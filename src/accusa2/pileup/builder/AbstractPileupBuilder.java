@@ -346,7 +346,9 @@ public abstract class AbstractPileupBuilder {
 
 		// filter
 		for(AbstractPileupBuilderFilter pileupBuilderFilter : pileupBuilderFilters) {
-			pileupBuilderFilter.process(this);
+			if(pileupBuilderFilter != null) {
+				pileupBuilderFilter.process(this);
+			}
 		}
 	}
 
