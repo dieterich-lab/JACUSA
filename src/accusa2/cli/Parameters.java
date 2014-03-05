@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-
 import accusa2.filter.process.PileupBuilderFilter;
 import accusa2.filter.samtag.SamTagFilter;
 import accusa2.io.format.AbstractResultFormat;
@@ -14,7 +13,7 @@ import accusa2.io.format.DefaultResultFormat;
 import accusa2.io.output.Output;
 import accusa2.io.output.OutputPrinter;
 import accusa2.method.AbstractMethodFactory;
-import accusa2.method.statistic.DefaultStatistic;
+import accusa2.method.statistic.LRStatistic;
 import accusa2.method.statistic.StatisticCalculator;
 import accusa2.pileup.Pileup;
 import accusa2.pileup.builder.DirectedPileupBuilderFactory;
@@ -50,7 +49,7 @@ public class Parameters {
 	private AbstractResultFormat resultFormat;
 
 	// version
-	public final String VERSION = "2.5 beta11";
+	public final String VERSION = "2.5 DEVEL";
 
 	// bed file to scan for variants
 	private String bedPathname;
@@ -61,7 +60,7 @@ public class Parameters {
 	private AbstractMethodFactory methodFactory;
 	private StatisticCalculator statisticCalculator;
 	private PileupBuilderFilter pileupBuilderFilters;
-	
+
 	// path to BAM files
 	private String[] pathnames1;
 	private String[] pathnames2;
@@ -106,7 +105,7 @@ public class Parameters {
 
 		processINDELs	= false;
 
-		statisticCalculator	= new DefaultStatistic();
+		statisticCalculator	= new LRStatistic();
 
 		pileupBuilderFilters = new PileupBuilderFilter(this);
 

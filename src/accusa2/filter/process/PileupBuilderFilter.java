@@ -21,7 +21,7 @@ public class PileupBuilderFilter implements Cloneable {
 	public PileupBuilderFilter(Parameters paramters) {
 		this.parameters = paramters;
 
-		int n 		= 6;
+		int n = 6;
 
 		c2f = new HashMap<Character, AbstractFilterFactory>(n);
 		c2i = new HashMap<Character, Integer>(n);
