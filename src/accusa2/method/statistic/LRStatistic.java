@@ -70,7 +70,7 @@ public final class LRStatistic implements StatisticCalculator {
 		final double z = -2 * (densityP) + 2 * (density11 + density22);
 
 		// only positive values are allowed
-		if(z < 0 ) {
+		if(z < 0.0 ) {
 			return 1.0;
 		}
 		return 1 - dist.cdf(z);
