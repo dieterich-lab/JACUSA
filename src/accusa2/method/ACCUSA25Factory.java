@@ -156,9 +156,11 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 		abstractFilterFactory.setParameters(parameters);
 		abstractPileupFilters.put(abstractFilterFactory.getC(), abstractFilterFactory);
 
+		/*
 		abstractFilterFactory = new PolymorphismPileupFilterFactory();
 		abstractFilterFactory.setParameters(parameters);
 		abstractPileupFilters.put(abstractFilterFactory.getC(), abstractFilterFactory);
+		*/
 
 		return abstractPileupFilters;
 	}

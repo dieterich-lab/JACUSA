@@ -31,7 +31,7 @@ public class HomozygousParallelPileupFilter extends AbstractParallelPileupFilter
 			throw new IllegalArgumentException("Unsupported sample!");
 		}
 
-		if(pileup.getAlleles().length > 2) {
+		if(pileup.getAlleles().length > 1) {
 			return true;
 		}
 
