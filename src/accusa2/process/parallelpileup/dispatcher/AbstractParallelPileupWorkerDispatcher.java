@@ -5,35 +5,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.samtools.SAMFileReader;
-
 import accusa2.cli.Parameters;
 import accusa2.io.output.TmpOutputWriter;
 import accusa2.process.parallelpileup.worker.AbstractParallelPileupWorker;
 import accusa2.util.AnnotatedCoordinate;
+import accusa2.util.CoordinateProvider;
 
 public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractParallelPileupWorker> {
 
-	protected AnnotatedCoordinate[] coordinates;
-	protected Integer currentCoordinateIndex;
-
+	protected CoordinateProvider coordinateProvider;
 	protected final Parameters parameters;
+
 	protected final List<T> threadContainer;
 	protected TmpOutputWriter[] tmpOutputs;
 
 	protected Integer comparisons;
 
-	public AbstractParallelPileupWorkerDispatcher(List<AnnotatedCoordinate> coordinates, Parameters parameters) {
-		this.coordinates = coordinates.toArray(new AnnotatedCoordinate[coordinates.size()]);
-		currentCoordinateIndex = 0;
-		tmpOutputs 		= new TmpOutputWriter[coordinates.size()];
-
+	public AbstractParallelPileupWorkerDispatcher(CoordinateProvider coordinateProvider, Parameters parameters) {
+		this.coordinateProvider = coordinateProvider;
 		this.parameters = parameters;
 
+		tmpOutputs 		= new TmpOutputWriter[parameters.getMaxThreads()];
 		threadContainer = new ArrayList<T>(parameters.getMaxThreads());
 
 		comparisons 	= 0;
 	}
 
+	/**
+	 * 
+	 * @param pathname
+	 * @return
+	 */
 	private SAMFileReader initReader(String pathname) {
 		SAMFileReader reader = new SAMFileReader(new File(pathname));
 		// be silent
@@ -66,12 +68,12 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 						threadContainer.add(processParallelPileupThread);
 						processParallelPileupThread.start();
 				}
-	
+
 				// 
 				if(!hasNext() && threadContainer.isEmpty()) {
 					break;
 				}
-	
+
 				try {
 					this.wait();
 				} catch (InterruptedException e) {
@@ -95,7 +97,7 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 	 * @return
 	 */
 	public synchronized boolean hasNext() {
-		return currentCoordinateIndex < coordinates.length;
+		return coordinateProvider.hasNext();
 	}
 
 	/**
@@ -103,29 +105,34 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 	 * @return
 	 */
 	public AnnotatedCoordinate next() {
-		AnnotatedCoordinate coordinate = new AnnotatedCoordinate();
-
 		if(hasNext()) {
-			coordinate = coordinates[currentCoordinateIndex];
-			coordinate.setCoordinateIndex(currentCoordinateIndex);
-			++currentCoordinateIndex;
+			return coordinateProvider.next();
 		}
-
-		return coordinate;
+		
+		return null;
 	}
 
-	public synchronized int getCurrentCoordinateIndex() {
-		return currentCoordinateIndex;
-	}
-
+	/**
+	 * 
+	 * @return
+	 */
 	public SAMFileReader[] createBAMFileReaders1() {
 		return initReaders(parameters.getPathnames1());
 	}
-	
+
+	/**
+	 * 
+	 * @return
+	 */
 	public SAMFileReader[] createBAMFileReaders2() {
 		return initReaders(parameters.getPathnames2());
 	}
 
+	/**
+	 * 
+	 * @param pathnames
+	 * @return
+	 */
 	private SAMFileReader[] initReaders(String[] pathnames) {
 		SAMFileReader[] readers = new SAMFileReader[pathnames.length];
 		for(int i = 0; i < pathnames.length; ++i) {
@@ -133,7 +140,5 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 		}
 		return readers;
 	}
-	
-	
 
 }

@@ -1,20 +1,18 @@
 package accusa2.process.parallelpileup.dispatcher;
 
-
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import accusa2.cli.Parameters;
 import accusa2.io.output.Output;
 import accusa2.io.output.TmpOutputReader;
 import accusa2.process.parallelpileup.worker.MpileupParallelPileupWorker;
-import accusa2.util.AnnotatedCoordinate;
+import accusa2.util.CoordinateProvider;
 
 public class MpileupParallelPileupWorkerDispatcher extends AbstractParallelPileupWorkerDispatcher<MpileupParallelPileupWorker> {
 
-	public MpileupParallelPileupWorkerDispatcher(List<AnnotatedCoordinate> coordinates, Parameters parameters) {
-		super(coordinates, parameters);
+	public MpileupParallelPileupWorkerDispatcher(CoordinateProvider coordinateProvider, Parameters parameters) {
+		super(coordinateProvider, parameters);
 	}
 
 	@Override
@@ -23,11 +21,14 @@ public class MpileupParallelPileupWorkerDispatcher extends AbstractParallelPileu
 			comparisons += processParallelPileup.getComparisons();
 		}
 
+		// Deprecated
+		/*
 		synchronized (tmpOutputs) {
 			for(int i : processParallelPileup.getTmpOutputWriters().keySet()) {
 				tmpOutputs[i] = processParallelPileup.getTmpOutputWriters().get(i);
 			}
 		}
+		*/
 	}
 
 	@Override

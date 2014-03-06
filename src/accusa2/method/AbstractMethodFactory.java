@@ -1,14 +1,14 @@
 package accusa2.method;
 
+
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import accusa2.cli.Parameters;
 import accusa2.cli.options.ACOption;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
 import accusa2.process.parallelpileup.worker.AbstractParallelPileupWorker;
-import accusa2.util.AnnotatedCoordinate;
+import accusa2.util.CoordinateProvider;
 
 
 public abstract class AbstractMethodFactory {
@@ -20,7 +20,7 @@ public abstract class AbstractMethodFactory {
 	private String desc;
 
 	public abstract void initACOptions();
-	public abstract AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> getInstance(List<AnnotatedCoordinate> coordinates, Parameters parameters); 
+	public abstract AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> getInstance(CoordinateProvider coordinateProvider, Parameters parameters); 
 
 	public AbstractMethodFactory(String name, String desc) {
 		this.name = name;

@@ -1,10 +1,7 @@
 package accusa2.process.parallelpileup.dispatcher;
 
-
-
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import accusa2.cli.Parameters;
 import accusa2.io.format.AbstractResultFormat;
@@ -14,7 +11,7 @@ import accusa2.io.output.TmpOutputReader;
 import accusa2.io.output.TmpOutputWriter;
 import accusa2.pileup.ParallelPileup;
 import accusa2.process.parallelpileup.worker.ACCUSA2_ParallelPileupWorker;
-import accusa2.util.AnnotatedCoordinate;
+import accusa2.util.CoordinateProvider;
 import accusa2.util.DiscriminantStatisticContainer;
 import accusa2.util.StatisticContainer;
 
@@ -22,8 +19,8 @@ public class ACCUSA2_ParallelPileupWorkerDispatcher extends AbstractParallelPile
 
 	private final StatisticContainer statisticContainer; 
 
-	public ACCUSA2_ParallelPileupWorkerDispatcher(List<AnnotatedCoordinate> coordinates, Parameters parameters) {
-		super(coordinates, parameters);
+	public ACCUSA2_ParallelPileupWorkerDispatcher(CoordinateProvider coordinateProvider, Parameters parameters) {
+		super(coordinateProvider, parameters);
 
 		statisticContainer = new DiscriminantStatisticContainer();
 	}
@@ -42,11 +39,14 @@ public class ACCUSA2_ParallelPileupWorkerDispatcher extends AbstractParallelPile
 			}
 		}
 
+		// Deprecated
+		/*
 		synchronized (tmpOutputs) {
 			for(int i : parallelPileupWorker.getTmpOutputWriters().keySet()) {
 				tmpOutputs[i] = parallelPileupWorker.getTmpOutputWriters().get(i);
 			}
 		}
+		*/
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class ACCUSA2_ParallelPileupWorkerDispatcher extends AbstractParallelPile
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		for(final TmpOutputWriter tmpOutputWriter : tmpOutputs) {
 			try {
 				tmpOutputWriter.close();

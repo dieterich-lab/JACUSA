@@ -1,12 +1,7 @@
 package accusa2.method;
 
-
-
 import java.util.HashMap;
-
-import java.util.List;
 import java.util.TreeMap;
-
 import java.util.Map;
 
 import accusa2.cli.CLI;
@@ -50,7 +45,7 @@ import accusa2.method.statistic.StatisticCalculator;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
 import accusa2.process.parallelpileup.dispatcher.ACCUSA2_ParallelPileupWorkerDispatcher;
 import accusa2.process.parallelpileup.worker.ACCUSA2_ParallelPileupWorker;
-import accusa2.util.AnnotatedCoordinate;
+import accusa2.util.CoordinateProvider;
 
 public class ACCUSA2Factory extends AbstractMethodFactory {
 
@@ -110,9 +105,9 @@ public class ACCUSA2Factory extends AbstractMethodFactory {
 	}
 
 	@Override
-	public AbstractParallelPileupWorkerDispatcher<ACCUSA2_ParallelPileupWorker> getInstance(List<AnnotatedCoordinate> coordinates, Parameters parameters) {
+	public AbstractParallelPileupWorkerDispatcher<ACCUSA2_ParallelPileupWorker> getInstance(CoordinateProvider coordinateProvider, Parameters parameters) {
 		if(instance == null) {
-			instance = new ACCUSA2_ParallelPileupWorkerDispatcher(coordinates, parameters);
+			instance = new ACCUSA2_ParallelPileupWorkerDispatcher(coordinateProvider, parameters);
 		}
 		return instance;
 	}

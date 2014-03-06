@@ -1,11 +1,7 @@
 package accusa2.process.parallelpileup.dispatcher;
 
-
-
 import java.io.File;
-
 import java.io.IOException;
-import java.util.List;
 
 import accusa2.cli.Parameters;
 import accusa2.io.format.AbstractResultFormat;
@@ -14,12 +10,12 @@ import accusa2.io.output.Output;
 import accusa2.io.output.TmpOutputReader;
 import accusa2.io.output.TmpOutputWriter;
 import accusa2.process.parallelpileup.worker.ACCUSA25_ParallelPileupWorker;
-import accusa2.util.AnnotatedCoordinate;
+import accusa2.util.CoordinateProvider;
 
 public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPileupWorkerDispatcher<ACCUSA25_ParallelPileupWorker> {
 
-	public ACCUSA25_ParallelPileupWorkerDispatcher(List<AnnotatedCoordinate> coordinates, Parameters parameters) {
-		super(coordinates, parameters);
+	public ACCUSA25_ParallelPileupWorkerDispatcher(CoordinateProvider coordinateProvider, Parameters parameters) {
+		super(coordinateProvider, parameters);
 	}
 
 	@Override
@@ -28,11 +24,14 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 			comparisons += parallelPileupWorker.getComparisons();
 		}
 
+		// Deprecated
+		/*
 		synchronized (tmpOutputs) {
 			for(int i : parallelPileupWorker.getTmpOutputWriters().keySet()) {
 				tmpOutputs[i] = parallelPileupWorker.getTmpOutputWriters().get(i);
 			}
 		}
+		*/
 	}
 
 	@Override
@@ -78,13 +77,6 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 				new File(tmpOutputWriter.getInfo()).delete();
 			}
 		}
-		
-		// FIXME add FDR for p-values
-		/*
-		if(parameters.getDebug()){
-			statisticContainer.write("stat.txt");
-		}
-		*/
 	}
-	
+
 }

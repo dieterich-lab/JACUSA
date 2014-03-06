@@ -1,12 +1,5 @@
 package accusa2.process.parallelpileup.worker;
 
-
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-import java.util.TreeMap;
-
 import net.sf.samtools.SAMFileReader;
 
 import accusa2.cli.Parameters;
@@ -34,11 +27,10 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	// output related
 	// current writer
 	protected TmpOutputWriter tmpOutput;
-	// all writers
-	protected Map<Integer, TmpOutputWriter> tmpOutputWriters;
 	// final result format
 	protected AbstractResultFormat resultFormat;
 
+	protected String tmpFilename;
 	// indicates if computation is finished
 	private boolean isFinished;
 
@@ -51,11 +43,11 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 		this.parameters 		= parameters;
 		resultFormat 			= parameters.getResultFormat();
 
-		tmpOutputWriters 		= new TreeMap<Integer, TmpOutputWriter>();
+		tmpFilename 			= parameters.getOutput() + "_" + String.valueOf(1); // TODO
 		buildParallelPileupIterator(coordinate, parameters);
 
 		isFinished 				= false;
-		
+
 		comparisons 			= 0;
 	}
 
@@ -118,30 +110,10 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	 * @param parameters
 	 */
 	private final void buildParallelPileupIterator(AnnotatedCoordinate annotatedCoordinate, Parameters parameters) {
-		try {
-			// close existing tmp file
-			if(tmpOutputWriters.size() > 0) {
-				getCurrentTmpOutputWriter().close();
-			}
-
-			if(tmpOutputWriters.containsKey(annotatedCoordinate.getIndex())) {
-				throw new IllegalArgumentException("Duplicate coorindateIndex: " + annotatedCoordinate.getIndex());
-			}
-			tmpOutputWriters.put(
-					annotatedCoordinate.getIndex(), 
-					new TmpOutputWriter(
-							File.createTempFile(
-									"ACCUSA2_" + annotatedCoordinate.getSequenceName() + "_" + String.valueOf(annotatedCoordinate.getIndex()), 
-									null)
-							)
-					);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// TODO
 
 		// let implementing class build the iterator
 		parallelPileupIterator = buildParallelPileupIterator_Helper(annotatedCoordinate, parameters);
-		tmpOutput = getCurrentTmpOutputWriter();
 	}
 
 	public final int getComparisons() {
@@ -150,18 +122,6 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 
 	public final boolean isFinished() {
 		return isFinished;
-	}
-
-	protected final int getAnnotatedCoordinateIndex() {
-		return parallelPileupIterator.getAnnotatedCoordinate().getIndex();
-	}
-
-	protected final TmpOutputWriter getCurrentTmpOutputWriter() {
-		return getTmpOutputWriters().get(getAnnotatedCoordinateIndex());
-	}
-
-	public final Map<Integer, TmpOutputWriter> getTmpOutputWriters() {
-		return tmpOutputWriters;
 	}
 
 }
