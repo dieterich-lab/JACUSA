@@ -1,11 +1,13 @@
 package accusa2.pileup;
 
 
+
 import java.util.Arrays;
 import java.util.HashMap;
 //import java.util.HashSet;
 import java.util.Map;
 //import java.util.Set;
+
 
 import accusa2.process.phred2prob.Phred2Prob;
 
@@ -219,6 +221,50 @@ public final class Pileup {
 
 	public void setQualCount(int [][] qualCount) {
 		this.qualCount = qualCount;
+	}
+
+	// TEST
+	public Pileup complement() {
+		final Pileup complement = new Pileup(this);
+
+		// invert orientation
+		switch (complement.strand) {
+		case FORWARD:
+		case UNKNOWN:
+			complement.strand = STRAND.REVERSE;
+			break;
+
+		case REVERSE:
+			complement.strand = STRAND.FORWARD;
+			break;
+		}
+
+		// invert base and qual count
+		complement.invert();
+		// adjust counts for filteredPileups
+		for(Pileup filteredPileup : complement.filteredPileups) {
+			filteredPileup.invert();
+		}
+
+		return complement;
+	}
+
+	// TEST
+	private void invert() {
+		int[] tmpBaseCount = new int[baseCount.length];
+		int[][] tmpQualCount = new int[baseCount.length][Phred2Prob.MAX_Q];
+
+		for(int base = 0; base < baseCount.length; ++base) {
+			int complementaryBase = COMPLEMENT[base];
+
+			// invert base count
+			tmpBaseCount[complementaryBase] = baseCount[base];
+			// invert qualCount
+			tmpQualCount[complementaryBase] = qualCount[base];
+		}
+
+		baseCount = tmpBaseCount;
+		qualCount = tmpQualCount;
 	}
 
 	public enum STRAND {

@@ -91,7 +91,15 @@ public class VariantParallelPileupIterator implements ParallelPileupIterator {
 			pileupBuilder.adjustCurrentGenomicPosition(position);
 		}
 	}
-	
+
+	private Pileup[] complementPileups(Pileup[] pileups) {
+		Pileup[] complementedPileups = new Pileup[pileups.length];
+		for(int i = 0; i < pileups.length; ++i) {
+			complementedPileups[i] = pileups[i].complement();
+		}
+		return complementedPileups;
+	}
+
 	protected boolean findNext() {
 		while (parallelPileup.isValid()) {
 			int position1 = parallelPileup.getPooledPileup1().getPosition();
@@ -113,15 +121,29 @@ public class VariantParallelPileupIterator implements ParallelPileupIterator {
 				break;
 
 			case 0:
-				
+
 				final STRAND strand1 = parallelPileup.getStrand1();
 				final STRAND strand2 = parallelPileup.getStrand2();
-
+				/*
+				 * UGLY code!!
+				 * Do not update strand{1,2}, when pileups are changed/complemented in the following,
+				 * otherwise "UGLY code continued" won't work as expected 
+				 */
+				// change parallelPileup if U,S or S,U encountered
+				if(strand1 == STRAND.UNKNOWN && strand2 == STRAND.REVERSE) {
+					parallelPileup.setPileups1(complementPileups(parallelPileup.getPileups1()));
+				}
+				if(strand2 == STRAND.UNKNOWN && strand1 == STRAND.REVERSE) {
+					parallelPileup.setPileups2(complementPileups(parallelPileup.getPileups2()));
+				}
 				final boolean isVariant = isVariant(parallelPileup);
 
 				if(isVariant && strand1 == strand2) {
 					return true;
-				} else if((strand1 == STRAND.UNKNOWN || strand2 == STRAND.UNKNOWN) && isVariant) {
+					/*
+					 * UGLY code continued!
+					 */
+				} else if(isVariant && (strand1 == STRAND.UNKNOWN || strand2 == STRAND.UNKNOWN)) {
 					return true;
 				} else if(strand1 == STRAND.REVERSE) {
 					if(hasNext(pileupBuilders2)) {

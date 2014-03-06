@@ -14,13 +14,13 @@ public final class ParallelPileup {
 	private Pileup[] pileups2;
 
 	public ParallelPileup(final ParallelPileup parallelPileup) {
-		this.pileup = new Pileup(parallelPileup.pileup);
+		this.pileup = new Pileup(parallelPileup.getPooledPileup());
 
-		this.pileup1 = new Pileup(parallelPileup.pileup1);
-		this.pileup2 = new Pileup(parallelPileup.pileup2);
+		this.pileup1 = new Pileup(parallelPileup.getPooledPileup1());
+		this.pileup2 = new Pileup(parallelPileup.getPooledPileup2());
 
-		pileups1 = parallelPileup.pileups1.clone();
-		pileups2 = parallelPileup.pileups2.clone();
+		pileups1 = parallelPileup.getPileups1().clone();
+		pileups2 = parallelPileup.getPileups2().clone();
 	}
 
 	public ParallelPileup(final int n1, final int n2) {
