@@ -32,14 +32,14 @@ public class MpileupParallelPileupWorkerDispatcher extends AbstractParallelPileu
 	}
 
 	@Override
-	protected MpileupParallelPileupWorker buildNextParallelPileupWorker() {
+	protected MpileupParallelPileupWorker buildNextParallelPileupWorker_helper() {
 		return new MpileupParallelPileupWorker(this, next(), parameters);
 	}
 
 	@Override
 	protected void writeOuptut() {
 		final Output output = parameters.getOutput();
-		for(final Output tmpOutput : tmpOutputs) {
+		for(final Output tmpOutput : tmpOutputWriters) {
 			try {
 				tmpOutput.close();
 

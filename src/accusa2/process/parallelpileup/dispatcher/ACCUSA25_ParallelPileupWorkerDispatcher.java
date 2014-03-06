@@ -1,6 +1,5 @@
 package accusa2.process.parallelpileup.dispatcher;
 
-import java.io.File;
 import java.io.IOException;
 
 import accusa2.cli.Parameters;
@@ -23,19 +22,10 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 		synchronized (comparisons) {
 			comparisons += parallelPileupWorker.getComparisons();
 		}
-
-		// Deprecated
-		/*
-		synchronized (tmpOutputs) {
-			for(int i : parallelPileupWorker.getTmpOutputWriters().keySet()) {
-				tmpOutputs[i] = parallelPileupWorker.getTmpOutputWriters().get(i);
-			}
-		}
-		*/
 	}
 
 	@Override
-	protected ACCUSA25_ParallelPileupWorker buildNextParallelPileupWorker() {
+	protected ACCUSA25_ParallelPileupWorker buildNextParallelPileupWorker_helper() {
 		return new ACCUSA25_ParallelPileupWorker(this, next(), parameters);
 	}
 
@@ -49,33 +39,54 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 			output.write(resultFormat.getHeader());
 		} catch (IOException e) {
 			e.printStackTrace();
+			return;
 		}
-		
-		for(final TmpOutputWriter tmpOutputWriter : tmpOutputs) {
+
+		// build reader array
+		TmpOutputReader[] tmpOutputReaders = new TmpOutputReader[tmpOutputWriters.length];
+		for(int i = 0; i < tmpOutputWriters.length; ++i) {
+			final TmpOutputWriter tmpOutputWriter = tmpOutputWriters[i];
+			TmpOutputReader tmpOutputReader;
 			try {
-				tmpOutputWriter.close();
+				tmpOutputReader = new TmpOutputReader(tmpOutputWriter.getInfo());
 			} catch (IOException e) {
 				e.printStackTrace();
+				return;
 			}
+			tmpOutputReaders[i] = tmpOutputReader;
+		}
 
-			try {
-				final TmpOutputReader tmpOutputReader = new TmpOutputReader(tmpOutputWriter.getInfo());
-
-				String line = null;
-				while((line = tmpOutputReader.readLine()) != null) {
+		// read data and change readers based on meta info/nextThreadId on the fly to reconstruct order of output
+		TmpOutputReader tmpOutputReader = tmpOutputReaders[0];
+		try {
+			String line = null;
+			while((line = tmpOutputReader.readLine()) != null) {
+				if(line.charAt(0) == resultFormat.getCOMMENT()) {
+					int nextThreadId = Integer.parseInt(line.substring(1));
+					tmpOutputReader = tmpOutputReaders[nextThreadId];
+				} else {
 					final double p = resultFormat.extractValue(line);
 					if(p <= parameters.getFDR()) {
 						output.write(line + "\t" + p);
 					}
 				}
-				tmpOutputReader.close();
-			} catch (Exception e) {
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+
+		for(TmpOutputReader tmpOutputReader2 : tmpOutputReaders) {
+			try {
+				tmpOutputReader2.close();
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
-			if(!parameters.getDebug()){
-				new File(tmpOutputWriter.getInfo()).delete();
-			}
+		}
+		
+		// FIXME
+		if(!parameters.getDebug()){
+			//new File(tmpOutputWriter.getInfo()).delete();
 		}
 	}
 

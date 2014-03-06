@@ -1,6 +1,7 @@
 package accusa2.process.parallelpileup.dispatcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,18 +18,22 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 	protected final Parameters parameters;
 
 	protected final List<T> threadContainer;
-	protected TmpOutputWriter[] tmpOutputs;
+	protected TmpOutputWriter[] tmpOutputWriters;
 
 	protected Integer comparisons;
 
+	protected int lastThreadId;
+	
 	public AbstractParallelPileupWorkerDispatcher(CoordinateProvider coordinateProvider, Parameters parameters) {
 		this.coordinateProvider = coordinateProvider;
 		this.parameters = parameters;
 
-		tmpOutputs 		= new TmpOutputWriter[parameters.getMaxThreads()];
+		tmpOutputWriters = new TmpOutputWriter[parameters.getMaxThreads()];
 		threadContainer = new ArrayList<T>(parameters.getMaxThreads());
 
 		comparisons 	= 0;
+		
+		lastThreadId	= -1;
 	}
 
 	/**
@@ -45,9 +50,17 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 		return reader;
 	}
 
+	public synchronized int getLastThreadId() {
+		return lastThreadId;
+	}
+	
+	public synchronized void setLastThreadId(int id) {
+		this.lastThreadId = id;
+	}
+	
 	public final int run() {
 		synchronized (this) {
-
+			
 			while(hasNext() || !threadContainer.isEmpty()) {
 				// clean finished threads
 				for(int i = 0; i < threadContainer.size(); ++i) {
@@ -56,6 +69,9 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 					if(processParallelPileupThread.isFinished()) {
 						processFinishedWorker(processParallelPileupThread);
 
+						// FIXME
+						// tmpOutputWriters[i].close();
+						
 						// remove from container and "kill"
 						threadContainer.remove(processParallelPileupThread);
 						processParallelPileupThread = null;
@@ -64,12 +80,14 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 
 				// fill thread container
 				while(threadContainer.size() < parameters.getMaxThreads() && hasNext()) {
-					T processParallelPileupThread = buildNextParallelPileupWorker();
-						threadContainer.add(processParallelPileupThread);
-						processParallelPileupThread.start();
+					T processParallelPileupThread = buildNextParallelPileupWorker_helper();
+					int threadId = threadContainer.size();
+					processParallelPileupThread.setThreadId(threadId);
+					threadContainer.add(processParallelPileupThread);
+					processParallelPileupThread.start();
 				}
 
-				// 
+				// computation finished
 				if(!hasNext() && threadContainer.isEmpty()) {
 					break;
 				}
@@ -82,12 +100,26 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 			}
 		}
 
+		// close
+		for(final TmpOutputWriter tmpOutputWriter : tmpOutputWriters) {
+			try {
+				tmpOutputWriter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return comparisons.intValue();
+			}
+		}
+
 		// finally write the output and cleanup
 		writeOuptut();
-		return comparisons.intValue();		
+		return comparisons.intValue();
 	}
 
-	abstract protected T buildNextParallelPileupWorker();
+	protected T buildNextParallelPileupWorker() {
+		return buildNextParallelPileupWorker();
+	}
+	
+	abstract protected T buildNextParallelPileupWorker_helper();
 	abstract protected void processFinishedWorker(T processParallelPileupThread);
 
 	abstract protected void writeOuptut();

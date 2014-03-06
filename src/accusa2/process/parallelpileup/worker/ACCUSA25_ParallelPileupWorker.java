@@ -1,7 +1,5 @@
 package accusa2.process.parallelpileup.worker;
 
-
-
 import java.io.IOException;
 
 import accusa2.ACCUSA2;
@@ -119,9 +117,19 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 			comparisons++;
 			try {
 				// write output 
-				tmpOutput.write(sb.toString());
+				tmpOutputWriter.write(sb.toString());
 			} catch (IOException e) {
 				e.printStackTrace();
+				return;
+			}
+		}
+		
+		if(parameters.getMaxThreads() > 1) {
+			try {
+				tmpOutputWriter.write(resultFormat.getCOMMENT() + String.valueOf(getNextThreadId()));
+			} catch (IOException e) {
+				e.printStackTrace();
+				return;
 			}
 		}
 	}

@@ -145,7 +145,7 @@ public class ACCUSA2_ParallelPileupWorker extends AbstractParallelPileupWorker {
 			comparisons++;
 			try {
 				// write output 
-				tmpOutput.write(sb.toString());
+				tmpOutputWriter.write(sb.toString());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

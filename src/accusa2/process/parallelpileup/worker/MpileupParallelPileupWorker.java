@@ -35,7 +35,7 @@ public class MpileupParallelPileupWorker extends AbstractParallelPileupWorker {
 
 			sb.append(resultFormat.convert2String(parallelPileup, 0));
 			try {
-				tmpOutput.write(sb.toString());
+				tmpOutputWriter.write(sb.toString());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -50,7 +50,7 @@ public class ACCUSA2_ParallelPileupWorkerDispatcher extends AbstractParallelPile
 	}
 
 	@Override
-	protected ACCUSA2_ParallelPileupWorker buildNextParallelPileupWorker() {
+	protected ACCUSA2_ParallelPileupWorker buildNextParallelPileupWorker_helper() {
 		return new ACCUSA2_ParallelPileupWorker(this, next(), parameters);
 	}
 
@@ -66,7 +66,7 @@ public class ACCUSA2_ParallelPileupWorkerDispatcher extends AbstractParallelPile
 			e.printStackTrace();
 		}
 
-		for(final TmpOutputWriter tmpOutputWriter : tmpOutputs) {
+		for(final TmpOutputWriter tmpOutputWriter : tmpOutputWriters) {
 			try {
 				tmpOutputWriter.close();
 			} catch (IOException e) {

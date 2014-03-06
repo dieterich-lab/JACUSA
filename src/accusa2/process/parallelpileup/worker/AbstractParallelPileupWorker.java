@@ -22,15 +22,17 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 
 	protected StatisticCalculator statistic;
 
+	protected int threadId;
+	protected int nextThreadId;
+	
 	protected int comparisons;
 
 	// output related
 	// current writer
-	protected TmpOutputWriter tmpOutput;
+	protected TmpOutputWriter tmpOutputWriter;
 	// final result format
 	protected AbstractResultFormat resultFormat;
 
-	protected String tmpFilename;
 	// indicates if computation is finished
 	private boolean isFinished;
 
@@ -43,11 +45,14 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 		this.parameters 		= parameters;
 		resultFormat 			= parameters.getResultFormat();
 
-		tmpFilename 			= parameters.getOutput() + "_" + String.valueOf(1); // TODO
+		// FIXME tmpFilename 			= parameters.getOutput() + "_" + String.valueOf(1); // TODO
 		buildParallelPileupIterator(coordinate, parameters);
 
 		isFinished 				= false;
 
+		threadId				= -1;
+		nextThreadId			= -1;
+		
 		comparisons 			= 0;
 	}
 
@@ -74,7 +79,22 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 			}
 		}
 		close();
+	}
 
+	public int getNextThreadId() {
+		return nextThreadId;
+	}
+	
+	public void setNextThreadId(int id) {
+		nextThreadId = id;
+	}
+
+	public int getThreadId() {
+		return threadId;
+	}
+
+	public void setThreadId(int id) {
+		threadId = id;
 	}
 
 	protected void close() {
