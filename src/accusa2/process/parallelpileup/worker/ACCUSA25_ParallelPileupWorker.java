@@ -105,7 +105,7 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 				// append empty result
 				for(;pileupFilterIndex < pileupFilterCount; ++pileupFilterIndex) {
 					sb.append(resultFormat.getSEP());
-					sb.append("-1");
+					sb.append("-1.0");
 				}
 
 				// append filtered result
@@ -145,8 +145,7 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 	}
 
 	@Override
-	protected ParallelPileupIterator buildParallelPileupIterator_Helper(final AnnotatedCoordinate coordinate,
-			final Parameters parameters) {
+	protected ParallelPileupIterator buildParallelPileupIterator_Helper(final AnnotatedCoordinate coordinate, final Parameters parameters) {
 		return new VariantParallelPileupIterator(coordinate, readers1, readers2, parameters);
 	}
 

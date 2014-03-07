@@ -1,6 +1,5 @@
 package accusa2.process.parallelpileup.dispatcher;
 
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.List;
 import net.sf.samtools.SAMFileReader;
 import accusa2.cli.Parameters;
 import accusa2.process.parallelpileup.worker.AbstractParallelPileupWorker;
-import accusa2.util.AnnotatedCoordinate;
 import accusa2.util.CoordinateProvider;
 
 public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractParallelPileupWorker> {
@@ -51,15 +49,26 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 	public synchronized int getLastThreadId() {
 		return lastThreadId;
 	}
-	
+
 	public synchronized void setLastThreadId(int id) {
 		this.lastThreadId = id;
 	}
-	
+
+	public void processThreadId(AbstractParallelPileupWorker abstractParallelPileupWorker) {
+		synchronized (this) {
+			int threadId = abstractParallelPileupWorker.getThreadId();
+			int lastThreadId = getLastThreadId();
+			if(lastThreadId >= 0) {
+				getThreadContainer().get(lastThreadId).setNextThreadId(threadId);
+			}
+			setLastThreadId(threadId);
+		}
+	}
+
 	public final int run() {
 		synchronized (this) {
 
-			while(hasNext() || !threadContainer.isEmpty()) {
+			while(coordinateProvider.hasNext() || !threadContainer.isEmpty()) {
 				// clean finished threads
 				for(int i = 0; i < threadContainer.size(); ++i) {
 					T processParallelPileupThread = threadContainer.get(i);
@@ -71,7 +80,7 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 				}
 
 				// fill thread container
-				while(threadContainer.size() < parameters.getMaxThreads() && hasNext()) {
+				while(threadContainer.size() < parameters.getMaxThreads() && coordinateProvider.hasNext()) {
 					T processParallelPileupThread = buildNextParallelPileupWorker();
 					threadContainer.add(processParallelPileupThread);
 					runningThreads.add(processParallelPileupThread);
@@ -80,7 +89,7 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 				}
 
 				// computation finished
-				if(!hasNext() && runningThreads.isEmpty()) {
+				if(!coordinateProvider.hasNext() && runningThreads.isEmpty()) {
 					break;
 				}
 
@@ -101,26 +110,6 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 	abstract protected void processFinishedWorker(T processParallelPileupThread);
 
 	abstract protected void writeOuptut();
-
-	/**
-	 * 
-	 * @return
-	 */
-	public synchronized boolean hasNext() {
-		return coordinateProvider.hasNext();
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public synchronized AnnotatedCoordinate next() {
-		if(hasNext()) {
-			return coordinateProvider.next();
-		}
-		
-		return null;
-	}
 
 	/**
 	 * 
@@ -151,7 +140,19 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 		return readers;
 	}
 
-	public synchronized List<T> getThreadContainer() {
+	/**
+	 * 
+	 * @return
+	 */
+	public CoordinateProvider getCoordinateProvider() {
+		return coordinateProvider;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public List<T> getThreadContainer() {
 		return threadContainer;
 	}
 	

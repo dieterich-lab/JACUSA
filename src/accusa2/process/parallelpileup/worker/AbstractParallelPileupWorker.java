@@ -23,7 +23,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 
 	protected StatisticCalculator statistic;
 
-	protected int threadId;
+	protected final int threadId;
 	protected int nextThreadId;
 	
 	protected int comparisons;
@@ -45,12 +45,14 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 
 		this.parameters 		= parameters;
 		resultFormat 			= parameters.getResultFormat();
-		buildParallelPileupIterator(coordinate, parameters);
-		
+
 		isFinished 				= false;
 
-		threadId				= parallelPileupWorkerDispatcher.getThreadContainer().size();
+		synchronized (parallelPileupWorkerDispatcher.getThreadContainer()) {
+			threadId			= parallelPileupWorkerDispatcher.getThreadContainer().size();
+		}
 		nextThreadId			= -1;
+		buildParallelPileupIterator(coordinate, parameters);
 
 		final String tmpFilename = parameters.getOutput().getInfo() + "_tmp" + String.valueOf(threadId) + ".gz";
 		try {
@@ -65,12 +67,11 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 
 	public final void run() {
 		processParallelPileupIterator(parallelPileupIterator);
-
 		while(!isFinished) {
 			AnnotatedCoordinate annotatedCoordinate = null;
-			synchronized (parallelPileupWorkerDispatcher) {
-				if(parallelPileupWorkerDispatcher.hasNext()) {
-					annotatedCoordinate = parallelPileupWorkerDispatcher.next();
+			synchronized (parallelPileupWorkerDispatcher.getCoordinateProvider()) {
+				if(parallelPileupWorkerDispatcher.getCoordinateProvider().hasNext()) {
+					annotatedCoordinate = parallelPileupWorkerDispatcher.getCoordinateProvider().next();
 				} else {
 					isFinished = true;
 				}
@@ -88,15 +89,15 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 		close();
 	}
 
-	public int getNextThreadId() {
+	public synchronized int getNextThreadId() {
 		return nextThreadId;
 	}
 
-	public void setNextThreadId(int id) {
+	public synchronized void setNextThreadId(int id) {
 		nextThreadId = id;
 	}
 
-	public int getThreadId() {
+	final public int getThreadId() {
 		return threadId;
 	}
 
@@ -124,7 +125,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	 * @param parallelPileupIterator
 	 */
 	abstract protected void processParallelPileupIterator(ParallelPileupIterator parallelPileupIterator);
-	
+
 	/**
 	 * 
 	 * @param coordinate
@@ -138,16 +139,11 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	 * @param annotatedCoordinate
 	 * @param parameters
 	 */
-	private final void buildParallelPileupIterator(AnnotatedCoordinate annotatedCoordinate, Parameters parameters) {
-		int nextThreadId = getThreadId();
-
+	final private void buildParallelPileupIterator(AnnotatedCoordinate annotatedCoordinate, Parameters parameters) {
 		synchronized (parallelPileupWorkerDispatcher) {
-			int lastThreadId = parallelPileupWorkerDispatcher.getLastThreadId();
-			if(lastThreadId >= 0) {
-				parallelPileupWorkerDispatcher.getThreadContainer().get(lastThreadId).setNextThreadId(nextThreadId);
-			}
-			parallelPileupWorkerDispatcher.setLastThreadId(nextThreadId);
+			parallelPileupWorkerDispatcher.processThreadId(this);
 		}
+
 		// let implementing class build the iterator
 		parallelPileupIterator = buildParallelPileupIterator_Helper(annotatedCoordinate, parameters);
 	}

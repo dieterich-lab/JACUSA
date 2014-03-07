@@ -34,7 +34,7 @@ public class MpileupParallelPileupWorkerDispatcher extends AbstractParallelPileu
 
 	@Override
 	protected MpileupParallelPileupWorker buildNextParallelPileupWorker() {
-		return new MpileupParallelPileupWorker(this, next(), parameters);
+		return new MpileupParallelPileupWorker(this, getCoordinateProvider().next(), parameters);
 	}
 
 	@Override
