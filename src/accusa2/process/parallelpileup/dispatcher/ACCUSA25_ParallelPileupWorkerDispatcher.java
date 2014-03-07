@@ -6,6 +6,7 @@ import accusa2.cli.Parameters;
 import accusa2.io.format.AbstractResultFormat;
 import accusa2.io.format.TmpResultFormat;
 import accusa2.io.output.Output;
+import accusa2.io.output.OutputWriter;
 import accusa2.io.output.TmpOutputReader;
 import accusa2.io.output.TmpOutputWriter;
 import accusa2.process.parallelpileup.worker.ACCUSA25_ParallelPileupWorker;
@@ -32,6 +33,13 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 	@Override
 	protected void writeOuptut() {
 		final Output output = parameters.getOutput();
+		Output filtered;
+		try {
+			filtered = new OutputWriter(parameters.getOutput().getInfo() + ".filtered");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
 		final AbstractResultFormat resultFormat = new TmpResultFormat(parameters.getResultFormat());
 
 		// write Header
@@ -64,17 +72,33 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 				if(line.charAt(0) == resultFormat.getCOMMENT()) {
 					int nextThreadId = Integer.parseInt(line.substring(1));
 					tmpOutputReader = tmpOutputReaders[nextThreadId];
-					//output.write("#" + nextThreadId);
+					output.write("#" + nextThreadId);
 				} else {
 					final double p = resultFormat.extractValue(line);
+
 					if(p <= parameters.getFDR()) {
 						output.write(line + "\t" + p);
 					}
+					/*
+					if(p < 0) {
+						filtered.write(line + "\t" + p);
+					} else if(p <= parameters.getFDR()) {
+						output.write(line + "\t" + p);
+					}
+					*/
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
+		}
+
+		try {
+			output.close();
+			filtered.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		for(int i = 0; i < threadContainer.size(); ++i) {

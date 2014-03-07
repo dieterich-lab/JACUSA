@@ -58,8 +58,11 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 		synchronized (this) {
 			int threadId = abstractParallelPileupWorker.getThreadId();
 			int lastThreadId = getLastThreadId();
+			
 			if(lastThreadId >= 0) {
-				getThreadContainer().get(lastThreadId).setNextThreadId(threadId);
+				synchronized (getThreadContainer().get(lastThreadId)) {
+					getThreadContainer().get(lastThreadId).setNextThreadId(threadId);
+				}
 			}
 			setLastThreadId(threadId);
 		}

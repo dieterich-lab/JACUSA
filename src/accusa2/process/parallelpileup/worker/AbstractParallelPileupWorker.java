@@ -140,9 +140,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	 * @param parameters
 	 */
 	final private void buildParallelPileupIterator(AnnotatedCoordinate annotatedCoordinate, Parameters parameters) {
-		synchronized (parallelPileupWorkerDispatcher) {
-			parallelPileupWorkerDispatcher.processThreadId(this);
-		}
+		parallelPileupWorkerDispatcher.processThreadId(this);
 
 		// let implementing class build the iterator
 		parallelPileupIterator = buildParallelPileupIterator_Helper(annotatedCoordinate, parameters);
@@ -159,4 +157,5 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	public final TmpOutputWriter getTmpOutputWriter() {
 		return tmpOutputWriter;
 	}
+
 }
