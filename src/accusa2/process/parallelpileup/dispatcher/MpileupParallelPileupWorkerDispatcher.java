@@ -6,6 +6,7 @@ import java.io.IOException;
 import accusa2.cli.Parameters;
 import accusa2.io.output.Output;
 import accusa2.io.output.TmpOutputReader;
+import accusa2.io.output.TmpOutputWriter;
 import accusa2.process.parallelpileup.worker.MpileupParallelPileupWorker;
 import accusa2.util.CoordinateProvider;
 
@@ -32,13 +33,15 @@ public class MpileupParallelPileupWorkerDispatcher extends AbstractParallelPileu
 	}
 
 	@Override
-	protected MpileupParallelPileupWorker buildNextParallelPileupWorker_helper() {
+	protected MpileupParallelPileupWorker buildNextParallelPileupWorker() {
 		return new MpileupParallelPileupWorker(this, next(), parameters);
 	}
 
 	@Override
 	protected void writeOuptut() {
 		final Output output = parameters.getOutput();
+
+		TmpOutputWriter[] tmpOutputWriters = null;
 		for(final Output tmpOutput : tmpOutputWriters) {
 			try {
 				tmpOutput.close();

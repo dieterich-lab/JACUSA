@@ -1,7 +1,8 @@
 package accusa2.process.parallelpileup.worker;
 
-import net.sf.samtools.SAMFileReader;
+import java.io.IOException;
 
+import net.sf.samtools.SAMFileReader;
 import accusa2.cli.Parameters;
 import accusa2.io.format.AbstractResultFormat;
 import accusa2.io.output.TmpOutputWriter;
@@ -44,15 +45,21 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 
 		this.parameters 		= parameters;
 		resultFormat 			= parameters.getResultFormat();
-
-		// FIXME tmpFilename 			= parameters.getOutput() + "_" + String.valueOf(1); // TODO
 		buildParallelPileupIterator(coordinate, parameters);
-
+		
 		isFinished 				= false;
 
-		threadId				= -1;
+		threadId				= parallelPileupWorkerDispatcher.getThreadContainer().size();
 		nextThreadId			= -1;
-		
+
+		final String tmpFilename = parameters.getOutput().getInfo() + "_tmp" + String.valueOf(threadId) + ".gz";
+		try {
+			tmpOutputWriter		= new TmpOutputWriter(tmpFilename);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+
 		comparisons 			= 0;
 	}
 
@@ -84,17 +91,13 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	public int getNextThreadId() {
 		return nextThreadId;
 	}
-	
+
 	public void setNextThreadId(int id) {
 		nextThreadId = id;
 	}
 
 	public int getThreadId() {
 		return threadId;
-	}
-
-	public void setThreadId(int id) {
-		threadId = id;
 	}
 
 	protected void close() {
@@ -107,6 +110,12 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 			if(reader != null) {
 				reader.close();
 			}
+		}
+
+		try {
+			tmpOutputWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -130,8 +139,15 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	 * @param parameters
 	 */
 	private final void buildParallelPileupIterator(AnnotatedCoordinate annotatedCoordinate, Parameters parameters) {
-		// TODO
+		int nextThreadId = getThreadId();
 
+		synchronized (parallelPileupWorkerDispatcher) {
+			int lastThreadId = parallelPileupWorkerDispatcher.getLastThreadId();
+			if(lastThreadId >= 0) {
+				parallelPileupWorkerDispatcher.getThreadContainer().get(lastThreadId).setNextThreadId(nextThreadId);
+			}
+			parallelPileupWorkerDispatcher.setLastThreadId(nextThreadId);
+		}
 		// let implementing class build the iterator
 		parallelPileupIterator = buildParallelPileupIterator_Helper(annotatedCoordinate, parameters);
 	}
@@ -144,4 +160,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 		return isFinished;
 	}
 
+	public final TmpOutputWriter getTmpOutputWriter() {
+		return tmpOutputWriter;
+	}
 }

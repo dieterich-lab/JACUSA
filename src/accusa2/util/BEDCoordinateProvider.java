@@ -25,8 +25,8 @@ public class BEDCoordinateProvider implements CoordinateProvider {
 		try {
 			br = new BufferedReader(new FileReader(file));
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return;
 		}
 	}
 

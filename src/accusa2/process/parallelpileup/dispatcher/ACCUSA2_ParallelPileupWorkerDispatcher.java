@@ -38,19 +38,10 @@ public class ACCUSA2_ParallelPileupWorkerDispatcher extends AbstractParallelPile
 				e.printStackTrace();
 			}
 		}
-
-		// Deprecated
-		/*
-		synchronized (tmpOutputs) {
-			for(int i : parallelPileupWorker.getTmpOutputWriters().keySet()) {
-				tmpOutputs[i] = parallelPileupWorker.getTmpOutputWriters().get(i);
-			}
-		}
-		*/
 	}
 
 	@Override
-	protected ACCUSA2_ParallelPileupWorker buildNextParallelPileupWorker_helper() {
+	protected ACCUSA2_ParallelPileupWorker buildNextParallelPileupWorker() {
 		return new ACCUSA2_ParallelPileupWorker(this, next(), parameters);
 	}
 
@@ -66,6 +57,7 @@ public class ACCUSA2_ParallelPileupWorkerDispatcher extends AbstractParallelPile
 			e.printStackTrace();
 		}
 
+		TmpOutputWriter[] tmpOutputWriters = null;
 		for(final TmpOutputWriter tmpOutputWriter : tmpOutputWriters) {
 			try {
 				tmpOutputWriter.close();
@@ -109,11 +101,6 @@ public class ACCUSA2_ParallelPileupWorkerDispatcher extends AbstractParallelPile
 				new File(tmpOutputWriter.getInfo()).delete();
 			}
 		}
-		/* FIXME 
-		if(parameters.getDebug()){
-			statisticContainer.write("stat.txt");
-		}
-		*/
 	}
 	
 }
