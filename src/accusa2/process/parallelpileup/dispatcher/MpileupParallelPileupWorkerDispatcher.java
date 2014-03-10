@@ -18,9 +18,7 @@ public class MpileupParallelPileupWorkerDispatcher extends AbstractParallelPileu
 
 	@Override
 	protected void processFinishedWorker(MpileupParallelPileupWorker processParallelPileup) {
-		synchronized (comparisons) {
-			comparisons += processParallelPileup.getComparisons();
-		}
+		comparisons += processParallelPileup.getComparisons();
 	}
 
 	@Override

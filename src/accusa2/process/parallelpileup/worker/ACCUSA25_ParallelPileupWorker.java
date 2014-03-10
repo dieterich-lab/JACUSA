@@ -25,6 +25,7 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 		statisticCalculator = parameters.getStatisticCalculator().newInstance();
 	}
 
+	@Override
 	protected void processParallelPileupIterator(final ParallelPileupIterator parallelPileupIterator) {
 		ACCUSA2.printLog("Started screening contig " + 
 				parallelPileupIterator.getAnnotatedCoordinate().getSequenceName() + 
@@ -115,12 +116,12 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 
 			// considered comparisons
 			comparisons++;
+
 			try {
 				// write output 
 				tmpOutputWriter.write(sb.toString());
 			} catch (IOException e) {
 				e.printStackTrace();
-				return;
 			}
 		}
 
@@ -129,23 +130,32 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 				tmpOutputWriter.write(resultFormat.getCOMMENT() + String.valueOf(getNextThreadId()));
 			} catch (IOException e) {
 				e.printStackTrace();
-				return;
 			}
 		}
 	}
 
+	/**
+	 * 
+	 * @param parallelPileup
+	 * @return
+	 */
 	protected final boolean isValidParallelPileup(final ParallelPileup parallelPileup) {
 		return parallelPileup.getPooledPileup1().getCoverage() >= parameters.getMinCoverage() && 
 				parallelPileup.getPooledPileup2().getCoverage() >= parameters.getMinCoverage() && 
 				parallelPileup.getPooledPileup().getAlleles().length < 3;
 	}
 
+	/**
+	 * 
+	 * @param value
+	 * @return
+	 */
 	protected final boolean isValidValue(final double value) {
 		return value < 1.0; // TODO what about -1?
 	}
 
 	@Override
-	protected ParallelPileupIterator buildParallelPileupIterator_Helper(final AnnotatedCoordinate coordinate, final Parameters parameters) {
+	protected ParallelPileupIterator buildParallelPileupIterator(final AnnotatedCoordinate coordinate, final Parameters parameters) {
 		return new VariantParallelPileupIterator(coordinate, readers1, readers2, parameters);
 	}
 

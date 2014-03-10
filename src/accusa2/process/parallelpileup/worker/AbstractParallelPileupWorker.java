@@ -1,12 +1,12 @@
 package accusa2.process.parallelpileup.worker;
 
+
 import java.io.IOException;
 
 import net.sf.samtools.SAMFileReader;
 import accusa2.cli.Parameters;
 import accusa2.io.format.AbstractResultFormat;
 import accusa2.io.output.TmpOutputWriter;
-import accusa2.method.statistic.StatisticCalculator;
 import accusa2.pileup.iterator.ParallelPileupIterator;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
 import accusa2.util.AnnotatedCoordinate;
@@ -20,8 +20,6 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 
 	protected final Parameters parameters;
 	protected ParallelPileupIterator parallelPileupIterator;
-
-	protected StatisticCalculator statistic;
 
 	protected final int threadId;
 	protected int nextThreadId;
@@ -47,10 +45,11 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 		resultFormat 			= parameters.getResultFormat();
 
 		isFinished 				= false;
-
+		comparisons 			= 0;
+		
 		threadId				= parallelPileupWorkerDispatcher.getThreadContainer().size();
 		nextThreadId			= -1;
-		buildParallelPileupIterator(parallelPileupWorkerDispatcher.next(this), parameters);
+		parallelPileupIterator  = buildParallelPileupIterator(parallelPileupWorkerDispatcher.next(this), parameters);
 
 		final String tmpFilename = parameters.getOutput().getInfo() + "_tmp" + String.valueOf(threadId) + ".gz";
 		try {
@@ -59,14 +58,14 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 			e.printStackTrace();
 			return;
 		}
-
-		comparisons 			= 0;
 	}
 
 	public final void run() {
 		processParallelPileupIterator(parallelPileupIterator);
+
 		while(!isFinished) {
 			AnnotatedCoordinate annotatedCoordinate = null;
+
 			synchronized (parallelPileupWorkerDispatcher) {
 				if(parallelPileupWorkerDispatcher.hasNext()) {
 					annotatedCoordinate = parallelPileupWorkerDispatcher.next(this);
@@ -76,11 +75,12 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 			}
 
 			if(annotatedCoordinate != null) {
-				buildParallelPileupIterator(annotatedCoordinate, parameters);
+				parallelPileupIterator = buildParallelPileupIterator(annotatedCoordinate, parameters);
 				processParallelPileupIterator(parallelPileupIterator);
 			}
 		}
 
+		// this thread is done - tell dispatcher
 		synchronized (parallelPileupWorkerDispatcher) {
 			parallelPileupWorkerDispatcher.notify();
 		}
@@ -131,17 +131,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	 * @param parameters
 	 * @return
 	 */
-	abstract protected ParallelPileupIterator buildParallelPileupIterator_Helper(AnnotatedCoordinate coordinate, Parameters parameters);
-
-	/**
-	 * 
-	 * @param annotatedCoordinate
-	 * @param parameters
-	 */
-	final private void buildParallelPileupIterator(AnnotatedCoordinate annotatedCoordinate, Parameters parameters) {
-		// let implementing class build the iterator
-		parallelPileupIterator = buildParallelPileupIterator_Helper(annotatedCoordinate, parameters);
-	}
+	abstract protected ParallelPileupIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate, Parameters parameters);
 
 	public final int getComparisons() {
 		return comparisons;

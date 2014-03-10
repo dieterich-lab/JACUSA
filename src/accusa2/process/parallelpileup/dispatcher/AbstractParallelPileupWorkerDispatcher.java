@@ -1,5 +1,6 @@
 package accusa2.process.parallelpileup.dispatcher;
 
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,16 +48,15 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 		return reader;
 	}
 
-	// FIXME
 	public synchronized AnnotatedCoordinate next(AbstractParallelPileupWorker abstractParallelPileupWorker) {
 		int threadId = abstractParallelPileupWorker.getThreadId();
-//System.err.println(lastThreadId + "->" + threadId);
 		if(lastThreadId >= 0) {
 			threadContainer.get(lastThreadId).setNextThreadId(threadId);
 		}
 		lastThreadId = threadId;
+		// reset 
 		abstractParallelPileupWorker.setNextThreadId(-1);
-		
+
 		return coordinateProvider.next();
 	}
 
@@ -68,11 +68,13 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 		synchronized (this) {
 
 			while(hasNext() || !threadContainer.isEmpty()) {
+
 				// clean finished threads
 				for(int i = 0; i < threadContainer.size(); ++i) {
 					T processParallelPileupThread = threadContainer.get(i);
 
 					if(processParallelPileupThread.isFinished()) {
+						comparisons += processParallelPileupThread.getComparisons();
 						processFinishedWorker(processParallelPileupThread);
 						runningThreads.remove(processParallelPileupThread);
 					}
@@ -102,11 +104,11 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 
 		// finally write the output and cleanup
 		writeOuptut();
-		return comparisons.intValue();
+		return comparisons;
 	}
 
+	abstract protected void processFinishedWorker(T processParallelPileup);
 	abstract protected T buildNextParallelPileupWorker();	
-	abstract protected void processFinishedWorker(T processParallelPileupThread);
 
 	abstract protected void writeOuptut();
 

@@ -183,7 +183,7 @@ public class ACCUSA2_ParallelPileupWorker extends AbstractParallelPileupWorker {
 	}
 
 	@Override
-	protected ParallelPileupIterator buildParallelPileupIterator_Helper(final AnnotatedCoordinate coordinate,
+	protected ParallelPileupIterator buildParallelPileupIterator(final AnnotatedCoordinate coordinate,
 			final Parameters parameters) {
 		return new VariantParallelPileupIterator(coordinate, readers1, readers2, parameters);
 	}

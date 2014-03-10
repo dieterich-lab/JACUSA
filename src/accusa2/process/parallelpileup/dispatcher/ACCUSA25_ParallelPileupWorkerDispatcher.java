@@ -19,15 +19,14 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 	}
 
 	@Override
-	protected void processFinishedWorker(ACCUSA25_ParallelPileupWorker parallelPileupWorker) {
-		synchronized (comparisons) {
-			comparisons += parallelPileupWorker.getComparisons();
-		}
+	protected ACCUSA25_ParallelPileupWorker buildNextParallelPileupWorker() {
+		return new ACCUSA25_ParallelPileupWorker(this, parameters);
 	}
 
 	@Override
-	protected ACCUSA25_ParallelPileupWorker buildNextParallelPileupWorker() {
-		return new ACCUSA25_ParallelPileupWorker(this, parameters);
+	protected void processFinishedWorker(
+			ACCUSA25_ParallelPileupWorker processParallelPileup) {
+		// nothing to be done
 	}
 
 	@Override
@@ -72,7 +71,7 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 				if(line.charAt(0) == resultFormat.getCOMMENT()) {
 					int nextThreadId = Integer.parseInt(line.substring(1));
 					tmpOutputReader = tmpOutputReaders[nextThreadId];
-					output.write("#" + nextThreadId);
+// output.write("#" + nextThreadId);
 				} else {
 					final double p = resultFormat.extractValue(line);
 
@@ -97,7 +96,6 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 			output.close();
 			filtered.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

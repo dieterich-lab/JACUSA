@@ -43,7 +43,7 @@ public class MpileupParallelPileupWorker extends AbstractParallelPileupWorker {
 	}
 
 	@Override
-	protected ParallelPileupIterator buildParallelPileupIterator_Helper(AnnotatedCoordinate coordinate, Parameters parameters) {
+	protected ParallelPileupIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate, Parameters parameters) {
 		return new DefaultParallelPileupIterator(coordinate, readers1, readers2, parameters);
 	}
 

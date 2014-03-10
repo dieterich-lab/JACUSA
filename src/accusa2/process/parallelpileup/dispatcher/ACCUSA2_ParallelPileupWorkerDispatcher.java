@@ -27,10 +27,6 @@ public class ACCUSA2_ParallelPileupWorkerDispatcher extends AbstractParallelPile
 
 	@Override
 	protected void processFinishedWorker(ACCUSA2_ParallelPileupWorker parallelPileupWorker) {
-		synchronized (comparisons) {
-			comparisons += parallelPileupWorker.getComparisons();
-		}
-
 		synchronized (statisticContainer) {
 			try {
 				statisticContainer.addContainer(parallelPileupWorker.getStatisticContainer());
