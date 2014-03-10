@@ -30,8 +30,8 @@ public class ACCUSA2_ParallelPileupWorker extends AbstractParallelPileupWorker {
 
 	public ACCUSA2_ParallelPileupWorker(
 			final ACCUSA2_ParallelPileupWorkerDispatcher threadDispatcher, 
-			final AnnotatedCoordinate coordinate, final Parameters parameters) {
-		super(threadDispatcher, coordinate, parameters);
+			final Parameters parameters) {
+		super(threadDispatcher, parameters);
 
 		statisticCalculator = parameters.getStatisticCalculator().newInstance();
 

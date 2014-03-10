@@ -27,7 +27,7 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 
 	@Override
 	protected ACCUSA25_ParallelPileupWorker buildNextParallelPileupWorker() {
-		return new ACCUSA25_ParallelPileupWorker(this, getCoordinateProvider().next(), parameters);
+		return new ACCUSA25_ParallelPileupWorker(this, parameters);
 	}
 
 	@Override

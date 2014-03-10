@@ -37,7 +37,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	// indicates if computation is finished
 	private boolean isFinished;
 
-	public AbstractParallelPileupWorker(AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> parallelPileupWorkerDispatcher, final AnnotatedCoordinate coordinate, final Parameters parameters) {
+	public AbstractParallelPileupWorker(AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> parallelPileupWorkerDispatcher, final Parameters parameters) {
 		this.parallelPileupWorkerDispatcher 	= parallelPileupWorkerDispatcher; 
 
 		readers1				= parallelPileupWorkerDispatcher.createBAMFileReaders1();
@@ -48,11 +48,9 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 
 		isFinished 				= false;
 
-		synchronized (parallelPileupWorkerDispatcher.getThreadContainer()) {
-			threadId			= parallelPileupWorkerDispatcher.getThreadContainer().size();
-		}
+		threadId				= parallelPileupWorkerDispatcher.getThreadContainer().size();
 		nextThreadId			= -1;
-		buildParallelPileupIterator(coordinate, parameters);
+		buildParallelPileupIterator(parallelPileupWorkerDispatcher.next(this), parameters);
 
 		final String tmpFilename = parameters.getOutput().getInfo() + "_tmp" + String.valueOf(threadId) + ".gz";
 		try {
@@ -69,9 +67,9 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 		processParallelPileupIterator(parallelPileupIterator);
 		while(!isFinished) {
 			AnnotatedCoordinate annotatedCoordinate = null;
-			synchronized (parallelPileupWorkerDispatcher.getCoordinateProvider()) {
-				if(parallelPileupWorkerDispatcher.getCoordinateProvider().hasNext()) {
-					annotatedCoordinate = parallelPileupWorkerDispatcher.getCoordinateProvider().next();
+			synchronized (parallelPileupWorkerDispatcher) {
+				if(parallelPileupWorkerDispatcher.hasNext()) {
+					annotatedCoordinate = parallelPileupWorkerDispatcher.next(this);
 				} else {
 					isFinished = true;
 				}
@@ -81,11 +79,12 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 				buildParallelPileupIterator(annotatedCoordinate, parameters);
 				processParallelPileupIterator(parallelPileupIterator);
 			}
-
-			synchronized (parallelPileupWorkerDispatcher) {
-				parallelPileupWorkerDispatcher.notify();
-			}
 		}
+
+		synchronized (parallelPileupWorkerDispatcher) {
+			parallelPileupWorkerDispatcher.notify();
+		}
+
 		close();
 	}
 
@@ -97,7 +96,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 		nextThreadId = id;
 	}
 
-	final public int getThreadId() {
+	public int getThreadId() {
 		return threadId;
 	}
 
@@ -119,7 +118,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param parallelPileupIterator
@@ -140,8 +139,6 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	 * @param parameters
 	 */
 	final private void buildParallelPileupIterator(AnnotatedCoordinate annotatedCoordinate, Parameters parameters) {
-		parallelPileupWorkerDispatcher.processThreadId(this);
-
 		// let implementing class build the iterator
 		parallelPileupIterator = buildParallelPileupIterator_Helper(annotatedCoordinate, parameters);
 	}

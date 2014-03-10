@@ -21,20 +21,11 @@ public class MpileupParallelPileupWorkerDispatcher extends AbstractParallelPileu
 		synchronized (comparisons) {
 			comparisons += processParallelPileup.getComparisons();
 		}
-
-		// Deprecated
-		/*
-		synchronized (tmpOutputs) {
-			for(int i : processParallelPileup.getTmpOutputWriters().keySet()) {
-				tmpOutputs[i] = processParallelPileup.getTmpOutputWriters().get(i);
-			}
-		}
-		*/
 	}
 
 	@Override
 	protected MpileupParallelPileupWorker buildNextParallelPileupWorker() {
-		return new MpileupParallelPileupWorker(this, getCoordinateProvider().next(), parameters);
+		return new MpileupParallelPileupWorker(this, parameters);
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class ACCUSA2_ParallelPileupWorkerDispatcher extends AbstractParallelPile
 
 	@Override
 	protected ACCUSA2_ParallelPileupWorker buildNextParallelPileupWorker() {
-		return new ACCUSA2_ParallelPileupWorker(this, getCoordinateProvider().next(), parameters);
+		return new ACCUSA2_ParallelPileupWorker(this, parameters);
 	}
 
 	@Override

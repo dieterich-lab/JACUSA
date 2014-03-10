@@ -12,8 +12,8 @@ import accusa2.util.AnnotatedCoordinate;
 
 public class MpileupParallelPileupWorker extends AbstractParallelPileupWorker {
 
-	public MpileupParallelPileupWorker(MpileupParallelPileupWorkerDispatcher workerDispatcher, AnnotatedCoordinate coordinate, Parameters parameters) {
-		super(workerDispatcher, coordinate, parameters);
+	public MpileupParallelPileupWorker(MpileupParallelPileupWorkerDispatcher workerDispatcher, Parameters parameters) {
+		super(workerDispatcher, parameters);
 	}
 
 	@Override

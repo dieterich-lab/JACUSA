@@ -19,8 +19,8 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 	
 	public ACCUSA25_ParallelPileupWorker(
 			final ACCUSA25_ParallelPileupWorkerDispatcher threadDispatcher, 
-			final AnnotatedCoordinate coordinate, final Parameters parameters) {
-		super(threadDispatcher, coordinate, parameters);
+			final Parameters parameters) {
+		super(threadDispatcher, parameters);
 
 		statisticCalculator = parameters.getStatisticCalculator().newInstance();
 	}
@@ -105,7 +105,7 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 				// append empty result
 				for(;pileupFilterIndex < pileupFilterCount; ++pileupFilterIndex) {
 					sb.append(resultFormat.getSEP());
-					sb.append("-1.0");
+					sb.append("-1");
 				}
 
 				// append filtered result
@@ -123,7 +123,7 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 				return;
 			}
 		}
-		
+
 		if(parameters.getMaxThreads() > 1 && getNextThreadId() >= 0) {
 			try {
 				tmpOutputWriter.write(resultFormat.getCOMMENT() + String.valueOf(getNextThreadId()));
@@ -150,5 +150,3 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 	}
 
 }
-
-
