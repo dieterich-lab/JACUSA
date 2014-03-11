@@ -22,7 +22,7 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 	protected Integer comparisons;
 
 	protected int lastThreadId;
-	
+
 	public AbstractParallelPileupWorkerDispatcher(CoordinateProvider coordinateProvider, Parameters parameters) {
 		this.coordinateProvider = coordinateProvider;
 		this.parameters = parameters;
@@ -70,8 +70,8 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 			while(hasNext() || !threadContainer.isEmpty()) {
 
 				// clean finished threads
-				for(int i = 0; i < threadContainer.size(); ++i) {
-					T processParallelPileupThread = threadContainer.get(i);
+				for(int i = 0; i < runningThreads.size(); ++i) {
+					T processParallelPileupThread = runningThreads.get(i);
 
 					if(processParallelPileupThread.isFinished()) {
 						comparisons += processParallelPileupThread.getComparisons();
@@ -81,7 +81,7 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 				}
 
 				// fill thread container
-				while(threadContainer.size() < parameters.getMaxThreads() && hasNext()) {
+				while(runningThreads.size() < parameters.getMaxThreads() && hasNext()) {
 					T processParallelPileupThread = buildNextParallelPileupWorker();
 					threadContainer.add(processParallelPileupThread);
 					runningThreads.add(processParallelPileupThread);

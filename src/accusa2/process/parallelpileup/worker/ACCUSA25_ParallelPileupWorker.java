@@ -84,7 +84,7 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 
 						// calculate value for filterePileups
 						filteredValue = statisticCalculator.getStatistic(filteredParallelPileups);
-						
+
 						/* negative values are not permitted as result
 						if(!isValidValue(filteredValue)) {
 							filteredValue = -1;
@@ -99,7 +99,7 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 						sb.append(resultFormat.getSEP());
 						sb.append("*");
 					}
-					
+
 					pileupFilterIndex++;
 				}
 
