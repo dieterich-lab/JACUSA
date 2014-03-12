@@ -10,21 +10,20 @@ import accusa2.cli.Parameters;
  * 
  */
 
-public class CombinedStatistic extends AbstractCombinedStatistic {
+public class CombinedLRStatistic extends AbstractCombinedStatistic {
 
-
-	public CombinedStatistic(Parameters parameters, StatisticCalculator ho_he, StatisticCalculator he_he, String name, String description) {
+	public CombinedLRStatistic(Parameters parameters, StatisticCalculator ho_he, StatisticCalculator he_he, String name, String description) {
 		super(parameters, ho_he, he_he, name, description);
 	}
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new CombinedStatistic(parameters, ho_he, he_he, name, description);
+		return new CombinedLRStatistic(parameters, ho_he, he_he, name, description);
 	}
-
+	
 	@Override
 	public boolean filter(double value) {
-		return ho_he.filter(value);
+		return ho_he.filter(value); // FIXME
 	}
-
+	
 }

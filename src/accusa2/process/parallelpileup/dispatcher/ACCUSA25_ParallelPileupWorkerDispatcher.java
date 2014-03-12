@@ -79,8 +79,7 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 							output.write(line + "\t" + p);
 						}
 					} else {
-						if(p < 0) {
-							filtered.write(line + "\t" + p);
+						if(p < 0) {							filtered.write(line + "\t" + p);
 						} else if(!parameters.getStatisticCalculator().filter(p)) {
 							output.write(line + "\t" + p);
 						}

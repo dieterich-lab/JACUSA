@@ -18,7 +18,7 @@ import accusa2.cli.options.MinBASQOption;
 import accusa2.cli.options.MinCoverageOption;
 import accusa2.cli.options.MinMAPQOption;
 import accusa2.cli.options.PathnameOption;
-import accusa2.cli.options.PermutationsOption;
+//import accusa2.cli.options.PermutationsOption;
 import accusa2.cli.options.FilterOption;
 import accusa2.cli.options.StatisticOption;
 import accusa2.cli.options.ResultFileOption;
@@ -28,8 +28,8 @@ import accusa2.cli.options.BED_CoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
 import accusa2.cli.options.filter.FilterFlagOption;
-import accusa2.cli.options.filter.FilterNHsamTagOption;
-import accusa2.cli.options.filter.FilterNMsamTagOption;
+//import accusa2.cli.options.filter.FilterNHsamTagOption;
+//import accusa2.cli.options.filter.FilterNMsamTagOption;
 import accusa2.filter.factory.AbstractFilterFactory;
 import accusa2.filter.factory.HomozygousFilterFactory;
 //import accusa2.filter.factory.PolymorphismPileupFilterFactory;
@@ -37,6 +37,7 @@ import accusa2.filter.factory.DistanceFilterFactory;
 import accusa2.io.format.AbstractResultFormat;
 import accusa2.io.format.DefaultResultFormat;
 import accusa2.io.format.PileupResultFormat;
+import accusa2.method.statistic.CombinedLRStatistic;
 import accusa2.method.statistic.CombinedStatistic;
 import accusa2.method.statistic.DefaultStatistic;
 import accusa2.method.statistic.LR2Statistic;
@@ -94,15 +95,15 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 
 		acOptions.add(new ConsiderBasesOption(parameters));
 		acOptions.add(new FalseDiscoveryRateOption(parameters));
-		acOptions.add(new PermutationsOption(parameters));
+		//acOptions.add(new PermutationsOption(parameters));
 		acOptions.add(new PileupBuilderOption(parameters));
 		
 		acOptions.add(new DebugOption(parameters));
 		acOptions.add(new HelpOption(parameters, CLI.getSingleton()));
 		acOptions.add(new VersionOption(parameters, CLI.getSingleton()));
 		
-		acOptions.add(new FilterNHsamTagOption(parameters));
-		acOptions.add(new FilterNMsamTagOption(parameters));
+		//acOptions.add(new FilterNHsamTagOption(parameters));
+		//acOptions.add(new FilterNMsamTagOption(parameters));
 		
 	}
 
@@ -146,7 +147,7 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 		he_he = statistic;
 		statistics.put(statistic.getName(), statistic);
 
-		statistic = new CombinedStatistic(parameters,
+		statistic = new CombinedLRStatistic(parameters,
 				ho_he,
 				he_he,
 				"combinedLR", 
