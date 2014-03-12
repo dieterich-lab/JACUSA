@@ -1,5 +1,6 @@
 package accusa2.process.parallelpileup.dispatcher;
 
+import java.io.File;
 import java.io.IOException;
 
 import accusa2.cli.Parameters;
@@ -71,32 +72,24 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 				if(line.charAt(0) == resultFormat.getCOMMENT()) {
 					int nextThreadId = Integer.parseInt(line.substring(1));
 					tmpOutputReader = tmpOutputReaders[nextThreadId];
-// output.write("#" + nextThreadId);
 				} else {
 					final double p = resultFormat.extractValue(line);
-
-					if(p <= parameters.getFDR()) {
-						output.write(line + "\t" + p);
+					if(parameters.getDebug()) {
+						if(!parameters.getStatisticCalculator().filter(p)) {
+							output.write(line + "\t" + p);
+						}
+					} else {
+						if(p < 0) {
+							filtered.write(line + "\t" + p);
+						} else if(!parameters.getStatisticCalculator().filter(p)) {
+							output.write(line + "\t" + p);
+						}
 					}
-					/*
-					if(p < 0) {
-						filtered.write(line + "\t" + p);
-					} else if(p <= parameters.getFDR()) {
-						output.write(line + "\t" + p);
-					}
-					*/
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
-		}
-
-		try {
-			output.close();
-			filtered.close();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 
 		for(int i = 0; i < threadContainer.size(); ++i) {
@@ -106,10 +99,16 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 				e.printStackTrace();
 			}
 			// leave tmp files if needed
-			// FIXME
-			//if(!parameters.getDebug()) {
-			//	new File(threadContainer.get(i).getTmpOutputWriter().getInfo()).delete();
-			//}
+			if(!parameters.getDebug()) {
+				new File(threadContainer.get(i).getTmpOutputWriter().getInfo()).delete();
+			}
+		}
+		
+		try {
+			output.close();
+			filtered.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

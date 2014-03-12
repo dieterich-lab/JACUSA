@@ -21,7 +21,7 @@ public class FalseDiscoveryRateOption  extends AbstractACOption {
 		return OptionBuilder.withLongOpt(longOpt)
 			.withArgName(longOpt.toUpperCase())
 			.hasArg(true)
-	        .withDescription("Filter positions dependening on the " + longOpt.toUpperCase() + "\n default: " + parameters.getFDR())
+	        .withDescription("Filter positions dependening on the " + longOpt.toUpperCase() + "\n default: " + parameters.getT())
 	        .create(opt);
 	}
 
@@ -33,7 +33,7 @@ public class FalseDiscoveryRateOption  extends AbstractACOption {
 	    	if(fdr < 0 || fdr > 1) {
 	    		throw new Exception("Invalid value for " + longOpt.toUpperCase() + ". Allowed values are 0 <= " + longOpt.toUpperCase() + " <= 1");
 	    	}
-	    	parameters.setFDR(fdr);
+	    	parameters.setT(fdr);
 		}
 	}
 

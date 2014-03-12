@@ -2,6 +2,7 @@ package accusa2.method.statistic;
 
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
+import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.pileup2Matrix.AbstractPileup2Matrix;
@@ -21,20 +22,24 @@ import accusa2.process.pileup2Matrix.BASQ;
 
 public final class LRStatistic implements StatisticCalculator {
 
+	protected final Parameters parameters;
+	
 	protected final AbstractPileup2Matrix pileup2Matrix;
 	protected final DefaultStatistic defaultStatistic;
 
 	// TODO test what is the best??? 2*k - 2 : k = dimension of modeled prob. vector
-	protected ChiSquareDist dist = new ChiSquareDist(6);
+	protected final ChiSquareDist dist = new ChiSquareDist(6);
 
-	public LRStatistic() {
+	public LRStatistic(Parameters parameters) {
+		this.parameters = parameters;
+
 		pileup2Matrix = new BASQ();
-		defaultStatistic = new DefaultStatistic();
+		defaultStatistic = new DefaultStatistic(parameters);
 	}
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new LRStatistic();
+		return new LRStatistic(parameters);
 	}
 
 	@Override
@@ -76,6 +81,10 @@ public final class LRStatistic implements StatisticCalculator {
 		return 1 - dist.cdf(z);
 	}
 
+	public boolean filter(double value) {
+		return parameters.getT() < value;
+	}
+
 	// redefined to use natural logarithm
 	protected double getDensity(final DirichletDist dirichlet, final double[][] probs) {
 		double density = 0.0;
@@ -86,7 +95,7 @@ public final class LRStatistic implements StatisticCalculator {
 
 		return density;
 	}
-
+	
 	@Override
 	public String getDescription() {
 		return "likelihood ratio test (min. coverage for alpha). Z = -2 ln( ( Dir(p,1) Dir(p,2) ) / ( Dir(1,1) Dir(2,2) ) )";

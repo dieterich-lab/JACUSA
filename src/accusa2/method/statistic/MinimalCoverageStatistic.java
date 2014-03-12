@@ -2,6 +2,7 @@ package accusa2.method.statistic;
 
 
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
+import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.process.pileup2Matrix.AbstractPileup2Matrix;
 import accusa2.process.pileup2Matrix.BASQ;
@@ -14,17 +15,20 @@ import accusa2.process.pileup2Matrix.BASQ;
  */
 public class MinimalCoverageStatistic implements StatisticCalculator {
 
-	protected AbstractPileup2Matrix pileup2Matrix;
-	protected DefaultStatistic defaultStatistic;
+	protected final Parameters parameters;
 	
-	public MinimalCoverageStatistic() {
-		pileup2Matrix = new BASQ();
-		defaultStatistic = new DefaultStatistic(); 
+	protected final AbstractPileup2Matrix pileup2Matrix;
+	protected final DefaultStatistic defaultStatistic;
+	
+	public MinimalCoverageStatistic(Parameters parameters) {
+		this.parameters		= parameters;
+		this.pileup2Matrix 		= new BASQ();
+		this.defaultStatistic 	= new DefaultStatistic(parameters); 
 	}
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new MinimalCoverageStatistic();
+		return new MinimalCoverageStatistic(parameters);
 	}
 
 	public double getStatistic(final ParallelPileup parallelPileup) {
@@ -53,6 +57,11 @@ public class MinimalCoverageStatistic implements StatisticCalculator {
 		return Math.max(0, z);
 	}
 
+	@Override
+	public boolean filter(double value) {
+		return parameters.getT() > value;
+	}
+	
 	@Override
 	public String getDescription() {
 		return "Similar to default. Use the minimal coverage to estimate alpha(s)";

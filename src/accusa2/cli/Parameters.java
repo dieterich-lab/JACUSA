@@ -1,6 +1,7 @@
 package accusa2.cli;
 
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -32,13 +33,14 @@ public class Parameters {
 	private int minMAPQ;
 	private int minCoverage;
 	private Set<Character> bases;
+	private Set<Character> basesComplemented;
 
 	// filter: flags
 	private int filterFlags;
 	private int retainFlags;
 
 	// filter: statistic
-	private double fdr;
+	private double T;
 	
 	private int permutations;
 
@@ -49,7 +51,7 @@ public class Parameters {
 	private AbstractResultFormat resultFormat;
 
 	// version
-	public final String VERSION = "2.5 DEVEL";
+	public final String VERSION = "2.5 BETA 20";
 
 	// bed file to scan for variants
 	private String bedPathname;
@@ -88,11 +90,13 @@ public class Parameters {
 		maxDepth 		= -1;
 		maxThreads 		= 1;
 		bases			= new TreeSet<Character>();
+		basesComplemented = new TreeSet<Character>();
 		for(char b : Pileup.BASES2) {
 			bases.add(b);
+			basesComplemented.add(Pileup.BASES[Pileup.COMPLEMENT[Pileup.BASE2INT.get(b)]]);
 		}
-
-		fdr 			= 0.3;
+		
+		T 			= 0.3;
 
 		permutations	= 10;
 		filterFlags		= 0;
@@ -105,7 +109,7 @@ public class Parameters {
 
 		processINDELs	= false;
 
-		statisticCalculator	= new LRStatistic();
+		statisticCalculator	= new LRStatistic(this);
 
 		pileupBuilderFilters = new PileupBuilderFilter(this);
 
@@ -266,18 +270,18 @@ public class Parameters {
 
 	/**
 	 * 
-	 * @param fdr
+	 * @param T
 	 */
-	public void setFDR(double fdr) {
-		this.fdr = fdr;
+	public void setT(double T) {
+		this.T = T;
 	}
 
 	/**
 	 * 
 	 * @return
 	 */
-	public double getFDR() {
-		return fdr;
+	public double getT() {
+		return T;
 	}
 
 	/**
@@ -390,10 +394,21 @@ public class Parameters {
 		pileupBuilderFactory2 = null;
 	}
 
+	public void setBasesComplemented(Set<Character> basesComplemented) {
+		this.basesComplemented = basesComplemented;
+		pileupBuilderFactory1 = null;
+		pileupBuilderFactory2 = null;
+
+	}
+	
 	public Set<Character> getBases() {
 		return bases;
 	}
 
+	public Set<Character> getBasesComplemented() {
+		return basesComplemented;
+	}
+	
 	public void setProcessINDELs(boolean processINDELs) {
 		this.processINDELs = processINDELs;
 	}

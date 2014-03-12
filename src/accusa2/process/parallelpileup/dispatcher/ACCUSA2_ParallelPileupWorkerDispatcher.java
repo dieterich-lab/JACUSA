@@ -84,7 +84,7 @@ public class ACCUSA2_ParallelPileupWorkerDispatcher extends AbstractParallelPile
 					}
 					*/
 
-					if(fdr <= parameters.getFDR()) {
+					if(fdr <= parameters.getT()) {
 						output.write(line + resultFormat.getSEP() + fdr);
 					}
 				}

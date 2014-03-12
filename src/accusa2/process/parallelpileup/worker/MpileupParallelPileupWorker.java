@@ -30,12 +30,18 @@ public class MpileupParallelPileupWorker extends AbstractParallelPileupWorker {
 			comparisons++;
 
 			StringBuilder sb = new StringBuilder();
-
 			ParallelPileup parallelPileup = parallelPileupIterator.next();
-
 			sb.append(resultFormat.convert2String(parallelPileup, 0));
 			try {
 				tmpOutputWriter.write(sb.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if(parameters.getMaxThreads() > 1 && getNextThreadId() >= 0) {
+			try {
+				tmpOutputWriter.write(resultFormat.getCOMMENT() + String.valueOf(getNextThreadId()));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

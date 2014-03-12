@@ -1,5 +1,6 @@
 package accusa2.method;
 
+
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Map;
@@ -41,7 +42,7 @@ import accusa2.method.statistic.DefaultStatistic;
 import accusa2.method.statistic.LR2Statistic;
 import accusa2.method.statistic.LRStatistic;
 import accusa2.method.statistic.PooledStatistic;
-import accusa2.method.statistic.MinimalCoverageStatistic;
+//import accusa2.method.statistic.MinimalCoverageStatistic;
 import accusa2.method.statistic.StatisticCalculator;
 import accusa2.process.parallelpileup.dispatcher.ACCUSA25_ParallelPileupWorkerDispatcher;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
@@ -116,24 +117,42 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 	public Map<String, StatisticCalculator> getStatistics() {
 		Map<String, StatisticCalculator> statistics = new TreeMap<String, StatisticCalculator>();
 
-		StatisticCalculator statistic = new DefaultStatistic();
+		StatisticCalculator statistic = new DefaultStatistic(parameters);
+		StatisticCalculator ho_he = statistic;
+		statistics.put(statistic.getName(), statistic);
+		
+		
+		statistic = new PooledStatistic(parameters);
+		StatisticCalculator he_he = statistic;
 		statistics.put(statistic.getName(), statistic);
 
-		statistic = new PooledStatistic();
-		statistics.put(statistic.getName(), statistic);
-
+		/*
 		statistic = new MinimalCoverageStatistic();
 		statistics.put(statistic.getName(), statistic);
+		*/
 
-		statistic = new CombinedStatistic();
+		statistic = new CombinedStatistic(parameters,
+				ho_he,
+				he_he,
+				"combined", 
+				"default(ho:he) + pooled(he:he)");
 		statistics.put(statistic.getName(), statistic);
 
-		statistic = new LRStatistic();
+		statistic = new LRStatistic(parameters);
+		ho_he = statistic;
 		statistics.put(statistic.getName(), statistic);
-		
-		statistic = new LR2Statistic();
+	
+		statistic = new LR2Statistic(parameters);
+		he_he = statistic;
 		statistics.put(statistic.getName(), statistic);
-		
+
+		statistic = new CombinedStatistic(parameters,
+				ho_he,
+				he_he,
+				"combinedLR", 
+				"lr(ho:he) + lr2(he:he)");
+		statistics.put(statistic.getName(), statistic);
+
 		return statistics;
 	}
 

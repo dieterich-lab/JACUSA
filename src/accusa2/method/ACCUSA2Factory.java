@@ -1,5 +1,6 @@
 package accusa2.method;
 
+
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Map;
@@ -40,7 +41,6 @@ import accusa2.method.statistic.CombinedStatistic;
 import accusa2.method.statistic.DefaultStatistic;
 import accusa2.method.statistic.LRStatistic;
 import accusa2.method.statistic.PooledStatistic;
-import accusa2.method.statistic.MinimalCoverageStatistic;
 import accusa2.method.statistic.StatisticCalculator;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
 import accusa2.process.parallelpileup.dispatcher.ACCUSA2_ParallelPileupWorkerDispatcher;
@@ -115,19 +115,27 @@ public class ACCUSA2Factory extends AbstractMethodFactory {
 	public Map<String, StatisticCalculator> getStatistics() {
 		Map<String, StatisticCalculator> statistics = new TreeMap<String, StatisticCalculator>();
 
-		StatisticCalculator statistic = new DefaultStatistic();
+		StatisticCalculator statistic = new DefaultStatistic(parameters);
+		StatisticCalculator ho_he = statistic;
 		statistics.put(statistic.getName(), statistic);
 
-		statistic = new PooledStatistic();
+		statistic = new PooledStatistic(parameters);
+		StatisticCalculator he_he = statistic;
 		statistics.put(statistic.getName(), statistic);
 
+		/*
 		statistic = new MinimalCoverageStatistic();
 		statistics.put(statistic.getName(), statistic);
+		*/
 
-		statistic = new CombinedStatistic();
+		statistic = new CombinedStatistic(parameters,
+				ho_he,
+				he_he,
+				"combined", 
+				"default(ho:he) + pooled(he:he)");
 		statistics.put(statistic.getName(), statistic);
 
-		statistic = new LRStatistic();
+		statistic = new LRStatistic(parameters);
 		statistics.put(statistic.getName(), statistic);
 		
 		return statistics;

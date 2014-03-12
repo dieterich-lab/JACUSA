@@ -1,5 +1,6 @@
 package accusa2.method.statistic;
 
+import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 
 /**
@@ -12,17 +13,27 @@ import accusa2.pileup.ParallelPileup;
 
 public final class CombinedStatistic implements StatisticCalculator {
 
+	protected final Parameters parameters;
+	
 	protected final StatisticCalculator ho_he;
 	protected final StatisticCalculator he_he;
 
-	public CombinedStatistic() {
-		ho_he = new DefaultStatistic();
-		he_he = new PooledStatistic();
+	protected final String name;
+	protected final String description;
+	
+	public CombinedStatistic(Parameters parameters, StatisticCalculator ho_he, StatisticCalculator he_he, String name, String description) {
+		this.parameters 	= parameters;
+		
+		this.ho_he			= ho_he;
+		this.he_he 			= ho_he;
+
+		this.name 			= name;
+		this.description 	= description;
 	}
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new CombinedStatistic();
+		return new CombinedStatistic(parameters, ho_he, he_he, name, description);
 	}
 
 	public double getStatistic(final ParallelPileup parallelPileup) {
@@ -34,13 +45,20 @@ public final class CombinedStatistic implements StatisticCalculator {
 	}
 
 	@Override
+	public boolean filter(double value) {
+		return parameters.getT() > value;
+	}
+	
+	// "default(ho:he) + pooled(he:he)"
+	@Override
 	public String getDescription() {
-		return "default(ho:he) + pooled(he:he)";
+		return description;
 	}
 
+	// combined
 	@Override
 	public String getName() {
-		return "combined";
+		return name;
 	}
 
 }

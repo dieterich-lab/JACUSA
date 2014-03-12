@@ -1,6 +1,7 @@
 package accusa2.method.statistic;
 
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
+import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.pileup2Matrix.AbstractPileup2Matrix;
@@ -17,18 +18,20 @@ import accusa2.process.pileup2Matrix.BASQ;
  */
 public final class PooledStatistic implements StatisticCalculator {
 
+	protected final Parameters parameters;
+	
 	protected final AbstractPileup2Matrix pileup2Matrix;
 	protected final DefaultStatistic defaultStatistic;
 	
-	public PooledStatistic() {
-		pileup2Matrix = new BASQ();
-		defaultStatistic = new DefaultStatistic();
-		
+	public PooledStatistic(Parameters parameters) {
+		this.parameters 	= parameters;
+		pileup2Matrix 		= new BASQ();
+		defaultStatistic 	= new DefaultStatistic(parameters);
 	}
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new PooledStatistic();
+		return new PooledStatistic(parameters);
 	}
 	
 	public double getStatistic(final ParallelPileup parallelPileup) {
@@ -64,6 +67,11 @@ public final class PooledStatistic implements StatisticCalculator {
 
 		// only positive values are allowed
 		return Math.max(0, z);
+	}
+
+	@Override
+	public boolean filter(double value) {
+		return parameters.getT() > value;
 	}
 	
 	@Override

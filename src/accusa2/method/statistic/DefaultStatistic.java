@@ -1,7 +1,7 @@
 package accusa2.method.statistic;
 
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
-
+import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.pileup2Matrix.AbstractPileup2Matrix;
@@ -17,15 +17,17 @@ import accusa2.process.pileup2Matrix.BASQ;
  */
 public class DefaultStatistic implements StatisticCalculator {
 
-	protected AbstractPileup2Matrix pileup2Matrix;
+	protected final Parameters parameters;
+	protected final AbstractPileup2Matrix pileup2Matrix;
 	
-	public DefaultStatistic() {
-		pileup2Matrix = new BASQ();
+	public DefaultStatistic(Parameters parameters) {
+		this.parameters 	= parameters;
+		pileup2Matrix 		= new BASQ();
 	}
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new DefaultStatistic();
+		return new DefaultStatistic(parameters);
 	}
 
 	/**
@@ -96,6 +98,11 @@ public class DefaultStatistic implements StatisticCalculator {
 		return density;
 	}
 
+	@Override
+	public boolean filter(double value) {
+		return parameters.getT() > value;
+	}
+	
 	/**
 	 * 
 	 * @param bases

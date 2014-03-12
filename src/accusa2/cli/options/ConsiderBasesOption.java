@@ -41,10 +41,13 @@ public class ConsiderBasesOption extends AbstractACOption {
 	    		throw new IllegalArgumentException("Possible values for " + longOpt.toUpperCase() + ": TC, AG, ACGT, AT...");
 	    	}
 	    	Set<Character> bases = new HashSet<Character>(Pileup.BASES2.length);
+	    	Set<Character> basesComplemented = new HashSet<Character>(Pileup.BASES2.length);
 	    	for(char b : values) {
 	    		bases.add(b);
+	    		basesComplemented.add(Pileup.BASES[Pileup.COMPLEMENT[Pileup.BASE2INT.get(b)]]);
 	    	}
 	    	parameters.setBases(bases);
+	    	parameters.setBasesComplemented(basesComplemented);
 	    }
 	}
 

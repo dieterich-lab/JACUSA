@@ -22,18 +22,16 @@ public class RestrictedUndirectedPileupBuilder extends UndirectedPileupBuilder {
 	@Override
 	protected void processAlignmetMatch(int readPosition, int genomicPosition, final CigarElement cigarElement, final SAMRecord record) {
 		for(int i = 0; i < cigarElement.getLength(); ++i) {
-			if(record.getBaseQualities()[readPosition] < parameters.getMinBASQ() || 
+			char base = (char)record.getReadBases()[readPosition];
+			if(record.getBaseQualities()[readPosition] < parameters.getMinBASQ() || base == 'N' || 
 					!parameters.getBases().contains((char)record.getReadBases()[readPosition])) {
-				// iterate
-				++readPosition;
-				++genomicPosition;
+				
 			} else {
 				cachePosition(readPosition, genomicPosition, cigarElement, indelsBuffer, skippedBuffer, record);
-	
-				// iterate
-				++readPosition;
-				++genomicPosition;
 			}
+			// iterate
+			++readPosition;
+			++genomicPosition;
 		}
 
 	}

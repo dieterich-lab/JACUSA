@@ -2,6 +2,7 @@ package accusa2.method.statistic;
 
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
+import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.pileup2Matrix.AbstractPileup2Matrix;
@@ -19,22 +20,26 @@ import accusa2.process.pileup2Matrix.BASQ;
 
 public final class LR2Statistic implements StatisticCalculator {
 
+	protected final Parameters parameters; 
+	
 	protected final AbstractPileup2Matrix pileup2Matrix;
 	protected final DefaultStatistic defaultStatistic;
 
 	// TODO test what is the best??? 2*k - 2 : k = dimension of modeled prob. vector
 	protected ChiSquareDist dist = new ChiSquareDist(6);
 	
-	public LR2Statistic() {
-		pileup2Matrix = new BASQ();
-		defaultStatistic = new DefaultStatistic();
+	public LR2Statistic(Parameters parameters) {
+		this.parameters 	= parameters;
+		
+		pileup2Matrix 		= new BASQ();
+		defaultStatistic 	= new DefaultStatistic(parameters);
 	}
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new LR2Statistic();
+		return new LR2Statistic(parameters);
 	}
-	
+
 	public double getStatistic(final ParallelPileup parallelPileup) {
 		final int bases[] = {0, 1, 2, 3};
 		//final int bases[] = parallelPileup.getPooledPileup().getAlleles();
@@ -85,6 +90,11 @@ public final class LR2Statistic implements StatisticCalculator {
 		return density;
 	}
 
+	@Override
+	public boolean filter(double value) {
+		return parameters.getT() < value;
+	}
+	
 	@Override
 	public String getDescription() {
 		return "likelihood ratio test (effective coverage for alpha). Z = -2 ln( ( Dir(p,1) Dir(p,2) ) / ( Dir(1,1) Dir(2,2) ) )";
