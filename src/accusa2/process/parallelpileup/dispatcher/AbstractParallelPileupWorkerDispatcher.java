@@ -54,10 +54,16 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 			threadContainer.get(lastThreadId).setNextThreadId(threadId);
 		}
 		lastThreadId = threadId;
-		// reset 
-		abstractParallelPileupWorker.setNextThreadId(-1);
+		AnnotatedCoordinate annotatedCoordinate = coordinateProvider.next();
 
-		return coordinateProvider.next();
+		// reset
+		if(coordinateProvider.hasNext()) {
+			abstractParallelPileupWorker.setNextThreadId(-1);
+		} else {
+			abstractParallelPileupWorker.setNextThreadId(-2);
+		}
+
+		return annotatedCoordinate;
 	}
 
 	public synchronized boolean hasNext() {

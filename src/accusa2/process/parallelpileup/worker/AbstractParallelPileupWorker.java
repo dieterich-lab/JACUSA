@@ -60,8 +60,31 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 		}
 	}
 
+	private synchronized void writeNextThreadID() {
+		if(getNextThreadId() >= 0) {
+			try {
+				tmpOutputWriter.write(resultFormat.getCOMMENT() + String.valueOf(getNextThreadId()));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
+
+		while(getNextThreadId() == -1) {
+			try {
+				wait(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			writeNextThreadID();
+		}
+	}
+
 	public final void run() {
 		processParallelPileupIterator(parallelPileupIterator);
+		if(parameters.getMaxThreads() > 1) {
+			writeNextThreadID();
+		}
 
 		while(!isFinished) {
 			AnnotatedCoordinate annotatedCoordinate = null;
@@ -77,6 +100,10 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 			if(annotatedCoordinate != null) {
 				parallelPileupIterator = buildParallelPileupIterator(annotatedCoordinate, parameters);
 				processParallelPileupIterator(parallelPileupIterator);
+
+				if(parameters.getMaxThreads() > 1) {
+					writeNextThreadID();
+				}
 			}
 		}
 

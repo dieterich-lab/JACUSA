@@ -43,7 +43,7 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 			if(!isValidValue(unfilteredValue) || !isValidParallelPileup(parallelPileup)) {
 				continue;
 			}
-
+			
 			final StringBuilder sb = new StringBuilder();
 			sb.append(resultFormat.convert2String(parallelPileup, unfilteredValue));
 
@@ -124,14 +124,6 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 				e.printStackTrace();
 			}
 		}
-
-		if(parameters.getMaxThreads() > 1 && getNextThreadId() >= 0) {
-			try {
-				tmpOutputWriter.write(resultFormat.getCOMMENT() + String.valueOf(getNextThreadId()));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	/**
@@ -151,8 +143,11 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 	 * @return
 	 */
 	protected final boolean isValidValue(final double value) {
-		return value < 1.0;
-		//return value <= 1.0; // TODO what about -1?
+		if(parameters.getDebug()) {
+			return value < 1.0;
+		} else {
+			return value <= 1.0;
+		}
 	}
 
 	@Override
