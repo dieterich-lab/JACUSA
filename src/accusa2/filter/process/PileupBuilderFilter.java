@@ -60,6 +60,7 @@ public class PileupBuilderFilter implements Cloneable {
 		return c2i.get(c);
 	}
 	
+	// FIXME pre-compute
 	public List<AbstractParallelPileupFilter> getParallelPileupFilters() {
 		List<AbstractParallelPileupFilter> parallelPileupFilters = new ArrayList<AbstractParallelPileupFilter>(c2f.size());
 		for(int i = 0; i < i2f.size(); ++i) {
@@ -69,7 +70,7 @@ public class PileupBuilderFilter implements Cloneable {
 	}
 
 	public List<AbstractFilterFactory> getFilterFactories() {
-		return new ArrayList<AbstractFilterFactory>(c2f.values());
+		return i2f;
 	}
 
 	public boolean hasFiters() {
