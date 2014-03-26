@@ -1,5 +1,7 @@
 package accusa2.io.format;
 
+
+
 import accusa2.cli.Parameters;
 import accusa2.filter.factory.AbstractFilterFactory;
 import accusa2.pileup.Pileup;
@@ -57,12 +59,10 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		sb.append("unfiltered");
 
 		// values from filters
-		String filtered = new String();
 		for(final AbstractFilterFactory abstractPileupFilterFactory : parameters.getPileupBuilderFilters().getFilterFactories()) {
-			filtered += abstractPileupFilterFactory.getC();
 			sb.append(getSEP());
 			sb.append("filtered_");
-			sb.append(filtered);
+			sb.append(abstractPileupFilterFactory.getC());
 		}
 
 		// final value used to calculate FDR

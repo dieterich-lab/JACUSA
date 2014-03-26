@@ -47,19 +47,20 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 			final StringBuilder sb = new StringBuilder();
 			sb.append(resultFormat.convert2String(parallelPileup, unfilteredValue));
 
+			ParallelPileup filteredParallelPileups = new ParallelPileup(parallelPileup);
+			
 			final int pileupFilterCount = parameters.getPileupBuilderFilters().getFilterFactories().size();
 			int pileupFilterIndex = 0;
 			if(!parameters.getPileupBuilderFilters().hasFiters()) { // no filters
 
 			} else { // calculate filters or quit
-				// container for pileups
-				ParallelPileup filteredParallelPileups = new ParallelPileup(parallelPileup);
-
 				// container for value(s)
 				double filteredValue = unfilteredValue;
 
 				// apply each filter
 				for(AbstractFilterFactory filterFactory : parameters.getPileupBuilderFilters().getFilterFactories()) {
+					// container for pileups
+
 					AbstractParallelPileupFilter filter = filterFactory.getParallelPileupFilterInstance();
 
 					// apply filter

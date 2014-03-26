@@ -25,32 +25,48 @@ public class DistanceParallelPileupFilter extends AbstractParallelPileupFilter {
 	// what if AAAA VS GGGG - same number?
 	@Override
 	public boolean filter(ParallelPileup parallelPileup) {
-		this.filteredParallelPileup = parallelPileup;
+		filteredParallelPileup = new ParallelPileup(parallelPileup);
 
-		int[] alleles = parallelPileup.getPooledPileup().getAlleles();
+		int[] variants = filteredParallelPileup.getVariantBases();
+		if(variants.length == 0 || filteredParallelPileup.isHoHo()) {
+			return false; // FIXME all other cases are currently ignored
+		}
+		int variant = variants[0]; 
 
-		// determine the least abundant variant
-		for(int base : alleles) {
-			int count = parallelPileup.getPooledPileup().getBaseCount()[base];
-			Pileup[] filteredPileups1 = applyFilter(base, parallelPileup.getPileups1());
-			Pileup[] filteredPileups2 = applyFilter(base, parallelPileup.getPileups2());
+		int count1 = filteredParallelPileup.getPooledPileup1().getBaseCount()[variant];
+		Pileup[] filteredPileups1 = applyFilter(variant, filteredParallelPileup.getPileups1());
 
-			// if nothing was filtered
-			if(filteredPileups1 == null && filteredPileups2 == null) {
-				continue;
-			}
-			filteredParallelPileup = new ParallelPileup(filteredPileups1, filteredPileups2);
-			int filteredCount = filteredParallelPileup.getPooledPileup().getBaseCount()[base];
-			
-			if((double)filteredCount / (double)count <= 0.5) {
-				return true;
-			}
+		int count2 = filteredParallelPileup.getPooledPileup2().getBaseCount()[variant];
+		Pileup[] filteredPileups2 = applyFilter(variant, filteredParallelPileup.getPileups2());
+
+		// if nothing was filtered
+		if(count1 == 0 && count2 == 0) {
+			return true;
+		}
+		
+		int filteredCount = 0;
+		int count = 0;
+		if(count1 > 0) {
+			filteredParallelPileup.setPileups1(filteredPileups1);
+			filteredCount = filteredParallelPileup.getPooledPileup1().getBaseCount()[variant];
+			count = count1;
+		}
+		if(count2 > 0) {
+			filteredParallelPileup.setPileups2(filteredPileups2);
+			filteredCount = filteredParallelPileup.getPooledPileup2().getBaseCount()[variant];
+			count = count2;
 		}
 
+		if((double)filteredCount / (double)count <= 0.5) {
+			return true;
+		}
+
+		filteredParallelPileup = parallelPileup;
 		return false;
 	}
 
 	/**
+	 * FIXME check this
 	 * null if filter did not change anything
 	 * @param pileups
 	 * @return

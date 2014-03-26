@@ -81,7 +81,7 @@ public abstract class AbstractPileupBuilder {
 		skippedBuffer 		= new ArrayList<Coordinate>(3);
 		adjustCurrentGenomicPosition(currentGenomicPosition);
 	}
-	
+
 	protected void init() {
 		coverageCache = new int[windowSize];
 		baseCache = new int[windowSize][Pileup.BASES2.length];
@@ -94,6 +94,11 @@ public abstract class AbstractPileupBuilder {
 		}
 	}
 
+	/**
+	 * 
+	 * @param targetPosition
+	 * @return
+	 */
 	protected int getNextValidPosition(int targetPosition) {
 		SAMRecordIterator iterator = reader.query(contig, targetPosition, maxGenomicPosition, false);
 		while(iterator.hasNext() ) {
@@ -136,6 +141,11 @@ public abstract class AbstractPileupBuilder {
 		}
 	}
 
+	/**
+	 * 
+	 * @param targetPosition
+	 * @return
+	 */
 	public boolean adjustCurrentGenomicPosition(int targetPosition) {
 		currentGenomicPosition = targetPosition;
 		if(isContainedInWindow(targetPosition)) {
@@ -190,11 +200,11 @@ public abstract class AbstractPileupBuilder {
 			return true;
 		}
 	}
-	
+
 	public boolean isContainedInGenome(int genomicPosition) {
 		return genomicPosition <= maxGenomicPosition && genomicPosition > 0;
 	}
-	
+
 	public boolean isContainedInWindow(int genomicPosition) {
 		return genomicPosition >= genomicWindowStart && genomicPosition <= getWindowEnd();
 	}
@@ -204,10 +214,12 @@ public abstract class AbstractPileupBuilder {
 	 * @param samRecord
 	 * @return
 	 */
+	// TODO collect statistics
 	protected boolean isValid(SAMRecord samRecord) {
 		int mapq = samRecord.getMappingQuality();
 		List<SAMValidationError> errors = samRecord.isValid();
 
+		// TODO check behavior of flags
 		if(!samRecord.getReadUnmappedFlag()
 				&& !samRecord.getNotPrimaryAlignmentFlag()
 				&& (mapq < 0 || mapq >= parameters.getMinMAPQ())
@@ -251,7 +263,7 @@ public abstract class AbstractPileupBuilder {
 
 		return genomicPosition - genomicWindowStart;
 	}
-	
+
 	/**
 	 * End of window (inclusive)
 	 * @return

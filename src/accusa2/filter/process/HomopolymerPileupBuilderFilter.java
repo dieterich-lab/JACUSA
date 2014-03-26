@@ -1,10 +1,12 @@
 package accusa2.filter.process;
 
-import accusa2.cache.Coordinate;
+import java.util.Arrays;
+
 import accusa2.pileup.builder.AbstractPileupBuilder;
 
-public class DistancePileupBuilderFilter extends AbstractPileupBuilderFilter {
+public class HomopolymerPileupBuilderFilter extends AbstractPileupBuilderFilter {
 
+	private int length;
 	private int distance;
 
 	/**
@@ -12,13 +14,14 @@ public class DistancePileupBuilderFilter extends AbstractPileupBuilderFilter {
 	 * @param c
 	 * @param distance
 	 */
-	public DistancePileupBuilderFilter(char c, int distance) {
+	public HomopolymerPileupBuilderFilter(char c, int length, int distance) {
 		super(c);
+		this.length = length;
 		this.distance = distance;
 	}
 
 	/**
-	 * 
+	 * FIXME very very complicated
 	 */
 	@Override
 	public void process(final AbstractPileupBuilder pileupBuilder) {
@@ -27,37 +30,28 @@ public class DistancePileupBuilderFilter extends AbstractPileupBuilderFilter {
 
 		PileupBuilderFilter pileupFilter = pileupBuilder.getParameters().getPileupBuilderFilters();
 
-		// process first and last base of read
-		for(int i = 0; i < distance; ++i) {
-			process(pileupBuilder.getCurrentRecord().getAlignmentStart() + i, bases, quals, pileupBuilder, pileupFilter);
-			process(pileupBuilder.getCurrentRecord().getAlignmentEnd() - i, bases, quals, pileupBuilder, pileupFilter);
-		}
+		int[] count = new int[pileupBuilder.getCurrentRecord().getReadLength()];
+		int[] index = new int[pileupBuilder.getCurrentRecord().getReadLength()];
+		Arrays.fill(index, -1);
 
-		// process INDELs
-		for(final Coordinate indel : pileupBuilder.getIndels()) {
-			for(int i = 0; i < distance; ++i) {
-				process(indel.getGenomicPosition() - i, bases, quals, pileupBuilder, pileupFilter);
-				process(indel.getGenomicPosition() + indel.getCigarElement().getLength() + i, bases, quals, pileupBuilder, pileupFilter);
+		int i = 0;
+		int j = 0;
+		index[i] = j;
+		for(i = 1; i < index.length; ++i) {
+			if(pileupBuilder.getCurrentRecord().getReadBases()[i - 1] != pileupBuilder.getCurrentRecord().getReadBases()[i]) {
+				++j;
 			}
+			index[i] = j;
+			++count[j];
 		}
 
-		// process Skipped regions
-		for(final Coordinate skipped : pileupBuilder.getSkipped()) {
-			for(int i = 0; i < distance; ++i) {
-				process(skipped.getGenomicPosition() - i, bases, quals, pileupBuilder, pileupFilter);
-				process(skipped.getGenomicPosition() + skipped.getCigarElement().getLength() + i, bases, quals, pileupBuilder, pileupFilter);
+		for(i = 0; i < pileupBuilder.getCurrentRecord().getReadLength(); ++i) {
+			if(count[index[i]] >= length) {
+				process(pileupBuilder.getCurrentRecord().getAlignmentStart() + i, bases, quals, pileupBuilder, pileupFilter);
 			}
 		}
 	}
 
-	/**
-	 * 
-	 * @param windowPosition
-	 * @param bases
-	 * @param quals
-	 * @param pileupCache
-	 * @param pileupFilter
-	 */
 	private void process(int genomicPosition, int[] bases, byte[] quals, AbstractPileupBuilder pileupBuilder, PileupBuilderFilter pileupFilter) {
 		// outside of cache or already filtered (bases[windowPosition] < 0)
 
@@ -77,6 +71,10 @@ public class DistancePileupBuilderFilter extends AbstractPileupBuilderFilter {
 		bases[genomicPosition - pileupBuilder.getGenomicWindowStart()] = -1;
 		quals[genomicPosition - pileupBuilder.getGenomicWindowStart()] = -1;		
 	}
+	
+	public int getLength() {
+		return length;
+	}
 
 	/**
 	 * 
@@ -85,5 +83,5 @@ public class DistancePileupBuilderFilter extends AbstractPileupBuilderFilter {
 	public int getDistance() {
 		return distance;
 	}
-	
+
 }

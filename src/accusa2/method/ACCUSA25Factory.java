@@ -31,9 +31,11 @@ import accusa2.cli.options.filter.FilterFlagOption;
 //import accusa2.cli.options.filter.FilterNHsamTagOption;
 //import accusa2.cli.options.filter.FilterNMsamTagOption;
 import accusa2.filter.factory.AbstractFilterFactory;
+import accusa2.filter.factory.HomopolymerFilterFactory;
 import accusa2.filter.factory.HomozygousFilterFactory;
 //import accusa2.filter.factory.PolymorphismPileupFilterFactory;
 import accusa2.filter.factory.DistanceFilterFactory;
+import accusa2.filter.factory.RareEventFilterFactory;
 import accusa2.io.format.AbstractResultFormat;
 import accusa2.io.format.DefaultResultFormat;
 import accusa2.io.format.PileupResultFormat;
@@ -170,6 +172,14 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 		abstractFilterFactory.setParameters(parameters);
 		abstractPileupFilters.put(abstractFilterFactory.getC(), abstractFilterFactory);
 
+		abstractFilterFactory = new HomopolymerFilterFactory();
+		abstractFilterFactory.setParameters(parameters);
+		abstractPileupFilters.put(abstractFilterFactory.getC(), abstractFilterFactory);
+		
+		abstractFilterFactory = new RareEventFilterFactory();
+		abstractFilterFactory.setParameters(parameters);
+		abstractPileupFilters.put(abstractFilterFactory.getC(), abstractFilterFactory);
+		
 		/*
 		abstractFilterFactory = new PolymorphismPileupFilterFactory();
 		abstractFilterFactory.setParameters(parameters);

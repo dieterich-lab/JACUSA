@@ -47,14 +47,12 @@ public class PileupResultFormat extends PileupFormat {
 
 		sb.append("unfiltered");
 
-		String filtered = new String();
-
 		for(final AbstractFilterFactory abstractPileupFilterFactory : parameters.getPileupBuilderFilters().getFilterFactories()) {
-			filtered += abstractPileupFilterFactory.getC();
 			sb.append(getSEP());
 			sb.append("filtered_");
-			sb.append(filtered);
+			sb.append(abstractPileupFilterFactory.getC());
 		}
+
 		if(parameters.getPileupBuilderFilters().hasFiters()) {
 			sb.append(getSEP());
 			sb.append("filtered");
