@@ -16,7 +16,7 @@ public class RareEventParallelPileupFilter extends AbstractParallelPileupFilter 
 
 	@Override
 	public boolean filter(final ParallelPileup parallelPileup) {
-		this.filteredParallelPileup = null;
+		this.filteredParallelPileup = new ParallelPileup(parallelPileup);
 
 		// homo-hetero-morph scenario
 		int[] variants = parallelPileup.getVariantBases();

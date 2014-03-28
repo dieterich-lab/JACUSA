@@ -11,7 +11,7 @@ public class AlleleParallelPileupFilter extends AbstractParallelPileupFilter {
 
 	@Override
 	public boolean filter(final ParallelPileup parallelPileup) {
-		this.filteredParallelPileup = null;
+		this.filteredParallelPileup = parallelPileup;
 
 		// filter if there are more than 2 alleles
 		if(parallelPileup.getPooledPileup().getAlleles().length > 2) {

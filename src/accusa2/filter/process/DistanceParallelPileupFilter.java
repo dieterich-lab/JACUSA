@@ -57,6 +57,7 @@ public class DistanceParallelPileupFilter extends AbstractParallelPileupFilter {
 			count = count2;
 		}
 
+		// FIXME if 2 RDDs remain don't filter or something
 		if((double)filteredCount / (double)count <= 0.5) {
 			return true;
 		}

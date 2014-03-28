@@ -27,7 +27,7 @@ public class HomopolymerParallelPileupFilter extends AbstractParallelPileupFilte
 	// what if AAAA VS GGGG - same number?
 	@Override
 	public boolean filter(ParallelPileup parallelPileup) {
-		this.filteredParallelPileup = parallelPileup;
+		this.filteredParallelPileup = new ParallelPileup(parallelPileup);
 
 		int[] alleles = parallelPileup.getPooledPileup().getAlleles();
 
@@ -49,6 +49,7 @@ public class HomopolymerParallelPileupFilter extends AbstractParallelPileupFilte
 			}
 		}
 
+		this.filteredParallelPileup = parallelPileup;
 		return false;
 	}
 

@@ -43,12 +43,10 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 			if(!isValidValue(unfilteredValue) || !isValidParallelPileup(parallelPileup)) {
 				continue;
 			}
-			
+
 			final StringBuilder sb = new StringBuilder();
 			sb.append(resultFormat.convert2String(parallelPileup, unfilteredValue));
 
-			ParallelPileup filteredParallelPileups = new ParallelPileup(parallelPileup);
-			
 			final int pileupFilterCount = parameters.getPileupBuilderFilters().getFilterFactories().size();
 			int pileupFilterIndex = 0;
 			if(!parameters.getPileupBuilderFilters().hasFiters()) { // no filters
@@ -61,19 +59,21 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 				for(AbstractFilterFactory filterFactory : parameters.getPileupBuilderFilters().getFilterFactories()) {
 					// container for pileups
 
+					ParallelPileup filteredParallelPileups = new ParallelPileup(parallelPileup);
 					AbstractParallelPileupFilter filter = filterFactory.getParallelPileupFilterInstance();
 
 					// apply filter
 					if(filter.filter(filteredParallelPileups)) {
 
 						// quit filtering
-						if(filter.quitFiltering()) {
+						//if(filter.quitFiltering()) {
 							// reset
 							filteredParallelPileups = new ParallelPileup(parallelPileup.getN1(), parallelPileup.getN2());
 							filteredValue = -1;
 							break;
-						}
+						//}
 
+						/*
 						// change parallel pileup
 						filteredParallelPileups = filter.getFilteredParallelPileup();
 
@@ -86,15 +86,10 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 						// calculate value for filterePileups
 						filteredValue = statisticCalculator.getStatistic(filteredParallelPileups);
 
-						/* negative values are not permitted as result
-						if(!isValidValue(filteredValue)) {
-							filteredValue = -1;
-							break;
-						}*/
-
 						// append calculated result
 						sb.append(resultFormat.getSEP());
 						sb.append(filteredValue);
+						*/
 					} else {
 						// append dummy result
 						sb.append(resultFormat.getSEP());
