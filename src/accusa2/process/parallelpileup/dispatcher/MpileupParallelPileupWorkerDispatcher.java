@@ -77,7 +77,7 @@ public class MpileupParallelPileupWorkerDispatcher extends AbstractParallelPileu
 				new File(threadContainer.get(i).getTmpOutputWriter().getInfo()).delete();
 			}
 		}
-		
+
 		try {
 			output.close();
 		} catch (IOException e) {

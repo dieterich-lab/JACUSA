@@ -37,10 +37,15 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 		while (parallelPileupIterator.hasNext()) {
 			final ParallelPileup parallelPileup = parallelPileupIterator.next();
 
+
+			if(!isValidParallelPileup(parallelPileup)) {
+				continue;
+			}
+
 			// calculate unfiltered value
 			final double unfilteredValue = statisticCalculator.getStatistic(parallelPileup);
-
-			if(!isValidValue(unfilteredValue) || !isValidParallelPileup(parallelPileup)) {
+			
+			if(!isValidValue(unfilteredValue)) {
 				continue;
 			}
 

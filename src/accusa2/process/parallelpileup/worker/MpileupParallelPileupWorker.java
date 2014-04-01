@@ -38,14 +38,6 @@ public class MpileupParallelPileupWorker extends AbstractParallelPileupWorker {
 				e.printStackTrace();
 			}
 		}
-		
-		if(parameters.getMaxThreads() > 1 && getNextThreadId() >= 0) {
-			try {
-				tmpOutputWriter.write(resultFormat.getCOMMENT() + String.valueOf(getNextThreadId()));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	@Override

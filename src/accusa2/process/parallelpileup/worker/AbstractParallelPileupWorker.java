@@ -61,22 +61,21 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	}
 
 	private synchronized void writeNextThreadID() {
-		if(getNextThreadId() >= 0) {
-			try {
-				tmpOutputWriter.write(resultFormat.getCOMMENT() + String.valueOf(getNextThreadId()));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return;
-		}
-
 		while(getNextThreadId() == -1) {
+			if(getNextThreadId() >= 0) {
+				try {
+					tmpOutputWriter.write(resultFormat.getCOMMENT() + String.valueOf(getNextThreadId()));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return;
+			}
+
 			try {
-				wait(500);
+				wait(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			writeNextThreadID();
 		}
 	}
 

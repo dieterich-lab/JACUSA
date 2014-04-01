@@ -103,7 +103,7 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 				new File(threadContainer.get(i).getTmpOutputWriter().getInfo()).delete();
 			}
 		}
-		
+
 		try {
 			output.close();
 			filtered.close();
