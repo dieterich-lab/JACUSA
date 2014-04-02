@@ -50,6 +50,7 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 
 	public synchronized AnnotatedCoordinate next(AbstractParallelPileupWorker abstractParallelPileupWorker) {
 		int threadId = abstractParallelPileupWorker.getThreadId();
+
 		if(lastThreadId >= 0) {
 			threadContainer.get(lastThreadId).setNextThreadId(threadId);
 		}

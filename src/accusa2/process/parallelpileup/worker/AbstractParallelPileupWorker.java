@@ -77,6 +77,15 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 				e.printStackTrace();
 			}
 		}
+		
+		if(getNextThreadId() >= 0) {
+			try {
+				tmpOutputWriter.write(resultFormat.getCOMMENT() + String.valueOf(getNextThreadId()));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
 	}
 
 	public final void run() {
