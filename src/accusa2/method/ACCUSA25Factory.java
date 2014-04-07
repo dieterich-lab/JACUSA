@@ -57,7 +57,7 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 	private static ACCUSA25_ParallelPileupWorkerDispatcher instance;
 	
 	public ACCUSA25Factory() {
-		super("call25", "Strand UNspecific variant calling");
+		super("call", "Call variants");
 	}
 
 	public void initACOptions() {
@@ -95,12 +95,12 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 
 		acOptions.add(new FilterOption(parameters, getFilterFactories()));
 
-		acOptions.add(new ConsiderBasesOption(parameters));
+		//acOptions.add(new ConsiderBasesOption(parameters));
 		acOptions.add(new FalseDiscoveryRateOption(parameters));
 		//acOptions.add(new PermutationsOption(parameters));
 		acOptions.add(new PileupBuilderOption(parameters));
 		
-		acOptions.add(new DebugOption(parameters));
+		//acOptions.add(new DebugOption(parameters));
 		acOptions.add(new HelpOption(parameters, CLI.getSingleton()));
 		acOptions.add(new VersionOption(parameters, CLI.getSingleton()));
 		
@@ -121,40 +121,40 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 		Map<String, StatisticCalculator> statistics = new TreeMap<String, StatisticCalculator>();
 
 		StatisticCalculator statistic = new DefaultStatistic(parameters);
-		StatisticCalculator ho_he = statistic;
-		statistics.put(statistic.getName(), statistic);
+		//StatisticCalculator ho_he = statistic;
+		//statistics.put(statistic.getName(), statistic);
 		
 		
-		statistic = new PooledStatistic(parameters);
-		StatisticCalculator he_he = statistic;
-		statistics.put(statistic.getName(), statistic);
+		//statistic = new PooledStatistic(parameters);
+		//StatisticCalculator he_he = statistic;
+		//statistics.put(statistic.getName(), statistic);
 
 		/*
 		statistic = new MinimalCoverageStatistic();
 		statistics.put(statistic.getName(), statistic);
 		*/
 
-		statistic = new CombinedStatistic(parameters,
-				ho_he,
-				he_he,
-				"combined", 
-				"default(ho:he) + pooled(he:he)");
-		statistics.put(statistic.getName(), statistic);
+		//statistic = new CombinedStatistic(parameters,
+		//		ho_he,
+		//		he_he,
+		//		"combined", 
+		//		"default(ho:he) + pooled(he:he)");
+		//statistics.put(statistic.getName(), statistic);
 
-		statistic = new LRStatistic(parameters);
-		ho_he = statistic;
-		statistics.put(statistic.getName(), statistic);
+		//statistic = new LRStatistic(parameters);
+		//ho_he = statistic;
+		//statistics.put(statistic.getName(), statistic);
 	
 		statistic = new LR2Statistic(parameters);
-		he_he = statistic;
+		//he_he = statistic;
 		statistics.put(statistic.getName(), statistic);
 
-		statistic = new CombinedLRStatistic(parameters,
-				ho_he,
-				he_he,
-				"combinedLR", 
-				"lr(ho:he) + lr2(he:he)");
-		statistics.put(statistic.getName(), statistic);
+		//statistic = new CombinedLRStatistic(parameters,
+		//		ho_he,
+		//		he_he,
+		//		"combinedLR", 
+		//		"lr(ho:he) + lr2(he:he)");
+		//statistics.put(statistic.getName(), statistic);
 
 		return statistics;
 	}
@@ -175,11 +175,11 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 		abstractFilterFactory = new HomopolymerFilterFactory();
 		abstractFilterFactory.setParameters(parameters);
 		abstractPileupFilters.put(abstractFilterFactory.getC(), abstractFilterFactory);
-		
+		/*
 		abstractFilterFactory = new RareEventFilterFactory();
 		abstractFilterFactory.setParameters(parameters);
 		abstractPileupFilters.put(abstractFilterFactory.getC(), abstractFilterFactory);
-		
+		*/
 		/*
 		abstractFilterFactory = new PolymorphismPileupFilterFactory();
 		abstractFilterFactory.setParameters(parameters);

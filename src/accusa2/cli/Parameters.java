@@ -51,7 +51,7 @@ public class Parameters {
 	private AbstractResultFormat resultFormat;
 
 	// version
-	public final String VERSION = "2.5 BETA 23";
+	public final String VERSION = "ACCUSA 2.5";
 
 	// bed file to scan for variants
 	private String bedPathname;

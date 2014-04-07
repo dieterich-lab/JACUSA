@@ -12,7 +12,7 @@ public class FalseDiscoveryRateOption  extends AbstractACOption {
 	public FalseDiscoveryRateOption(Parameters parameters) {
 		super(parameters);
 		opt = 'T';
-		longOpt = "fdr";
+		longOpt = "test-statistic";
 	}
 
 	@SuppressWarnings("static-access")
