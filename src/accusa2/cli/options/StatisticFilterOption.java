@@ -7,12 +7,12 @@ import org.apache.commons.cli.OptionBuilder;
 
 import accusa2.cli.Parameters;
 
-public class FalseDiscoveryRateOption  extends AbstractACOption {
+public class StatisticFilterOption  extends AbstractACOption {
 
-	public FalseDiscoveryRateOption(Parameters parameters) {
+	public StatisticFilterOption(Parameters parameters) {
 		super(parameters);
 		opt = 'T';
-		longOpt = "fdr";
+		longOpt = "stat";
 	}
 
 	@SuppressWarnings("static-access")

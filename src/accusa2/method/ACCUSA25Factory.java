@@ -10,7 +10,7 @@ import accusa2.cli.Parameters;
 import accusa2.cli.options.PileupBuilderOption;
 import accusa2.cli.options.ConsiderBasesOption;
 import accusa2.cli.options.DebugOption;
-import accusa2.cli.options.FalseDiscoveryRateOption;
+import accusa2.cli.options.StatisticFilterOption;
 import accusa2.cli.options.HelpOption;
 import accusa2.cli.options.MaxDepthOption;
 import accusa2.cli.options.MaxThreadOption;
@@ -96,7 +96,7 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 		acOptions.add(new FilterOption(parameters, getFilterFactories()));
 
 		acOptions.add(new ConsiderBasesOption(parameters));
-		acOptions.add(new FalseDiscoveryRateOption(parameters));
+		acOptions.add(new StatisticFilterOption(parameters));
 		//acOptions.add(new PermutationsOption(parameters));
 		acOptions.add(new PileupBuilderOption(parameters));
 		

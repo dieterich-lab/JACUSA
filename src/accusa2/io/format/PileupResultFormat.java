@@ -59,7 +59,7 @@ public class PileupResultFormat extends PileupFormat {
 		}
 
 		sb.append(getSEP());
-		sb.append("fdr");
+		sb.append("stat");
 		return sb.toString();
 	}
 	

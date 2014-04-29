@@ -65,15 +65,15 @@ public class DefaultResultFormat extends AbstractResultFormat {
 			sb.append(abstractPileupFilterFactory.getC());
 		}
 
-		// final value used to calculate FDR
+		// final value used to calculate STAT
 		if(parameters.getPileupBuilderFilters().hasFiters()) {
 			sb.append(getSEP());
 			sb.append("filtered");
 		}
 
-		// FDR
+		// stat
 		sb.append(getSEP());
-		sb.append("fdr");
+		sb.append("stat");
 
 		return sb.toString();
 	}
