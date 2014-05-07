@@ -41,6 +41,9 @@ public class VariantParallelPileupIterator implements ParallelPileupIterator {
 		return pileupBuilders;
 	}
 
+	/**
+	 * 
+	 */
 	private boolean hasNext(AbstractPileupBuilder[] pileupBuilders) {
 		boolean hasNext = false;
 
@@ -51,6 +54,9 @@ public class VariantParallelPileupIterator implements ParallelPileupIterator {
 		return hasNext;
 	}
 	
+	/**
+	 * 
+	 */
 	public boolean hasNext() {
 		if(parallelPileup.isValid()) {
 			return true;
@@ -85,7 +91,7 @@ public class VariantParallelPileupIterator implements ParallelPileupIterator {
 	protected boolean isVariant(ParallelPileup parallelPileup)  {
 		return parallelPileup.getPooledPileup().getAlleles().length > 1;
 	}
-	
+
 	private void adjustCurrentGenomicPosition(AbstractPileupBuilder[] pileupBuilders, int position) {
 		for(AbstractPileupBuilder pileupBuilder : pileupBuilders) {
 			pileupBuilder.adjustCurrentGenomicPosition(position);

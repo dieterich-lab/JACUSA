@@ -27,6 +27,10 @@ public class DirectedPileupBuilder extends UndirectedPileupBuilder {
 		super(annotatedCoordinate, reader, parameters);
 	}
 
+	/**
+	 * +-+-...+-+-
+	 */
+	@Override
 	protected void init() {
 		int size = 2 * windowSize;
 		coverageCache = new int[size];
@@ -40,6 +44,7 @@ public class DirectedPileupBuilder extends UndirectedPileupBuilder {
 		}
 
 		reverseSAMRecordsBuffer = new SAMRecord[SAMRecordsBuffer.length];
+		// always consider forward strand first
 		strand = STRAND.FORWARD;
 	}
 
@@ -65,6 +70,7 @@ public class DirectedPileupBuilder extends UndirectedPileupBuilder {
 			}
 		}
 
+		// always consider forward strand first
 		strand = STRAND.FORWARD;
 	}
 
@@ -97,6 +103,7 @@ public class DirectedPileupBuilder extends UndirectedPileupBuilder {
 		return false;
 	}
 
+	// FIXME confusing code
 	@Override
 	public int convertGenomicPosition2WindowPosition(int genomicPosition) {
  		if(genomicPosition < genomicWindowStart) {
@@ -111,7 +118,7 @@ public class DirectedPileupBuilder extends UndirectedPileupBuilder {
  		}
 		return pos;
 	}
-	
+
 	@Override
 	public Pileup next() {
 		final Pileup pileup = super.next();
@@ -121,6 +128,7 @@ public class DirectedPileupBuilder extends UndirectedPileupBuilder {
 
 		case FORWARD:
 			strand 	= STRAND.REVERSE;
+			// stay at the same position but switch the strand
 			--currentGenomicPosition;
 			break;
 
@@ -136,13 +144,14 @@ public class DirectedPileupBuilder extends UndirectedPileupBuilder {
 	}
 
 	@Override
-	public boolean adjustCurrentGenomicPosition(int targetPosition) {
-		currentGenomicPosition = targetPosition;
-		if(isContainedInWindow(targetPosition)) {
+	public boolean adjustCurrentGenomicPosition(int potentialTargetPosition) {
+		currentGenomicPosition = potentialTargetPosition;
+		if(isContainedInWindow(potentialTargetPosition)) {
+			// always start with the forward strand
 			strand = STRAND.FORWARD;
 			return true;
 		}
-		genomicWindowStart = targetPosition;
+		genomicWindowStart = potentialTargetPosition;
 		clearPileupCache();
 
 		// fill window
@@ -167,7 +176,7 @@ public class DirectedPileupBuilder extends UndirectedPileupBuilder {
 				filteredSAMRecords++;
 			}
 
-			// process buffer
+			// process buffer for forward reads
 			if(forwardCount >= SAMRecordsBuffer.length) {
 				strand 	= STRAND.FORWARD;
 				for(int i = 0; i < forwardCount; ++i) {
@@ -181,7 +190,7 @@ public class DirectedPileupBuilder extends UndirectedPileupBuilder {
 				forwardWindowHit = true;
 			}
 			
-			// process buffer
+			// process buffer for reverse reads
 			if(reverseCount >= reverseSAMRecordsBuffer.length) {
 				strand 	= STRAND.REVERSE;
 				for(int i = 0; i < reverseCount; ++i) {
@@ -197,8 +206,9 @@ public class DirectedPileupBuilder extends UndirectedPileupBuilder {
 		}
 		iterator.close();
 
+		// if no valid SAMRecord could be processed within current window
 		if(!forwardWindowHit && !reverseWindowHit && forwardCount == 0 && reverseCount == 0) {
-			int nextPosition = getNextValidPosition(targetPosition + windowSize);
+			int nextPosition = getNextValidPosition(potentialTargetPosition + windowSize);
 			if(nextPosition > 0) {
 				strand = STRAND.FORWARD;
 				return adjustCurrentGenomicPosition(nextPosition);
@@ -239,6 +249,7 @@ public class DirectedPileupBuilder extends UndirectedPileupBuilder {
 			}
 			final byte qual = record.getBaseQualities()[readPosition];
 
+			// DO NOT CHANGE - windowPosition != genomicPosition - genomicWindowStart
 			currentBases[genomicPosition - genomicWindowStart] = base;
 			currentQuals[genomicPosition - genomicWindowStart] = qual;
 
