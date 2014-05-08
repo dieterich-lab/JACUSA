@@ -26,8 +26,8 @@ public final class Pileup {
 	public static final char STRAND_UNKNOWN_CHAR = '.';
 	
 	public static final char[] BASES = {'A' ,'C', 'G', 'T', 'N'};
+	//										0	 1	  2	   3	4
 	public static final int[] COMPLEMENT = {3, 2, 1, 0, 4};
-
 	public static final char[] BASES2 = {'A' ,'C', 'G', 'T'};
 
 	public static final Map<Character, Integer> BASE2INT = new HashMap<Character, Integer>(BASES.length);
@@ -60,11 +60,11 @@ public final class Pileup {
 	private int[] baseCount;
 
 	public Pileup() {
-		contig 	= new String();
-		position= -1;
-		strand	= STRAND.UNKNOWN;
+		contig 		= new String();
+		position	= -1;
+		strand		= STRAND.UNKNOWN;
 
-		int n 	= Phred2Prob.MAX_Q;
+		final int n= Phred2Prob.MAX_Q;
 		qualCount	= new int[BASES2.length][n];
 
 		baseCount 	= new int[BASES2.length];
@@ -72,7 +72,7 @@ public final class Pileup {
 		filteredPileups = new Pileup[0];
 	}
 
-	public Pileup(String contig, int position, STRAND strand) {
+	public Pileup(final String contig, final int position, final STRAND strand) {
 		this();
 		this.contig = contig;
 		this.position = position;
@@ -81,15 +81,14 @@ public final class Pileup {
 		filteredPileups = new Pileup[0];
 	}
 
-	public void addBase(int base, byte qual) {
-		++qualCount[base][qual];
+	public void addBase(final int base, final byte qual) {
 		++baseCount[base];
-		//quals.add(qual);
+		++qualCount[base][qual];
 	}
 
 	public void removeBase(final int base, final byte qual) {
-		--qualCount[base][qual];
 		--baseCount[base];
+		--qualCount[base][qual];
 	}
 
 	public int getQualCount(final int base, final byte qual) {
@@ -101,6 +100,7 @@ public final class Pileup {
 	}
 
 	public Pileup(final Pileup pileup) {
+		// deep copy filtered pileups
 		filteredPileups = new Pileup[pileup.filteredPileups.length];
 		for(int i = 0; i < pileup.filteredPileups.length; ++i) {
 			filteredPileups[i] = new Pileup(pileup.filteredPileups[i]); 
@@ -111,8 +111,10 @@ public final class Pileup {
 		strand		= pileup.getStrand();
 		refBase 	= pileup.getReferenceBase();
 
-		baseCount		= pileup.baseCount.clone();
-		qualCount		= pileup.qualCount.clone();
+		baseCount	= pileup.baseCount.clone();
+
+		// deep copy qual count
+		qualCount	= pileup.qualCount.clone();
 		for(int i = 0; i < pileup.qualCount.length; ++i) {
 			qualCount[i] = pileup.qualCount[i].clone();
 		}
@@ -223,7 +225,6 @@ public final class Pileup {
 		this.qualCount = qualCount;
 	}
 
-	// TEST
 	public Pileup complement() {
 		final Pileup complement = new Pileup(this);
 
@@ -240,17 +241,16 @@ public final class Pileup {
 		}
 
 		// invert base and qual count
-		complement.invert();
+		complement.invertCounts();
 		// adjust counts for filteredPileups
 		for(Pileup filteredPileup : complement.filteredPileups) {
-			filteredPileup.invert();
+			filteredPileup.invertCounts();
 		}
 
 		return complement;
 	}
 
-	// TEST
-	private void invert() {
+	private void invertCounts() {
 		int[] tmpBaseCount = new int[baseCount.length];
 		int[][] tmpQualCount = new int[baseCount.length][Phred2Prob.MAX_Q];
 
@@ -292,7 +292,6 @@ public final class Pileup {
 				return STRAND.UNKNOWN;
 			}
 		}
-
 	}
 
 }

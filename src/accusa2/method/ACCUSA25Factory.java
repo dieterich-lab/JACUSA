@@ -39,12 +39,9 @@ import accusa2.filter.factory.RareEventFilterFactory;
 import accusa2.io.format.AbstractResultFormat;
 import accusa2.io.format.DefaultResultFormat;
 import accusa2.io.format.PileupResultFormat;
-import accusa2.method.statistic.CombinedLRStatistic;
-import accusa2.method.statistic.CombinedStatistic;
 import accusa2.method.statistic.DefaultStatistic;
 import accusa2.method.statistic.LR2Statistic;
 import accusa2.method.statistic.LRStatistic;
-import accusa2.method.statistic.PooledStatistic;
 //import accusa2.method.statistic.MinimalCoverageStatistic;
 import accusa2.method.statistic.StatisticCalculator;
 import accusa2.process.parallelpileup.dispatcher.ACCUSA25_ParallelPileupWorkerDispatcher;
@@ -121,39 +118,12 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 		Map<String, StatisticCalculator> statistics = new TreeMap<String, StatisticCalculator>();
 
 		StatisticCalculator statistic = new DefaultStatistic(parameters);
-		StatisticCalculator ho_he = statistic;
 		statistics.put(statistic.getName(), statistic);
 		
-		
-		statistic = new PooledStatistic(parameters);
-		StatisticCalculator he_he = statistic;
-		statistics.put(statistic.getName(), statistic);
-
-		/*
-		statistic = new MinimalCoverageStatistic();
-		statistics.put(statistic.getName(), statistic);
-		*/
-
-		statistic = new CombinedStatistic(parameters,
-				ho_he,
-				he_he,
-				"combined", 
-				"default(ho:he) + pooled(he:he)");
-		statistics.put(statistic.getName(), statistic);
-
 		statistic = new LRStatistic(parameters);
-		ho_he = statistic;
 		statistics.put(statistic.getName(), statistic);
 	
 		statistic = new LR2Statistic(parameters);
-		he_he = statistic;
-		statistics.put(statistic.getName(), statistic);
-
-		statistic = new CombinedLRStatistic(parameters,
-				ho_he,
-				he_he,
-				"combinedLR", 
-				"lr(ho:he) + lr2(he:he)");
 		statistics.put(statistic.getName(), statistic);
 
 		return statistics;
