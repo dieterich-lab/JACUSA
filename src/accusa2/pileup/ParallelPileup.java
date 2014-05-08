@@ -2,7 +2,6 @@ package accusa2.pileup;
 
 import accusa2.pileup.Pileup.STRAND;
 
-// CHECKED
 public final class ParallelPileup {
 
 	private Pileup pileup;
@@ -19,8 +18,10 @@ public final class ParallelPileup {
 		this.pileup1 = new Pileup(parallelPileup.getPooledPileup1());
 		this.pileup2 = new Pileup(parallelPileup.getPooledPileup2());
 
-		pileups1 = parallelPileup.getPileups1().clone();
-		pileups2 = parallelPileup.getPileups2().clone();
+		pileups1 = new Pileup[parallelPileup.getPileups1().length];
+		System.arraycopy(parallelPileup.getPileups1(), 0, pileups1, 0, parallelPileup.getPileups1().length);
+		pileups2 = new Pileup[parallelPileup.getPileups2().length];
+		System.arraycopy(parallelPileup.getPileups2(), 0, pileups2, 0, parallelPileup.getPileups2().length);
 	}
 
 	public ParallelPileup(final int n1, final int n2) {

@@ -51,7 +51,7 @@ public class Parameters {
 	private AbstractResultFormat resultFormat;
 
 	// version
-	public final String VERSION = "2.5 BETA 23";
+	public final String VERSION = "ACCUSA 2.5";
 
 	// bed file to scan for variants
 	private String bedPathname;
@@ -85,7 +85,7 @@ public class Parameters {
 		windowSize 		= 200;
 
 		minBASQ 		= Byte.parseByte(new String("20"));
-		minMAPQ 		= 20; // TODO make this higher
+		minMAPQ 		= 20;
 		minCoverage 	= 3;
 		maxDepth 		= -1;
 		maxThreads 		= 1;

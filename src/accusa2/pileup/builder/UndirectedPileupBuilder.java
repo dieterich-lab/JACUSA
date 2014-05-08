@@ -34,11 +34,12 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 				if(isValid(currentGenomicPosition)) {
 					return true;
 				} else {
+					// move along the window
 					++currentGenomicPosition;
 				}
 				
 			} else if(!adjustCurrentGenomicPosition(currentGenomicPosition)) {
-				break;
+				return false;
 			}
 		}
 
@@ -48,28 +49,34 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 	@Override
 	public Pileup next() {
 		final int windowPosition = convertGenomicPosition2WindowPosition(currentGenomicPosition);
+		// container
 		final Pileup pileup = new Pileup(contig, currentGenomicPosition, STRAND.UNKNOWN);
-
+// check arraycopy
 		// copy base and qual info from cache
 		pileup.setBaseCount(new int[Pileup.BASES2.length]);
 		pileup.setQualCount(new int[Pileup.BASES2.length][Phred2Prob.MAX_Q]);
 		System.arraycopy(baseCache[windowPosition], 0, pileup.getBaseCount(), 0, baseCache[windowPosition].length);
-		System.arraycopy(qualCache[windowPosition], 0, pileup.getQualCount(), 0, qualCache[windowPosition].length);
-
+		for(int i = 0; i < pileup.getQualCount().length; ++i) {
+			System.arraycopy(qualCache[windowPosition][i], 0, pileup.getQualCount()[i], 0, pileup.getQualCount()[i].length);
+		}
+		
 		// copy filter information to pileup
 		if(pileupBuilderFilters.size() > 0) {
 			Pileup[] filteredPileups = new Pileup[pileupBuilderFilters.size()];
 			for(int f = 0; f < pileupBuilderFilters.size(); ++f) {
 				Pileup filteredPileup = new Pileup();
-	
+
+				// setup containers
 				int[] baseCount = new int[filteredBaseCache[windowPosition][f].length];
 				int[][] qualCount = new int[Pileup.BASES2.length][Phred2Prob.MAX_Q];
 				filteredPileup.setBaseCount(baseCount);
 				filteredPileup.setQualCount(qualCount);
 	
-				System.arraycopy(filteredBaseCache[windowPosition][f], 0, filteredPileup.getBaseCount(), 0, Pileup.BASES2.length);
-				System.arraycopy(filteredQualCache[windowPosition][f], 0, filteredPileup.getQualCount(), 0, filteredQualCache[windowPosition][f].length);
-
+				// copy data
+				System.arraycopy(filteredBaseCache[windowPosition][f], 0, filteredPileup.getBaseCount(), 0, filteredPileup.getBaseCount().length);
+				for(int i = 0; i < filteredPileup.getQualCount().length; ++i) {
+					System.arraycopy(filteredQualCache[windowPosition][f][i], 0, filteredPileup.getQualCount()[i], 0, filteredQualCache[windowPosition][f][i].length);
+				}
 				filteredPileups[f] = filteredPileup;
 			}
 			pileup.setFilteredPileups(filteredPileups);
@@ -79,6 +86,11 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		return pileup;
 	}
 
+	/**
+	 * 
+	 * @param genomicPosition
+	 * @return
+	 */
 	protected boolean isValid(int genomicPosition) {
 		int windowPosition = convertGenomicPosition2WindowPosition(genomicPosition);
 		return coverageCache[windowPosition] >= parameters.getMinCoverage();
@@ -91,15 +103,19 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 
 	@Override
 	protected void processAlignmetMatch(int readPosition, int genomicPosition, final CigarElement cigarElement, final SAMRecord record) {
+		// iterate over matched portion of aread 
 		for(int i = 0; i < cigarElement.getLength(); ++i) {
+			// ignore low quality and uncalled 'N' bases
 			if(record.getBaseQualities()[readPosition] >= parameters.getMinBASQ() && record.getReadBases()[readPosition] != 'N') {
+				// speedup: if windowPosition == -1 the remaining part of the read will be outside of the windowCache
+				// ignore the overhanging part of the read until it overlaps with the window cache
 				int windowPosition = cachePosition(readPosition, genomicPosition, cigarElement, indelsBuffer, skippedBuffer, record);
 				if(windowPosition == -1) {
 					return;
 				}
 			}
 
-			// iterate
+			// move pointers
 			++readPosition;
 			++genomicPosition;
 		}
@@ -142,11 +158,12 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		final int windowPosition = convertGenomicPosition2WindowPosition(genomicPosition);
 
 		if(windowPosition >= 0 && (parameters.getMaxDepth() == -1 || coverageCache[windowPosition] <= parameters.getMaxDepth()) ) {
+			// convert base char to int 
 			final int base = Pileup.BASE2INT.get((char)record.getReadBases()[readPosition]);
 			final byte qual = record.getBaseQualities()[readPosition];
 
-			currentBases[genomicPosition - genomicWindowStart] = base;
-			currentQuals[genomicPosition - genomicWindowStart] = qual;
+			currentBases[windowPosition] = base;
+			currentQuals[windowPosition] = qual;
 
 			coverageCache[windowPosition]++;
 			baseCache[windowPosition][base]++;

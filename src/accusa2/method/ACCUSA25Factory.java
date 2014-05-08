@@ -35,11 +35,10 @@ import accusa2.filter.factory.HomopolymerFilterFactory;
 import accusa2.filter.factory.HomozygousFilterFactory;
 //import accusa2.filter.factory.PolymorphismPileupFilterFactory;
 import accusa2.filter.factory.DistanceFilterFactory;
-import accusa2.filter.factory.RareEventFilterFactory;
+//import accusa2.filter.factory.RareEventFilterFactory;
 import accusa2.io.format.AbstractResultFormat;
 import accusa2.io.format.DefaultResultFormat;
 import accusa2.io.format.PileupResultFormat;
-import accusa2.method.statistic.DefaultStatistic;
 import accusa2.method.statistic.LR2Statistic;
 import accusa2.method.statistic.LRStatistic;
 //import accusa2.method.statistic.MinimalCoverageStatistic;
@@ -54,7 +53,7 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 	private static ACCUSA25_ParallelPileupWorkerDispatcher instance;
 	
 	public ACCUSA25Factory() {
-		super("call25", "Strand UNspecific variant calling");
+		super("call", "Call variants");
 	}
 
 	public void initACOptions() {
@@ -117,9 +116,8 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 	public Map<String, StatisticCalculator> getStatistics() {
 		Map<String, StatisticCalculator> statistics = new TreeMap<String, StatisticCalculator>();
 
-		StatisticCalculator statistic = new DefaultStatistic(parameters);
-		statistics.put(statistic.getName(), statistic);
-		
+		StatisticCalculator statistic = null;
+
 		statistic = new LRStatistic(parameters);
 		statistics.put(statistic.getName(), statistic);
 	
@@ -145,11 +143,11 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 		abstractFilterFactory = new HomopolymerFilterFactory();
 		abstractFilterFactory.setParameters(parameters);
 		abstractPileupFilters.put(abstractFilterFactory.getC(), abstractFilterFactory);
-		
+		/*
 		abstractFilterFactory = new RareEventFilterFactory();
 		abstractFilterFactory.setParameters(parameters);
 		abstractPileupFilters.put(abstractFilterFactory.getC(), abstractFilterFactory);
-		
+		*/
 		/*
 		abstractFilterFactory = new PolymorphismPileupFilterFactory();
 		abstractFilterFactory.setParameters(parameters);

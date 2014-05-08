@@ -111,12 +111,12 @@ public final class Pileup {
 		strand		= pileup.getStrand();
 		refBase 	= pileup.getReferenceBase();
 
-		baseCount	= pileup.baseCount.clone();
+		baseCount	= new int[pileup.baseCount.length];
+		System.arraycopy(pileup.baseCount, 0, baseCount, 0, pileup.baseCount.length);
 
-		// deep copy qual count
-		qualCount	= pileup.qualCount.clone();
+		qualCount	= new int[pileup.qualCount.length][Phred2Prob.MAX_Q];
 		for(int i = 0; i < pileup.qualCount.length; ++i) {
-			qualCount[i] = pileup.qualCount[i].clone();
+			System.arraycopy(pileup.qualCount[i], 0, qualCount[i], 0, pileup.qualCount[i].length);
 		}
 	}
 

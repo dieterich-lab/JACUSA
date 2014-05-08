@@ -25,8 +25,11 @@ public class HomopolymerPileupBuilderFilter extends AbstractPileupBuilderFilter 
 	 */
 	@Override
 	public void process(final AbstractPileupBuilder pileupBuilder) {
-		final int[] bases = pileupBuilder.getCurrentBases().clone();
-		final byte[] quals = pileupBuilder.getCurrentQuals().clone();
+		final int[] bases = new int[pileupBuilder.getCurrentBases().length];
+		System.arraycopy(pileupBuilder.getCurrentBases(), 0, bases, 0, pileupBuilder.getCurrentBases().length);
+
+		final byte[] quals = new byte[pileupBuilder.getCurrentQuals().length];
+		System.arraycopy(pileupBuilder.getCurrentQuals(), 0, quals, 0, pileupBuilder.getCurrentQuals().length);
 
 		PileupBuilderFilter pileupFilter = pileupBuilder.getParameters().getPileupBuilderFilters();
 

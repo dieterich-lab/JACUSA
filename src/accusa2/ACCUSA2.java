@@ -46,15 +46,10 @@ public class ACCUSA2 {
 
 		AbstractMethodFactory methodFactory = null;
 
-		// DEPRECATED
-		// instantiate different methods
-		//methodFactory = new ACCUSA2Factory();
-		//methodFactories.put(methodFactory.getName(), methodFactory);
-		
 		// instantiate different methods
 		methodFactory = new ACCUSA25Factory();
 		methodFactories.put(methodFactory.getName(), methodFactory);
-		
+
 		methodFactory = new PileupFactory();
 		methodFactories.put(methodFactory.getName(), methodFactory);
 

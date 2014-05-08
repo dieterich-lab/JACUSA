@@ -100,7 +100,7 @@ public class CLI {
 		HelpFormatter formatter = new HelpFormatter();
 		formatter.setWidth(160);
 
-		formatter.printHelp("ACCUSA2", options);
+		formatter.printHelp("ACCUSA25", options);
 	}
 
 	/**
