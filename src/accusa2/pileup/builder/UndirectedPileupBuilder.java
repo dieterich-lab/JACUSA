@@ -51,7 +51,7 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		final int windowPosition = convertGenomicPosition2WindowPosition(currentGenomicPosition);
 		// container
 		final Pileup pileup = new Pileup(contig, currentGenomicPosition, STRAND.UNKNOWN);
-// check arraycopy
+
 		// copy base and qual info from cache
 		pileup.setBaseCount(new int[Pileup.BASES2.length]);
 		pileup.setQualCount(new int[Pileup.BASES2.length][Phred2Prob.MAX_Q]);
