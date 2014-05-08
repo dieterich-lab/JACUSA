@@ -239,7 +239,6 @@ public abstract class AbstractPileupBuilder {
 		int mapq = samRecord.getMappingQuality();
 		List<SAMValidationError> errors = samRecord.isValid();
 		
-		// TODO check behavior of flags
 		if(!samRecord.getReadUnmappedFlag()
 				&& !samRecord.getNotPrimaryAlignmentFlag() // ignore non-primary alignments
 				&& (mapq < 0 || mapq >= parameters.getMinMAPQ()) // filter by mapping quality

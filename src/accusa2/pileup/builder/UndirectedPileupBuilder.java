@@ -51,13 +51,15 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		final int windowPosition = convertGenomicPosition2WindowPosition(currentGenomicPosition);
 		// container
 		final Pileup pileup = new Pileup(contig, currentGenomicPosition, STRAND.UNKNOWN);
-
+// check arraycopy
 		// copy base and qual info from cache
 		pileup.setBaseCount(new int[Pileup.BASES2.length]);
 		pileup.setQualCount(new int[Pileup.BASES2.length][Phred2Prob.MAX_Q]);
 		System.arraycopy(baseCache[windowPosition], 0, pileup.getBaseCount(), 0, baseCache[windowPosition].length);
-		System.arraycopy(qualCache[windowPosition], 0, pileup.getQualCount(), 0, qualCache[windowPosition].length);
-
+		for(int i = 0; i < pileup.getQualCount().length; ++i) {
+			System.arraycopy(qualCache[windowPosition][i], 0, pileup.getQualCount()[i], 0, pileup.getQualCount()[i].length);
+		}
+		
 		// copy filter information to pileup
 		if(pileupBuilderFilters.size() > 0) {
 			Pileup[] filteredPileups = new Pileup[pileupBuilderFilters.size()];
@@ -71,9 +73,10 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 				filteredPileup.setQualCount(qualCount);
 	
 				// copy data
-				System.arraycopy(filteredBaseCache[windowPosition][f], 0, filteredPileup.getBaseCount(), 0, Pileup.BASES2.length);
-				System.arraycopy(filteredQualCache[windowPosition][f], 0, filteredPileup.getQualCount(), 0, filteredQualCache[windowPosition][f].length);
-
+				System.arraycopy(filteredBaseCache[windowPosition][f], 0, filteredPileup.getBaseCount(), 0, filteredPileup.getBaseCount().length);
+				for(int i = 0; i < filteredPileup.getQualCount().length; ++i) {
+					System.arraycopy(filteredQualCache[windowPosition][f][i], 0, filteredPileup.getQualCount()[i], 0, filteredQualCache[windowPosition][f][i].length);
+				}
 				filteredPileups[f] = filteredPileup;
 			}
 			pileup.setFilteredPileups(filteredPileups);

@@ -35,16 +35,16 @@ import accusa2.filter.factory.HomopolymerFilterFactory;
 import accusa2.filter.factory.HomozygousFilterFactory;
 //import accusa2.filter.factory.PolymorphismPileupFilterFactory;
 import accusa2.filter.factory.DistanceFilterFactory;
-import accusa2.filter.factory.RareEventFilterFactory;
+//import accusa2.filter.factory.RareEventFilterFactory;
 import accusa2.io.format.AbstractResultFormat;
 import accusa2.io.format.DefaultResultFormat;
 import accusa2.io.format.PileupResultFormat;
-import accusa2.method.statistic.CombinedLRStatistic;
-import accusa2.method.statistic.CombinedStatistic;
+//import accusa2.method.statistic.CombinedLRStatistic;
+//import accusa2.method.statistic.CombinedStatistic;
 import accusa2.method.statistic.DefaultStatistic;
 import accusa2.method.statistic.LR2Statistic;
 import accusa2.method.statistic.LRStatistic;
-import accusa2.method.statistic.PooledStatistic;
+//import accusa2.method.statistic.PooledStatistic;
 //import accusa2.method.statistic.MinimalCoverageStatistic;
 import accusa2.method.statistic.StatisticCalculator;
 import accusa2.process.parallelpileup.dispatcher.ACCUSA25_ParallelPileupWorkerDispatcher;
@@ -95,12 +95,12 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 
 		acOptions.add(new FilterOption(parameters, getFilterFactories()));
 
-		//acOptions.add(new ConsiderBasesOption(parameters));
+		acOptions.add(new ConsiderBasesOption(parameters));
 		acOptions.add(new FalseDiscoveryRateOption(parameters));
 		//acOptions.add(new PermutationsOption(parameters));
 		acOptions.add(new PileupBuilderOption(parameters));
 		
-		//acOptions.add(new DebugOption(parameters));
+		acOptions.add(new DebugOption(parameters));
 		acOptions.add(new HelpOption(parameters, CLI.getSingleton()));
 		acOptions.add(new VersionOption(parameters, CLI.getSingleton()));
 		
@@ -141,9 +141,9 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 		//		"default(ho:he) + pooled(he:he)");
 		//statistics.put(statistic.getName(), statistic);
 
-		//statistic = new LRStatistic(parameters);
+		statistic = new LRStatistic(parameters);
 		//ho_he = statistic;
-		//statistics.put(statistic.getName(), statistic);
+		statistics.put(statistic.getName(), statistic);
 	
 		statistic = new LR2Statistic(parameters);
 		//he_he = statistic;

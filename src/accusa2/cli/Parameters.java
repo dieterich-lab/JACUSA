@@ -85,7 +85,7 @@ public class Parameters {
 		windowSize 		= 200;
 
 		minBASQ 		= Byte.parseByte(new String("20"));
-		minMAPQ 		= 20; // TODO make this higher
+		minMAPQ 		= 20;
 		minCoverage 	= 3;
 		maxDepth 		= -1;
 		maxThreads 		= 1;
