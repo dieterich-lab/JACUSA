@@ -4,7 +4,7 @@ import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
-import accusa2.process.pileup2Matrix.AbstractPileup2Matrix;
+import accusa2.process.pileup2Matrix.AbstractPileup2Prob;
 import accusa2.process.pileup2Matrix.BASQ;
 
 
@@ -18,7 +18,7 @@ import accusa2.process.pileup2Matrix.BASQ;
 public class DefaultStatistic implements StatisticCalculator {
 
 	protected final Parameters parameters;
-	protected final AbstractPileup2Matrix pileup2Matrix;
+	protected final AbstractPileup2Prob pileup2Matrix;
 	
 	public DefaultStatistic(Parameters parameters) {
 		this.parameters 	= parameters;

@@ -5,7 +5,7 @@ import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
-import accusa2.process.pileup2Matrix.AbstractPileup2Matrix;
+import accusa2.process.pileup2Matrix.AbstractPileup2Prob;
 import accusa2.process.pileup2Matrix.BASQ;
 
 /**
@@ -22,7 +22,7 @@ public final class LR2Statistic implements StatisticCalculator {
 
 	protected final Parameters parameters; 
 	
-	protected final AbstractPileup2Matrix pileup2Matrix;
+	protected final AbstractPileup2Prob pileup2Matrix;
 	protected final DefaultStatistic defaultStatistic;
 
 	// TODO test what is the best??? 2*k - 2 : k = dimension of modeled prob. vector
@@ -46,7 +46,7 @@ public final class LR2Statistic implements StatisticCalculator {
 
 		final int coverage1 = defaultStatistic.getCoverage(parallelPileup.getPileups1());
 		final int coverage2 = defaultStatistic.getCoverage(parallelPileup.getPileups2());
-		
+
 		final double[][] probs1 = defaultStatistic.getPileup2Probs(bases, parallelPileup.getPileups1());
 		final double[] alpha1 = defaultStatistic.estimateAlpha(bases, parallelPileup.getPooledPileup1(), coverage1);
 		final DirichletDist dirichlet1 = new DirichletDist(alpha1);
