@@ -4,9 +4,7 @@ import accusa2.pileup.ParallelPileup;
 
 public interface StatisticCalculator {
 
-	/* FIXME
-	 * must be always >= 0
-	 */
+	// Make sure this is always >= 0
 	public double getStatistic(ParallelPileup parallelPileup);
 	public boolean filter(double value);
 

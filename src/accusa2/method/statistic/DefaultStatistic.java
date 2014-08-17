@@ -4,9 +4,7 @@ import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
-import accusa2.process.pileup2Matrix.AbstractPileup2Prob;
-import accusa2.process.pileup2Matrix.BASQ;
-
+import accusa2.process.phred2prob.Phred2Prob;
 
 /**
  * 
@@ -18,11 +16,11 @@ import accusa2.process.pileup2Matrix.BASQ;
 public class DefaultStatistic implements StatisticCalculator {
 
 	protected final Parameters parameters;
-	protected final AbstractPileup2Prob pileup2Matrix;
+	protected final Phred2Prob phred2Prob;
 	
 	public DefaultStatistic(Parameters parameters) {
 		this.parameters 	= parameters;
-		pileup2Matrix 		= new BASQ();
+		phred2Prob 			= Phred2Prob.getInstance();
 	}
 
 	@Override
@@ -155,11 +153,11 @@ public class DefaultStatistic implements StatisticCalculator {
 	protected double[] estimateAlpha(final int bases[], final Pileup pileup, int coverage) {
 		final double[] alphas = new double[bases.length];
 
-		double[] alpha = pileup2Matrix.calculate(bases, pileup);
+		double[] probVector = phred2Prob.convert2ProbVector(bases, pileup);
 		// INFO: coverage and pileup.getCoverage() may be different.
 		// e.g.: when replicates are available...
 		for(int baseI = 0; baseI < bases.length; ++baseI) {
-			alphas[baseI] = (double)coverage * alpha[baseI] / (double)pileup.getCoverage();
+			alphas[baseI] = (double)coverage * probVector[baseI] / (double)pileup.getCoverage();
 		}
 
 		return alphas;
@@ -183,11 +181,11 @@ public class DefaultStatistic implements StatisticCalculator {
 
 		for(int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			// sum the probabilities giving alpha 
-			double[] alpha = pileup2Matrix.calculate(bases, pileups[pileupI]);
+			double[] probVector = phred2Prob.convert2ProbVector(bases, pileups[pileupI]);
 
 			//  divide alpha by coverage to get average probability
 			for(int baseI = 0; baseI < bases.length; ++baseI) {
-				probs[pileupI][baseI] = alpha[baseI] / (double)pileups[pileupI].getCoverage();
+				probs[pileupI][baseI] = probVector[baseI] / (double)pileups[pileupI].getCoverage();
 			}
 		}
 

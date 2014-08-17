@@ -7,8 +7,7 @@ import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
-import accusa2.process.pileup2Matrix.AbstractPileup2Prob;
-import accusa2.process.pileup2Matrix.BASQ;
+import accusa2.process.phred2prob.Phred2Prob;
 
 /**
  * 
@@ -19,14 +18,14 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 
 	protected final Parameters parameters; 
 	
-	protected final AbstractPileup2Prob pileup2Prob;
+	protected final Phred2Prob phred2Prob;
 
 	protected ChiSquareDist dist = new ChiSquareDist(6);
 	
 	public MethodOfMomentsStatistic(Parameters parameters) {
 		this.parameters 	= parameters;
 		
-		pileup2Prob 		= new BASQ();
+		phred2Prob 			= Phred2Prob.getInstance(parameters.getBases().size());
 	}
 
 	@Override
@@ -39,7 +38,7 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 
 		for (int pileupI = 0; pileupI < pileups.length; pileupI++) {
 			// sum the probabilities giving alpha 
-			final double[] prob = pileup2Prob.calculate(bases, pileups[pileupI]);
+			final double[] prob = phred2Prob.convert2ProbVector(bases, pileups[pileupI]);
 			for (int i = 0; i < bases.length; ++i) {
 				probs[pileupI][i] = prob[i];
 			}
@@ -103,7 +102,7 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 		double density = 0.0;
 
 		for (final Pileup pileup : pileups) {
-			double[] prob = pileup2Prob.calculate(bases, pileup);
+			double[] prob = phred2Prob.convert2ProbVector(bases, pileup);
 			density += Math.log(Math.max(Double.MIN_VALUE, dirichlet.density(prob)));
 		}
 

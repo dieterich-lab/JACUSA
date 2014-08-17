@@ -5,8 +5,7 @@ import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
-import accusa2.process.pileup2Matrix.AbstractPileup2Prob;
-import accusa2.process.pileup2Matrix.BASQ;
+import accusa2.process.phred2prob.Phred2Prob;
 
 /**
  * 
@@ -22,7 +21,7 @@ public final class LR2Statistic implements StatisticCalculator {
 
 	protected final Parameters parameters; 
 	
-	protected final AbstractPileup2Prob pileup2Matrix;
+	protected final Phred2Prob phred2Prob;
 	protected final DefaultStatistic defaultStatistic;
 
 	// TODO test what is the best??? 2*k - 2 : k = dimension of modeled prob. vector
@@ -31,7 +30,7 @@ public final class LR2Statistic implements StatisticCalculator {
 	public LR2Statistic(Parameters parameters) {
 		this.parameters 	= parameters;
 		
-		pileup2Matrix 		= new BASQ();
+		phred2Prob 			= Phred2Prob.getInstance(parameters.getBases().size());
 		defaultStatistic 	= new DefaultStatistic(parameters);
 	}
 
@@ -50,12 +49,12 @@ public final class LR2Statistic implements StatisticCalculator {
 		final double[][] probs1 = defaultStatistic.getPileup2Probs(bases, parallelPileup.getPileups1());
 		final double[] alpha1 = defaultStatistic.estimateAlpha(bases, parallelPileup.getPooledPileup1(), coverage1);
 		final DirichletDist dirichlet1 = new DirichletDist(alpha1);
-		final double density11 = getDensity(dirichlet1, probs1);
+		final double density11 = StatisticUtils.getDensity(dirichlet1, probs1);
 
 		final double[][] probs2 = defaultStatistic.getPileup2Probs(bases, parallelPileup.getPileups2());
 		final double[] alpha2 = defaultStatistic.estimateAlpha(bases, parallelPileup.getPooledPileup2(), coverage2);
 		final DirichletDist dirichlet2 = new DirichletDist(alpha2);
-		final double density22 = getDensity(dirichlet2, probs2);
+		final double density22 = StatisticUtils.getDensity(dirichlet2, probs2);
 
 		final int coverageP = parallelPileup.getPooledPileup().getCoverage();
 		final Pileup[] pileupsP = new Pileup[parallelPileup.getN1() + parallelPileup.getN2()];
@@ -65,7 +64,7 @@ public final class LR2Statistic implements StatisticCalculator {
 		final double[][] probsP = defaultStatistic.getPileup2Probs(bases, pileupsP);
 		final double[] alphaP = defaultStatistic.estimateAlpha(bases, parallelPileup.getPooledPileup(), coverageP);
 		final DirichletDist dirichletP = new DirichletDist(alphaP);
-		final double densityP = getDensity(dirichletP, probsP);
+		final double densityP = StatisticUtils.getDensity(dirichletP, probsP);
 
 		final double z = -2 * (densityP) + 2 * (density11 + density22);
 
@@ -74,20 +73,6 @@ public final class LR2Statistic implements StatisticCalculator {
 			return 1.0;
 		}
 		return 1 - dist.cdf(z);
-	}
-
-	/*
-	 * TODO
-	 * redundant code: see LRStatistic, DefaultStatistic(log10)
-	 */
-	protected double getDensity(final DirichletDist dirichlet, final double[][] probs) {
-		double density = 0.0;
-
-		for(int i = 0; i < probs.length; ++i) {
-			density += Math.log(Math.max(Double.MIN_VALUE, dirichlet.density(probs[i])));
-		}
-
-		return density;
 	}
 
 	@Override

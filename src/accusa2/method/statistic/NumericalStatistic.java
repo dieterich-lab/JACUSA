@@ -7,8 +7,7 @@ import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
-import accusa2.process.pileup2Matrix.AbstractPileup2Prob;
-import accusa2.process.pileup2Matrix.BASQ;
+import accusa2.process.phred2prob.Phred2Prob;
 import accusa2.util.MathUtil;
 
 /**
@@ -20,14 +19,14 @@ public final class NumericalStatistic implements StatisticCalculator {
 
 	protected final Parameters parameters; 
 	
-	protected final AbstractPileup2Prob pileup2Prob;
+	protected final Phred2Prob phred2Prob;
 
 	protected ChiSquareDist dist = new ChiSquareDist(6);
 	
 	public NumericalStatistic(Parameters parameters) {
 		this.parameters 	= parameters;
 		
-		pileup2Prob 		= new BASQ();
+		phred2Prob 			= Phred2Prob.getInstance(parameters.getBases().size());
 	}
 
 	@Override
@@ -41,11 +40,11 @@ public final class NumericalStatistic implements StatisticCalculator {
 
 		for(int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			// sum the probabilities giving alpha 
-			double[] alpha = pileup2Prob.calculate(bases, pileups[pileupI]);
+			double[] probVec = phred2Prob.convert2ProbVector(bases, pileups[pileupI]);
 
 			//  divide alpha by coverage to get average probability
 			for(int baseI = 0; baseI < bases.length; ++baseI) {
-				probs[pileupI][baseI] = alpha[baseI] / (double)pileups[pileupI].getCoverage();
+				probs[pileupI][baseI] = probVec[baseI] / (double)pileups[pileupI].getCoverage();
 			}
 		}
 
@@ -103,7 +102,7 @@ public final class NumericalStatistic implements StatisticCalculator {
 		double density = 0.0;
 
 		for (final Pileup pileup : pileups) {
-			double[] prob = pileup2Prob.calculate(bases, pileup);
+			double[] prob = phred2Prob.convert2ProbVector(bases, pileup);
 			density += Math.log(Math.max(Double.MIN_VALUE, dirichlet.density(prob)));
 		}
 

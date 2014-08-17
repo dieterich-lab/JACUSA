@@ -58,9 +58,19 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		}
 		*/
 
-		// TODO
-		//add means
-		//add Variances
+		//add means and vars
+		sb.append(getSEP());
+		sb.append("mean1");
+		sb.append(getSEP());
+		sb.append("var1");
+		sb.append(getSEP());
+		sb.append("mean2");
+		sb.append(getSEP());
+		sb.append("var2");
+		sb.append(getSEP());
+		sb.append("mean12");
+		sb.append(getSEP());
+		sb.append("var12");
 		
 		// stat
 		sb.append(getSEP());
