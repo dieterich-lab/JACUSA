@@ -15,7 +15,7 @@ import accusa2.util.MathUtil;
  * @author michael
  */
 
-public final class MethodOfMomentsStatistic implements StatisticCalculator {
+public final class WeightedMethodOfMomentsStatistic implements StatisticCalculator {
 
 	protected final Parameters parameters; 
 	
@@ -23,7 +23,7 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 
 	protected ChiSquareDist dist = new ChiSquareDist(6);
 	
-	public MethodOfMomentsStatistic(Parameters parameters) {
+	public WeightedMethodOfMomentsStatistic(Parameters parameters) {
 		this.parameters 	= parameters;
 		
 		phred2Prob 			= Phred2Prob.getInstance(parameters.getBases().size());
@@ -31,13 +31,16 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new MethodOfMomentsStatistic(parameters);
+		return new WeightedMethodOfMomentsStatistic(parameters);
 	}
 
 	protected double getDensity(final int[] bases, final Pileup[] pileups) {
 		double density = 0.0;
 		
 		final int pileupN = pileups.length;
+		// weights by coverage
+		final double[] weights = new double[pileupN] ;
+		int totalCoverage = 0;
 		// prob. vector per pileup
 		final double[][] pileupProbVectors = new double[pileupN][bases.length];
 		// alpha
@@ -45,19 +48,27 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 		Arrays.fill(alpha, 0.0);
 		
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
-			final Pileup pileup = pileups[pileupI];
+			// calculate weights
+			final Pileup pileup = pileups[pileupI]; // has to be
+			int coverage = pileup.getCoverage();
+			weights[pileupI] = (double)coverage;
+			totalCoverage += coverage;
 			
 			// calculate prob. vectors
 			double[] probVector = phred2Prob.convert2ProbVector(bases, pileup);
 			pileupProbVectors[pileupI] = probVector;
 		}
-		double[] mean = MathUtil.mean(pileupProbVectors);
-		double[] variance = MathUtil.variance(mean, pileupProbVectors);
+		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
+			weights[pileupI] /= (double)totalCoverage;
+		}
+		
+		double[] weightedMean = MathUtil.weightedMean(weights, pileupProbVectors);
+		double[] weightedVariance = MathUtil.weightedVariance(weights, weightedMean, pileupProbVectors);
 
 		// calculate alphas need to be divided by total coverage
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI = 0; baseI < bases.length; ++baseI) {
-				alpha[baseI] = Math.pow(mean[baseI], 2.0) * (1 - mean[baseI]) / variance[baseI];
+				alpha[baseI] = Math.pow(weightedMean[baseI], 2.0) * (1 - weightedMean[baseI]) / weightedVariance[baseI];
 			}
 		}
 		
@@ -101,12 +112,12 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 
 	@Override
 	public String getDescription() {
-		return "Method of Moments estimation";
+		return "Weighted Method of Moments estimation";
 	}
 
 	@Override
 	public String getName() {
-		return "mom";
+		return "wmom";
 	}
 
 }

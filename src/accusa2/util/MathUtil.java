@@ -1,5 +1,7 @@
 package accusa2.util;
 
+import java.util.Arrays;
+
 public abstract class MathUtil {
 
 	/*
@@ -48,6 +50,85 @@ public abstract class MathUtil {
 		return result;
 	}
 
+	public static double[] weightedMean(double[] w, double[][] o) {
+		int rows = w.length;
+		int cols = o[0].length;
+
+		double[] result = new double[cols];
+
+		for(double[] row : o) {
+
+			assert(row.length == cols);
+
+			for(int i = 0; i < cols; ++i) {
+				result[i] += w[i] * row[i];
+			}
+		}
+
+		for(int i = 0; i < cols; ++i) {
+			result[i] /= (double)rows;
+		}
+
+		return result;
+	}
+
+	public static double[] variance(double m[], double[][] o) {
+		int rows = o.length;
+		int cols = o[0].length;
+		
+		double[] var = new double[m.length];
+		Arrays.fill(var, 0.0);
+		if (rows == 1 ) {
+			return var;
+		}
+	
+		for(double[] row : o) {
+
+			assert(row.length == cols);
+
+			for(int i = 0; i < cols; ++i) {
+				var[i] += Math.pow(m[i] - row[i], 2.0);
+			}
+		}
+		for (int i = 0; i < cols; i++) {
+			var[i] /= (rows - 1);
+		}
+
+		return var;
+	}
+
+	public static double[] weightedVariance(double[] w, double m[], double[][] o) {
+		int rows = o.length;
+		int cols = o[0].length;
+		
+		double V1 = 0.0;
+		double V2 = 0.0;
+		
+				
+		double[] var = new double[m.length];
+		Arrays.fill(var, 0.0);
+		if (rows == 1 ) {
+			return var;
+		}
+	
+		for (int j = 0; j < rows; ++j) {
+			double[] row = o[j];
+			assert(row.length == cols);
+
+			for (int i = 0; i < cols; ++i) {
+				var[i] += w[j] * Math.pow(m[i] - row[i], 2.0);
+			}
+			V1 += w[j];
+			V2 += w[j] * w[j];
+		}
+		double V = V1 - (V2 / V1);
+		for (int i = 0; i < cols; i++) {
+			var[i] /= V;
+		}
+
+		return var;
+	}
+	
 	/**
 	 * 
 	 * @param basqs

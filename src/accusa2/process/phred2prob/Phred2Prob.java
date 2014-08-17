@@ -1,7 +1,5 @@
 package accusa2.process.phred2prob;
 
-import java.util.List;
-
 import accusa2.pileup.Pileup;
 
 public final class Phred2Prob {
@@ -14,7 +12,7 @@ public final class Phred2Prob {
 	public static final int MAX_Q = 61; // some machines give phred score of 60 -> Prob of error: 10^-6 ?!
 	public static final int MAX_Q2 = 41; // Illumina style
 	
-	private static List<Phred2Prob> singles;
+	private static Phred2Prob[] singles = new Phred2Prob[Pileup.BASES2.length + 1];
 	
 	private Phred2Prob(int n) {
 		// pre-calculate probabilities
@@ -23,7 +21,7 @@ public final class Phred2Prob {
 		phred2baseP = new double[MAX_Q2];
 		phred2baseErrorP = new double[MAX_Q2];
 
-		for(int i = min; i <= MAX_Q2; i++) {
+		for(int i = min; i < MAX_Q2; i++) {
 			phred2errerP[i] = Math.pow(10.0, -(double)i / 10.0);
 			phred2baseP[i] = 1.0 - phred2errerP[i];
 			phred2baseErrorP[i] = phred2errerP[i] / (n - 1); // ignore the called base
@@ -84,11 +82,11 @@ public final class Phred2Prob {
 	}
 	
 	public static Phred2Prob getInstance(int n) {
-		if (singles.get(n) == null) {
-			singles.add(n, new Phred2Prob(n));
+		if (singles[n] == null) {
+			singles[n] = new Phred2Prob(n);
 		}
 
-		return singles.get(n);
+		return singles[n];
 	}
 	
 }

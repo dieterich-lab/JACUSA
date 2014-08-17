@@ -1,7 +1,5 @@
 package accusa2.cli;
 
-
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +20,6 @@ import accusa2.pileup.builder.PileupBuilderFactory;
 import accusa2.pileup.builder.UndirectedPileupBuilderFactory;
 
 public class Parameters {
-
 	
 	// cache related
 	private int windowSize;

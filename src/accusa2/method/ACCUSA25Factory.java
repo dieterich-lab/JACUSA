@@ -42,7 +42,9 @@ import accusa2.io.format.PileupResultFormat;
 import accusa2.method.statistic.LR2Statistic;
 import accusa2.method.statistic.LRStatistic;
 import accusa2.method.statistic.MethodOfMomentsStatistic;
+import accusa2.method.statistic.MixtureDirichletStatistic;
 import accusa2.method.statistic.NumericalStatistic;
+import accusa2.method.statistic.WeightedMethodOfMomentsStatistic;
 //import accusa2.method.statistic.MinimalCoverageStatistic;
 import accusa2.method.statistic.StatisticCalculator;
 import accusa2.process.parallelpileup.dispatcher.ACCUSA25_ParallelPileupWorkerDispatcher;
@@ -127,6 +129,12 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 		statistics.put(statistic.getName(), statistic);
 
 		statistic = new MethodOfMomentsStatistic(parameters);
+		statistics.put(statistic.getName(), statistic);
+		
+		statistic = new WeightedMethodOfMomentsStatistic(parameters);
+		statistics.put(statistic.getName(), statistic);
+		
+		statistic = new MixtureDirichletStatistic(parameters);
 		statistics.put(statistic.getName(), statistic);
 		
 		statistic = new NumericalStatistic(parameters);

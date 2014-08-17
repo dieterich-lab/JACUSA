@@ -1,9 +1,6 @@
 package accusa2.pileup;
 
-import java.util.Arrays;
-
 import accusa2.pileup.Pileup.STRAND;
-import accusa2.process.phred2prob.Phred2Prob;
 
 public final class ParallelPileup {
 
@@ -16,15 +13,6 @@ public final class ParallelPileup {
 	private Pileup[] pileups2;
 
 	private Pileup[] pileupsP;
-
-	// stats
-	private double[] mean;;
-	private double[] mean1;
-	private double[] mean2;
-	
-	private double[] var;
-	private double[] var1;
-	private double[] var2;
 	
 	public ParallelPileup(final ParallelPileup parallelPileup) {
 		this.pileup = new Pileup(parallelPileup.getPooledPileup());
@@ -39,14 +27,6 @@ public final class ParallelPileup {
 
 		System.arraycopy(pileups1, 0, pileupsP, 0, pileups1.length);
 		System.arraycopy(pileups2,0, pileupsP, pileups1.length, pileups2.length);
-		
-		this.mean = parallelPileup.mean;
-		this.mean1 = parallelPileup.mean1;
-		this.mean2 = parallelPileup.mean2;
-		
-		this.var = parallelPileup.var;
-		this.var1 = parallelPileup.var1;
-		this.var2 = parallelPileup.var2;
 	}
 
 	public ParallelPileup(final int n1, final int n2) {
@@ -69,14 +49,6 @@ public final class ParallelPileup {
 		pileup2 = null;
 		pileup1 = null;
 		pileup = null;
-		
-		mean2 = null;
-		mean1 = null;
-		mean = null;
-	
-		var2 = null;
-		var1 = null;
-		var = null;
 	}
 
 	public Pileup[] getPileups1() {
@@ -102,12 +74,6 @@ public final class ParallelPileup {
 		
 		pileup1 = null;
 		pileup = null;
-		
-		mean1 = null;
-		mean = null;
-		
-		var1 = null;
-		var = null;
 	}
 
 	public void setPileups2(final Pileup[] pileups2) {
@@ -121,26 +87,12 @@ public final class ParallelPileup {
 		
 		pileup2 = null;
 		pileup = null;
-		
-		mean2 = null;
-		mean = null;
-		
-		var2 = null;
-		var = null;
 	}
 
 	public void reset() {
 		pileup1 = null;
 		pileup2 = null;
 		pileup = null;
-		
-		mean = null;
-		mean2 = null;
-		mean1 = null;
-		
-		var = null;
-		var1 = null;
-		var2 = null;
 	}
 
 	public int getN1() {
@@ -181,69 +133,9 @@ public final class ParallelPileup {
 			for(int i = 0; i < pileups1.length; ++i) {
 				pileup1.addPileup(pileups1[i]);
 			}
-			mean1 = getMeanHelper(pileups1);
-			var1 = getVarianceHelper(mean1, pileups1);
 		}
 		return pileup1;
 	}
-
-	/**
-	 * 
-	 * @param pileups
-	 * @return
-	 */
-	// TODO check how to estimate mean
-	private double[] getMeanHelper(Pileup[] pileups) {
-		double[] mean = new double[Pileup.BASES2.length];
-		Arrays.fill(mean, 0.0);
-		for (Pileup pileup : pileups) {
-			double[] prob = Phred2Prob.getInstance().convert2ProbVector(null, pileup);
-			for (int baseI = 0; baseI < mean.length; baseI++) {
-				mean[baseI] += prob[baseI];
-			}
-		}
-		int n = pileups.length;
-		if (n > 1) {
-			for (int baseI = 0; baseI < mean.length; baseI++) {
-				mean[baseI] /= n;
-			}
-		}
-		return mean;
-	}
-
-	private double[] getVarianceHelper(double mean[], Pileup[] pileups) {
-		int n = pileups.length;
-		if (n == 1 ) {
-			return var;
-		}
-	
-		for (Pileup pileup : pileups) {
-			double[] prob = Phred2Prob.getInstance().convert2ProbVector(null, pileup);
-			for (int baseI = 0; baseI < mean.length; baseI++) {
-				var[baseI] += Math.pow(mean[baseI] - prob[baseI], 2.0);
-			}
-		}
-
-		for (int baseI = 0; baseI < mean.length; baseI++) {
-			var[baseI] /= (n - 1);
-		}
-
-		return var;
-	}
-	
-	/* Is this needed?
-	private double[] getVarianceHelper(Pileup[] pileups) {
-		int n = pileups.length;
-		if (n == 1 ) {
-			double[] var = new double[Pileup.BASES2.length];
-			Arrays.fill(var, 0.0);
-			return var;
-		}
-		
-		double[] mean = getMeanHelper(pileups);
-		return getVarianceHelper(mean, pileups);
-	}
-	*/
 	
 	public Pileup getPooledPileup2() {
 		if(pileup2 == null) {
@@ -251,8 +143,6 @@ public final class ParallelPileup {
 			for(int i = 0; i < pileups2.length; ++i) {
 				pileup2.addPileup(pileups2[i]);
 			}
-			mean2 = getMeanHelper(pileups2);
-			var2 = getVarianceHelper(mean2, pileups2);
 		}
 		return pileup2;
 	}
@@ -273,9 +163,6 @@ public final class ParallelPileup {
 			}
 			System.arraycopy(pileups1, 0, pileupsP, 0, pileups1.length);
 			System.arraycopy(pileups2, 0, pileupsP, pileups1.length, pileups2.length);
-
-			mean = getMeanHelper(pileupsP);
-			var = getVarianceHelper(mean, pileupsP);
 		}
 
 		return pileup;

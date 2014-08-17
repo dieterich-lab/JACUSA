@@ -13,5 +13,5 @@ public class StatisticUtils {
 
 		return density;
 	}
-	
+
 }

@@ -8,14 +8,13 @@ import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
-import accusa2.util.MathUtil;
 
 /**
  * 
  * @author michael
  */
 
-public final class MethodOfMomentsStatistic implements StatisticCalculator {
+public final class MixtureDirichletStatistic implements StatisticCalculator {
 
 	protected final Parameters parameters; 
 	
@@ -23,7 +22,7 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 
 	protected ChiSquareDist dist = new ChiSquareDist(6);
 	
-	public MethodOfMomentsStatistic(Parameters parameters) {
+	public MixtureDirichletStatistic(Parameters parameters) {
 		this.parameters 	= parameters;
 		
 		phred2Prob 			= Phred2Prob.getInstance(parameters.getBases().size());
@@ -31,33 +30,43 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new MethodOfMomentsStatistic(parameters);
+		return new MixtureDirichletStatistic(parameters);
 	}
 
 	protected double getDensity(final int[] bases, final Pileup[] pileups) {
 		double density = 0.0;
 		
 		final int pileupN = pileups.length;
+		// weights by coverage
+		final double[] weights = new double[pileupN] ;
+		int totalCoverage = 0;
 		// prob. vector per pileup
 		final double[][] pileupProbVectors = new double[pileupN][bases.length];
 		// alpha
+		final double alphas[][] = new double[pileupN][bases.length];
 		final double alpha[] = new double[bases.length];
 		Arrays.fill(alpha, 0.0);
 		
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
-			final Pileup pileup = pileups[pileupI];
+			// calculate weights
+			final Pileup pileup = pileups[pileupI]; // has to be
+			int coverage = pileup.getCoverage();
+			weights[pileupI] = (double)coverage;
+			totalCoverage += coverage;
 			
 			// calculate prob. vectors
 			double[] probVector = phred2Prob.convert2ProbVector(bases, pileup);
 			pileupProbVectors[pileupI] = probVector;
+			
+			for (int baseI = 0; baseI < bases.length; ++baseI) {
+				alphas[pileupI][baseI] = probVector[baseI] * coverage;
+			}
 		}
-		double[] mean = MathUtil.mean(pileupProbVectors);
-		double[] variance = MathUtil.variance(mean, pileupProbVectors);
-
+		
 		// calculate alphas need to be divided by total coverage
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI = 0; baseI < bases.length; ++baseI) {
-				alpha[baseI] = Math.pow(mean[baseI], 2.0) * (1 - mean[baseI]) / variance[baseI];
+				alpha[baseI] += alphas[pileupI][baseI] * weights[pileupI] / totalCoverage;
 			}
 		}
 		
@@ -101,12 +110,12 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 
 	@Override
 	public String getDescription() {
-		return "Method of Moments estimation";
+		return "Mixture of Dirichlets";
 	}
 
 	@Override
 	public String getName() {
-		return "mom";
+		return "mix";
 	}
 
 }
