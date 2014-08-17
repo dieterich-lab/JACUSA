@@ -244,6 +244,14 @@ public class Parameters {
 		return maxThreads;
 	}
 
+	public int getReplicates1() {
+		return pathnames1.length;
+	}
+	
+	public int getReplicates2() {
+		return pathnames2.length;
+	}
+	
 	/**
 	 * 
 	 * @param maxThreads

@@ -2,6 +2,7 @@ package accusa2.process.pileup2Matrix;
 
 import accusa2.pileup.Pileup;
 
+@Deprecated
 public abstract class AbstractPileup2Prob {
 
 	protected String name;

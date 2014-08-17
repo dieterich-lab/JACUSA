@@ -36,11 +36,6 @@ public class TmpResultFormat extends AbstractResultFormat {
 	}
 
 	@Override
-	public ParallelPileup extractParallelPileup(String line) {
-		return resultFormat.extractParallelPileup(line);
-	}
-
-	@Override
 	public double extractValue(String line) {
 		return resultFormat.extractValue(line);
 	}

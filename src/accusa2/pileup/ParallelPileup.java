@@ -12,6 +12,15 @@ public final class ParallelPileup {
 	private Pileup[] pileups1;
 	private Pileup[] pileups2;
 
+	// stats
+	private double mean = Double.NaN;
+	private double mean1 = Double.NaN;
+	private double mean2 = Double.NaN;
+	
+	private double var = Double.NaN;
+	private double var1 = Double.NaN;
+	private double var2 = Double.NaN;
+	
 	public ParallelPileup(final ParallelPileup parallelPileup) {
 		this.pileup = new Pileup(parallelPileup.getPooledPileup());
 
@@ -22,6 +31,14 @@ public final class ParallelPileup {
 		System.arraycopy(parallelPileup.getPileups1(), 0, pileups1, 0, parallelPileup.getPileups1().length);
 		pileups2 = new Pileup[parallelPileup.getPileups2().length];
 		System.arraycopy(parallelPileup.getPileups2(), 0, pileups2, 0, parallelPileup.getPileups2().length);
+	
+		this.mean = parallelPileup.mean;
+		this.mean1 = parallelPileup.mean1;
+		this.mean2 = parallelPileup.mean2;
+		
+		this.var = parallelPileup.var;
+		this.var1 = parallelPileup.var1;
+		this.var2 = parallelPileup.var2;
 	}
 
 	public ParallelPileup(final int n1, final int n2) {
@@ -46,18 +63,37 @@ public final class ParallelPileup {
 		this.pileups1 = pileups1;
 		pileup1 = null;
 		pileup = null;
+		mean1 = Double.NaN;
+		mean = Double.NaN;
+		
+		var1 = Double.NaN;
+		var = Double.NaN;
 	}
 
 	public void setPileups2(final Pileup[] pileups2) {
 		this.pileups2 = pileups2;
 		pileup2 = null;
 		pileup = null;
+		
+		mean2 = Double.NaN;
+		mean = Double.NaN;
+		
+		var2 = Double.NaN;
+		var = Double.NaN;
 	}
 
 	public void reset() {
 		pileup1 = null;
 		pileup2 = null;
 		pileup = null;
+		
+		mean = Double.NaN;
+		mean2 = Double.NaN;
+		mean1 = Double.NaN;
+		
+		var = Double.NaN;
+		var1 = Double.NaN;
+		var2 = Double.NaN;
 	}
 
 	public int getN1() {
@@ -94,8 +130,20 @@ public final class ParallelPileup {
 			for(int i = 0; i < pileups1.length; ++i) {
 				pileup1.addPileup(pileups1[i]);
 			}
+			
 		}
 		return pileup1;
+	}
+
+	/**
+	 * 
+	 * @param pileups
+	 * @return
+	 */
+	private double[] getMeanHelper(Pileup pileups) {
+		double[] mean = new double[Pileup.BASES2.length];
+		
+		return mean;
 	}
 
 	public Pileup getPooledPileup2() {

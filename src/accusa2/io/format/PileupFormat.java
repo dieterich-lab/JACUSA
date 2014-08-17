@@ -82,11 +82,6 @@ public class PileupFormat extends AbstractResultFormat {
 			}
 		}
 	}
-
-	@Override
-	public ParallelPileup extractParallelPileup(String line) {
-		return null;
-	}
 	
 	@Override
 	public char getCOMMENT() {

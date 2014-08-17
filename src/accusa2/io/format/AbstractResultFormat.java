@@ -26,8 +26,7 @@ public abstract class AbstractResultFormat {
 	public String getHeader(ParallelPileup parallelPileup) {
 		return new String();
 	}
-	
-	public abstract ParallelPileup extractParallelPileup(String line);
+
 	public abstract double extractValue(String line);
 
 	public abstract char getCOMMENT();

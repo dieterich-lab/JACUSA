@@ -3,6 +3,7 @@ package accusa2.process.pileup2Matrix;
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
 
+@Deprecated
 public class BASQ extends AbstractPileup2Prob {
 
 	protected Phred2Prob phred2Prob;
