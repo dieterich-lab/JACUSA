@@ -98,9 +98,43 @@ public final class NumericalStatistic implements StatisticCalculator {
 		return alpha;
 	}
 	
-	protected double getDensity(final int[] bases, final DirichletDist dirichlet, final Pileup[] pileups) {
+	protected double getDensity(final int[] bases, final Pileup[] pileups) {
 		double density = 0.0;
 
+		final int pileupN = pileups.length;
+		// weights by coverage
+		final double[] weights = new double[pileupN] ;
+		int totalCoverage = 0;
+		// prob. vector per pileup
+		final double[][] pileupProbVectors = new double[pileupN][bases.length];
+		
+		
+		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
+			// calculate weights
+			final Pileup pileup = pileups[pileupI]; // has to be
+			int coverage = pileup.getCoverage();
+			weights[pileupI] = (double)coverage;
+			totalCoverage += coverage;
+						
+			// calculate prob. vectors
+			double[] probVector = phred2Prob.convert2ProbVector(bases, pileup);
+			pileupProbVectors[pileupI] = probVector;
+		}
+		
+		// init alpha
+		final double alpha[] = new double[bases.length];
+		Arrays.fill(alpha, 0.0);
+		final double mean[] = MathUtil.mean(pileupProbVectors);
+		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
+			for (int baseI = 0; baseI < bases.length; ++baseI) {
+				alpha[baseI] += mean[baseI] * weights[pileupI] / totalCoverage;
+			}
+		}
+		
+		// do numerical search
+		// TODO
+		
+		DirichletDist dirichlet = new DirichletDist(alpha);
 		for (final Pileup pileup : pileups) {
 			double[] prob = phred2Prob.convert2ProbVector(bases, pileup);
 			density += Math.log(Math.max(Double.MIN_VALUE, dirichlet.density(prob)));
@@ -114,23 +148,15 @@ public final class NumericalStatistic implements StatisticCalculator {
 		//final int bases[] = parallelPileup.getPooledPileup().getAlleles();
 
 		// first sample(s)
-		double[] alpha1 = estimateAlpha(bases, parallelPileup.getPileups1());
-		DirichletDist dirichlet1 = new DirichletDist(alpha1);
-		double density1 = getDensity(bases, dirichlet1, parallelPileup.getPileups1());
+		double density1 = getDensity(bases, parallelPileup.getPileups1());
 		
 		// second sample(s)
-		double[] alpha2 = estimateAlpha(bases, parallelPileup.getPileups2());
-		DirichletDist dirichlet2 = new DirichletDist(alpha2);
-		double density2 = getDensity(bases, dirichlet2, parallelPileup.getPileups2());
+		double density2 = getDensity(bases, parallelPileup.getPileups2());
 		
 		// pooled sample(s)
-		final Pileup[] pileupsP = new Pileup[parallelPileup.getN1() + parallelPileup.getN2()];
-		System.arraycopy(parallelPileup.getPileups1(), 0, pileupsP, 0, parallelPileup.getPileups1().length);
-		System.arraycopy(parallelPileup.getPileups2(), 0, pileupsP, parallelPileup.getPileups1().length, parallelPileup.getPileups2().length);
-		double[] alphaP = estimateAlpha(bases, pileupsP);
-		DirichletDist dirichletP = new DirichletDist(alphaP);
-		double densityP = getDensity(bases, dirichletP, pileupsP);
-		
+		final Pileup[] pileupsP = parallelPileup.getPileupP();
+		double densityP = getDensity(bases, pileupsP);
+
 		final double z = -2 * (densityP) + 2 * (density1 + density2);
 
 		// only positive values are allowed
