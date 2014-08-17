@@ -44,7 +44,7 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 
 		// write Header
 		try {
-			output.write(resultFormat.getHeader());
+			output.write(resultFormat.getHeader(null)); // TODO
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;

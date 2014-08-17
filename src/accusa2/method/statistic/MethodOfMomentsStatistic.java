@@ -1,5 +1,7 @@
 package accusa2.method.statistic;
 
+import java.util.Arrays;
+
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 import accusa2.cli.Parameters;
@@ -7,7 +9,6 @@ import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.pileup2Matrix.AbstractPileup2Prob;
 import accusa2.process.pileup2Matrix.BASQ;
-import accusa2.util.MathUtil;
 
 /**
  * 
@@ -33,7 +34,7 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 		return new MethodOfMomentsStatistic(parameters);
 	}
 
-	protected double[][] getPileup2Probs(final int[] bases, final Pileup[] pileups) {
+	protected double[][] getPileupMeans(final int[] bases, final Pileup[] pileups) {
 		final double[][] probs = new double[pileups.length][bases.length];
 
 		for (int pileupI = 0; pileupI < pileups.length; pileupI++) {
@@ -61,30 +62,39 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 	protected double[] getWeights(final int[] bases, final Pileup[] pileups) {
 		final double[] weights = new double[bases.length];
 		final int n = pileups.length;
-
+		int totalCoverage = 0;
+		for (int i = 0; i < n; ++i) {
+			totalCoverage += pileups[i].getCoverage();
+		}
+		
 		for (int i = 0; i < n; ++i) {
 			final Pileup pileup = pileups[i];
-			weights[i] = (double)pileup.getCoverage() / (double)n;
+			weights[i] = (double)pileup.getCoverage() / (double)totalCoverage;
 		}
 		
 		return weights;
 	}
-	
+
+	/*
 	protected double[] getMean(final int[] bases, final Pileup[] pileups) {
-		final double[][] probs = getPileup2Probs(bases, pileups);
+		final double[][] probs = getPileupMeans(bases, pileups);
 		final double[] mean = MathUtil.mean(probs);
 		
 		return mean;
 	}
+	*/
 	
 	protected double[] estimateAlpha(final int bases[], final Pileup[] pileups) {
-		double[] mean = getMean(bases, pileups); 
+		double[][] pileupMeans = getPileupMeans(bases, pileups);
 		double[] weights = getWeights(bases, pileups);
-		double[] variance = getVariance(bases, pileups);
 		
-		// TODO do the actual estimation
-		final double[] alpha = mean;
-		
+		final double[] alpha = new double[bases.length];
+		Arrays.fill(alpha, 0.0);
+		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
+			for (int baseI = 0; baseI < bases.length; ++pileupI) {
+				alpha[baseI] += weights[pileupI] * pileups[pileupI].getCoverage() * pileupMeans[pileupI][baseI];
+			}
+		}
 		
 		return alpha;
 	}
@@ -98,12 +108,6 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 		}
 
 		return density;
-	}
-
-	protected double[] getVariance(final int[] base, final Pileup[] pileups) {
-		double[] var = new double [base.length];
-		
-		return var;
 	}
 	
 	public double getStatistic(final ParallelPileup parallelPileup) {

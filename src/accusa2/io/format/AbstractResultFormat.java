@@ -23,7 +23,7 @@ public abstract class AbstractResultFormat {
 	public abstract String convert2String(ParallelPileup parallelPileup, double value);
 	public abstract String convert2String(ParallelPileup parallelPileup);
 
-	public String getHeader() {
+	public String getHeader(ParallelPileup parallelPileup) {
 		return new String();
 	}
 	

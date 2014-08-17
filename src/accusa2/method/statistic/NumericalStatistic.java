@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
-import umontreal.iro.lecuyer.randvarmulti.DirichletGen;
 import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
@@ -93,10 +92,10 @@ public final class NumericalStatistic implements StatisticCalculator {
 	
 	protected double[] estimateAlpha(final int bases[], final Pileup[] pileups) {
 		double[] alpha = initialEstimate(bases, pileups);
-		double[] weights = getWeights(bases, pileups);
-		
+		//double[] weights = getWeights(bases, pileups);
+
 		// TODO do the actual estimation
-		
+
 		return alpha;
 	}
 	

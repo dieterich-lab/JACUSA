@@ -21,8 +21,8 @@ public class TmpResultFormat extends AbstractResultFormat {
 	}
 
 	@Override
-	public String getHeader() {
-		return resultFormat.getHeader();
+	public String getHeader(ParallelPileup parallelPileup) {
+		return resultFormat.getHeader(parallelPileup);
 	}
 
 	@Override
