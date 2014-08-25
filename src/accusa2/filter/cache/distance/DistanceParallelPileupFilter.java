@@ -6,6 +6,7 @@ import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
+import accusa2.pileup.DefaultPileup.Counts;
 
 /**
  * @author mpiechotta
@@ -15,48 +16,48 @@ import accusa2.pileup.Pileup;
 public class DistanceParallelPileupFilter extends AbstractParallelPileupFilter {
 
 	private int filterDistance;
-	private Parameters parameters;
+	private final int filterI; 
 
 	public DistanceParallelPileupFilter(char c, int filterDistance, Parameters parameters) {
 		super(c);
 		this.filterDistance = filterDistance;
-		this.parameters = parameters;
+		filterI = parameters.getFilterConfig().c2i(c);
 	}
 
 	// FIXME what is a variant base - how should we filter?
-	// FIXME is this still the case??? after filter filteredPileups lost inside pileup
 	// what if AAAA VS GGGG - same number?
 	@Override
 	public boolean filter(ParallelPileup parallelPileup) {
-		filtered = new DefaultParallelPileup(parallelPileup);
-
-		int[] variants = filtered.getVariantBases();
-		if(variants.length == 0 || DefaultParallelPileup.isHoHo(filtered)) {
+		int[] variants = parallelPileup.getVariantBases();
+		if(variants.length == 0 || DefaultParallelPileup.isHoHo(parallelPileup)) {
 			return false; // FIXME all other cases are currently ignored
 		}
-		int variant = variants[0]; 
+		int variantBaseI = variants[0]; 
 
-		int count1 = filtered.getPooledPileupA().getBaseCount()[variant];
-		DefaultPileup[] filteredPileups1 = applyFilter(variant, filtered.getPileupsA());
+		int count1 = parallelPileup.getPooledPileupA().getBaseCount()[variantBaseI];
+		Pileup[] filteredPileups1 = applyFilter(variantBaseI, parallelPileup.getPileupsA(), parallelPileup.getFilterCountsA()[filterI]);
 
-		int count2 = filtered.getPooledPileupB().getBaseCount()[variant];
-		DefaultPileup[] filteredPileups2 = applyFilter(variant, filtered.getPileupsB());
+		int count2 = parallelPileup.getPooledPileupB().getBaseCount()[variantBaseI];
+		Pileup[] filteredPileups2 = applyFilter(variantBaseI, parallelPileup.getPileupsB(), parallelPileup.getFilterCountsB()[filterI]);
 
 		// if nothing was filtered
 		if(count1 == 0 && count2 == 0) {
 			return true;
 		}
+
 		
+		filtered = new DefaultParallelPileup(parallelPileup);
+
 		int filteredCount = 0;
 		int count = 0;
 		if(count1 > 0) {
 			filtered.setPileupsA(filteredPileups1);
-			filteredCount = filtered.getPooledPileupA().getBaseCount()[variant];
+			filteredCount = filtered.getPooledPileupA().getBaseCount()[variantBaseI];
 			count = count1;
 		}
 		if(count2 > 0) {
 			filtered.setPileupsB(filteredPileups2);
-			filteredCount = filtered.getPooledPileupB().getBaseCount()[variant];
+			filteredCount = filtered.getPooledPileupB().getBaseCount()[variantBaseI];
 			count = count2;
 		}
 
@@ -70,33 +71,26 @@ public class DistanceParallelPileupFilter extends AbstractParallelPileupFilter {
 	}
 
 	/**
-	 * FIXME check this
 	 * null if filter did not change anything
 	 * @param extendedPileups
 	 * @return
 	 */
-	private Pileup[] applyFilter(int variantBase, ExtendedPileup[] extendedPileups) {
-		DefaultPileup[] filtered = new DefaultPileup[extendedPileups.length];
+	private Pileup[] applyFilter(int variantBaseI, Pileup[] pileups, Counts[] counts) {
+		Pileup[] filtered = new DefaultPileup[pileups.length];
 
 		boolean processed = false;
-		for (int i = 0; i < extendedPileups.length; ++i) {
-			ExtendedPileup extendedPileup = extendedPileups[i];
-			if (extendedPileup.getFilteredCounts() == null) {
-				filtered[i] = null;
-			} else {
-				filtered[i] = new DefaultPileup(extendedPileup.getPileup());
-			
-				filtered[i].getCounts().substract(variantBase, counts);
-			}
-			if(pileup != null) { 
-				filtered[i].substractPileup(variantBase, pileup);
+		for(int i = 0; i < pileups.length; ++i) {
+			filtered[i] = new DefaultPileup(pileups[i]);
+			Counts count = counts[i];
+			if(count != null) { 
+				filtered[i].getCounts().substract(variantBaseI, count);
 				processed = true;
 			}
 		}
 
 		return processed ? filtered : null;
 	}
-
+	
 	public int getDistance() {
 		return filterDistance;
 	}

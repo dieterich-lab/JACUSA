@@ -26,7 +26,6 @@ public abstract class AbstractPileupBuilder {
 	protected SAMRecord[] SAMRecordsBuffer;
 	protected SAMFileReader reader;
 
-	// TODO make this a proper class
 	protected int filteredSAMRecords;
 
 	protected Parameters parameters;
@@ -249,11 +248,11 @@ public abstract class AbstractPileupBuilder {
 		// let the filter decide what data they need
 		for(AbstractPileupBuilderFilterCache pileupBuilderFilter : filterCache) {
 			if(pileupBuilderFilter != null) {
-				pileupBuilderFilter.processCigar(genomicWindowStart, record.getCigar(), record);
+				pileupBuilderFilter.processRecord(genomicWindowStart, record);
 			}
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @return

@@ -19,7 +19,6 @@ public class HomozygousFilterFactory extends AbstractFilterFactory {
 
 	@Override
 	public AbstractPileupBuilderFilterCache getCacheInstance() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	

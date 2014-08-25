@@ -6,7 +6,7 @@ import accusa2.filter.cache.PolymorphismParallelPileupFilter;
 public class PolymorphismPileupFilterFactory extends AbstractFilterFactory {
 
 	public PolymorphismPileupFilterFactory() {
-		super('P', "Filter polymorphic positions"); // TODO make better description
+		super('P', "Filter polymorphic positions.");
 	}
 
 	@Override

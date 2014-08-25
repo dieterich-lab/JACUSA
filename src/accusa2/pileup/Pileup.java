@@ -18,14 +18,13 @@ public interface Pileup {
 
 	 abstract int[] getBaseCount();
 	 abstract int[][] getQualCount();
-	 
+
 	 abstract void setContig(String contig);
 	 abstract void setReferenceBase(char referenceBase);
 	 abstract void setPosition(int position);
 	 abstract void setStrand(STRAND strand);
 
 	 abstract Counts getCounts();
-	 // TODO abstract void setCounts(PositionCounts counts);
-	 
+
 	 abstract Pileup complement();
 }

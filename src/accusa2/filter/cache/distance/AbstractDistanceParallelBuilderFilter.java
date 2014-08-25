@@ -6,8 +6,6 @@ public abstract class AbstractDistanceParallelBuilderFilter extends AbstractPara
 
 	public AbstractDistanceParallelBuilderFilter(char c) {
 		super(c);
-		// TODO Auto-generated constructor stub
 	}
-
 	
 }

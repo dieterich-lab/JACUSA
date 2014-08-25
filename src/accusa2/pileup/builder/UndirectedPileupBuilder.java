@@ -134,16 +134,4 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		return windowCache.getCoverage(windowPosition);
 	}
 
-	/**
-	 * 
-	 * @param readPosition
-	 * @param genomicPosition
-	 * @param cigarElement
-	 * @param record
-	 * @return
-	 */
-	protected void cachePosition(final int windowPosition, final int readPosition, final int genomicPosition, final SAMRecord record) {
-		// TODO
-	}
-
 }

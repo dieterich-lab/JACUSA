@@ -8,11 +8,9 @@ public class HomopolymerFilterFactory extends AbstractFilterFactory {
 
 	private int length;
 	private int distance;
-	//private Set<Character> bases;
 
 	public HomopolymerFilterFactory() {
-		// TODO more descriptive
-		super('Y', "Filter homopolymers. Default: none");
+		super('Y', "Filter wrong variant calls in the vicinity of homopolymers. Format: length:distance");
 	}
 
 	@Override
@@ -22,7 +20,7 @@ public class HomopolymerFilterFactory extends AbstractFilterFactory {
 
 	@Override
 	public AbstractPileupBuilderFilterCache getCacheInstance() {
-		return new HomopolymerPileupBuilderFilter(getC(), length, distance);
+		return new HomopolymerPileupBuilderFilter(getC(), length, distance, getParameters());
 	}
 
 	@Override

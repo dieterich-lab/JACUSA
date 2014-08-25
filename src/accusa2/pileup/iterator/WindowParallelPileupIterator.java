@@ -31,7 +31,7 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 		pileupBuildersA = createPileupBuilders(parameters.getPileupBuilderFactoryA(), annotatedCoordinate, readersA, parameters);
 		pileupBuildersB = createPileupBuilders(parameters.getPileupBuilderFactoryB(), annotatedCoordinate, readersB, parameters);
 
-		filters = 1; // TODO Parameters.getInstance().getFilterConfig();
+		filters = 1; parameters.getFilterConfig().getFactories().size();
 
 		// init
 		parallelPileup = new DefaultParallelPileup(0, 0);
@@ -139,7 +139,6 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(parallelPileup.getPosition());
 		for(int i = 0; i < n; ++i) {
 			counts[i] = pileupBuildersA[i].getFilteredCounts(windowPosition, STRAND.UNKNOWN);
-			// TODO check if copy needed
 		}
 
 		return counts;
@@ -171,6 +170,7 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 		return ret;
 	}
 
+	/*
 	private Pileup[] complementPileups(Pileup[] pileups) {
 		Pileup[] complementedPileups = new DefaultPileup[pileups.length];
 		for(int i = 0; i < pileups.length; ++i) {
@@ -178,6 +178,7 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 		}
 		return complementedPileups;
 	}
+	*/
 
 	public boolean hasNext() {
 		if (parallelPileup.isValid()) {
@@ -340,31 +341,6 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 	private void advance() {
 		parallelPileup.setPosition(parallelPileup.getPosition() + 1);
 	}
-
-	/*
-	public DefaultParallelPileup next() {
-		if (!hasNext()) {
-			return null;
-		}
-
-		DefaultParallelPileup ret = new DefaultParallelPileup(parallelPileup);
-		ret.setFilterCountsA(getCounts(pileupBuildersA));
-		ret.setFilterCountsB(getCounts(pileupBuildersB));
-
-		// TODO check
-		// this is necessary!!!
-		if(parallelPileup.getPooledPileupA().getStrand() == STRAND.UNKNOWN && parallelPileup.getPooledPileupB().getStrand() == STRAND.FORWARD) {
-			parallelPileup.setPileupsB(new DefaultPileup[0]);
-		} else if(parallelPileup.getPooledPileupB().getStrand() == STRAND.UNKNOWN && parallelPileup.getPooledPileupA().getStrand() == STRAND.FORWARD) {
-			parallelPileup.setPileupsA(new DefaultPileup[0]);
-		} else {
-			parallelPileup.setPileupsA(new DefaultPileup[0]);
-			parallelPileup.setPileupsB(new DefaultPileup[0]);
-		}
-
-		return ret;
-	}
-	*/
 
 	public final AnnotatedCoordinate getAnnotatedCoordinate() {
 		return coordinate;

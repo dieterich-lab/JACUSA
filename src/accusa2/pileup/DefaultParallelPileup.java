@@ -290,17 +290,17 @@ public final class DefaultParallelPileup implements ParallelPileup {
 		this.filterCountsB = counts;
 	}
 
-	public static boolean isHoHo(DefaultParallelPileup parallelPileup) {
+	public static boolean isHoHo(ParallelPileup parallelPileup) {
 		return parallelPileup.getPooledPileup().getAlleles().length == 1 && 
 				parallelPileup.getPooledPileupA().getAlleles().length == 1 && parallelPileup.getPooledPileupB().getAlleles().length == 1;		
 	}
 	
-	public static boolean isHeHe(DefaultParallelPileup parallelPileup) {
+	public static boolean isHeHe(ParallelPileup parallelPileup) {
 		return parallelPileup.getPooledPileup().getAlleles().length == 2 && 
 				parallelPileup.getPooledPileupA().getAlleles().length == 2 && parallelPileup.getPooledPileupB().getAlleles().length == 2;
 	}
 
-	public static boolean isHoHe(DefaultParallelPileup parallelPileup) {
+	public static boolean isHoHe(ParallelPileup parallelPileup) {
 		return parallelPileup.getPooledPileup().getAlleles().length == 2 && 
 				(parallelPileup.getPooledPileupA().getAlleles().length == 1 && parallelPileup.getPooledPileupB().getAlleles().length == 2 ||
 						parallelPileup.getPooledPileupA().getAlleles().length == 2 && parallelPileup.getPooledPileupB().getAlleles().length == 1 );

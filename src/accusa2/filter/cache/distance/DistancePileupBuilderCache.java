@@ -1,5 +1,8 @@
 package accusa2.filter.cache.distance;
 
+import java.util.List;
+
+import net.sf.samtools.AlignmentBlock;
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
 import accusa2.cli.Parameters;
@@ -18,30 +21,54 @@ public class DistancePileupBuilderCache extends AbstractPileupBuilderFilterCache
 		super(c, parameters);
 		this.distance = distance;
 	}
-	
-	// process read start and end
+
 	@Override
-	protected void processAlignmetMatch(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
-		// TODO
+	public void processRecord(int genomicWindowStart, SAMRecord record) {
+		processCigar(genomicWindowStart, record);
+
+		// TODO use direction
+
+		AlignmentBlock alignmentBlock;
+		int windowPosition;
+		
+		// process read start and end
+		List<AlignmentBlock> alignmentBlocks = record.getAlignmentBlocks();
+		
+		// read start
+		alignmentBlock = alignmentBlocks.get(0);
+		windowPosition = alignmentBlock.getReferenceStart() - genomicWindowStart;
+		fillCache(windowPosition - distance, distance, alignmentBlock.getReadStart() - distance, record);
+
+		// read end
+		alignmentBlock = alignmentBlocks.get(alignmentBlocks.size() - 1);
+		int offset = alignmentBlock.getReferenceStart() + alignmentBlock.getLength() - genomicWindowStart; // TODO check
+		if (offset > distance) {
+			return;
+		}
+
+		windowPosition = offset;
+		fillCache(windowPosition - distance, distance, alignmentBlock.getReadStart() + alignmentBlock.getLength() - distance, record);
 	}
+
 	
+
 	// process INDELs
 	@Override
 	protected void processInsertion(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
-		fillCache(windowPosition - distance, distance, readPosition - distance, -1, record);
-		fillCache(windowPosition - cigarElement.getLength(), distance, readPosition + cigarElement.getLength(), -1, record);
+		fillCache(windowPosition - distance, distance, readPosition - distance, record);
+		fillCache(windowPosition - cigarElement.getLength(), distance, readPosition + cigarElement.getLength(), record);
 	}
 	@Override
 	protected void processDeletion(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
-		fillCache(windowPosition - distance, distance, readPosition - distance, -1, record);
-		fillCache(windowPosition - cigarElement.getLength(), distance, readPosition + cigarElement.getLength(), -1, record);
+		fillCache(windowPosition - distance, distance, readPosition - distance, record);
+		fillCache(windowPosition - cigarElement.getLength(), distance, readPosition + cigarElement.getLength(), record);
 	}
 
 	// process SpliceSites
 	@Override
 	protected void processSkipped(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
-		fillCache(windowPosition - distance, distance, readPosition - distance, -1, record);
-		fillCache(windowPosition - cigarElement.getLength(), distance, readPosition + cigarElement.getLength(), -1, record);
+		fillCache(windowPosition - distance, distance, readPosition - distance, record);
+		fillCache(windowPosition - cigarElement.getLength(), distance, readPosition + cigarElement.getLength(), record);
 	}
 
 	/**

@@ -3,6 +3,7 @@ package accusa2.filter.cache;
 import accusa2.cli.Parameters;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.DefaultPileup;
+import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 
@@ -15,17 +16,17 @@ public class HomopolymerParallelPileupFilter extends AbstractParallelPileupFilte
 	private int length;
 	private int distance;
 
-	private Parameters parameters;
-
+	private int filterI;
+	
 	public HomopolymerParallelPileupFilter(char c, int length, int distance, Parameters parameters) {
 		super(c);
 		this.length = length;
 		this.distance = distance;
-		this.parameters = parameters;
+
+		filterI = parameters.getFilterConfig().c2i(c);
 	}
 
 	// FIXME what is a variant base - how should we filter?
-	// FIXME is this still the case??? after filter filteredPileups lost inside pileup
 	// what if AAAA VS GGGG - same number?
 	@Override
 	public boolean filter(ParallelPileup parallelPileup) {
@@ -34,18 +35,19 @@ public class HomopolymerParallelPileupFilter extends AbstractParallelPileupFilte
 		int[] alleles = parallelPileup.getPooledPileup().getAlleles();
 
 		// determine the least abundant variant
-		for(int base : alleles) {
-			int count = parallelPileup.getPooledPileup().getBaseCount()[base];
-			Pileup[] filteredPileups1 = applyFilter(base, parallelPileup.getPileupsA());
-			Pileup[] filteredPileups2 = applyFilter(base, parallelPileup.getPileupsB());
+		for(int baseI : alleles) {
+			int count = parallelPileup.getPooledPileup().getBaseCount()[baseI];
+			Pileup[] filteredPileups1 = applyFilter(baseI, parallelPileup.getPileupsA(), parallelPileup.getFilterCountsA()[filterI]);
+			Pileup[] filteredPileups2 = applyFilter(baseI, parallelPileup.getPileupsB(), parallelPileup.getFilterCountsA()[filterI]);
 
 			// if nothing was filtered
 			if(filteredPileups1 == null && filteredPileups2 == null) {
 				continue;
 			}
 			filtered = new DefaultParallelPileup(filteredPileups1, filteredPileups2);
-			int filteredCount = filtered.getPooledPileup().getBaseCount()[base];
-			
+			int filteredCount = filtered.getPooledPileup().getBaseCount()[baseI];
+
+			// TODO make this more quantitative
 			if((double)filteredCount / (double)count <= 0.5) {
 				return true;
 			}
@@ -60,16 +62,15 @@ public class HomopolymerParallelPileupFilter extends AbstractParallelPileupFilte
 	 * @param pileups
 	 * @return
 	 */
-	private Pileup[] applyFilter(int variantBase, DefaultPileup[] pileups) {
-		DefaultPileup[] filtered = new DefaultPileup[pileups.length];
+	private Pileup[] applyFilter(int variantBaseI, Pileup[] pileups, Counts[] counts) {
+		Pileup[] filtered = new DefaultPileup[pileups.length];
 
 		boolean processed = false;
 		for(int i = 0; i < pileups.length; ++i) {
 			filtered[i] = new DefaultPileup(pileups[i]);
-
-			DefaultPileup pileup = parameters.getFilterConfig().getFilteredPileup(getC(), filtered[i]);
-			if(pileup != null) { 
-				filtered[i].substractPileup(variantBase, pileup);
+			Counts count = counts[i];
+			if(count != null) { 
+				filtered[i].getCounts().substract(variantBaseI, count);
 				processed = true;
 			}
 		}

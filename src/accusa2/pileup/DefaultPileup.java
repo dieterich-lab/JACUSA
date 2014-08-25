@@ -285,7 +285,7 @@ public final class DefaultPileup implements Pileup {
 
 			for(int baseI = 0; baseI < baseCount.length; ++baseI) {
 				// int complementaryBase = Bases.COMPLEMENT[base];
-				int complementaryBaseI = baseCount.length - baseI; // TODO CHECK  
+				int complementaryBaseI = baseCount.length - baseI;  
 
 				// invert base count
 				tmpBaseCount[complementaryBaseI] = baseCount[baseI];

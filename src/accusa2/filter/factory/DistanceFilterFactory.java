@@ -1,11 +1,10 @@
 package accusa2.filter.factory;
 
 import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
-import accusa2.filter.cache.distance.AbstractDistanceFilter;
 import accusa2.filter.cache.distance.DistanceParallelPileupFilter;
 import accusa2.filter.cache.distance.DistancePileupBuilderCache;
 
-// TODO make this generic
+//TODO make this generic
 public class DistanceFilterFactory extends AbstractFilterFactory {
 
 	// options
@@ -34,7 +33,8 @@ public class DistanceFilterFactory extends AbstractFilterFactory {
 		
 	}
 
-	// FIXME
+	// TODO
+	/*
 	private AbstractDistanceFilter create(DISTANCE_FILTER op) {
 		switch (op) {
 		case RS:
@@ -47,6 +47,7 @@ public class DistanceFilterFactory extends AbstractFilterFactory {
 		
 		return null;
 	}
+	*/
 
 	// TODO
 	@Override
@@ -57,7 +58,7 @@ public class DistanceFilterFactory extends AbstractFilterFactory {
 	// TODO
 	@Override
 	public AbstractPileupBuilderFilterCache getCacheInstance() {
-		return new DistancePileupBuilderCache(getC(), 0);
+		return new DistancePileupBuilderCache(getC(), 0, getParameters());
 	}
 	
 	public enum DISTANCE_FILTER {RS, RE, SJ, ID, HP}

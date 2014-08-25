@@ -3,7 +3,6 @@ package accusa2.pileup;
 public class BaseConfig {
 
 	// dictionary to convert byte to int -> index to ALL, or valid
-	// TODO document
 	static final int[] BYTE_BASE2INT_BASE = new int[86 + 1];
 	static {
 		for (int i = 0; i < BYTE_BASE2INT_BASE.length; ++i) {
@@ -31,10 +30,12 @@ public class BaseConfig {
 	/*
 	 * 
 	 */
-
 	private char[] bases;
-	public int[] byte2int;
 	
+	public int[] byte2int;
+	// complement
+	public int[] complementByte2int;
+
 	public BaseConfig(char[] bases) {
 		this.bases = bases;
 		byte2int = Byte2baseI(bases);
@@ -61,8 +62,38 @@ public class BaseConfig {
 		return byte2int;
 	}
 
+	private char getComplementBase(char base) {
+		for (int i = 0; i < VALID.length; ++i) {
+			if (VALID[i] == base) {
+				return VALID_COMPLEMENTED[i];
+			}
+		}
+
+		return 'N';
+	}
+
+	// complement
+	public int[] ComplementByte2baseI(final char[] bases) {
+			final int[] byte2int = new int[BYTE_BASE2INT_BASE.length];
+
+			for (int i = 0; i < byte2int.length; ++i) {
+				byte2int[i] = -1;
+			}
+
+			for (int i = 0; i < bases.length; ++i) {
+				char base = getComplementBase(bases[i]);
+				byte2int[(int)base] = i;
+			}
+			return byte2int;
+		}
+
+
 	public int getBaseI(byte base) {
 		return byte2int[base];
+	}
+
+	public int getComplementBaseI(byte base) {
+		return complementByte2int[base];
 	}
 
 	public char[] getBases() {

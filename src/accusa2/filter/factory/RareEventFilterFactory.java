@@ -3,7 +3,6 @@ package accusa2.filter.factory;
 import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
 import accusa2.filter.cache.RareEventParallelPileupFilter;
 
-// TODO make this nice
 public class RareEventFilterFactory extends AbstractFilterFactory {
 
 	private int reads = 2;
@@ -11,7 +10,7 @@ public class RareEventFilterFactory extends AbstractFilterFactory {
 
 	public RareEventFilterFactory() {
 		super('R', "");
-		desc = "Rare event filter. Default: " + Integer.toString(reads) + ":" + Double.toString(level);
+		desc = "Rare event filter. Default: reads:level " + Integer.toString(reads) + ":" + Double.toString(level);
 	}
 
 	@Override

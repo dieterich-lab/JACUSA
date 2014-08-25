@@ -1,11 +1,6 @@
 package accusa2.pileup.builder;
 
-import java.util.List;
-
-import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMRecord;
-import accusa2.cache.Coordinate;
 import accusa2.cli.Parameters;
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.util.AnnotatedCoordinate;
@@ -37,6 +32,7 @@ public class DirectedPileupBuilder extends UndirectedPileupBuilder {
 		return forwardWindowCache.getCoverage(windowPosition) + reverseWindowCache.getCoverage(windowPosition);
 	}
 
+	/*
 	protected int cachePosition(final int windowPosition, final int readPosition, final int genomicPosition, final CigarElement cigarElement, final List<Coordinate> indels, final List<Coordinate> skipped, final SAMRecord record) {
 		//  || FIXME coverageCache[windowPosition] <= parameters.getMaxDepth()) 
 		if(windowPosition >= 0 && (parameters.getMaxDepth() == -1)) {
@@ -54,5 +50,6 @@ public class DirectedPileupBuilder extends UndirectedPileupBuilder {
 
 		return windowPosition;
 	}
+	*/
 
 }

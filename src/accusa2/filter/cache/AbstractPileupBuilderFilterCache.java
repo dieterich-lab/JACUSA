@@ -2,7 +2,6 @@ package accusa2.filter.cache;
 
 import java.util.Arrays;
 
-import net.sf.samtools.Cigar;
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
 
@@ -27,11 +26,26 @@ public abstract class AbstractPileupBuilderFilterCache {
 		Arrays.fill(visited, false);
 	}
 
-	public void processCigar(int windowStart, Cigar cigar, SAMRecord record) {
+	protected void fillCache(int windowPosition, int length, int readPosition, SAMRecord record) {
+		int end = Math.min(cache.getWindowSize(), windowPosition + length);
+
+		for (int i = 0; i < length && windowPosition < end && readPosition < record.getReadLength(); ++i) {
+			windowPosition += i;
+			readPosition += i;
+			
+			if (! visited[windowPosition]) {
+				int baseI = parameters.getBaseConfig().getBaseI(record.getReadBases()[readPosition]);
+				byte qual = record.getBaseQualities()[readPosition];
+				cache.add(windowPosition, baseI, qual);
+			}
+		}
+	}
+
+	protected void processCigar(int genomicWindowStart, SAMRecord record) {
 		// init
 		int readPosition 	= 0;
 		int genomicPosition = record.getAlignmentStart();
-		int windowPosition = genomicPosition - windowStart;
+		int windowPosition  = genomicPosition - genomicWindowStart;
 		Arrays.fill(visited, false);
 
 		// process CIGAR -> SP, INDELs
@@ -107,21 +121,6 @@ public abstract class AbstractPileupBuilderFilterCache {
 		return cache;
 	}
 
-	protected void fillCache(int windowPosition, int length, int readPosition, int genomicPosition, SAMRecord record) {
-		int end = Math.min(cache.getWindowSize(), windowPosition + length);
-
-		for (int i = 0; i < length && windowPosition < end && readPosition < record.getReadLength(); ++i) {
-			windowPosition += i;
-			readPosition += i;
-			
-			if (! visited[windowPosition]) {
-				int baseI = parameters.getBaseConfig().getBaseI(record.getReadBases()[readPosition]);
-				byte qual = record.getBaseQualities()[readPosition];
-				cache.add(windowPosition, baseI, qual);
-			}
-		}
-	}
-
 	protected void processInsertion(int windowPosition, int readPosition, int genomicPosition, final CigarElement cigarElement, final SAMRecord record) {}
 
 	protected void processAlignmetMatch(int windowPosition, int readPosition, int genomicPosition, final CigarElement cigarElement, final SAMRecord record) {}
@@ -139,5 +138,7 @@ public abstract class AbstractPileupBuilderFilterCache {
 	protected void processPadding(int windowPosition, int readPosition, int genomicPosition, final CigarElement cigarElement, final SAMRecord record) {
 		System.err.println("Padding not handled yet!");
 	}
+
+	public abstract void processRecord(int genomicWindowStart, SAMRecord record);
 
 }
