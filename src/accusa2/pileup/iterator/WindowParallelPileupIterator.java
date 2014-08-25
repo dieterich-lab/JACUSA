@@ -78,9 +78,9 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 		int nextValidPosition = -1;
 
 		for (AbstractPileupBuilder pileupBuilder : pileupBuilders) {
-			int tmp = pileupBuilder.getNextValidGenomicPosition(targetGenomicPosition);
-			if (tmp > 0) {
-				nextValidPosition = tmp;
+			nextValidPosition = pileupBuilder.getNextValidGenomicPosition(targetGenomicPosition);
+			if (nextValidPosition > 0) {
+				return nextValidPosition;
 			}
 		}
 
