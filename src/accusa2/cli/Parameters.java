@@ -2,10 +2,8 @@ package accusa2.cli;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
-import accusa2.filter.process.PileupBuilderFilter;
+import accusa2.filter.cache.FilterConfig;
 import accusa2.filter.samtag.SamTagFilter;
 import accusa2.io.format.AbstractResultFormat;
 import accusa2.io.format.DefaultResultFormat;
@@ -14,8 +12,7 @@ import accusa2.io.output.OutputPrinter;
 import accusa2.method.AbstractMethodFactory;
 import accusa2.method.statistic.LRStatistic;
 import accusa2.method.statistic.StatisticCalculator;
-import accusa2.pileup.Pileup;
-import accusa2.pileup.builder.DirectedPileupBuilderFactory;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.builder.PileupBuilderFactory;
 import accusa2.pileup.builder.UndirectedPileupBuilderFactory;
 
@@ -29,15 +26,15 @@ public class Parameters {
 	private byte minBASQ;
 	private int minMAPQ;
 	private int minCoverage;
-	private Set<Character> bases;
-	private Set<Character> basesComplemented;
+	
+	private BaseConfig baseConfig;
 
 	// filter: flags
 	private int filterFlags;
 	private int retainFlags;
 
 	// filter: statistic
-	private double T;
+	private double stat;
 	
 	private int permutations;
 
@@ -48,33 +45,39 @@ public class Parameters {
 	private AbstractResultFormat resultFormat;
 
 	// version
-	public final String VERSION = "ACCUSA 2.5";
+	public final String VERSION = "ACCUSA 2.7";
 
 	// bed file to scan for variants
 	private String bedPathname;
 
-	private boolean processINDELs;
-
 	// chosen instances
 	private AbstractMethodFactory methodFactory;
 	private StatisticCalculator statisticCalculator;
-	private PileupBuilderFilter pileupBuilderFilters;
+	private FilterConfig filterConfig;
 
 	// path to BAM files
 	private String[] pathnames1;
 	private String[] pathnames2;
 
 	// properties for BAM files
-	private boolean isDirected1;
-	private boolean isDirected2;
-	private PileupBuilderFactory pileupBuilderFactory1;
-	private PileupBuilderFactory pileupBuilderFactory2;
+	private PileupBuilderFactory pileupBuilderFactoryA;
+	private PileupBuilderFactory pileupBuilderFactoryB;
 
 	private List<SamTagFilter> samTagFilters;
 
 	// debug flag
 	private boolean debug; 
 
+	private static Parameters singleton;
+	
+	public static Parameters getInstance() {
+		if (singleton == null) {
+			singleton = new Parameters();
+		}
+		
+		return singleton;
+	}
+	
 	/**
 	 * 
 	 */
@@ -86,14 +89,10 @@ public class Parameters {
 		minCoverage 	= 3;
 		maxDepth 		= -1;
 		maxThreads 		= 1;
-		bases			= new TreeSet<Character>();
-		basesComplemented = new TreeSet<Character>();
-		for(char b : Pileup.BASES2) {
-			bases.add(b);
-			basesComplemented.add(Pileup.BASES[Pileup.COMPLEMENT[Pileup.BASE2INT.get(b)]]);
-		}
-		
-		T 			= 0.3;
+
+		baseConfig			= new BaseConfig(BaseConfig.VALID);
+
+		stat 			= 0.3;
 
 		permutations	= 10;
 		filterFlags		= 0;
@@ -104,20 +103,14 @@ public class Parameters {
 
 		bedPathname 	= new String();
 
-		processINDELs	= false;
-
 		statisticCalculator	= new LRStatistic(this);
 
-		pileupBuilderFilters = new PileupBuilderFilter(this);
+		filterConfig = new FilterConfig(this);
 
-		isDirected1 	= false;
-		pileupBuilderFactory1	= new UndirectedPileupBuilderFactory(bases);
-		
-		isDirected2 	= false;
-		pileupBuilderFactory2	= new UndirectedPileupBuilderFactory(bases);
+		pileupBuilderFactoryA	= new UndirectedPileupBuilderFactory();
+		pileupBuilderFactoryB	= new UndirectedPileupBuilderFactory();
 
 		samTagFilters 	= new ArrayList<SamTagFilter>(3);
-
 		debug			= false;
 	}
 
@@ -278,7 +271,7 @@ public class Parameters {
 	 * @param T
 	 */
 	public void setT(double T) {
-		this.T = T;
+		this.stat = T;
 	}
 
 	/**
@@ -286,7 +279,7 @@ public class Parameters {
 	 * @return
 	 */
 	public double getT() {
-		return T;
+		return stat;
 	}
 
 	/**
@@ -393,35 +386,10 @@ public class Parameters {
 		return bedPathname;
 	}
 
-	public void setBases(Set<Character> bases) {
-		this.bases = bases;
-		pileupBuilderFactory1 = null;
-		pileupBuilderFactory2 = null;
+	public BaseConfig getBaseConfig() {
+		return baseConfig;
 	}
 
-	public void setBasesComplemented(Set<Character> basesComplemented) {
-		this.basesComplemented = basesComplemented;
-		pileupBuilderFactory1 = null;
-		pileupBuilderFactory2 = null;
-
-	}
-	
-	public Set<Character> getBases() {
-		return bases;
-	}
-
-	public Set<Character> getBasesComplemented() {
-		return basesComplemented;
-	}
-	
-	public void setProcessINDELs(boolean processINDELs) {
-		this.processINDELs = processINDELs;
-	}
-
-	public boolean getProcessINDELs() {
-		return processINDELs;
-	}
-	
 	public void setDebug(boolean debug) {
 		this.debug = debug;
 	}
@@ -430,46 +398,28 @@ public class Parameters {
 		return debug;
 	}
 
-	private PileupBuilderFactory buildPileupBuilderFactory(boolean isDirected) {
-		if(isDirected) {
-			return new DirectedPileupBuilderFactory(bases);
-		} else {
-			return new UndirectedPileupBuilderFactory(bases);
-		}
+	public PileupBuilderFactory getPileupBuilderFactoryA(){
+		return pileupBuilderFactoryA;
 	}
 
-	public PileupBuilderFactory getPileupBuilderFactory1(){
-		if(pileupBuilderFactory1 == null) {
-			pileupBuilderFactory1 = buildPileupBuilderFactory(isDirected1);
-		}
-
-		return pileupBuilderFactory1;
-	}
-
-	public PileupBuilderFactory getPileupBuilderFactory2(){
-		if(pileupBuilderFactory2 == null) {
-			pileupBuilderFactory2 = buildPileupBuilderFactory(isDirected2);
-		}
-
-		return pileupBuilderFactory2;
+	public PileupBuilderFactory getPileupBuilderFactoryB(){
+		return pileupBuilderFactoryB;
 	}
 	
 	public List<SamTagFilter> getSamTagFilter() {
 		return samTagFilters;
 	}
 
-	public void setIsDirected1(boolean isDirected) {
-		isDirected1 = isDirected;
-		pileupBuilderFactory1 = null;
+	public void setPileupBuilderFactoryA(PileupBuilderFactory pileupBuilderFactory) {
+		pileupBuilderFactoryA = pileupBuilderFactory;
 	}
-	
-	public void setIsDirected2(boolean isDirected) {
-		isDirected2 = isDirected;
-		pileupBuilderFactory2 = null;
+
+	public void setPileupBuilderFactoryB(PileupBuilderFactory pileupBuilderFactory) {
+		pileupBuilderFactoryB = pileupBuilderFactory;
 	}
-	
-	public PileupBuilderFilter getPileupBuilderFilters() {
-		return pileupBuilderFilters;
+
+	public FilterConfig getFilterConfig() {
+		return filterConfig;
 	}
-	
+
 }

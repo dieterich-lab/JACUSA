@@ -2,6 +2,8 @@ package accusa2.pileup.sample;
 
 import java.util.Random;
 
+import accusa2.pileup.DefaultParallelPileup;
+import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 
@@ -11,10 +13,10 @@ public class SimplePermutateParallelPileup {
 	private Random random = new Random(0);  
 
 	public ParallelPileup permutate(ParallelPileup parallelPileup) {
-		final int count = parallelPileup.getN1() + parallelPileup.getN2(); 
+		final int count = parallelPileup.getNA() + parallelPileup.getNB(); 
 		final Pileup[] pileups = new Pileup[count];
-		System.arraycopy(parallelPileup.getPileups1(), 0, pileups, 0, parallelPileup.getN1());
-		System.arraycopy(parallelPileup.getPileups2(), 0, pileups, parallelPileup.getN1(), parallelPileup.getN2());
+		System.arraycopy(parallelPileup.getPileupsA(), 0, pileups, 0, parallelPileup.getNA());
+		System.arraycopy(parallelPileup.getPileupsB(), 0, pileups, parallelPileup.getNA(), parallelPileup.getNB());
 
 		for(int i = 0; i < count; ++i) {
 			final int r = random.nextInt(count);
@@ -23,11 +25,11 @@ public class SimplePermutateParallelPileup {
 			pileups[r] = tmp;
 		}
 		
-		final ParallelPileup permutated = new ParallelPileup(parallelPileup.getN1(), parallelPileup.getN2());
-		final Pileup[] pileups1 = new Pileup[parallelPileup.getN1()];
-		permutated.setPileups1(pileups1);
-		final Pileup[] pileups2 = new Pileup[parallelPileup.getN2()];
-		permutated.setPileups2(pileups2);
+		final ParallelPileup permutated = new DefaultParallelPileup(parallelPileup.getNA(), parallelPileup.getNB());
+		final DefaultPileup[] pileups1 = new DefaultPileup[parallelPileup.getNA()];
+		permutated.setPileupsA(pileups1);
+		final DefaultPileup[] pileups2 = new DefaultPileup[parallelPileup.getNB()];
+		permutated.setPileupsB(pileups2);
 
 		return permutated;
 	}

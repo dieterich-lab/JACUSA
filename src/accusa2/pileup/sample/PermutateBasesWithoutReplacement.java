@@ -3,8 +3,10 @@ package accusa2.pileup.sample;
 
 import java.util.Random;
 
-import accusa2.pileup.Pileup;
+import accusa2.pileup.DefaultPileup;
+import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.ParallelPileup;
+import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
 
 public class PermutateBasesWithoutReplacement implements PermutateParallelPileup{
@@ -13,35 +15,35 @@ public class PermutateBasesWithoutReplacement implements PermutateParallelPileup
 
 	public ParallelPileup permutate(ParallelPileup parallelPileup) {
 		// containter for permutated parallel pileup
-		final ParallelPileup permutated = new ParallelPileup(parallelPileup.getN1(), parallelPileup.getN2());
+		final ParallelPileup permutated = new DefaultParallelPileup(parallelPileup.getNA(), parallelPileup.getNB());
 
 		// 
-		Pileup pooled = new Pileup(parallelPileup.getPooledPileup());
+		Pileup pooled = new DefaultPileup(parallelPileup.getPooledPileup());
 		int[] alleles = pooled.getAlleles();
-		int[] baseCount = pooled.getBaseCount();
+		int[] baseCount = pooled.getCounts().getBaseCount();
 		int[] pooledCoverage = {pooled.getCoverage()};
 		
-		final Pileup[] permutated1 = permuatePileup(pooledCoverage, alleles, baseCount, parallelPileup.getPileups1());
-		permutated.setPileups1(permutated1);
+		final DefaultPileup[] permutated1 = permuatePileup(pooledCoverage, alleles, baseCount, parallelPileup.getPileupsA());
+		permutated.setPileupsA(permutated1);
 
-		final Pileup[] permutated2 = permuatePileup(pooledCoverage, alleles, baseCount, parallelPileup.getPileups2());
-		permutated.setPileups2(permutated2);
+		final DefaultPileup[] permutated2 = permuatePileup(pooledCoverage, alleles, baseCount, parallelPileup.getPileupsB());
+		permutated.setPileupsB(permutated2);
 
 		return permutated;
 	}
 
-	private Pileup[] permuatePileup(int[] pooledCoverage, int[] alleles, int[] baseCount, Pileup[] pileups) {
-		Pileup[] permutated = new Pileup[pileups.length];
+	private DefaultPileup[] permuatePileup(int[] pooledCoverage, int[] alleles, int[] baseCount, Pileup[] pileups) {
+		DefaultPileup[] permutated = new DefaultPileup[pileups.length];
 
 		for(int j = 0; j < pileups.length; ++j) {
 			Pileup pileup = pileups[j];
-			permutated[j] = new Pileup();
+			permutated[j] = new DefaultPileup();
 			
 			int[] quals = collapseQualCount(pileup);
 			for(int coverage = pileup.getCoverage(); coverage > 0; --coverage) {
 				int base = sampleBase(pooledCoverage, alleles, baseCount);
 				byte qual = sampleQual(coverage, quals);
-				permutated[j].addBase(base, qual);
+				permutated[j].getCounts().addBase(base, qual);
 				quals[qual]--;
 			}
 		}
@@ -52,7 +54,7 @@ public class PermutateBasesWithoutReplacement implements PermutateParallelPileup
 		int[] quals = new int[Phred2Prob.MAX_Q];
 		for(int i = 0; i < Phred2Prob.MAX_Q; ++i) {
 			for(int base : pileup.getAlleles()) {
-				quals[i] += pileup.getQualCount()[base][i];
+				quals[i] += pileup.getCounts().getQualCount()[base][i];
 			}
 		}
 

@@ -3,8 +3,10 @@ package accusa2.pileup.sample;
 
 import java.util.Random;
 
-import accusa2.pileup.Pileup;
+import accusa2.pileup.DefaultPileup;
+import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.ParallelPileup;
+import accusa2.pileup.Pileup;
 
 public class PermutateParallelPileupWithReplacement implements PermutateParallelPileup {
 
@@ -12,32 +14,32 @@ public class PermutateParallelPileupWithReplacement implements PermutateParallel
 
 	@Override
 	public ParallelPileup permutate(ParallelPileup parallelPileup) {
-		final ParallelPileup permutated = new ParallelPileup(parallelPileup.getN1(), parallelPileup.getN2());
+		final ParallelPileup permutated = new DefaultParallelPileup(parallelPileup.getNA(), parallelPileup.getNB());
 
-		Pileup pooled = new Pileup(parallelPileup.getPooledPileup());
+		Pileup pooled = new DefaultPileup(parallelPileup.getPooledPileup());
 
-		final Pileup[] permutated1 = permuatePileup(pooled, parallelPileup.getPileups1());
-		permutated.setPileups1(permutated1);
+		final DefaultPileup[] permutated1 = permuatePileup(pooled, parallelPileup.getPileupsA());
+		permutated.setPileupsA(permutated1);
 
-		final Pileup[] permutated2 = permuatePileup(pooled, parallelPileup.getPileups2());
-		permutated.setPileups2(permutated2);
+		final DefaultPileup[] permutated2 = permuatePileup(pooled, parallelPileup.getPileupsB());
+		permutated.setPileupsB(permutated2);
 
 		return permutated;
 	}
 
-	private Pileup[] permuatePileup(Pileup pooled, Pileup[] pileups) {
-		Pileup[] permutated = new Pileup[pileups.length];
+	private DefaultPileup[] permuatePileup(Pileup pooled, Pileup[] pileups) {
+		DefaultPileup[] permutated = new DefaultPileup[pileups.length];
 
 		for(int j = 0; j < pileups.length; ++j) {
 			Pileup pileup = pileups[j];
-			permutated[j] = new Pileup(); 
+			permutated[j] = new DefaultPileup(); 
 
 			for(int i = 0; i < pileup.getCoverage(); ++i) {
 				int base = sampleBase(pooled);
 				byte qual = sampleQual(base, pooled);
 				//pooled.removeBase(base, qual);
 
-				permutated[j].addBase(base, qual);
+				permutated[j].getCounts().addBase(base, qual);
 			}
 		}
 		return permutated;
@@ -46,24 +48,24 @@ public class PermutateParallelPileupWithReplacement implements PermutateParallel
 	private int sampleBase(final Pileup pileup) {
 		final int r = random.nextInt(pileup.getCoverage());
 		int count = 0;
-		for(int base = 0; base < pileup.getBaseCount().length; ++base) {
-			if(r >= count && r < count + pileup.getBaseCount()[base]) {
+		for(int base = 0; base < pileup.getCounts().getBaseCount().length; ++base) {
+			if(r >= count && r < count + pileup.getCounts().getBaseCount()[base]) {
 				return base;
 			}
-			count += pileup.getBaseCount()[base];
+			count += pileup.getCounts().getBaseCount()[base];
 		}
 
 		return -1;
 	}
 
 	private byte sampleQual(final int base, final Pileup pileup) {
-		final int r = random.nextInt(pileup.getBaseCount(base));
+		final int r = random.nextInt(pileup.getCounts().getBaseCount(base));
 		int count = 0;
-		for(int i = 0; i < pileup.getQualCount()[base].length; ++i) {
-			if(r >= count && r < count + pileup.getQualCount()[base][i]) {
+		for(int i = 0; i < pileup.getCounts().getQualCount()[base].length; ++i) {
+			if(r >= count && r < count + pileup.getCounts().getQualCount()[base][i]) {
 				return (byte)(i);
 			}
-			count += pileup.getQualCount()[base][i];
+			count += pileup.getCounts().getQualCount()[base][i];
 		}
 
 		return -1;

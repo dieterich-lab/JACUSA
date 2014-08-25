@@ -61,7 +61,7 @@ public class FilterOption extends AbstractACOption {
 				if(a.length() > 1) {
 					filterFactory.processCLI(a);
 				}
-				parameters.getPileupBuilderFilters().addFilterFactory(filterFactory);
+				parameters.getFilterConfig().addFactory(filterFactory);
 			}
 		}
 	}

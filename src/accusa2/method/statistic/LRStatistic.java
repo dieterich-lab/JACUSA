@@ -33,7 +33,7 @@ public final class LRStatistic implements StatisticCalculator {
 	public LRStatistic(Parameters parameters) {
 		this.parameters = parameters;
 
-		phred2Prob = Phred2Prob.getInstance(parameters.getBases().size());
+		phred2Prob = Phred2Prob.getInstance(parameters.getBaseConfig().getBases().length);
 		defaultStatistic = new DefaultStatistic(parameters);
 	}
 
@@ -47,24 +47,24 @@ public final class LRStatistic implements StatisticCalculator {
 		final int bases[] = {0, 1, 2, 3};
 		//final int bases[] = parallelPileup.getPooledPileup().getAlleles();
 
-		final int coverage1 = defaultStatistic.getCoverage(parallelPileup.getPileups1());
-		final int coverage2 = defaultStatistic.getCoverage(parallelPileup.getPileups2());
+		final int coverage1 = defaultStatistic.getCoverage(parallelPileup.getPileupsA());
+		final int coverage2 = defaultStatistic.getCoverage(parallelPileup.getPileupsB());
 		final int minCoverage = Math.min(coverage1, coverage2);
 
-		final double[][] probs1 = defaultStatistic.getPileup2Probs(bases, parallelPileup.getPileups1());
-		final double[] alpha1 = defaultStatistic.estimateAlpha(bases, parallelPileup.getPooledPileup1(), minCoverage);
+		final double[][] probs1 = defaultStatistic.getPileup2Probs(bases, parallelPileup.getPileupsA());
+		final double[] alpha1 = defaultStatistic.estimateAlpha(bases, parallelPileup.getPooledPileupA(), minCoverage);
 		final DirichletDist dirichlet1 = new DirichletDist(alpha1);
 		final double density11 = getDensity(dirichlet1, probs1);
 
-		final double[][] probs2 = defaultStatistic.getPileup2Probs(bases, parallelPileup.getPileups2());
-		final double[] alpha2 = defaultStatistic.estimateAlpha(bases, parallelPileup.getPooledPileup2(), minCoverage);
+		final double[][] probs2 = defaultStatistic.getPileup2Probs(bases, parallelPileup.getPileupsB());
+		final double[] alpha2 = defaultStatistic.estimateAlpha(bases, parallelPileup.getPooledPileupB(), minCoverage);
 		final DirichletDist dirichlet2 = new DirichletDist(alpha2);
 		final double density22 = getDensity(dirichlet2, probs2);
 
 		//final int coverageP = parallelPileup.getPooledPileup().getCoverage();
-		final Pileup[] pileupsP = new Pileup[parallelPileup.getN1() + parallelPileup.getN2()];
-		System.arraycopy(parallelPileup.getPileups1(), 0, pileupsP, 0, parallelPileup.getPileups1().length);
-		System.arraycopy(parallelPileup.getPileups2(), 0, pileupsP, parallelPileup.getPileups1().length, parallelPileup.getPileups2().length);
+		final Pileup[] pileupsP = new Pileup[parallelPileup.getNA() + parallelPileup.getNB()];
+		System.arraycopy(parallelPileup.getPileupsA(), 0, pileupsP, 0, parallelPileup.getPileupsA().length);
+		System.arraycopy(parallelPileup.getPileupsB(), 0, pileupsP, parallelPileup.getPileupsA().length, parallelPileup.getPileupsB().length);
 
 		final double[][] probsP = defaultStatistic.getPileup2Probs(bases, pileupsP);
 		final double[] alphaP = defaultStatistic.estimateAlpha(bases, parallelPileup.getPooledPileup(), minCoverage);

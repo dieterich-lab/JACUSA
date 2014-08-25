@@ -26,7 +26,7 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 	public MethodOfMomentsStatistic(Parameters parameters) {
 		this.parameters 	= parameters;
 		
-		phred2Prob 			= Phred2Prob.getInstance(parameters.getBases().size());
+		phred2Prob 			= Phred2Prob.getInstance(parameters.getBaseConfig().getBases().length);
 	}
 
 	@Override
@@ -76,13 +76,13 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 		//final int bases[] = parallelPileup.getPooledPileup().getAlleles();
 
 		// first sample(s)
-		double density1 = getDensity(bases, parallelPileup.getPileups1());
+		double density1 = getDensity(bases, parallelPileup.getPileupsA());
 		
 		// second sample(s)
-		double density2 = getDensity(bases, parallelPileup.getPileups2());
+		double density2 = getDensity(bases, parallelPileup.getPileupsB());
 		
 		// pooled sample(s)
-		final Pileup[] pileupsP = parallelPileup.getPileupP();
+		final Pileup[] pileupsP = parallelPileup.getPileupsP();
 		double densityP = getDensity(bases, pileupsP);
 
 		final double z = -2 * (densityP) + 2 * (density1 + density2);

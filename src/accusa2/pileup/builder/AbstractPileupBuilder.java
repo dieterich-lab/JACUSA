@@ -1,21 +1,18 @@
 package accusa2.pileup.builder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import java.util.List;
 
-import net.sf.samtools.CigarElement;
+import net.sf.samtools.AlignmentBlock;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 import net.sf.samtools.SAMValidationError;
-import accusa2.cache.Coordinate;
 import accusa2.cli.Parameters;
-import accusa2.filter.process.AbstractPileupBuilderFilter;
+import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
 import accusa2.filter.samtag.SamTagFilter;
+import accusa2.pileup.DefaultPileup.Counts;
+import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.Pileup;
-import accusa2.process.phred2prob.Phred2Prob;
 import accusa2.util.AnnotatedCoordinate;
 
 public abstract class AbstractPileupBuilder {
@@ -24,75 +21,35 @@ public abstract class AbstractPileupBuilder {
 	protected String contig;
 	protected int genomicWindowStart;
 	protected int windowSize;
-
-	protected int currentGenomicPosition;
 	protected int maxGenomicPosition;
 
 	protected SAMRecord[] SAMRecordsBuffer;
-	protected SAMRecord currentRecord;
-	protected int[] currentBases;
-	protected byte[] currentQuals;
-
-	protected int[] coverageCache;
-	protected int[][] baseCache;
-	protected int[][][] qualCache;
-
-	protected int[][] filteredCoverageCache;
-	protected int[][][] filteredBaseCache;
-	protected int[][][][] filteredQualCache;
-
 	protected SAMFileReader reader;
 
+	// TODO make this a proper class
 	protected int filteredSAMRecords;
-	
+
 	protected Parameters parameters;
+	protected AbstractPileupBuilderFilterCache[] filterCache;
 	
-	protected List<Coordinate> indelsBuffer;
-	protected List<Coordinate> skippedBuffer;
-
-	protected List<AbstractPileupBuilderFilter> pileupBuilderFilters;
-
-	public abstract boolean hasNext();
-	public abstract Pileup next();
+	protected boolean isCached;
 
 	public AbstractPileupBuilder(AnnotatedCoordinate annotatedCoordinate, SAMFileReader SAMFileReader, Parameters parameters) {
 		contig				= annotatedCoordinate.getSequenceName();
-		genomicWindowStart 	= Integer.MAX_VALUE; //annotatedCoordinate.getStart();
-		currentGenomicPosition 	= annotatedCoordinate.getStart();
+		genomicWindowStart 	= annotatedCoordinate.getStart();
 		windowSize 			= parameters.getWindowSize();
 		maxGenomicPosition 	= Math.min(annotatedCoordinate.getEnd(), SAMFileReader.getFileHeader().getSequence(contig).getSequenceLength());
 
 		this.parameters		= parameters;
-		pileupBuilderFilters= parameters.getPileupBuilderFilters().getPileupBuilderFilters();
+		filterCache			= parameters.getFilterConfig().createCache();
 
 		// build cache
-		currentRecord 		= null;
 		SAMRecordsBuffer	= new SAMRecord[20000];
-		init();
 
 		this.reader			= SAMFileReader;
+		isCached			= false;
 
 		filteredSAMRecords	= 0;
-
-		// init
-		currentBases 		= new int[windowSize];
-		currentQuals 		= new byte[windowSize];
-		indelsBuffer 		= new ArrayList<Coordinate>(3);
-		skippedBuffer 		= new ArrayList<Coordinate>(3);
-		adjustCurrentGenomicPosition(currentGenomicPosition);
-	}
-
-	protected void init() {
-		coverageCache 	= new int[windowSize];
-		baseCache 		= new int[windowSize][Pileup.BASES2.length];
-		qualCache 		= new int[windowSize][Pileup.BASES2.length][Phred2Prob.MAX_Q];
-
-		// TODO move this to respective filter
-		if(pileupBuilderFilters.size() > 0) {
-			filteredCoverageCache 	= new int[windowSize][pileupBuilderFilters.size()];
-			filteredBaseCache 		= new int[windowSize][pileupBuilderFilters.size()][Pileup.BASES2.length];
-			filteredQualCache 		= new int[windowSize][pileupBuilderFilters.size()][Pileup.BASES2.length][Phred2Prob.MAX_Q];
-		}
 	}
 
 	/**
@@ -100,7 +57,7 @@ public abstract class AbstractPileupBuilder {
 	 * @param targetPosition
 	 * @return
 	 */
-	protected int getNextValidPosition(int targetPosition) {
+	public int getNextValidGenomicPosition(int targetPosition) {
 		SAMRecordIterator iterator = reader.query(contig, targetPosition, maxGenomicPosition, false);
 		while(iterator.hasNext() ) {
 			SAMRecord record = iterator.next();
@@ -112,101 +69,77 @@ public abstract class AbstractPileupBuilder {
 			}
 		}
 		iterator.close();
-		iterator = null;
 
 		// if no more reads are found 
 		return -1;
 	}
 
-	/**
-	 * Reset all caches in window
-	 * TODO only iterate over considered bases
-	 */
-	protected void clearPileupCache() {
-		Arrays.fill(coverageCache, 0);
-		for(int f = 0; f < pileupBuilderFilters.size(); ++f) {
-			Arrays.fill(filteredCoverageCache[f], 0);
-		}
-
-		for(int i = 0; i < windowSize; ++i) {
-			Arrays.fill(baseCache[i], 0);
-			for(int f = 0; f < pileupBuilderFilters.size(); ++f) {
-				Arrays.fill(filteredBaseCache[i][f], 0);
-				for(int b = 0; b < Pileup.BASES2.length; ++b) {
-					Arrays.fill(filteredQualCache[i][f][b], 0);
-				}
-			}
-
-			for(int b = 0; b < Pileup.BASES2.length; ++b) {
-				Arrays.fill(qualCache[i][b], 0);
-			}
-		}
+	public boolean isCached() {
+		return isCached;
 	}
 
+	public boolean adjustWindowStart() {
+		return adjustWindowStart(getWindowEnd());
+	}
+	
 	/**
 	 * Tries to adjust to target position
-	 * if this does not work it looks for the first valid SAMRecord and returns its position!
-	 * Return true if a valid SAMRecord could be found.
+	 * Return true if at least one valid SAMRecord could be found.
 	 * WARNING: currentGenomicPosition != targetPosition is possible after method call 
 	 * @param smallestTargetPosition
 	 * @return
 	 */
-	public boolean adjustCurrentGenomicPosition(int smallestTargetPosition) {
-		currentGenomicPosition = smallestTargetPosition;
-		if(isContainedInWindow(smallestTargetPosition)) {
-			return true;
-		}
-		genomicWindowStart = smallestTargetPosition;
-		clearPileupCache();
+	public boolean adjustWindowStart(int genomicWindowStart) {
+		clearCache();
+		isCached = false;
+		this.genomicWindowStart = genomicWindowStart;
 
-		// fill window
+		// get iterator to fill the window
 		SAMRecordIterator iterator = reader.query(contig, genomicWindowStart, Math.min(getWindowEnd(), maxGenomicPosition), false);
 
 		// true if a valid read is found within genomicWindowStart and genomicWindowStart + windowSize
 		boolean windowHit = false;
-		int readSAMReocords = 0;
+		int SAMReocordsInBuffer = 0;
 		while(iterator.hasNext()) {
 			SAMRecord record = iterator.next();
 
 			if(isValid(record)) {
-				SAMRecordsBuffer[readSAMReocords++] = record;
+				SAMRecordsBuffer[SAMReocordsInBuffer++] = record;
 			} else {
 				// TODO make proper statistics
 				filteredSAMRecords++;
 			}
 
 			// process buffer
-			if(readSAMReocords >= SAMRecordsBuffer.length) {
-				for(int i = 0; i < readSAMReocords; ++i) {
+			if (SAMReocordsInBuffer >= SAMRecordsBuffer.length) {
+				for(SAMRecord bufferedRecord : SAMRecordsBuffer) {
 					try {
-						processRecord(SAMRecordsBuffer[i]);
+						processRecord(bufferedRecord);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 				// reset counter
-				readSAMReocords = 0;
-				// we found a valid SAMRecord
+				SAMReocordsInBuffer = 0;
+				// we found at least a valid SAMRecord
 				windowHit = true;
 			}
 		}
 		iterator.close();
 
-		if(!windowHit && readSAMReocords == 0) {
-			// try to find a valid next SAMRecord
-			int nextPosition = getNextValidPosition(smallestTargetPosition + windowSize);
-			if(nextPosition > 0) {
-				return adjustCurrentGenomicPosition(nextPosition);
-			}
+		if (! windowHit && SAMReocordsInBuffer == 0) {
+			// no reads found
+			isCached = false;
 			return false;
 		} else { // process any left SAMrecords in the buffer
-			for(int i = 0; i < readSAMReocords; ++i) {
+			for(int i = 0; i < SAMReocordsInBuffer; ++i) {
 				try {
 					processRecord(SAMRecordsBuffer[i]);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
+			isCached = true;
 			return true;
 		}
 	}
@@ -307,181 +240,20 @@ public abstract class AbstractPileupBuilder {
 	 * @throws Exception
 	 */
 	protected void processRecord(final SAMRecord record) throws Exception {
-		currentRecord = record;
-
-		// reset
-		int readPosition 	= 0;
-		int genomicPosition = currentRecord.getAlignmentStart();
-
-		// reset
-		Arrays.fill(currentBases, -1);
-		Arrays.fill(currentQuals, (byte)-1);
-
-		// reset
-		indelsBuffer.clear();
-		skippedBuffer.clear();
-
-		// TODO check picards tools if there is a faster way
-		for(final CigarElement cigarElement : currentRecord.getCigar().getCigarElements()) {
-
-			switch(cigarElement.getOperator()) {
-
-			/*
-			 * handle insertion
-			 */
-			case I:
-				processInsertion(readPosition, genomicPosition, cigarElement, currentRecord);
-				readPosition += cigarElement.getLength();
-				break;
-
-			/*
-			 * handle alignment/sequence match and mismatch
-			 */
-			case M:
-			case EQ:
-			case X:
-				processAlignmetMatch(readPosition, genomicPosition, cigarElement, currentRecord);
-				readPosition += cigarElement.getLength();
-				genomicPosition += cigarElement.getLength();
-				break;
-
-			/*
-			 * handle hard clipping 
-			 */
-			case H:
-				processHardClipping(readPosition, genomicPosition, cigarElement, currentRecord);
-				break;
-
-			/*
-			 * handle deletion from the reference and introns
-			 */
-			case D:
-				processDeletion(readPosition, genomicPosition, cigarElement, currentRecord);
-				genomicPosition += cigarElement.getLength();
-				break;
-
-			case N:
-				processSkipped(readPosition, genomicPosition, cigarElement, currentRecord);
-				genomicPosition += cigarElement.getLength();
-				break;
-
-			/*
-			 * soft clipping
-			 */
-			case S:
-				processSoftClipping(readPosition, genomicPosition, cigarElement, currentRecord);
-				readPosition += cigarElement.getLength();
-				break;
-
-			/*
-			 * silent deletion from padded sequence
-			 */
-			case P:
-				processPadding(readPosition, genomicPosition, cigarElement, currentRecord);
-				break;
-
-			default:
-				throw new RuntimeException("Unsupported Cigar Operator: " + cigarElement.getOperator().toString());
-			}
+		// process alignment block
+		for (AlignmentBlock alignmentBlock : record.getAlignmentBlocks()) {
+			processAlignmentBlock(record, alignmentBlock);
 		}
 
 		// filter
 		// let the filter decide what data they need
-		for(AbstractPileupBuilderFilter pileupBuilderFilter : pileupBuilderFilters) {
+		for(AbstractPileupBuilderFilterCache pileupBuilderFilter : filterCache) {
 			if(pileupBuilderFilter != null) {
-				pileupBuilderFilter.process(this);
+				pileupBuilderFilter.processCigar(genomicWindowStart, record.getCigar(), record);
 			}
 		}
 	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public int[] getCoverageCache() {
-		return coverageCache;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public int[][] getBaseCache() {
-		return baseCache;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public int[][][] getQualCache() {
-		return qualCache;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public int[][] getFilteredCoverageCache() {
-		return filteredCoverageCache;
-	}
 	
-	/**
-	 * 
-	 * @return
-	 */
-	public int[][][] getFilteredBaseCache() {
-		return filteredBaseCache;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public int[][][][] getFilteredQualCache() {
-		return filteredQualCache;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public SAMRecord getCurrentRecord() {
-		return currentRecord;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public int[] getCurrentBases() {
-		return currentBases;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public byte[] getCurrentQuals() {
-		return currentQuals;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public List<Coordinate> getIndels() {
-		return indelsBuffer;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public List<Coordinate> getSkipped() {
-		return skippedBuffer;
-	}
-
 	/**
 	 * 
 	 * @return
@@ -497,13 +269,24 @@ public abstract class AbstractPileupBuilder {
 	public int getGenomicWindowStart() {
 		return genomicWindowStart;
 	}
+
+	/**
+	 * 
+	 * @param windowPosition
+	 * @return
+	 */
+	public int getCurrentGenomicPosition(int windowPosition) {
+		return genomicWindowStart + windowPosition;
+	}
 	
-	abstract protected void processInsertion(int readPosition, int genomicPosition, final CigarElement cigarElement, final SAMRecord record);
-	abstract protected void processAlignmetMatch(int readPosition, int genomicPosition, final CigarElement cigarElement, final SAMRecord record);	
-	abstract protected void processHardClipping(int readPosition, int genomicPosition, final CigarElement cigarElement, final SAMRecord record);
-	abstract protected void processDeletion(int readPosition, int genomicPosition, final CigarElement cigarElement, final SAMRecord record);
-	abstract protected void processSkipped(int readPosition, int genomicPosition, final CigarElement cigarElement, final SAMRecord record);
-	abstract protected void processSoftClipping(int readPosition, int genomicPosition, final CigarElement cigarElement, final SAMRecord record);
-	abstract protected void processPadding(int readPosition, int genomicPosition, final CigarElement cigarElement, final SAMRecord record);
+	// abstract methods
+	
+	// Reset all caches in windows
+	public abstract void clearCache();
+	public abstract boolean isCovered(int windowPosition);
+	public abstract Pileup getPileup(int windowPosition, STRAND strand);
+	public abstract Counts[] getFilteredCounts(int windowPosition, STRAND strand);
+	public abstract int getCoverage(int windowPosition, STRAND strand);
+	protected abstract void processAlignmentBlock(SAMRecord record, AlignmentBlock alignmentBlock);
 
 }

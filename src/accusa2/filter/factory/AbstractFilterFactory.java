@@ -1,15 +1,15 @@
 package accusa2.filter.factory;
 
 import accusa2.cli.Parameters;
-import accusa2.filter.process.AbstractParallelPileupFilter;
-import accusa2.filter.process.AbstractPileupBuilderFilter;
+import accusa2.filter.cache.AbstractParallelPileupFilter;
+import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
 
 public abstract class AbstractFilterFactory {
 
 	public final static char SEP = ':';
 
-	private char c;
-	private String desc;
+	protected char c;
+	protected String desc;
 
 	private Parameters parameters;
 
@@ -18,8 +18,8 @@ public abstract class AbstractFilterFactory {
 		this.desc = desc;
 	}
 
-	public abstract AbstractParallelPileupFilter getParallelPileupFilterInstance();
-	public abstract AbstractPileupBuilderFilter getPileupBuilderFilterInstance();
+	public abstract AbstractParallelPileupFilter getFilterInstance();
+	public abstract AbstractPileupBuilderFilterCache getCacheInstance();
 
 	public final char getC() {
 		return c;

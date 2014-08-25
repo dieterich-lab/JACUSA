@@ -1,24 +1,23 @@
-package accusa2.filter.process;
+package accusa2.filter.cache;
 
 import accusa2.pileup.ParallelPileup;
 
 public abstract class AbstractParallelPileupFilter {
-	
+
 	private char c;
-	protected ParallelPileup filteredParallelPileup;
-	
+	protected ParallelPileup filtered;
+
 	public AbstractParallelPileupFilter(char c) {
 		this.c = c;
 	}
 
 	public abstract boolean filter(ParallelPileup parallelPileup);
-
 	public boolean quitFiltering() {
 		return false;
 	}
 
 	public ParallelPileup getFilteredParallelPileup() {
-		return filteredParallelPileup;
+		return filtered;
 	}
 
 	public final char getC() {

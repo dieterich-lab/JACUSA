@@ -36,7 +36,7 @@ public class DiscriminantStatisticContainer implements StatisticContainer {
 	 */
 	@Override
 	public void addNULL_Value(final double value, final ParallelPileup parallelPileup) {
-		if(parallelPileup.getPooledPileup1().getAlleles().length > 1 && parallelPileup.getPooledPileup2().getAlleles().length > 1) {
+		if(parallelPileup.getPooledPileupA().getAlleles().length > 1 && parallelPileup.getPooledPileupB().getAlleles().length > 1) {
 			he_he_V.addValue(value);
 		} else {
 			ho_he_V.addValue(value);
@@ -48,7 +48,7 @@ public class DiscriminantStatisticContainer implements StatisticContainer {
 	 */
 	@Override
 	public void addR_Value(final double value, final ParallelPileup parallelPileup) {
-		if(parallelPileup.getPooledPileup1().getAlleles().length > 1 && parallelPileup.getPooledPileup2().getAlleles().length > 1) { 
+		if(parallelPileup.getPooledPileupA().getAlleles().length > 1 && parallelPileup.getPooledPileupB().getAlleles().length > 1) { 
 			he_he_R.addValue(value);
 		} else {
 			ho_he_R.addValue(value);
@@ -110,7 +110,7 @@ public class DiscriminantStatisticContainer implements StatisticContainer {
 		double V = 0.0;
 		double R = 0.0;
 
-		if(parallelPileup.getPooledPileup1().getAlleles().length > 1 && parallelPileup.getPooledPileup2().getAlleles().length > 1) { 
+		if(parallelPileup.getPooledPileupA().getAlleles().length > 1 && parallelPileup.getPooledPileupB().getAlleles().length > 1) { 
 			V	= (double)he_he_V.getCumulativeCount(value);
 			R 	= (double)he_he_R.getCumulativeCount(value);
 		} else {

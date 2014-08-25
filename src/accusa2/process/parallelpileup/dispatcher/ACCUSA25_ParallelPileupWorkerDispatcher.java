@@ -10,7 +10,7 @@ import accusa2.io.output.Output;
 import accusa2.io.output.OutputWriter;
 import accusa2.io.output.TmpOutputReader;
 import accusa2.io.output.TmpOutputWriter;
-import accusa2.pileup.ParallelPileup;
+import accusa2.pileup.DefaultParallelPileup;
 import accusa2.process.parallelpileup.worker.ACCUSA25_ParallelPileupWorker;
 import accusa2.util.CoordinateProvider;
 
@@ -45,7 +45,7 @@ public class ACCUSA25_ParallelPileupWorkerDispatcher extends AbstractParallelPil
 
 		// write Header
 		try {
-			output.write(resultFormat.getHeader(new ParallelPileup(parameters.getReplicates1(), parameters.getReplicates2())));
+			output.write(resultFormat.getHeader(new DefaultParallelPileup(parameters.getReplicates1(), parameters.getReplicates2())));
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;

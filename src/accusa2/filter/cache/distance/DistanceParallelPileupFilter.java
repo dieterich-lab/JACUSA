@@ -1,6 +1,9 @@
-package accusa2.filter.process;
+package accusa2.filter.cache.distance;
 
 import accusa2.cli.Parameters;
+import accusa2.filter.cache.AbstractParallelPileupFilter;
+import accusa2.pileup.DefaultParallelPileup;
+import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 
@@ -25,19 +28,19 @@ public class DistanceParallelPileupFilter extends AbstractParallelPileupFilter {
 	// what if AAAA VS GGGG - same number?
 	@Override
 	public boolean filter(ParallelPileup parallelPileup) {
-		filteredParallelPileup = new ParallelPileup(parallelPileup);
+		filtered = new DefaultParallelPileup(parallelPileup);
 
-		int[] variants = filteredParallelPileup.getVariantBases();
-		if(variants.length == 0 || filteredParallelPileup.isHoHo()) {
+		int[] variants = filtered.getVariantBases();
+		if(variants.length == 0 || DefaultParallelPileup.isHoHo(filtered)) {
 			return false; // FIXME all other cases are currently ignored
 		}
 		int variant = variants[0]; 
 
-		int count1 = filteredParallelPileup.getPooledPileup1().getBaseCount()[variant];
-		Pileup[] filteredPileups1 = applyFilter(variant, filteredParallelPileup.getPileups1());
+		int count1 = filtered.getPooledPileupA().getBaseCount()[variant];
+		DefaultPileup[] filteredPileups1 = applyFilter(variant, filtered.getPileupsA());
 
-		int count2 = filteredParallelPileup.getPooledPileup2().getBaseCount()[variant];
-		Pileup[] filteredPileups2 = applyFilter(variant, filteredParallelPileup.getPileups2());
+		int count2 = filtered.getPooledPileupB().getBaseCount()[variant];
+		DefaultPileup[] filteredPileups2 = applyFilter(variant, filtered.getPileupsB());
 
 		// if nothing was filtered
 		if(count1 == 0 && count2 == 0) {
@@ -47,13 +50,13 @@ public class DistanceParallelPileupFilter extends AbstractParallelPileupFilter {
 		int filteredCount = 0;
 		int count = 0;
 		if(count1 > 0) {
-			filteredParallelPileup.setPileups1(filteredPileups1);
-			filteredCount = filteredParallelPileup.getPooledPileup1().getBaseCount()[variant];
+			filtered.setPileupsA(filteredPileups1);
+			filteredCount = filtered.getPooledPileupA().getBaseCount()[variant];
 			count = count1;
 		}
 		if(count2 > 0) {
-			filteredParallelPileup.setPileups2(filteredPileups2);
-			filteredCount = filteredParallelPileup.getPooledPileup2().getBaseCount()[variant];
+			filtered.setPileupsB(filteredPileups2);
+			filteredCount = filtered.getPooledPileupB().getBaseCount()[variant];
 			count = count2;
 		}
 
@@ -62,24 +65,29 @@ public class DistanceParallelPileupFilter extends AbstractParallelPileupFilter {
 			return true;
 		}
 
-		filteredParallelPileup = parallelPileup;
+		filtered = parallelPileup;
 		return false;
 	}
 
 	/**
 	 * FIXME check this
 	 * null if filter did not change anything
-	 * @param pileups
+	 * @param extendedPileups
 	 * @return
 	 */
-	private Pileup[] applyFilter(int variantBase, Pileup[] pileups) {
-		Pileup[] filtered = new Pileup[pileups.length];
+	private Pileup[] applyFilter(int variantBase, ExtendedPileup[] extendedPileups) {
+		DefaultPileup[] filtered = new DefaultPileup[extendedPileups.length];
 
 		boolean processed = false;
-		for(int i = 0; i < pileups.length; ++i) {
-			filtered[i] = new Pileup(pileups[i]);
-
-			Pileup pileup = parameters.getPileupBuilderFilters().getFilteredPileup(getC(), filtered[i]);
+		for (int i = 0; i < extendedPileups.length; ++i) {
+			ExtendedPileup extendedPileup = extendedPileups[i];
+			if (extendedPileup.getFilteredCounts() == null) {
+				filtered[i] = null;
+			} else {
+				filtered[i] = new DefaultPileup(extendedPileup.getPileup());
+			
+				filtered[i].getCounts().substract(variantBase, counts);
+			}
 			if(pileup != null) { 
 				filtered[i].substractPileup(variantBase, pileup);
 				processed = true;

@@ -2,9 +2,10 @@ package accusa2.io.format;
 
 import accusa2.cli.Parameters;
 import accusa2.filter.factory.AbstractFilterFactory;
-import accusa2.pileup.Pileup;
+import accusa2.pileup.BaseConfig;
+import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.ParallelPileup;
-import accusa2.pileup.Pileup.STRAND;
+import accusa2.pileup.Pileup;
 
 // CHANGED
 public class DefaultResultFormat extends AbstractResultFormat {
@@ -34,17 +35,17 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		sb.append(getSEP());
 
 		// (1) first sample  infos
-		addSampleHeader(sb, 1, parallelPileup.getN1());
+		addSampleHeader(sb, 1, parallelPileup.getNA());
 		sb.append(getSEP());
 		// (2) second sample  infos
-		addSampleHeader(sb, 2, parallelPileup.getN2());
+		addSampleHeader(sb, 2, parallelPileup.getNB());
 
 		sb.append(getSEP());
 		// unfiltered value
 		sb.append("unfiltered");
 
 		// values from filters
-		for(final AbstractFilterFactory abstractPileupFilterFactory : parameters.getPileupBuilderFilters().getFilterFactories()) {
+		for(final AbstractFilterFactory abstractPileupFilterFactory : parameters.getFilterConfig().getFactories()) {
 			sb.append(getSEP());
 			sb.append("filtered_");
 			sb.append(abstractPileupFilterFactory.getC());
@@ -108,9 +109,9 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		sb.append(parallelPileup.getPosition());
 
 		// (1) first pileups
-		addPileups(sb, parallelPileup.getStrand1(), parallelPileup.getPileups1());
+		addPileups(sb, parallelPileup.getStrandA(), parallelPileup.getPileupsA());
 		// (2) second pileups
-		addPileups(sb, parallelPileup.getStrand2(), parallelPileup.getPileups2());
+		addPileups(sb, parallelPileup.getStrandB(), parallelPileup.getPileupsB());
 		
 		return sb;
 	}
@@ -143,9 +144,9 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		// output sample: Ax,Cx,Gx,Tx
 		for (Pileup pileup : pileups) {
 			sb.append(SEP);
-			for (int base = 0; base < Pileup.BASES2.length ; ++base) {
+			for (int base = 0; base < BaseConfig.VALID.length ; ++base) {
 				sb.append(SEP2);
-				sb.append(pileup.getBaseCount()[base]);
+				sb.append(pileup.getCounts().getBaseCount()[base]);
 			}
 		}
 	}

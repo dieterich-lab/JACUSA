@@ -3,9 +3,10 @@ package accusa2.io.format;
 import net.sf.samtools.SAMUtils;
 import accusa2.cli.Parameters;
 import accusa2.filter.factory.AbstractFilterFactory;
+import accusa2.pileup.BaseConfig;
+import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
-import accusa2.pileup.Pileup.STRAND;
 import accusa2.process.phred2prob.Phred2Prob;
 
 public class PileupResultFormat extends PileupFormat {
@@ -47,13 +48,13 @@ public class PileupResultFormat extends PileupFormat {
 
 		sb.append("unfiltered");
 
-		for(final AbstractFilterFactory abstractPileupFilterFactory : parameters.getPileupBuilderFilters().getFilterFactories()) {
+		for(final AbstractFilterFactory abstractPileupFilterFactory : parameters.getFilterConfig().getFactories()) {
 			sb.append(getSEP());
 			sb.append("filtered_");
 			sb.append(abstractPileupFilterFactory.getC());
 		}
 
-		if(parameters.getPileupBuilderFilters().hasFiters()) {
+		if(parameters.getFilterConfig().hasFiters()) {
 			sb.append(getSEP());
 			sb.append("filtered");
 		}
@@ -90,8 +91,8 @@ public class PileupResultFormat extends PileupFormat {
 			for(int base : pileup.getAlleles()) {
 				
 				// print bases 
-				for(int i = 0; i < pileup.getBaseCount()[base]; ++i) {
-					sb.append(Pileup.BASES2[base]);
+				for(int i = 0; i < pileup.getCounts().getBaseCount()[base]; ++i) {
+					sb.append(BaseConfig.VALID[base]);
 				}
 			}
 
@@ -101,7 +102,7 @@ public class PileupResultFormat extends PileupFormat {
 			for(int base : pileup.getAlleles()) {
 				for(byte qual = 0; qual < Phred2Prob.MAX_Q; ++qual) {
 
-					int count = pileup.getQualCount(base, qual);
+					int count = pileup.getCounts().getQualCount(base, qual);
 					if(count > 0) {
 						// repeat count times
 						for(int j = 0; j < count; ++j) {

@@ -3,7 +3,7 @@ package accusa2.pileup.iterator;
 
 import java.util.Iterator;
 
-import accusa2.pileup.ParallelPileup;
+import accusa2.pileup.DefaultParallelPileup;
 import accusa2.util.AnnotatedCoordinate;
 
 
@@ -18,14 +18,14 @@ import accusa2.util.AnnotatedCoordinate;
  * @author Sebastian Fröhler
  * @author Michael Piechotta
  */
-public interface ParallelPileupIterator extends Iterator<ParallelPileup> {
+public interface ParallelPileupIterator extends Iterator<DefaultParallelPileup> {
 
 	/**
 	 * Returns the next pileup columns.
 	 * 
 	 * @return the next pileup columns
 	 */
-	public ParallelPileup next();
+	public DefaultParallelPileup next();
 
 	/**
 	 * Returns true iff more pileup columns are available to be returned.
@@ -33,6 +33,7 @@ public interface ParallelPileupIterator extends Iterator<ParallelPileup> {
 	 * @return true iff more pileup columns are available to be returned
 	 */
 	public boolean hasNext();
-	
+
 	public AnnotatedCoordinate getAnnotatedCoordinate();
+
 }

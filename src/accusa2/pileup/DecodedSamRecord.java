@@ -16,6 +16,7 @@ public final class DecodedSamRecord {
 	private final List<Coordinate> skipped;
 	private final SAMRecord samRecord;
 
+	@Deprecated
 	public DecodedSamRecord(final int readPosition, final int genomicPosition, final CigarElement cigarElement, final List<Coordinate> indels, final List<Coordinate> skipped, final SAMRecord samRecord) {
 		this.readPostition 	= readPosition;
 		this.genomicPostition = genomicPosition;

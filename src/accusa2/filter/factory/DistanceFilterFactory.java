@@ -1,27 +1,24 @@
 package accusa2.filter.factory;
 
-import accusa2.filter.process.AbstractPileupBuilderFilter;
-import accusa2.filter.process.DistanceParallelPileupFilter;
-import accusa2.filter.process.DistancePileupBuilderFilter;
+import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
+import accusa2.filter.cache.distance.AbstractDistanceFilter;
+import accusa2.filter.cache.distance.DistanceParallelPileupFilter;
+import accusa2.filter.cache.distance.DistancePileupBuilderCache;
 
+// TODO make this generic
 public class DistanceFilterFactory extends AbstractFilterFactory {
 
-	private static int FILTER_DISTANCE = 6;
-	private int filterDistance;
-	
+	// options
+	// RS Read_Start
+	// RE Reand_End
+	// SJ SpliceJunction
+	// ID InDel
+	// HP HomoPolymer
+
 	public DistanceFilterFactory() {
-		super('D', "Filter distance to start/end of read, intron and INDEL position. Default: " + FILTER_DISTANCE);
-		this.filterDistance = FILTER_DISTANCE;
-	}
-	
-	public final int getDistance() {
-		return filterDistance;
+		super('D', "Filter distance to start/end of read, intron and INDEL position. Default: ");
 	}
 
-	public final void setDistance(final int distance) {
-		this.filterDistance = distance;
-	}
-	
 	@Override
 	public void processCLI(String line) throws IllegalArgumentException {
 		if(line.length() == 1) {
@@ -33,17 +30,36 @@ public class DistanceFilterFactory extends AbstractFilterFactory {
 		if(distance < 0) {
 			throw new IllegalArgumentException("Invalid distance " + line);
 		}
-		setDistance(distance);
+		
+		
 	}
 
-	@Override
-	public DistanceParallelPileupFilter getParallelPileupFilterInstance() {
-		return new DistanceParallelPileupFilter(getC(), getDistance(), getParameters());
+	// FIXME
+	private AbstractDistanceFilter create(DISTANCE_FILTER op) {
+		switch (op) {
+		case RS:
+		case RE:
+		case SJ:
+		case ID:
+		case HP:
+			break;
+		}
+		
+		return null;
 	}
 
+	// TODO
 	@Override
-	public AbstractPileupBuilderFilter getPileupBuilderFilterInstance() {
-		return new DistancePileupBuilderFilter(getC(), getDistance());
+	public DistanceParallelPileupFilter getFilterInstance() {
+		return new DistanceParallelPileupFilter(getC(), 0, getParameters());
+	}
+
+	// TODO
+	@Override
+	public AbstractPileupBuilderFilterCache getCacheInstance() {
+		return new DistancePileupBuilderCache(getC(), 0);
 	}
 	
+	public enum DISTANCE_FILTER {RS, RE, SJ, ID, HP}
+
 }

@@ -1,6 +1,8 @@
-package accusa2.filter.process;
+package accusa2.filter.cache;
 
 import accusa2.cli.Parameters;
+import accusa2.pileup.DefaultParallelPileup;
+import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 
@@ -27,29 +29,29 @@ public class HomopolymerParallelPileupFilter extends AbstractParallelPileupFilte
 	// what if AAAA VS GGGG - same number?
 	@Override
 	public boolean filter(ParallelPileup parallelPileup) {
-		this.filteredParallelPileup = new ParallelPileup(parallelPileup);
+		this.filtered = new DefaultParallelPileup(parallelPileup);
 
 		int[] alleles = parallelPileup.getPooledPileup().getAlleles();
 
 		// determine the least abundant variant
 		for(int base : alleles) {
 			int count = parallelPileup.getPooledPileup().getBaseCount()[base];
-			Pileup[] filteredPileups1 = applyFilter(base, parallelPileup.getPileups1());
-			Pileup[] filteredPileups2 = applyFilter(base, parallelPileup.getPileups2());
+			Pileup[] filteredPileups1 = applyFilter(base, parallelPileup.getPileupsA());
+			Pileup[] filteredPileups2 = applyFilter(base, parallelPileup.getPileupsB());
 
 			// if nothing was filtered
 			if(filteredPileups1 == null && filteredPileups2 == null) {
 				continue;
 			}
-			filteredParallelPileup = new ParallelPileup(filteredPileups1, filteredPileups2);
-			int filteredCount = filteredParallelPileup.getPooledPileup().getBaseCount()[base];
+			filtered = new DefaultParallelPileup(filteredPileups1, filteredPileups2);
+			int filteredCount = filtered.getPooledPileup().getBaseCount()[base];
 			
 			if((double)filteredCount / (double)count <= 0.5) {
 				return true;
 			}
 		}
 
-		this.filteredParallelPileup = parallelPileup;
+		this.filtered = parallelPileup;
 		return false;
 	}
 
@@ -58,14 +60,14 @@ public class HomopolymerParallelPileupFilter extends AbstractParallelPileupFilte
 	 * @param pileups
 	 * @return
 	 */
-	private Pileup[] applyFilter(int variantBase, Pileup[] pileups) {
-		Pileup[] filtered = new Pileup[pileups.length];
+	private Pileup[] applyFilter(int variantBase, DefaultPileup[] pileups) {
+		DefaultPileup[] filtered = new DefaultPileup[pileups.length];
 
 		boolean processed = false;
 		for(int i = 0; i < pileups.length; ++i) {
-			filtered[i] = new Pileup(pileups[i]);
+			filtered[i] = new DefaultPileup(pileups[i]);
 
-			Pileup pileup = parameters.getPileupBuilderFilters().getFilteredPileup(getC(), filtered[i]);
+			DefaultPileup pileup = parameters.getFilterConfig().getFilteredPileup(getC(), filtered[i]);
 			if(pileup != null) { 
 				filtered[i].substractPileup(variantBase, pileup);
 				processed = true;

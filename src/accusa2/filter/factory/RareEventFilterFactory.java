@@ -1,24 +1,26 @@
 package accusa2.filter.factory;
 
-import accusa2.filter.process.AbstractPileupBuilderFilter;
-import accusa2.filter.process.RareEventParallelPileupFilter;
+import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
+import accusa2.filter.cache.RareEventParallelPileupFilter;
 
+// TODO make this nice
 public class RareEventFilterFactory extends AbstractFilterFactory {
 
 	private int reads = 2;
 	private double level = 0.1;
 
 	public RareEventFilterFactory() {
-		super('R', "Rare event filter. Default: TODO");
+		super('R', "");
+		desc = "Rare event filter. Default: " + Integer.toString(reads) + ":" + Double.toString(level);
 	}
 
 	@Override
-	public RareEventParallelPileupFilter getParallelPileupFilterInstance() {
+	public RareEventParallelPileupFilter getFilterInstance() {
 		return new RareEventParallelPileupFilter(getC(), getReads(), getLevel());
 	}
 
 	@Override
-	public AbstractPileupBuilderFilter getPileupBuilderFilterInstance() {
+	public AbstractPileupBuilderFilterCache getCacheInstance() {
 		return null;
 	}
 

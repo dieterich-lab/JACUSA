@@ -1,14 +1,11 @@
 package accusa2.cli.options;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
 import accusa2.cli.Parameters;
-import accusa2.pileup.Pileup;
+import accusa2.pileup.BaseConfig;
 
 public class ConsiderBasesOption extends AbstractACOption {
 
@@ -22,7 +19,7 @@ public class ConsiderBasesOption extends AbstractACOption {
 	@Override
 	public Option getOption() {
 		StringBuilder sb = new StringBuilder();
-		for(char c : parameters.getBases()) {
+		for(char c : parameters.getBaseConfig().getBases()) {
 			sb.append(c);
 		}
 
@@ -33,21 +30,16 @@ public class ConsiderBasesOption extends AbstractACOption {
 	        .create(opt);
 	}
 
+	// TODO allow A->G
 	@Override
 	public void process(CommandLine line) throws Exception {
 		if(line.hasOption(opt)) {
 	    	char[] values = line.getOptionValue(opt).toCharArray();
-	    	if(values.length < 2 || values.length > Pileup.BASES2.length) {
+	    	if(values.length < 2 || values.length > BaseConfig.VALID.length) {
 	    		throw new IllegalArgumentException("Possible values for " + longOpt.toUpperCase() + ": TC, AG, ACGT, AT...");
 	    	}
-	    	Set<Character> bases = new HashSet<Character>(Pileup.BASES2.length);
-	    	Set<Character> basesComplemented = new HashSet<Character>(Pileup.BASES2.length);
-	    	for(char b : values) {
-	    		bases.add(b);
-	    		basesComplemented.add(Pileup.BASES[Pileup.COMPLEMENT[Pileup.BASE2INT.get(b)]]);
-	    	}
-	    	parameters.setBases(bases);
-	    	parameters.setBasesComplemented(basesComplemented);
+	    	char[] bases = new char[values.length];
+	    	parameters.getBaseConfig().setBases(bases);
 	    }
 	}
 

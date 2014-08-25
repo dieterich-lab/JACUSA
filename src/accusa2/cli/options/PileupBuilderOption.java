@@ -6,12 +6,15 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
 import accusa2.cli.Parameters;
+import accusa2.pileup.builder.DirectedPileupBuilderFactory;
+import accusa2.pileup.builder.PileupBuilderFactory;
+import accusa2.pileup.builder.UndirectedPileupBuilderFactory;
 
 public class PileupBuilderOption extends AbstractACOption {
 
-	private final char STRAND_SPECIFIC 	= 'S';
-	private final char STRAND_UNSPECIFIC 	= 'U';
-	private final char SEP 				= ',';
+	private final char STRAND_SPECIFIC 	 = 'S';
+	private final char STRAND_UNSPECIFIC = 'U';
+	private final char SEP 				 = ',';
 	
 	public PileupBuilderOption(Parameters parameters) {
 		super(parameters);
@@ -36,11 +39,19 @@ public class PileupBuilderOption extends AbstractACOption {
 	    	if(value.length != 3) {
 	    		throw new IllegalArgumentException("Possible values for " + longOpt.toUpperCase() + ": S,S or U,U or S,U or U,S");
 	    	}
-	    	parameters.setIsDirected1(parse(value[0]));
-	    	parameters.setIsDirected2(parse(value[2]));
+	    	parameters.setPileupBuilderFactoryA(buildPileupBuilderFactory(parse(value[0])));
+	    	parameters.setPileupBuilderFactoryB(buildPileupBuilderFactory(parse(value[1])));
 	    }
 	}
 
+	private PileupBuilderFactory buildPileupBuilderFactory(boolean isDirected) {
+		if(isDirected) {
+			return new DirectedPileupBuilderFactory();
+		} else {
+			return new UndirectedPileupBuilderFactory();
+		}
+	}
+	
 	private boolean parse(char c) {
 		switch(c) {
 		case STRAND_SPECIFIC:

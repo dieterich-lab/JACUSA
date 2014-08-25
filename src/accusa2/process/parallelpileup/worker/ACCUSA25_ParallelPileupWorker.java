@@ -4,9 +4,10 @@ import java.io.IOException;
 
 import accusa2.ACCUSA2;
 import accusa2.cli.Parameters;
+import accusa2.filter.cache.AbstractParallelPileupFilter;
 import accusa2.filter.factory.AbstractFilterFactory;
-import accusa2.filter.process.AbstractParallelPileupFilter;
 import accusa2.method.statistic.StatisticCalculator;
+import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.iterator.ParallelPileupIterator;
 import accusa2.pileup.iterator.VariantParallelPileupIterator;
@@ -52,20 +53,20 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 			final StringBuilder sb = new StringBuilder();
 			sb.append(resultFormat.convert2String(parallelPileup, unfilteredValue));
 
-			final int pileupFilterCount = parameters.getPileupBuilderFilters().getFilterFactories().size();
+			final int pileupFilterCount = parameters.getFilterConfig().getFactories().size();
 			int pileupFilterIndex = 0;
-			if(!parameters.getPileupBuilderFilters().hasFiters()) { // no filters
+			if(!parameters.getFilterConfig().hasFiters()) { // no filters
 
 			} else { // calculate filters or quit
 				// container for value(s)
 				double filteredValue = unfilteredValue;
 
 				// apply each filter
-				for(AbstractFilterFactory filterFactory : parameters.getPileupBuilderFilters().getFilterFactories()) {
+				for(AbstractFilterFactory filterFactory : parameters.getFilterConfig().getFactories()) {
 					// container for pileups
 
-					ParallelPileup filteredParallelPileups = new ParallelPileup(parallelPileup);
-					AbstractParallelPileupFilter filter = filterFactory.getParallelPileupFilterInstance();
+					ParallelPileup filteredParallelPileups = new DefaultParallelPileup(parallelPileup);
+					AbstractParallelPileupFilter filter = filterFactory.getFilterInstance();
 
 					// apply filter
 					if(filter.filter(filteredParallelPileups)) {
@@ -73,7 +74,7 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 						// quit filtering
 						//if(filter.quitFiltering()) {
 							// reset
-							filteredParallelPileups = new ParallelPileup(parallelPileup.getN1(), parallelPileup.getN2());
+							filteredParallelPileups = new DefaultParallelPileup(parallelPileup.getNA(), parallelPileup.getNB());
 							filteredValue = -1;
 							break;
 						//}
@@ -133,8 +134,8 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 	 * @return
 	 */
 	protected final boolean isValidParallelPileup(final ParallelPileup parallelPileup) {
-		return parallelPileup.getPooledPileup1().getCoverage() >= parameters.getMinCoverage() && 
-				parallelPileup.getPooledPileup2().getCoverage() >= parameters.getMinCoverage() && 
+		return parallelPileup.getPooledPileupA().getCoverage() >= parameters.getMinCoverage() && 
+				parallelPileup.getPooledPileupB().getCoverage() >= parameters.getMinCoverage() && 
 				parallelPileup.getPooledPileup().getAlleles().length < 3;
 	}
 

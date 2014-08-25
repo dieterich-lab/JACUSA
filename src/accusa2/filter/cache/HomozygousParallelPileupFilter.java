@@ -1,4 +1,4 @@
-package accusa2.filter.process;
+package accusa2.filter.cache;
 
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
@@ -14,34 +14,34 @@ public class HomozygousParallelPileupFilter extends AbstractParallelPileupFilter
 
 	@Override
 	public boolean filter(final ParallelPileup parallelPileup) {
-		this.filteredParallelPileup = null;
+		this.filtered = null;
 		Pileup pileup = null;
 
 		switch(sample) {
 
 		case 1:
-			pileup = parallelPileup.getPooledPileup1();
+			pileup = parallelPileup.getPooledPileupA();
 			break;
 
 		case 2:
-			pileup = parallelPileup.getPooledPileup2();
+			pileup = parallelPileup.getPooledPileupB();
 			break;
 
 		default:
 			throw new IllegalArgumentException("Unsupported sample!");
 		}
 
-		if(pileup.getAlleles().length > 1) {
+		if(pileup.getAlleles().length > 1) { // make this more lax...
 			return true;
 		}
 
-		this.filteredParallelPileup = parallelPileup;
+		this.filtered = parallelPileup;
 		return false;
 	}
 
 	@Override
 	public boolean quitFiltering() {
-		return filteredParallelPileup == null;
+		return filtered == null;
 	}
 
 	public int getSample() {

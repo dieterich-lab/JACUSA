@@ -53,18 +53,18 @@ public class DefaultStatistic implements StatisticCalculator {
 
 		// first sample
 		// mean coverage for pileups for sample1
-		final int coverage1 = getCoverage(parallelPileup.getPileups1());
+		final int coverage1 = getCoverage(parallelPileup.getPileupsA());
 		// probability matrix for all pileups in sample1 (bases in column, pileups in rows)
-		final double[][] probs1 = getPileup2Probs(bases, parallelPileup.getPileups1());
+		final double[][] probs1 = getPileup2Probs(bases, parallelPileup.getPileupsA());
 		// estimate alpha for by pooling pileups in sample1 alpha = alphaP * avg.cov / covP  
-		final double[] alpha1 = estimateAlpha(bases, parallelPileup.getPooledPileup1(), coverage1);
+		final double[] alpha1 = estimateAlpha(bases, parallelPileup.getPooledPileupA(), coverage1);
 		final DirichletDist dirichlet1 = new DirichletDist(alpha1);
 		final double density11 = getDensity(dirichlet1, probs1);
 
 		// second sample - see above
-		final int coverage2 = getCoverage(parallelPileup.getPileups2());
-		final double[][] probs2 = getPileup2Probs(bases, parallelPileup.getPileups2());
-		final double[] alpha2 = estimateAlpha(bases, parallelPileup.getPooledPileup2(), coverage2);
+		final int coverage2 = getCoverage(parallelPileup.getPileupsB());
+		final double[][] probs2 = getPileup2Probs(bases, parallelPileup.getPileupsB());
+		final double[] alpha2 = estimateAlpha(bases, parallelPileup.getPooledPileupB(), coverage2);
 		final DirichletDist dirichlet2 = new DirichletDist(alpha2);
 		final double density22 = getDensity(dirichlet2, probs2);
 

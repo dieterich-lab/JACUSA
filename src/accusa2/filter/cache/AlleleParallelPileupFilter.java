@@ -1,8 +1,7 @@
-package accusa2.filter.process;
+package accusa2.filter.cache;
 
 import accusa2.pileup.ParallelPileup;
 
-// CHECKED
 public class AlleleParallelPileupFilter extends AbstractParallelPileupFilter {
 
 	public AlleleParallelPileupFilter(char c) {
@@ -11,20 +10,20 @@ public class AlleleParallelPileupFilter extends AbstractParallelPileupFilter {
 
 	@Override
 	public boolean filter(final ParallelPileup parallelPileup) {
-		this.filteredParallelPileup = parallelPileup;
+		this.filtered = null;
 
 		// filter if there are more than 2 alleles
 		if(parallelPileup.getPooledPileup().getAlleles().length > 2) {
 			return true;
 		}
 
-		this.filteredParallelPileup = parallelPileup;
+		filtered = parallelPileup;
 		return false;
 	}
 
 	@Override
 	public boolean quitFiltering() {
-		return filteredParallelPileup == null;
+		return filtered == null;
 	}
 
 }

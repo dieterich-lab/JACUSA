@@ -1,5 +1,6 @@
 package accusa2.process.phred2prob;
 
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.Pileup;
 
 public final class Phred2Prob {
@@ -8,20 +9,18 @@ public final class Phred2Prob {
 	private final double[] phred2baseP;
 	private final double[] phred2baseErrorP;
 
-	// FIXME see 2 commments 
-	public static final int MAX_Q = 61; // some machines give phred score of 60 -> Prob of error: 10^-6 ?!
-	public static final int MAX_Q2 = 41; // Illumina style
-	
-	private static Phred2Prob[] singles = new Phred2Prob[Pileup.BASES2.length + 1];
-	
+	// phred capped at 41
+	public static final int MAX_Q = 41; // some machines give phred score of 60 -> Prob of error: 10^-6 ?!
+	private static Phred2Prob[] singles = new Phred2Prob[BaseConfig.VALID.length];
+
 	private Phred2Prob(int n) {
 		// pre-calculate probabilities
 		final int min = 0;
-		phred2errerP = new double[MAX_Q2];
-		phred2baseP = new double[MAX_Q2];
-		phred2baseErrorP = new double[MAX_Q2];
+		phred2errerP = new double[MAX_Q];
+		phred2baseP = new double[MAX_Q];
+		phred2baseErrorP = new double[MAX_Q];
 
-		for(int i = min; i < MAX_Q2; i++) {
+		for(int i = min; i < MAX_Q; i++) {
 			phred2errerP[i] = Math.pow(10.0, -(double)i / 10.0);
 			phred2baseP[i] = 1.0 - phred2errerP[i];
 			phred2baseErrorP[i] = phred2errerP[i] / (n - 1); // ignore the called base
@@ -29,22 +28,22 @@ public final class Phred2Prob {
 	}
 
 	public double convert2errorP(byte qual) {
-		qual =  qual > MAX_Q2 ? MAX_Q2 : qual; 
+		qual =  qual > MAX_Q ? MAX_Q : qual; 
 		return phred2errerP[qual];
 	}
 
 	public double convert2P(byte qual) {
-		qual =  qual > MAX_Q2 ? MAX_Q2 : qual;
+		qual =  qual > MAX_Q ? MAX_Q : qual;
 		return phred2baseP[qual];
 	}
 	
 	public double convert2perEntityP(byte qual) {
-		qual =  qual > MAX_Q2 ? MAX_Q2 : qual;
+		qual =  qual > MAX_Q ? MAX_Q : qual;
 		return phred2baseErrorP[qual];
 	}
 	
 	public double getErrorP(byte qual) {
-		qual =  qual > MAX_Q2 ? MAX_Q2 : qual;
+		qual =  qual > MAX_Q ? MAX_Q : qual;
 		return phred2errerP[qual];
 	}
 
@@ -58,7 +57,7 @@ public final class Phred2Prob {
 		for(int baseI = 0; baseI < bases.length; ++baseI) {
 			for(byte qual = 0 ; qual < Phred2Prob.MAX_Q; ++qual) {
 				// number of bases with specific quality 
-				final int count = pileup.getQualCount(bases[baseI], qual);
+				final int count = pileup.getCounts().getQualCount(bases[baseI], qual);
 				if(count > 0) {
 					final double baseP = convert2P(qual);
 					p[baseI] += count * baseP;
@@ -78,7 +77,7 @@ public final class Phred2Prob {
 	}
 
 	public static Phred2Prob getInstance() {
-		return getInstance(Pileup.LENGTH);
+		return getInstance(BaseConfig.VALID.length);
 	}
 	
 	public static Phred2Prob getInstance(int n) {

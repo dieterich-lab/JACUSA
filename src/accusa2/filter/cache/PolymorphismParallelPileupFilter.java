@@ -1,4 +1,4 @@
-package accusa2.filter.process;
+package accusa2.filter.cache;
 
 import accusa2.pileup.ParallelPileup;
 
@@ -10,20 +10,20 @@ public class PolymorphismParallelPileupFilter extends AbstractParallelPileupFilt
 
 	@Override
 	public boolean filter(ParallelPileup parallelPileup) {
-		this.filteredParallelPileup = null;
+		this.filtered = null;
 
 		// true when all bases are A in pileup1 and C in pileup pileup2
-		if(parallelPileup.getPooledPileup1().getAlleles().length ==  1 && parallelPileup.getPooledPileup2().getAlleles().length ==  1) {
+		if(parallelPileup.getPooledPileupA().getAlleles().length ==  1 && parallelPileup.getPooledPileupB().getAlleles().length ==  1) {
 			return true;
 		}
 
-		this.filteredParallelPileup = parallelPileup;
+		this.filtered = parallelPileup;
 		return false;
 	}
 
 	@Override
 	public boolean quitFiltering() {
-		return filteredParallelPileup == null;
+		return filtered == null;
 	}
 
 }
