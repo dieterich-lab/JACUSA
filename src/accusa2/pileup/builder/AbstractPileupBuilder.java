@@ -29,7 +29,7 @@ public abstract class AbstractPileupBuilder {
 	protected int filteredSAMRecords;
 
 	protected Parameters parameters;
-	protected AbstractPileupBuilderFilterCache[] filterCache;
+	protected AbstractPileupBuilderFilterCache[] filterCaches;
 	
 	protected boolean isCached;
 
@@ -40,7 +40,7 @@ public abstract class AbstractPileupBuilder {
 		maxGenomicPosition 	= Math.min(annotatedCoordinate.getEnd(), SAMFileReader.getFileHeader().getSequence(contig).getSequenceLength());
 
 		this.parameters		= parameters;
-		filterCache			= parameters.getFilterConfig().createCache();
+		filterCaches			= parameters.getFilterConfig().createCache();
 
 		// build cache
 		SAMRecordsBuffer	= new SAMRecord[20000];
@@ -246,7 +246,7 @@ public abstract class AbstractPileupBuilder {
 
 		// filter
 		// let the filter decide what data they need
-		for(AbstractPileupBuilderFilterCache pileupBuilderFilter : filterCache) {
+		for(AbstractPileupBuilderFilterCache pileupBuilderFilter : filterCaches) {
 			if(pileupBuilderFilter != null) {
 				pileupBuilderFilter.processRecord(genomicWindowStart, record);
 			}

@@ -10,8 +10,8 @@ public final class Phred2Prob {
 	private final double[] phred2baseErrorP;
 
 	// phred capped at 41
-	public static final int MAX_Q = 41; // some machines give phred score of 60 -> Prob of error: 10^-6 ?!
-	private static Phred2Prob[] singles = new Phred2Prob[BaseConfig.VALID.length];
+	public static final int MAX_Q = 41 + 1; // some machines give phred score of 60 -> Prob of error: 10^-6 ?!
+	private static Phred2Prob[] singles = new Phred2Prob[BaseConfig.VALID.length + 1];
 
 	private Phred2Prob(int n) {
 		// pre-calculate probabilities
@@ -76,10 +76,6 @@ public final class Phred2Prob {
 		return p;
 	}
 
-	public static Phred2Prob getInstance() {
-		return getInstance(BaseConfig.VALID.length);
-	}
-	
 	public static Phred2Prob getInstance(int n) {
 		if (singles[n] == null) {
 			singles[n] = new Phred2Prob(n);

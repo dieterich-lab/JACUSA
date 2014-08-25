@@ -40,7 +40,7 @@ public class PileupBuilderOption extends AbstractACOption {
 	    		throw new IllegalArgumentException("Possible values for " + longOpt.toUpperCase() + ": S,S or U,U or S,U or U,S");
 	    	}
 	    	parameters.setPileupBuilderFactoryA(buildPileupBuilderFactory(parse(value[0])));
-	    	parameters.setPileupBuilderFactoryB(buildPileupBuilderFactory(parse(value[1])));
+	    	parameters.setPileupBuilderFactoryB(buildPileupBuilderFactory(parse(value[2])));
 	    }
 	}
 
@@ -61,7 +61,7 @@ public class PileupBuilderOption extends AbstractACOption {
 			return false;
 			
 		default:
-			throw new IllegalArgumentException("Possible values for " + longOpt.toUpperCase() + ": S,S or U,U or S,U or U,S");
+			throw new IllegalArgumentException("Unknown '" + c + "'! Possible values for " + longOpt.toUpperCase() + ": S,S or U,U or S,U or U,S");
 		}
 	}
 	

@@ -17,10 +17,10 @@ public class DefaultStatistic implements StatisticCalculator {
 
 	protected final Parameters parameters;
 	protected final Phred2Prob phred2Prob;
-	
+
 	public DefaultStatistic(Parameters parameters) {
 		this.parameters 	= parameters;
-		phred2Prob 			= Phred2Prob.getInstance();
+		phred2Prob 			= Phred2Prob.getInstance(parameters.getBaseConfig().getBases().length);
 	}
 
 	@Override

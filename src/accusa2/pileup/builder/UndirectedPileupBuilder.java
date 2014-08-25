@@ -7,6 +7,7 @@ import net.sf.samtools.AlignmentBlock;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import accusa2.cli.Parameters;
+import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
 import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.DefaultPileup.STRAND;
@@ -34,10 +35,9 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		pileup = new DefaultPileup();
 	}
 
-
 	@Override
 	public Counts[] getFilteredCounts(int windowPosition, STRAND strand) {
-		Counts[] counts = new Counts[filterCache.length];
+		Counts[] counts = new Counts[filterCaches.length];
 		for (int i = 0; i < counts.length; ++i) {
 			Counts count = pileup.new Counts(new int[windowCache.baseCount.length], new int[windowCache.baseCount.length][Phred2Prob.MAX_Q]);
 			
@@ -60,10 +60,10 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		final DefaultPileup pileup = new DefaultPileup(contig, getCurrentGenomicPosition(windowPosition), strand);
 
 		// copy base and qual info from cache
-		pileup.getCounts().setBaseCount(new int[windowCache.baseCount.length]);
+		pileup.getCounts().setBaseCount(new int[windowCache.baseLength]);
 		System.arraycopy(windowCache.baseCount[windowPosition], 0, pileup.getBaseCount(), 0, windowCache.baseCount[windowPosition].length);
-		pileup.getCounts().setQualCount(new int[windowCache.baseCount.length][Phred2Prob.MAX_Q]);
-		for (int baseI = 0; baseI < windowCache.baseCount[windowPosition].length; ++baseI) {
+		pileup.getCounts().setQualCount(new int[windowCache.baseLength][Phred2Prob.MAX_Q]);
+		for (int baseI = 0; baseI < windowCache.baseLength; ++baseI) {
 			System.arraycopy(windowCache.getQual(windowPosition)[baseI], 0, pileup.getQualCount()[baseI], 0, pileup.getQualCount()[baseI].length);
 		}
 		
@@ -73,46 +73,26 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 	@Override
 	public void clearCache() {
 		windowCache.clear();
-	}
 
-	/*
-	public boolean hasNext() {
-		// ensure that we stay in the range of contig
-		int currentGenomicPosition = getCurrentGenomicPosition(windowPosition);
-		while(isContainedInGenome(currentGenomicPosition)) {
-			if(isContainedInWindow(currentGenomicPosition)) {
-				if(isValid(currentGenomicPosition)) {
-					return true;
-				} else {
-					// move along the window
-					++currentGenomicPosition;
-				}
-				
-			} else if(! adjustWindowStart(currentGenomicPosition)) {
-				return false;
-			}
+		for (AbstractPileupBuilderFilterCache filterCache : filterCaches) {
+			filterCache.getCache().clear();
 		}
-
-		return false;
 	}
-	*/
 	
 	@Override
-	protected void processAlignmentBlock(SAMRecord record, AlignmentBlock alignmentBlock) {
-		int readPosition = alignmentBlock.getReadStart();
+	protected void processAlignmentBlock(final SAMRecord record, final AlignmentBlock alignmentBlock) {
+		int readPosition = alignmentBlock.getReadStart() - 1;
 		int genomicPosition = alignmentBlock.getReferenceStart();
 
 		for (int offset = 0; offset < alignmentBlock.getLength(); ++offset) {
-			readPosition += offset;
-			genomicPosition += offset;
+			final int baseI = parameters.getBaseConfig().getBaseI(record.getReadBases()[readPosition + offset]);
+			final byte qual = record.getBaseQualities()[readPosition + offset];
 
-			final int baseI = parameters.getBaseConfig().getBaseI(record.getReadBases()[readPosition]);
-			final byte qual = record.getBaseQualities()[readPosition];
 			if(qual >= parameters.getMinBASQ() && baseI != -1) {
 				// speedup: if windowPosition == -1 the remaining part of the read will be outside of the windowCache
 				// ignore the overhanging part of the read until it overlaps with the window cache
-				int windowPosition = convertGenomicPosition2WindowPosition(genomicPosition);
-				if (windowPosition == -1) {
+				final int windowPosition = convertGenomicPosition2WindowPosition(genomicPosition + offset);
+				if (windowPosition < 0) {
 					return;
 				}
 

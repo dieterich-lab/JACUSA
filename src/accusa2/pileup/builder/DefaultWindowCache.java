@@ -24,11 +24,11 @@ public class DefaultWindowCache {
 
 	public void clear() {
 		Arrays.fill(coverage, 0);
-		for (int i = 0; i < windowsSize; i++) {
-			Arrays.fill(baseCount[i], 0);
+		for (int windowI = 0; windowI < windowsSize; windowI++) {
+			Arrays.fill(baseCount[windowI], 0);
 
 			for (int baseI = 0; baseI < baseLength; ++baseI) {
-				Arrays.fill(qualCount[i][baseI], 0);
+				Arrays.fill(qualCount[windowI][baseI], 0);
 			}
 		}
 	}

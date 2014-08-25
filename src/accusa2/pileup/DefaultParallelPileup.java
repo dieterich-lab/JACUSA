@@ -27,9 +27,9 @@ public final class DefaultParallelPileup implements ParallelPileup {
 	}
 
 	public DefaultParallelPileup(final ParallelPileup parallelPileup) {
-		this.contig = parallelPileup.getContig();
-		this.position = parallelPileup.getPosition();
-		this.strand = parallelPileup.getStrand();
+		this.contig 	= parallelPileup.getContig();
+		this.position 	= parallelPileup.getPosition();
+		this.strand 	= parallelPileup.getStrand();
 		
 		this.pileupA = new DefaultPileup(parallelPileup.getPooledPileupA());
 		this.pileupB = new DefaultPileup(parallelPileup.getPooledPileupB());
@@ -42,20 +42,17 @@ public final class DefaultParallelPileup implements ParallelPileup {
 		pileupsB = new Pileup[nB];
 		System.arraycopy(parallelPileup.getPileupsB(), 0, pileupsB, 0, nB);
 
+		pileupsP = new Pileup[nA + nB];
 		System.arraycopy(pileupsA, 0, pileupsP, 0, nA);
-		System.arraycopy(pileupsB,0, pileupsP, nA, nB);
+		System.arraycopy(pileupsB, 0, pileupsP, nA, nB);
 
-		if (parallelPileup.getFilterCountsA().length > 0) {
+		if (parallelPileup.getFilterCountsA() != null && parallelPileup.getFilterCountsA().length > 0) {
 			filterCountsA = new Counts[nA][parallelPileup.getFilterCountsA().length];
 			copyFilterCounts(nA, parallelPileup.getFilterCountsA(), filterCountsA);
-		} else {
-			filterCountsA = new Counts[0][0];
 		}
-		if (parallelPileup.getFilterCountsB().length > 0) {
+		if (parallelPileup.getFilterCountsB() != null && parallelPileup.getFilterCountsB().length > 0) {
 			filterCountsB = new Counts[nB][parallelPileup.getFilterCountsB().length];
 			copyFilterCounts(nB, parallelPileup.getFilterCountsB(), filterCountsB);
-		} else {
-			filterCountsB = new Counts[0][0];
 		}
 	}
 

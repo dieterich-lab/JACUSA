@@ -27,11 +27,7 @@ public class BaseConfig {
 	public static final char[] VALID = { 'A', 'C', 'G', 'T' };
 	public static final char[] VALID_COMPLEMENTED = { 'T', 'G', 'C', 'A' };
 
-	/*
-	 * 
-	 */
 	private char[] bases;
-	
 	public int[] byte2int;
 	// complement
 	public int[] complementByte2int;

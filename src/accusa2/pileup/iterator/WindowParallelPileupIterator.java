@@ -14,13 +14,16 @@ import accusa2.util.AnnotatedCoordinate;
 
 public class WindowParallelPileupIterator implements ParallelPileupIterator {
 
+	protected int genomicPositionA;
+	protected int genomicPositionB;
+
 	protected final AnnotatedCoordinate coordinate;
 	
 	// pileupBuilders
 	protected final AbstractPileupBuilder[] pileupBuildersA;
 	protected final AbstractPileupBuilder[] pileupBuildersB;
 
-	protected int filters;
+	protected int filterCount;
 
 	// output
 	protected ParallelPileup parallelPileup;
@@ -31,13 +34,14 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 		pileupBuildersA = createPileupBuilders(parameters.getPileupBuilderFactoryA(), annotatedCoordinate, readersA, parameters);
 		pileupBuildersB = createPileupBuilders(parameters.getPileupBuilderFactoryB(), annotatedCoordinate, readersB, parameters);
 
-		filters = 1; parameters.getFilterConfig().getFactories().size();
+		filterCount = parameters.getFilterConfig().getFactories().size();
 
 		// init
-		parallelPileup = new DefaultParallelPileup(0, 0);
+		parallelPileup = new DefaultParallelPileup(pileupBuildersA.length, pileupBuildersB.length);
 		parallelPileup.setContig(annotatedCoordinate.getSequenceName());
-		init(pileupBuildersA);
-		init(pileupBuildersB);
+
+		genomicPositionA = init(pileupBuildersA);
+		genomicPositionB = init(pileupBuildersB);
 	}
 
 	/**
@@ -58,12 +62,13 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 		return pileupBuilders;
 	}
 
-
 	private int init(AbstractPileupBuilder[] pileupBuilders) {
 		int nextValidGenomicPosition = getNextValidGenomicPosition(coordinate.getStart(), pileupBuilders);
 
-		for (AbstractPileupBuilder pileupBuilder : pileupBuilders) {
-			pileupBuilder.adjustWindowStart(nextValidGenomicPosition);
+		if (nextValidGenomicPosition > 0) {
+			for (AbstractPileupBuilder pileupBuilder : pileupBuilders) {
+				pileupBuilder.adjustWindowStart(nextValidGenomicPosition);
+			}
 		}
 
 		return nextValidGenomicPosition;
@@ -73,24 +78,41 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 		int nextValidPosition = -1;
 
 		for (AbstractPileupBuilder pileupBuilder : pileupBuilders) {
-			nextValidPosition = Math.max(nextValidPosition, pileupBuilder.getNextValidGenomicPosition(targetGenomicPosition));
+			int tmp = pileupBuilder.getNextValidGenomicPosition(targetGenomicPosition);
+			if (tmp > 0) {
+				nextValidPosition = tmp;
+			}
 		}
 
 		return nextValidPosition;
 	}
 
-	private boolean hasNext(final AbstractPileupBuilder[] pileupBuilders) {
-		int currentGenomicPosition = parallelPileup.getPosition();
-		if (isCovered(currentGenomicPosition, pileupBuilders)) {
-			return true;
+	private boolean hasNextA() {
+		int newGenomicPosition = hasNext(genomicPositionA, pileupBuildersA);
+		if (newGenomicPosition < 0) {
+			return false;
 		}
 		
+		genomicPositionA = newGenomicPosition;
+		return true;
+	}
+
+	private boolean hasNextB() {
+		int newGenomicPosition = hasNext(genomicPositionB, pileupBuildersB);
+		if (newGenomicPosition < 0) {
+			return false;
+		}
+		
+		genomicPositionB = newGenomicPosition;
+		return true;
+	}
+	
+	private int hasNext(int currentGenomicPosition, final AbstractPileupBuilder[] pileupBuilders) {
 		// within
-		while (currentGenomicPosition <= coordinate.getEnd()) {
+		while (currentGenomicPosition < coordinate.getEnd()) {
 			if (pileupBuilders[0].isContainedInWindow(currentGenomicPosition)) {
 				if (isCovered(currentGenomicPosition, pileupBuilders)) {
-					parallelPileup.setPosition(currentGenomicPosition);
-					return true;
+					return currentGenomicPosition;
 				} else {
 					// move along the window
 					++currentGenomicPosition;
@@ -98,16 +120,16 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 			} else {
 				currentGenomicPosition = getNextValidGenomicPosition(currentGenomicPosition, pileupBuilders);
 				if (currentGenomicPosition == -1) {
-					return false;
+					return -1;
 				} if (! adjustWindowStart(currentGenomicPosition, pileupBuilders)) {
-					return false;
+					return -1;
 				}
 			}
 		}
 
-		return false;
+		return -1;
 	}
-
+	
 	private boolean isCovered(int genomicPosition, AbstractPileupBuilder[] pileupBuilders) {
 		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(genomicPosition);
 
@@ -134,7 +156,7 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 
 	private Counts[][] getCounts(AbstractPileupBuilder[] pileupBuilders) {
 		int n = pileupBuilders.length;
-		Counts[][] counts = new Counts[n][filters];
+		Counts[][] counts = new Counts[n][filterCount];
 
 		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(parallelPileup.getPosition());
 		for(int i = 0; i < n; ++i) {
@@ -156,7 +178,6 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 			ret = adjustWindowStart(targetGenomicPosition, pileupBuilders);
 		}
 
-		parallelPileup.setPosition(targetGenomicPosition);
 		return ret;
 	}
 
@@ -181,33 +202,24 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 	*/
 
 	public boolean hasNext() {
-		if (parallelPileup.isValid()) {
-			return true;
-		}
-
-		while (hasNext(pileupBuildersA) && hasNext(pileupBuildersB)) {
-			final int positionA = parallelPileup.getPooledPileupA().getPosition();
-			final int positionB = parallelPileup.getPooledPileupB().getPosition();
-
-			final int compare = new Integer(positionA).compareTo(positionB);
+		while (hasNextA() && hasNextB()) {
+			final int compare = new Integer(genomicPositionA).compareTo(genomicPositionB);
 
 			switch (compare) {
 
 			case -1:
 				// adjust actualPosition; instead of iterating jump to specific
 				// position
-				adjustCurrentGenomicPosition(positionB, pileupBuildersA);
-				if (hasNext(pileupBuildersA)) {
-					parallelPileup.setPileupsA(getPileups(parallelPileup.getPosition(), pileupBuildersA));
-				} else { 
-					return false; 
-				}
+				adjustCurrentGenomicPosition(genomicPositionB, pileupBuildersA);
+				genomicPositionA = genomicPositionB;
 				break;
 
 			case 0:
+				parallelPileup.setPosition(genomicPositionA);
+				parallelPileup.setPileupsA(getPileups(genomicPositionA, pileupBuildersA));
+				parallelPileup.setPileupsB(getPileups(genomicPositionB, pileupBuildersB));
 
 				final boolean isVariant = isVariant(parallelPileup);
-
 				if(isVariant) {
 					return true;
 				} else {
@@ -218,12 +230,8 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 			case 1:
 				// adjust actualPosition; instead of iterating jump to specific
 				// position
-				adjustCurrentGenomicPosition(positionA, pileupBuildersB);
-				if (hasNext(pileupBuildersB)) {
-					parallelPileup.setPileupsB(getPileups(parallelPileup.getPosition(), pileupBuildersB));
-				} else { 
-					return false; 
-				}
+				adjustCurrentGenomicPosition(genomicPositionA, pileupBuildersB);
+				genomicPositionB = genomicPositionA;
 				break;
 			}
 		}
@@ -321,25 +329,25 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 		// return false;
 	}
 	*/
-
 	
 	public DefaultParallelPileup next() {
-		if (!hasNext()) {
+		if (! hasNext()) {
 			return null;
 		}
 
-		DefaultParallelPileup parallelPileup = new DefaultParallelPileup(this.parallelPileup);
-		parallelPileup.setFilterCountsA(getCounts(pileupBuildersA));
-		parallelPileup.setFilterCountsB(getCounts(pileupBuildersB));
-
+		DefaultParallelPileup next = new DefaultParallelPileup(parallelPileup);
+		next.setFilterCountsA(getCounts(pileupBuildersA));
+		next.setFilterCountsB(getCounts(pileupBuildersB));
+//System.out.println(next.getPosition());
 		// advance to the next position
 		advance();
 
-		return parallelPileup;
+		return next;
 	}
 
 	private void advance() {
-		parallelPileup.setPosition(parallelPileup.getPosition() + 1);
+		genomicPositionA++;
+		genomicPositionB++;
 	}
 
 	public final AnnotatedCoordinate getAnnotatedCoordinate() {

@@ -200,19 +200,19 @@ public final class DefaultPileup implements Pileup {
 			qualCount	= new int[baseLength][Phred2Prob.MAX_Q];
 		}
 
-		public Counts(Counts counts) {
-			this(counts.baseCount, counts.qualCount);
+		public Counts(Counts count) {
+			this();
+			System.arraycopy(count.baseCount, 0, this.baseCount, 0, count.baseCount.length);
+
+			for(int baseI = 0; baseI < count.baseCount.length; ++baseI) {
+				System.arraycopy(count.qualCount[baseI], 0, qualCount[baseI], 0, count.qualCount[baseI].length);
+			}
+
 		}
 		
 		public Counts(final int[] baseCount, final int[][] qualCount) {
-			this.baseCount = new int[baseCount.length];
-			System.arraycopy(baseCount, 0, this.baseCount, 0, baseCount.length);
-
-			this.qualCount = new int[baseCount.length][Phred2Prob.MAX_Q];
-			for(int i = 0; i < baseCount.length; ++i) {
-				System.arraycopy(baseCount[i], 0, this.qualCount[i], 0, qualCount[i].length);
-			}
-
+			this.baseCount = baseCount;
+			this.qualCount = qualCount;
 		}
 
 		public void addBase(final int base, final byte qual) {
@@ -298,7 +298,7 @@ public final class DefaultPileup implements Pileup {
 		}
 
 		@Override
-		protected Object clone() {
+		public Object clone() {
 			return new Counts(this);
 		}
 
