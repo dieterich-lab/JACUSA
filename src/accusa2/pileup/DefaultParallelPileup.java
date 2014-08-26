@@ -99,35 +99,37 @@ public final class DefaultParallelPileup implements ParallelPileup {
 
 	@Override
 	public Pileup[] getPileupsP() {
+		if (pileupsP == null) {
+			pileupsP = new Pileup[getNA() + getNB()];
+
+			if (getNA() > 0) {
+				System.arraycopy(pileupA, 0, pileupsA, 0, getNA());
+			}
+			
+			if (getNB() > 0) {
+				System.arraycopy(pileupB, 0, pileupsA, getNA(), getNB());
+			}
+		}
+
 		return pileupsP;
 	}
-	
+
 	@Override
 	public void setPileupsA(final Pileup[] pileupsA) {
-		if (this.pileupsA.length != pileupsA.length) {
-			Pileup[] tmpPileup = new Pileup[pileupsA.length * this.pileupsB.length];
-			System.arraycopy(pileupsB, 0, tmpPileup, pileupsA.length, this.pileupsB.length);
-			pileupsP = tmpPileup;
-		}
 		this.pileupsA = pileupsA;
-		System.arraycopy(this.pileupsA, 0, pileupsP, 0, this.pileupsA.length);
 		
 		pileupA = null;
 		pileupP = null;
+		pileupsP = null;
 	}
 
 	@Override
 	public void setPileupsB(final Pileup[] pileupsB) {
-		if (this.pileupsB.length != pileupsB.length) {
-			Pileup[] tmpPileup = new Pileup[pileupsA.length * this.pileupsB.length];
-			System.arraycopy(pileupsA, 0, tmpPileup, 0, this.pileupsA.length);
-			pileupsP = tmpPileup;
-		}
 		this.pileupsB = pileupsB;
-		System.arraycopy(this.pileupsB, 0, pileupsP, this.pileupsA.length, this.pileupsB.length);
 		
 		pileupB = null;
 		pileupP = null;
+		pileupsP = null;
 	}
 	
 	@Override
