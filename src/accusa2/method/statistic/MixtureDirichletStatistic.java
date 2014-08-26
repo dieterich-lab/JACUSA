@@ -55,7 +55,7 @@ public final class MixtureDirichletStatistic implements StatisticCalculator {
 			totalCoverage += coverage;
 			
 			// calculate prob. vectors
-			double[] probVector = phred2Prob.convert2ProbVector(bases, pileup);
+			double[] probVector = phred2Prob.sumProbs(bases, pileup);
 			pileupProbVectors[pileupI] = probVector;
 			
 			for (int baseI = 0; baseI < bases.length; ++baseI) {

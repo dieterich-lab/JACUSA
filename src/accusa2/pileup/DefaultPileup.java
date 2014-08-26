@@ -112,9 +112,10 @@ public final class DefaultPileup implements Pileup {
 		// make this allele
 		int[] alleles = new int[counts.baseCount.length];
 		int n = 0;
+		
 		for(int i = 0; i < counts.baseCount.length; ++i) {
 			if(counts.baseCount[i] > 0) {
-				alleles[n] = i;
+				alleles[i] = i;
 				++n;
 			}
 		}

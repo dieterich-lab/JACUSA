@@ -238,16 +238,6 @@ public final class DefaultParallelPileup implements ParallelPileup {
 
 			pileupP.addPileup(getPooledPileupA());
 			pileupP.addPileup(getPooledPileupB());
-
-			// copy things
-			// ensure there is enough space
-			/* remove this
-			if (getN() != getN1() + getN2()) {
-				pileupsP = new Pileup[getN1() + getN2()];
-			}
-			System.arraycopy(pileups1, 0, pileupsP, 0, pileups1.length);
-			System.arraycopy(pileups2, 0, pileupsP, pileups1.length, pileups2.length);
-			*/
 		}
 
 		return pileupP;

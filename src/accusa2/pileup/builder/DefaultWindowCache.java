@@ -14,7 +14,7 @@ public class DefaultWindowCache {
 	protected int[][][] qualCount; // TODO make this more efficient
 	
 	public DefaultWindowCache(int windowSize, int baseLength) {
-		this.windowsSize = baseLength;
+		this.windowsSize = windowSize;
 		this.baseLength = baseLength;
 
 		coverage = new int[windowSize];

@@ -48,7 +48,7 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 			final Pileup pileup = pileups[pileupI];
 			
 			// calculate prob. vectors
-			double[] probVector = phred2Prob.convert2ProbVector(bases, pileup);
+			double[] probVector = phred2Prob.sumProbs(bases, pileup);
 			pileupProbVectors[pileupI] = probVector;
 		}
 		double[] mean = MathUtil.mean(pileupProbVectors);

@@ -50,7 +50,7 @@ public final class Phred2Prob {
 	/**
 	 * Calculate a probability vector P for the pileup. |P| = |bases| 
 	 */
-	public double[] convert2ProbVector(final int[] bases, final Pileup pileup) {
+	public double[] sumProbs(final int[] bases, final Pileup pileup) {
 		// container for accumulated probabilities 
 		final double[] p = new double[bases.length];
 

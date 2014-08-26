@@ -55,7 +55,7 @@ public final class WeightedMethodOfMomentsStatistic implements StatisticCalculat
 			totalCoverage += coverage;
 			
 			// calculate prob. vectors
-			double[] probVector = phred2Prob.convert2ProbVector(bases, pileup);
+			double[] probVector = phred2Prob.sumProbs(bases, pileup);
 			pileupProbVectors[pileupI] = probVector;
 		}
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {

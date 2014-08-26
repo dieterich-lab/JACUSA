@@ -166,9 +166,8 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 		return counts;
 	}
 
-	// TODO make this more quantitative
 	protected boolean isVariant(ParallelPileup parallelPileup)  {
-		return parallelPileup.getPooledPileup().getAlleles().length > 1;
+		return parallelPileup.getPooledPileup().getAlleles().length > 0;
 	}
 
 	private boolean adjustCurrentGenomicPosition(int targetGenomicPosition, AbstractPileupBuilder[] pileupBuilders) {
@@ -220,7 +219,7 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 				parallelPileup.setPileupsB(getPileups(genomicPositionB, pileupBuildersB));
 
 				final boolean isVariant = isVariant(parallelPileup);
-				if(isVariant) {
+				if (isVariant) {
 					return true;
 				} else {
 					advance();

@@ -15,8 +15,10 @@ public class VariantParallelPileupIterator extends WindowParallelPileupIterator 
 		super(coordinate, readers1, readers2, parameters);
 	}
 	
+	// TODO make this more quantitative
 	@Override
 	protected boolean isVariant(ParallelPileup parallelPileup)  {
-		return parallelPileup.getPooledPileup().getAlleles().length > 0;
+		return parallelPileup.getPooledPileup().getAlleles().length > 1;
 	}
+	
 }

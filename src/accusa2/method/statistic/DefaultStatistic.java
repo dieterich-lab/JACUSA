@@ -153,7 +153,7 @@ public class DefaultStatistic implements StatisticCalculator {
 	protected double[] estimateAlpha(final int bases[], final Pileup pileup, int coverage) {
 		final double[] alphas = new double[bases.length];
 
-		double[] probVector = phred2Prob.convert2ProbVector(bases, pileup);
+		double[] probVector = phred2Prob.sumProbs(bases, pileup);
 		// INFO: coverage and pileup.getCoverage() may be different.
 		// e.g.: when replicates are available...
 		for(int baseI = 0; baseI < bases.length; ++baseI) {
@@ -181,7 +181,7 @@ public class DefaultStatistic implements StatisticCalculator {
 
 		for(int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			// sum the probabilities giving alpha 
-			double[] probVector = phred2Prob.convert2ProbVector(bases, pileups[pileupI]);
+			double[] probVector = phred2Prob.sumProbs(bases, pileups[pileupI]);
 
 			//  divide alpha by coverage to get average probability
 			for(int baseI = 0; baseI < bases.length; ++baseI) {
