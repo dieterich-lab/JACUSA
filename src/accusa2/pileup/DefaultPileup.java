@@ -15,7 +15,7 @@ import accusa2.process.phred2prob.Phred2Prob;
  * Michael Piechotta: refactored
  */
 public final class DefaultPileup implements Pileup {
-	
+
 	// container
 	private String contig;
 	private int position;
@@ -23,7 +23,9 @@ public final class DefaultPileup implements Pileup {
 	private char refBase;
 
 	private Counts counts;
-	
+
+	private int minQualI = Parameters.getInstance().getMinBASQ();
+
 	public DefaultPileup() {
 		contig 		= new String();
 		position	= -1;
@@ -44,7 +46,7 @@ public final class DefaultPileup implements Pileup {
 		position 	= pileup.getPosition();
 		strand		= pileup.getStrand();
 		refBase 	= pileup.getReferenceBase();
-		
+
 		counts		= (Counts)pileup.getCounts().clone();
 	}
 
@@ -52,7 +54,7 @@ public final class DefaultPileup implements Pileup {
 	public Counts getCounts() {
 		return counts;
 	}
-	
+
 	@Override
 	public void addPileup(final Pileup pileup) {
 		counts.addCounts(pileup.getCounts());
@@ -62,7 +64,7 @@ public final class DefaultPileup implements Pileup {
 	public void substractPileup(final Pileup pileup) {
 		for(int baseI : pileup.getCounts().baseCount) {
 			counts.baseCount[baseI] -= pileup.getCounts().baseCount[baseI];
-			for(int qualI = 0; qualI < pileup.getCounts().getQualCount()[baseI].length; ++qualI) {
+			for(int qualI = minQualI; qualI < pileup.getCounts().getQualCount()[baseI].length; ++qualI) {
 				counts.qualCount[baseI][qualI] -= pileup.getCounts().getQualCount()[baseI][qualI];
 			}
 		}
@@ -112,7 +114,7 @@ public final class DefaultPileup implements Pileup {
 		// make this allele
 		int[] alleles = new int[counts.baseCount.length];
 		int n = 0;
-		
+	
 		for(int i = 0; i < counts.baseCount.length; ++i) {
 			if(counts.baseCount[i] > 0) {
 				alleles[i] = i;
@@ -205,10 +207,9 @@ public final class DefaultPileup implements Pileup {
 			this();
 			System.arraycopy(count.baseCount, 0, this.baseCount, 0, count.baseCount.length);
 
-			for(int baseI = 0; baseI < count.baseCount.length; ++baseI) {
+			for(int baseI = minQualI; baseI < count.baseCount.length; ++baseI) {
 				System.arraycopy(count.qualCount[baseI], 0, qualCount[baseI], 0, count.qualCount[baseI].length);
 			}
-
 		}
 		
 		public Counts(final int[] baseCount, final int[][] qualCount) {
@@ -238,8 +239,9 @@ public final class DefaultPileup implements Pileup {
 			for(int baseI = 0; baseI < counts.baseCount.length; ++baseI) {
 				baseCount[baseI] += counts.baseCount[baseI];
 			}
+			
 			for(int baseI = 0; baseI < counts.baseCount.length; ++baseI) {
-				for (int qualI = 0; qualI < counts.qualCount[baseI].length; ++qualI) {
+				for (int qualI = minQualI; qualI < counts.qualCount[baseI].length; ++qualI) {
 					qualCount[baseI][qualI] += counts.qualCount[baseI][qualI];
 				}
 			}
@@ -247,7 +249,8 @@ public final class DefaultPileup implements Pileup {
 
 		public void substract(final int baseI, final Counts counts) {
 			baseCount[baseI] -= counts.baseCount[baseI];
-			for(int qualI = 0; qualI < counts.qualCount[baseI].length; ++qualI) {
+
+			for(int qualI = minQualI; qualI < counts.qualCount[baseI].length; ++qualI) {
 				qualCount[baseI][qualI] -= counts.qualCount[baseI][qualI];
 			}
 		}
@@ -258,7 +261,7 @@ public final class DefaultPileup implements Pileup {
 			}
 			
 			for(int baseI = 0; baseI < counts.baseCount.length; ++baseI) {
-				for(int qualI = 0; qualI < counts.qualCount[baseI].length; ++qualI) {
+				for(int qualI = minQualI; qualI < counts.qualCount[baseI].length; ++qualI) {
 					qualCount[baseI][qualI] -= counts.qualCount[baseI][qualI];
 				}
 			}
