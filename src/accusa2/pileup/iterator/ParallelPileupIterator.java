@@ -1,9 +1,8 @@
 package accusa2.pileup.iterator;
 
-
 import java.util.Iterator;
 
-import accusa2.pileup.DefaultParallelPileup;
+import accusa2.pileup.ParallelPileup;
 import accusa2.util.AnnotatedCoordinate;
 
 
@@ -18,14 +17,14 @@ import accusa2.util.AnnotatedCoordinate;
  * @author Sebastian Fröhler
  * @author Michael Piechotta
  */
-public interface ParallelPileupIterator extends Iterator<DefaultParallelPileup> {
+public interface ParallelPileupIterator extends Iterator<ParallelPileup> {
 
 	/**
 	 * Returns the next pileup columns.
 	 * 
 	 * @return the next pileup columns
 	 */
-	public DefaultParallelPileup next();
+	public ParallelPileup next();
 
 	/**
 	 * Returns true iff more pileup columns are available to be returned.

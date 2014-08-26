@@ -15,6 +15,7 @@ import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.Pileup;
 import accusa2.util.AnnotatedCoordinate;
 
+// TODO keep iterator
 public abstract class AbstractPileupBuilder {
 
 	// in genomic coordinates
@@ -40,10 +41,10 @@ public abstract class AbstractPileupBuilder {
 		maxGenomicPosition 	= Math.min(annotatedCoordinate.getEnd(), SAMFileReader.getFileHeader().getSequence(contig).getSequenceLength());
 
 		this.parameters		= parameters;
-		filterCaches			= parameters.getFilterConfig().createCache();
+		filterCaches		= parameters.getFilterConfig().createCache();
 
 		// build cache
-		SAMRecordsBuffer	= new SAMRecord[20000];
+		SAMRecordsBuffer	= new SAMRecord[30000];
 
 		this.reader			= SAMFileReader;
 		isCached			= false;
@@ -170,7 +171,7 @@ public abstract class AbstractPileupBuilder {
 	protected boolean isValid(SAMRecord samRecord) {
 		int mapq = samRecord.getMappingQuality();
 		List<SAMValidationError> errors = samRecord.isValid();
-		
+
 		if(!samRecord.getReadUnmappedFlag()
 				&& !samRecord.getNotPrimaryAlignmentFlag() // ignore non-primary alignments
 				&& (mapq < 0 || mapq >= parameters.getMinMAPQ()) // filter by mapping quality

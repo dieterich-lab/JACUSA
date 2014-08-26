@@ -6,12 +6,12 @@ import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
 
 import accusa2.cli.Parameters;
-import accusa2.pileup.builder.DefaultWindowCache;
+import accusa2.pileup.builder.WindowCache;
 
 public abstract class AbstractPileupBuilderFilterCache {
 
 	private char c;
-	protected DefaultWindowCache cache;
+	protected WindowCache cache;
 	protected boolean[] visited;
 	protected Parameters parameters;
 
@@ -22,7 +22,7 @@ public abstract class AbstractPileupBuilderFilterCache {
 		int windowSize = parameters.getWindowSize();
 		int baseLength = parameters.getBaseConfig().getBases().length;
 
-		cache = new DefaultWindowCache(windowSize, baseLength);
+		cache = new WindowCache(windowSize, baseLength);
 		Arrays.fill(visited, false);
 	}
 
@@ -117,7 +117,7 @@ public abstract class AbstractPileupBuilderFilterCache {
 		return c;
 	}
 
-	public DefaultWindowCache getCache() {
+	public WindowCache getCache() {
 		return cache;
 	}
 

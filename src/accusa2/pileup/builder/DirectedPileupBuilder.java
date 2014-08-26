@@ -12,10 +12,10 @@ import accusa2.util.AnnotatedCoordinate;
 // TODO
 public class DirectedPileupBuilder extends UndirectedPileupBuilder {
 
-	protected DefaultWindowCache forwardWindowCache;
-	protected DefaultWindowCache reverseWindowCache;
+	protected WindowCache forwardWindowCache;
+	protected WindowCache reverseWindowCache;
 	protected STRAND strand;
-	
+
 	public DirectedPileupBuilder(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader reader, final Parameters parameters) {
 		super(annotatedCoordinate, reader, parameters);
 	}

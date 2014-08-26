@@ -21,7 +21,7 @@ import accusa2.util.AnnotatedCoordinate;
  */
 public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 
-	protected DefaultWindowCache windowCache;
+	protected WindowCache windowCache;
 	
 	protected DefaultPileup pileup;
 	protected STRAND strand;
@@ -31,16 +31,17 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		super(annotatedCoordinate, reader, parameters);
 		int windowSize = parameters.getWindowSize();
 
-		windowCache = new DefaultWindowCache(windowSize, parameters.getBaseConfig().getBases().length);
+		windowCache = new WindowCache(windowSize, parameters.getBaseConfig().getBases().length);
 		pileup = new DefaultPileup();
 	}
 
+	// TODO check do I need to user System.arraycopy or just reassign
 	@Override
 	public Counts[] getFilteredCounts(int windowPosition, STRAND strand) {
 		Counts[] counts = new Counts[filterCaches.length];
 		for (int i = 0; i < counts.length; ++i) {
 			Counts count = pileup.new Counts(new int[windowCache.baseCount.length], new int[windowCache.baseCount.length][Phred2Prob.MAX_Q]);
-			
+
 			// copy base and qual info from cache
 			System.arraycopy(windowCache.baseCount[windowPosition], 0, count.getBaseCount(), 0, windowCache.baseCount[windowPosition].length);
 			for (int baseI = 0; baseI < windowCache.baseCount[windowPosition].length; ++baseI) {
@@ -56,6 +57,7 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		return counts;
 	}
 	
+	// TODO check if I need to copy
 	public Pileup getPileup(int windowPosition, STRAND strand) {
 		final DefaultPileup pileup = new DefaultPileup(contig, getCurrentGenomicPosition(windowPosition), strand);
 
@@ -69,7 +71,7 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 
 		return pileup;
 	}
-	
+
 	@Override
 	public void clearCache() {
 		windowCache.clear();

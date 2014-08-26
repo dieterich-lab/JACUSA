@@ -75,6 +75,7 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 		return nextValidGenomicPosition;
 	}
 
+	// TODO at least two need to be covered
 	private int getNextValidGenomicPosition(int targetGenomicPosition, AbstractPileupBuilder[] pileupBuilders) {
 		int nextValidPosition = -1;
 
@@ -93,7 +94,7 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 		if (newGenomicPosition < 0) {
 			return false;
 		}
-		
+
 		genomicPositionA = newGenomicPosition;
 		return true;
 	}
@@ -110,7 +111,7 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 	
 	private int hasNext(int currentGenomicPosition, final AbstractPileupBuilder[] pileupBuilders) {
 		// within
-		while (currentGenomicPosition < coordinate.getEnd()) {
+		while (currentGenomicPosition <= coordinate.getEnd()) {
 			if (pileupBuilders[0].isContainedInWindow(currentGenomicPosition)) {
 				if (isCovered(currentGenomicPosition, pileupBuilders)) {
 					return currentGenomicPosition;
@@ -130,7 +131,8 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 
 		return -1;
 	}
-	
+
+	// TODO make this more quantitative
 	private boolean isCovered(int genomicPosition, AbstractPileupBuilder[] pileupBuilders) {
 		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(genomicPosition);
 
@@ -142,7 +144,7 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 
 		return true;
 	}
-	
+
 	private Pileup[] getPileups(int genomicPosition, AbstractPileupBuilder[] pileupBuilders) {
 		int n = pileupBuilders.length;
 		Pileup[] pileups = new DefaultPileup[n];
@@ -330,24 +332,22 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 	}
 	*/
 	
-	public DefaultParallelPileup next() {
+	public ParallelPileup next() {
 		if (! hasNext()) {
 			return null;
 		}
 
-		// TODO optimize do not create a new object
-		DefaultParallelPileup next = new DefaultParallelPileup(parallelPileup);
-		next.setFilterCountsA(getCounts(pileupBuildersA));
-		next.setFilterCountsB(getCounts(pileupBuildersB));
+		parallelPileup.setFilterCountsA(getCounts(pileupBuildersA));
+		parallelPileup.setFilterCountsB(getCounts(pileupBuildersB));
 
 		// advance to the next position
 		advance();
 
-		if (next.getPosition() % 10000 <= 1000) {
-			ACCUSA2.printLog(Integer.toString(next.getPosition()));
-		}
+if (parallelPileup.getPosition() % 10000 <= 1000) {
+	ACCUSA2.printLog(Integer.toString(parallelPileup.getPosition()));
+}
 
-		return next;
+		return parallelPileup;
 	}
 
 	private void advance() {

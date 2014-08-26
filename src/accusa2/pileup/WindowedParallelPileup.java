@@ -2,6 +2,7 @@ package accusa2.pileup;
 
 import accusa2.pileup.DefaultPileup.STRAND;
 
+// TODO
 public final class WindowedParallelPileup {
 
 	private DefaultPileup pileup;

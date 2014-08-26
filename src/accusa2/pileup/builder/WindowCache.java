@@ -2,9 +2,10 @@ package accusa2.pileup.builder;
 
 import java.util.Arrays;
 
+import accusa2.cli.Parameters;
 import accusa2.process.phred2prob.Phred2Prob;
 
-public class DefaultWindowCache {
+public class WindowCache {
 
 	protected int windowsSize;
 	protected int baseLength;
@@ -13,13 +14,17 @@ public class DefaultWindowCache {
 	protected int[][] baseCount;
 	protected int[][][] qualCount; // TODO make this more efficient
 	
-	public DefaultWindowCache(int windowSize, int baseLength) {
+	protected int minQualI;
+	
+	public WindowCache(int windowSize, int baseLength) {
 		this.windowsSize = windowSize;
 		this.baseLength = baseLength;
 
-		coverage = new int[windowSize];
-		baseCount = new int[windowSize][baseLength];
-		qualCount = new int[windowSize][baseLength][Phred2Prob.MAX_Q];
+		coverage 	= new int[windowSize];
+		baseCount 	= new int[windowSize][baseLength];
+		qualCount 	= new int[windowSize][baseLength][Phred2Prob.MAX_Q];
+
+		minQualI 	= Parameters.getInstance().getMinBASQ();
 	}
 
 	public void clear() {
@@ -46,7 +51,7 @@ public class DefaultWindowCache {
 	public int[] getBaseI(int windowPosition) {
 		return baseCount[windowPosition];
 	}
-	
+
 	public int[][] getQual(int windowPosition) {
 		return qualCount[windowPosition];
 	}
