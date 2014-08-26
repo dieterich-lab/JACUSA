@@ -27,4 +27,5 @@ public interface Pileup {
 	 abstract Counts getCounts();
 
 	 abstract Pileup complement();
+
 }

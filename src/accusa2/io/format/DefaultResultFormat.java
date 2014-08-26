@@ -2,7 +2,6 @@ package accusa2.io.format;
 
 import accusa2.cli.Parameters;
 import accusa2.filter.factory.AbstractFilterFactory;
-import accusa2.pileup.BaseConfig;
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
@@ -61,17 +60,17 @@ public class DefaultResultFormat extends AbstractResultFormat {
 
 		//add means and vars
 		sb.append(getSEP());
-		sb.append("mean1");
+		sb.append("meanA");
 		sb.append(getSEP());
-		sb.append("var1");
+		sb.append("varA");
 		sb.append(getSEP());
-		sb.append("mean2");
+		sb.append("meanB");
 		sb.append(getSEP());
-		sb.append("var2");
+		sb.append("varB");
 		sb.append(getSEP());
-		sb.append("mean12");
+		sb.append("meanAB");
 		sb.append(getSEP());
-		sb.append("var12");
+		sb.append("varAB");
 		
 		// stat
 		sb.append(getSEP());
@@ -144,9 +143,12 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		// output sample: Ax,Cx,Gx,Tx
 		for (Pileup pileup : pileups) {
 			sb.append(SEP);
-			for (int base = 0; base < BaseConfig.VALID.length ; ++base) {
+			int baseI = 0;
+			sb.append(pileup.getCounts().getBaseCount()[baseI]);
+			baseI++;
+			for (; baseI < parameters.getFilterFlags() ; ++baseI) {
 				sb.append(SEP2);
-				sb.append(pileup.getCounts().getBaseCount()[base]);
+				sb.append(pileup.getCounts().getBaseCount()[baseI]);
 			}
 		}
 	}

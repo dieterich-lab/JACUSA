@@ -1,6 +1,7 @@
 package accusa2.pileup.iterator;
 
 import net.sf.samtools.SAMFileReader;
+import accusa2.ACCUSA2;
 import accusa2.cli.Parameters;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.DefaultPileup;
@@ -334,12 +335,17 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 			return null;
 		}
 
+		// TODO optimize do not create a new object
 		DefaultParallelPileup next = new DefaultParallelPileup(parallelPileup);
 		next.setFilterCountsA(getCounts(pileupBuildersA));
 		next.setFilterCountsB(getCounts(pileupBuildersB));
-//System.out.println(next.getPosition());
+
 		// advance to the next position
 		advance();
+
+		if (next.getPosition() % 10000 <= 1000) {
+			ACCUSA2.printLog(Integer.toString(next.getPosition()));
+		}
 
 		return next;
 	}

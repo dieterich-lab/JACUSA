@@ -43,8 +43,8 @@ public final class LR2Statistic implements StatisticCalculator {
 		final int bases[] = {0, 1, 2, 3};
 		//final int bases[] = parallelPileup.getPooledPileup().getAlleles();
 
-		final int coverage1 = defaultStatistic.getCoverage(parallelPileup.getPileupsA());
-		final int coverage2 = defaultStatistic.getCoverage(parallelPileup.getPileupsB());
+		final int coverage1 = defaultStatistic.getMeanCoverage(parallelPileup.getPileupsA());
+		final int coverage2 = defaultStatistic.getMeanCoverage(parallelPileup.getPileupsB());
 
 		final double[][] probs1 = defaultStatistic.getPileup2Probs(bases, parallelPileup.getPileupsA());
 		final double[] alpha1 = defaultStatistic.estimateAlpha(bases, parallelPileup.getPooledPileupA(), coverage1);
@@ -57,9 +57,7 @@ public final class LR2Statistic implements StatisticCalculator {
 		final double density22 = StatisticUtils.getDensity(dirichlet2, probs2);
 
 		final int coverageP = parallelPileup.getPooledPileup().getCoverage();
-		final Pileup[] pileupsP = new Pileup[parallelPileup.getNA() + parallelPileup.getNB()];
-		System.arraycopy(parallelPileup.getPileupsA(), 0, pileupsP, 0, parallelPileup.getPileupsA().length);
-		System.arraycopy(parallelPileup.getPileupsB(), 0, pileupsP, parallelPileup.getPileupsA().length, parallelPileup.getPileupsB().length);
+		final Pileup[] pileupsP = parallelPileup.getPileupsP();
 
 		final double[][] probsP = defaultStatistic.getPileup2Probs(bases, pileupsP);
 		final double[] alphaP = defaultStatistic.estimateAlpha(bases, parallelPileup.getPooledPileup(), coverageP);

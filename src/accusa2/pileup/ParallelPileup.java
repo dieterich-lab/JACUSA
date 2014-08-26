@@ -11,12 +11,11 @@ public interface ParallelPileup {
 
 	abstract void setPileupsA(Pileup[] pileupsA);
 	abstract void setPileupsB(Pileup[] pileupsB);
-	
+
 	abstract void reset();
 
 	abstract int getNA();
 	abstract int getNB();
-
 	abstract int getN();
 
 	abstract String getContig();
@@ -42,10 +41,6 @@ public interface ParallelPileup {
 	abstract Counts[][] getFilterCountsA();
 	abstract Counts[][] getFilterCountsB();
 
-	/**
-	 * 
-	 * @return
-	 */
 	abstract int[] getVariantBases();
 
 }

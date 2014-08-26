@@ -47,8 +47,8 @@ public final class LRStatistic implements StatisticCalculator {
 		final int bases[] = {0, 1, 2, 3};
 		//final int bases[] = parallelPileup.getPooledPileup().getAlleles();
 
-		final int coverage1 = defaultStatistic.getCoverage(parallelPileup.getPileupsA());
-		final int coverage2 = defaultStatistic.getCoverage(parallelPileup.getPileupsB());
+		final int coverage1 = defaultStatistic.getMeanCoverage(parallelPileup.getPileupsA());
+		final int coverage2 = defaultStatistic.getMeanCoverage(parallelPileup.getPileupsB());
 		final int minCoverage = Math.min(coverage1, coverage2);
 
 		final double[][] probs1 = defaultStatistic.getPileup2Probs(bases, parallelPileup.getPileupsA());

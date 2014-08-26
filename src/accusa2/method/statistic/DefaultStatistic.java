@@ -33,7 +33,7 @@ public class DefaultStatistic implements StatisticCalculator {
 	 * @param pileups
 	 * @return
 	 */
-	protected int getCoverage(Pileup[] pileups) {
+	protected int getMeanCoverage(Pileup[] pileups) {
 		if(pileups.length == 1) { 
 			return pileups[0].getCoverage();
 		}
@@ -53,7 +53,7 @@ public class DefaultStatistic implements StatisticCalculator {
 
 		// first sample
 		// mean coverage for pileups for sample1
-		final int coverage1 = getCoverage(parallelPileup.getPileupsA());
+		final int coverage1 = getMeanCoverage(parallelPileup.getPileupsA());
 		// probability matrix for all pileups in sample1 (bases in column, pileups in rows)
 		final double[][] probs1 = getPileup2Probs(bases, parallelPileup.getPileupsA());
 		// estimate alpha for by pooling pileups in sample1 alpha = alphaP * avg.cov / covP  
@@ -62,7 +62,7 @@ public class DefaultStatistic implements StatisticCalculator {
 		final double density11 = getDensity(dirichlet1, probs1);
 
 		// second sample - see above
-		final int coverage2 = getCoverage(parallelPileup.getPileupsB());
+		final int coverage2 = getMeanCoverage(parallelPileup.getPileupsB());
 		final double[][] probs2 = getPileup2Probs(bases, parallelPileup.getPileupsB());
 		final double[] alpha2 = estimateAlpha(bases, parallelPileup.getPooledPileupB(), coverage2);
 		final DirichletDist dirichlet2 = new DirichletDist(alpha2);
@@ -153,7 +153,7 @@ public class DefaultStatistic implements StatisticCalculator {
 	protected double[] estimateAlpha(final int bases[], final Pileup pileup, int coverage) {
 		final double[] alphas = new double[bases.length];
 
-		double[] probVector = phred2Prob.colSum(bases, pileup);
+		double[] probVector = phred2Prob.colMean(bases, pileup);
 		// INFO: coverage and pileup.getCoverage() may be different.
 		// e.g.: when replicates are available...
 		for(int baseI = 0; baseI < bases.length; ++baseI) {
@@ -181,12 +181,7 @@ public class DefaultStatistic implements StatisticCalculator {
 
 		for(int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			// sum the probabilities giving alpha 
-			double[] probVector = phred2Prob.colSum(bases, pileups[pileupI]);
-
-			//  divide alpha by coverage to get average probability
-			for(int baseI = 0; baseI < bases.length; ++baseI) {
-				probs[pileupI][baseI] = probVector[baseI] / (double)pileups[pileupI].getCoverage();
-			}
+			probs[pileupI] = phred2Prob.colMean(bases, pileups[pileupI]);
 		}
 
 		return probs;

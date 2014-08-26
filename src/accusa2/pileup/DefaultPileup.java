@@ -55,7 +55,7 @@ public final class DefaultPileup implements Pileup {
 	
 	@Override
 	public void addPileup(final Pileup pileup) {
-		counts.add(pileup.getCounts());
+		counts.addCounts(pileup.getCounts());
 	}
 
 	@Override
@@ -234,13 +234,13 @@ public final class DefaultPileup implements Pileup {
 			return baseCount[base];
 		}
 
-		public void add(final Counts counts) {
-			for(int i = 0; i < counts.baseCount.length; ++i) {
-				baseCount[i] += counts.baseCount[i];
+		public void addCounts(final Counts counts) {
+			for(int baseI = 0; baseI < counts.baseCount.length; ++baseI) {
+				baseCount[baseI] += counts.baseCount[baseI];
 			}
-			for(int i = 0; i < counts.baseCount.length; ++i) {
-				for(int j = 0; j < counts.qualCount.length; ++j) {
-					qualCount[i][j] += counts.qualCount[i][j];
+			for(int baseI = 0; baseI < counts.baseCount.length; ++baseI) {
+				for (int qualI = 0; qualI < counts.qualCount[baseI].length; ++qualI) {
+					qualCount[baseI][qualI] += counts.qualCount[baseI][qualI];
 				}
 			}
 		}

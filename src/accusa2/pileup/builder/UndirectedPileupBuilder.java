@@ -64,7 +64,7 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		System.arraycopy(windowCache.baseCount[windowPosition], 0, pileup.getBaseCount(), 0, windowCache.baseCount[windowPosition].length);
 		pileup.getCounts().setQualCount(new int[windowCache.baseLength][Phred2Prob.MAX_Q]);
 		for (int baseI = 0; baseI < windowCache.baseLength; ++baseI) {
-			System.arraycopy(windowCache.getQual(windowPosition)[baseI], 0, pileup.getQualCount()[baseI], 0, pileup.getQualCount()[baseI].length);
+			System.arraycopy(windowCache.getQual(windowPosition)[baseI], 0, pileup.getQualCount()[baseI], 0, windowCache.getQual(windowPosition)[baseI].length);
 		}
 
 		return pileup;
