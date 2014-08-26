@@ -50,7 +50,7 @@ public final class Phred2Prob {
 	/**
 	 * Calculate a probability vector P for the pileup. |P| = |bases| 
 	 */
-	public double[] sumProbs(final int[] bases, final Pileup pileup) {
+	public double[] colSum(final int[] bases, final Pileup pileup) {
 		// container for accumulated probabilities 
 		final double[] p = new double[bases.length];
 
@@ -76,6 +76,17 @@ public final class Phred2Prob {
 		return p;
 	}
 
+	public double[] colMean(final int[] bases, final Pileup pileup) {
+		// container for accumulated probabilities 
+		final double[] p = colSum(bases, pileup);
+		
+		for(int baseI = 0; baseI < bases.length; ++baseI) {
+			p[baseI] /= pileup.getCoverage();
+		}
+		
+		return p;
+	}
+	
 	public static Phred2Prob getInstance(int n) {
 		if (singles[n] == null) {
 			singles[n] = new Phred2Prob(n);

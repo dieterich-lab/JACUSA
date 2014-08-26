@@ -40,7 +40,7 @@ public final class NumericalStatistic implements StatisticCalculator {
 
 		for(int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			// sum the probabilities giving alpha 
-			double[] probVec = phred2Prob.sumProbs(bases, pileups[pileupI]);
+			double[] probVec = phred2Prob.colSum(bases, pileups[pileupI]);
 
 			//  divide alpha by coverage to get average probability
 			for(int baseI = 0; baseI < bases.length; ++baseI) {
@@ -117,7 +117,7 @@ public final class NumericalStatistic implements StatisticCalculator {
 			totalCoverage += coverage;
 						
 			// calculate prob. vectors
-			double[] probVector = phred2Prob.sumProbs(bases, pileup);
+			double[] probVector = phred2Prob.colSum(bases, pileup);
 			pileupProbVectors[pileupI] = probVector;
 		}
 		
@@ -136,7 +136,7 @@ public final class NumericalStatistic implements StatisticCalculator {
 		
 		DirichletDist dirichlet = new DirichletDist(alpha);
 		for (final Pileup pileup : pileups) {
-			double[] prob = phred2Prob.sumProbs(bases, pileup);
+			double[] prob = phred2Prob.colSum(bases, pileup);
 			density += Math.log(Math.max(Double.MIN_VALUE, dirichlet.density(prob)));
 		}
 
