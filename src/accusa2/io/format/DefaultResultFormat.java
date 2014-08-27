@@ -145,8 +145,8 @@ public class DefaultResultFormat extends AbstractResultFormat {
 			sb.append(SEP);
 			int baseI = 0;
 			sb.append(pileup.getCounts().getBaseCount()[baseI]);
-			baseI++;
-			for (; baseI < parameters.getFilterFlags() ; ++baseI) {
+			++baseI;
+			for (; baseI < pileup.getCounts().getBaseCount().length ; ++baseI) {
 				sb.append(SEP2);
 				sb.append(pileup.getCounts().getBaseCount()[baseI]);
 			}
