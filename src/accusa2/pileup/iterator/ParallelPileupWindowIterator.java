@@ -251,15 +251,7 @@ public class ParallelPileupWindowIterator implements ParallelPileupIterator {
 			switch (compare) {
 
 			case -1:
-				// adjust actualPosition; instead of iterating jump to specific
-				// position
-				adjustCurrentGenomicPosition(positionB, pileupBuildersA);
-				if (hasNext(pileupBuildersA)) {
-					parallelPileup.setPileupsA(getPileups(pileupBuildersA));
-				} else {
-					parallelPileup.setPileupsA(new DefaultPileup[0]);
-					return false;
-				}
+				// adjust actualPosition; instead of iterating jump to specific position
 				break;
 
 			case 0:
@@ -314,15 +306,7 @@ public class ParallelPileupWindowIterator implements ParallelPileupIterator {
 				break;
 
 			case 1:
-				// adjust actualPosition; instead of iterating jump to specific
-				// position
-				adjustCurrentGenomicPosition(positionA, pileupBuildersB);
-				if(hasNext(pileupBuildersB)) {
-					parallelPileup.setPileupsB(getPileups(pileupBuildersB));
-				} else {
-					parallelPileup.setPileupsB(new DefaultPileup[0]);
-					return false;
-				}
+				// adjust actualPosition; instead of iterating jump to specific position
 				break;
 			}
 		}
