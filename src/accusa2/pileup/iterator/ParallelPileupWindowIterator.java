@@ -1,7 +1,6 @@
 package accusa2.pileup.iterator;
 
 import net.sf.samtools.SAMFileReader;
-import accusa2.ACCUSA2;
 import accusa2.cli.Parameters;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.DefaultPileup;
@@ -13,7 +12,7 @@ import accusa2.pileup.builder.AbstractPileupBuilder;
 import accusa2.pileup.builder.PileupBuilderFactory;
 import accusa2.util.AnnotatedCoordinate;
 
-public class WindowParallelPileupIterator implements ParallelPileupIterator {
+public class ParallelPileupWindowIterator implements ParallelPileupIterator {
 
 	protected int genomicPositionA;
 	protected int genomicPositionB;
@@ -29,7 +28,7 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 	// output
 	protected ParallelPileup parallelPileup;
 
-	public WindowParallelPileupIterator(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader[] readersA, final SAMFileReader[] readersB, final Parameters parameters) {
+	public ParallelPileupWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader[] readersA, final SAMFileReader[] readersB, final Parameters parameters) {
 		this.coordinate = annotatedCoordinate;
 
 		pileupBuildersA = createPileupBuilders(parameters.getPileupBuilderFactoryA(), annotatedCoordinate, readersA, parameters);
@@ -342,10 +341,6 @@ public class WindowParallelPileupIterator implements ParallelPileupIterator {
 
 		// advance to the next position
 		advance();
-
-if (parallelPileup.getPosition() % 10000 <= 1000) {
-	ACCUSA2.printLog(Integer.toString(parallelPileup.getPosition()));
-}
 
 		return parallelPileup;
 	}
