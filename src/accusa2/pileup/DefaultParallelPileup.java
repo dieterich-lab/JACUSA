@@ -103,11 +103,11 @@ public final class DefaultParallelPileup implements ParallelPileup {
 			pileupsP = new Pileup[getNA() + getNB()];
 
 			if (getNA() > 0) {
-				System.arraycopy(pileupA, 0, pileupsA, 0, getNA());
+				System.arraycopy(pileupsA, 0, pileupsP, 0, getNA());
 			}
 			
 			if (getNB() > 0) {
-				System.arraycopy(pileupB, 0, pileupsA, getNA(), getNB());
+				System.arraycopy(pileupsB, 0, pileupsP, getNA(), getNB());
 			}
 		}
 
