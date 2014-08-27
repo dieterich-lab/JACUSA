@@ -1,13 +1,15 @@
 package accusa2.io.format;
 
-
 import net.sf.samtools.SAMUtils;
-import accusa2.pileup.BaseConfig;
+import accusa2.cli.Parameters;
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
 
+
+// TODO
+// add ref remove strand
 public class PileupFormat extends AbstractResultFormat {
 
 	public static char EMPTY 	= '*';
@@ -18,7 +20,7 @@ public class PileupFormat extends AbstractResultFormat {
 	public PileupFormat(char c, String desc) {
 		super(c, desc);
 	}
-	
+
 	public PileupFormat() {
 		super('M', "samtools mpileup like format (base columns without: $ ^ < > *)");
 	}
@@ -51,31 +53,31 @@ public class PileupFormat extends AbstractResultFormat {
 	protected void addPileups(StringBuilder sb, STRAND strand, Pileup[] pileups) {
 		sb.append(SEP);
 		sb.append(strand.character());
-		
-		for(Pileup pileup : pileups) {
+
+		char[] bases = Parameters.getInstance().getBaseConfig().getBases();
+		byte minBasq = Parameters.getInstance().getMinBASQ();
+		for (Pileup pileup : pileups) {
 
 			sb.append(SEP);
 			sb.append(pileup.getCoverage());
 			sb.append(SEP);
 			
-			for(int base : pileup.getAlleles()) {
-				
+			for (int baseI : pileup.getAlleles()) {
 				// print bases 
-				for(int i = 0; i < pileup.getCounts().getBaseCount()[base]; ++i) {
-					sb.append(BaseConfig.VALID[base]);
+				for (int i = 0; i < pileup.getCounts().getBaseCount()[baseI]; ++i) {
+					sb.append(bases[baseI]);
 				}
 			}
 
 			sb.append(SEP);
 
 			// print quals
-			for(int base : pileup.getAlleles()) {
-				for(byte qual = 0; qual < Phred2Prob.MAX_Q; ++qual) {
-
-					int count = pileup.getCounts().getQualCount(base, qual);
-					if(count > 0) {
+			for (int baseI : pileup.getAlleles()) {
+				for (byte qual = minBasq; qual < Phred2Prob.MAX_Q; ++qual) {
+					int count = pileup.getCounts().getQualCount(baseI, qual);
+					if (count > 0) {
 						// repeat count times
-						for(int j = 0; j < count; ++j) {
+						for (int i = 0; i < count; ++i) {
 							sb.append(SAMUtils.phredToFastq(qual));
 						}
 					}
