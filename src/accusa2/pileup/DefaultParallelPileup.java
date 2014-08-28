@@ -245,23 +245,29 @@ public final class DefaultParallelPileup implements ParallelPileup {
 		return pileupP;
 	}
 
-
-
 	@Override
 	public int[] getVariantBases() {
 		int n = 0;
 		int[] alleles = getPooledPileup().getAlleles();
-		for(int base : alleles) {
-			if(getPooledPileupA().getCounts().getBaseCount(base) == 0 || getPooledPileupB().getCounts().getBaseCount(base) == 0) {
+		for (int baseI : alleles) {
+			int countA = getPooledPileupA().getCounts().getBaseCount(baseI);
+			int countB = getPooledPileupB().getCounts().getBaseCount(baseI);
+			int countP = getPooledPileup().getCounts().getBaseCount(baseI);
+
+			if (countA == 0 && countB == countP || countB == 0 && countA == countP) {
 				++n;
 			}
 		}
 
 		int[] variantBases = new int[n];
 		int j = 0;
-		for(int base : alleles) {
-			if(getPooledPileupA().getCounts().getBaseCount(base) == 0 || getPooledPileupB().getCounts().getBaseCount(base) == 0) {
-				variantBases[j] = base;
+		for (int baseI : alleles) {
+			int countA = getPooledPileupA().getCounts().getBaseCount(baseI);
+			int countB = getPooledPileupB().getCounts().getBaseCount(baseI);
+			int countP = getPooledPileup().getCounts().getBaseCount(baseI);
+
+			if (countA == 0 && countB == countP || countB == 0 && countA == countP) {
+				variantBases[j] = baseI;
 				++j;
 			}
 		}
