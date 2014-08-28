@@ -42,7 +42,7 @@ public class MpileupParallelPileupWorker extends AbstractParallelPileupWorker {
 
 	@Override
 	protected ParallelPileupIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate, Parameters parameters) {
-		return new ParallelPileupWindowIterator(coordinate, readers1, readers2, parameters);
+		return new ParallelPileupWindowIterator(coordinate, readersA, readersB, parameters);
 	}
 
 }

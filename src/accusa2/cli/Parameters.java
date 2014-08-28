@@ -3,7 +3,7 @@ package accusa2.cli;
 import java.util.ArrayList;
 import java.util.List;
 
-import accusa2.filter.cache.FilterConfig;
+import accusa2.filter.FilterConfig;
 import accusa2.filter.samtag.SamTagFilter;
 import accusa2.io.format.AbstractResultFormat;
 import accusa2.io.format.DefaultResultFormat;

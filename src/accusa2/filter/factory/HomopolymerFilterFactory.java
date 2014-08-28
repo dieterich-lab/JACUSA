@@ -1,8 +1,9 @@
 package accusa2.filter.factory;
 
-import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
-import accusa2.filter.cache.HomopolymerParallelPileupFilter;
-import accusa2.filter.cache.HomopolymerPileupBuilderFilter;
+import accusa2.filter.AbstractParallelPileupFilter;
+import accusa2.filter.CountBasedFilter;
+import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
+import accusa2.filter.cache.HomopolymerFilterCount;
 
 public class HomopolymerFilterFactory extends AbstractFilterFactory {
 
@@ -14,13 +15,13 @@ public class HomopolymerFilterFactory extends AbstractFilterFactory {
 	}
 
 	@Override
-	public HomopolymerParallelPileupFilter getFilterInstance() {
-		return new HomopolymerParallelPileupFilter(getC(), getLength(), getDistance(), getParameters());
+	public AbstractParallelPileupFilter getFilterInstance() {
+		return new CountBasedFilter(getC(), 1, getParameters());
 	}
 
 	@Override
-	public AbstractPileupBuilderFilterCache getCacheInstance() {
-		return new HomopolymerPileupBuilderFilter(getC(), length, distance, getParameters());
+	public AbstractPileupBuilderFilterCount getFilterCountInstance() {
+		return new HomopolymerFilterCount(getC(), length, distance, getParameters());
 	}
 
 	@Override

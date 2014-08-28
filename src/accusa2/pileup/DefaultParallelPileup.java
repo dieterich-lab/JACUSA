@@ -188,12 +188,12 @@ public final class DefaultParallelPileup implements ParallelPileup {
 	public void setPosition(int position) {
 		this.position = position;
 	}
-	
+
 	@Override
 	public void setStrand(STRAND strand) {
 		this.strand = strand;
 	}
-	
+
 	@Override
 	public STRAND getStrandA() {
 		return getPooledPileupA().getStrand();

@@ -8,14 +8,14 @@ import net.sf.samtools.SAMRecord;
 import accusa2.cli.Parameters;
 import accusa2.pileup.builder.WindowCache;
 
-public abstract class AbstractPileupBuilderFilterCache {
+public abstract class AbstractPileupBuilderFilterCount {
 
 	private char c;
 	protected WindowCache cache;
 	protected boolean[] visited;
 	protected Parameters parameters;
 
-	public AbstractPileupBuilderFilterCache(char c, Parameters parameters) {
+	public AbstractPileupBuilderFilterCount(char c, Parameters parameters) {
 		this.c = c;
 		this.parameters = parameters;
 

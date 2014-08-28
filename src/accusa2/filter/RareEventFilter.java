@@ -1,15 +1,14 @@
-package accusa2.filter.cache;
+package accusa2.filter;
 
-import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 
-public class RareEventParallelPileupFilter extends AbstractParallelPileupFilter {
+public class RareEventFilter extends AbstractParallelPileupFilter {
 
 	private int reads;
 	private double level;
 
-	public RareEventParallelPileupFilter(char c, int reads, double level) {
+	public RareEventFilter(char c, int reads, double level) {
 		super(c);
 		this.reads = reads;
 		this.level = level;
@@ -17,15 +16,13 @@ public class RareEventParallelPileupFilter extends AbstractParallelPileupFilter 
 
 	@Override
 	public boolean filter(final ParallelPileup parallelPileup) {
-		this.filtered = new DefaultParallelPileup(parallelPileup);
-
 		// homo-hetero-morph scenario
 		int[] variants = parallelPileup.getVariantBases();
-		if(variants.length > 0) {
+		if (variants.length > 0) {
 			int variant = variants[0];
 
 			Pileup pileup = parallelPileup.getPooledPileupA();
-			if(parallelPileup.getPooledPileupB().getAlleles().length > 1) {
+			if (parallelPileup.getPooledPileupB().getAlleles().length > 1) {
 				pileup = parallelPileup.getPooledPileupB(); 
 			}
 
@@ -37,13 +34,7 @@ public class RareEventParallelPileupFilter extends AbstractParallelPileupFilter 
 			}
 		}
 
-		this.filtered = parallelPileup;
 		return false;
-	}
-
-	@Override
-	public boolean quitFiltering() {
-		return filtered == null;
 	}
 
 	public int getReads() {

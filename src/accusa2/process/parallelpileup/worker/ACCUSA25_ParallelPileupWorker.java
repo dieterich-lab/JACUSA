@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import accusa2.ACCUSA2;
 import accusa2.cli.Parameters;
-import accusa2.filter.cache.AbstractParallelPileupFilter;
+import accusa2.filter.AbstractParallelPileupFilter;
 import accusa2.filter.factory.AbstractFilterFactory;
 import accusa2.method.statistic.StatisticCalculator;
 import accusa2.pileup.DefaultParallelPileup;
@@ -135,8 +135,7 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 	 */
 	protected final boolean isValidParallelPileup(final ParallelPileup parallelPileup) {
 		return parallelPileup.getPooledPileupA().getCoverage() >= parameters.getMinCoverage() && 
-				parallelPileup.getPooledPileupB().getCoverage() >= parameters.getMinCoverage() && 
-				parallelPileup.getPooledPileup().getAlleles().length < 3;
+				parallelPileup.getPooledPileupB().getCoverage() >= parameters.getMinCoverage();
 	}
 
 	/**
@@ -154,7 +153,7 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 
 	@Override
 	protected ParallelPileupIterator buildParallelPileupIterator(final AnnotatedCoordinate coordinate, final Parameters parameters) {
-		return new VariantParallelPileupWindowIterator(coordinate, readers1, readers2, parameters);
+		return new VariantParallelPileupWindowIterator(coordinate, readersA, readersB, parameters);
 	}
 
 }

@@ -6,9 +6,9 @@ import net.sf.samtools.AlignmentBlock;
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
 import accusa2.cli.Parameters;
-import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
+import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
 
-public class DistancePileupBuilderCache extends AbstractPileupBuilderFilterCache {
+public class DistanceFilterCount extends AbstractPileupBuilderFilterCount {
 
 	private int distance;
 
@@ -17,7 +17,7 @@ public class DistancePileupBuilderCache extends AbstractPileupBuilderFilterCache
 	 * @param c
 	 * @param distance
 	 */
-	public DistancePileupBuilderCache(char c, int distance, Parameters parameters) {
+	public DistanceFilterCount(char c, int distance, Parameters parameters) {
 		super(c, parameters);
 		this.distance = distance;
 	}
@@ -49,8 +49,6 @@ public class DistancePileupBuilderCache extends AbstractPileupBuilderFilterCache
 		windowPosition = offset;
 		fillCache(windowPosition - distance, distance, alignmentBlock.getReadStart() + alignmentBlock.getLength() - distance, record);
 	}
-
-	
 
 	// process INDELs
 	@Override

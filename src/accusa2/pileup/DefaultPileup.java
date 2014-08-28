@@ -30,7 +30,8 @@ public final class DefaultPileup implements Pileup {
 		contig 		= new String();
 		position	= -1;
 		strand		= STRAND.UNKNOWN;
-
+		refBase		= 'N';
+		
 		counts 		= new Counts();
 	}
 	

@@ -1,4 +1,4 @@
-package accusa2.filter.cache;
+package accusa2.filter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import accusa2.cli.Parameters;
+import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
 import accusa2.filter.factory.AbstractFilterFactory;
 
 public class FilterConfig implements Cloneable {
@@ -42,11 +43,11 @@ public class FilterConfig implements Cloneable {
 		}
 	}
 
-	public AbstractPileupBuilderFilterCache[] createCache() {
-		AbstractPileupBuilderFilterCache[] filterCache = new AbstractPileupBuilderFilterCache[c2Factory.size()];
+	public AbstractPileupBuilderFilterCount[] createCache() {
+		AbstractPileupBuilderFilterCount[] filterCache = new AbstractPileupBuilderFilterCount[c2Factory.size()];
 
 		for(int i = 0; i < i2Factory.size(); ++i) {
-			filterCache[i] = i2Factory.get(i).getCacheInstance();
+			filterCache[i] = i2Factory.get(i).getFilterCountInstance();
 		}
 
 		return filterCache;

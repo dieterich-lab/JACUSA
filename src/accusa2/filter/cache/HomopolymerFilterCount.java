@@ -4,7 +4,7 @@ import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
 import accusa2.cli.Parameters;
 
-public class HomopolymerPileupBuilderFilter extends AbstractPileupBuilderFilterCache {
+public class HomopolymerFilterCount extends AbstractPileupBuilderFilterCount {
 
 	private int length;
 	private int minDistance;
@@ -14,7 +14,7 @@ public class HomopolymerPileupBuilderFilter extends AbstractPileupBuilderFilterC
 	 * @param c
 	 * @param distance
 	 */
-	public HomopolymerPileupBuilderFilter(char c, int length, int distance, Parameters parameters) {
+	public HomopolymerFilterCount(char c, int length, int distance, Parameters parameters) {
 		super(c, parameters);
 		this.length = length;
 		this.minDistance = distance;

@@ -1,8 +1,8 @@
 package accusa2.filter.factory;
 
 import accusa2.cli.Parameters;
-import accusa2.filter.cache.AbstractParallelPileupFilter;
-import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
+import accusa2.filter.AbstractParallelPileupFilter;
+import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
 
 public abstract class AbstractFilterFactory {
 
@@ -19,7 +19,7 @@ public abstract class AbstractFilterFactory {
 	}
 
 	public abstract AbstractParallelPileupFilter getFilterInstance();
-	public abstract AbstractPileupBuilderFilterCache getCacheInstance();
+	public abstract AbstractPileupBuilderFilterCount getFilterCountInstance();
 
 	public final char getC() {
 		return c;

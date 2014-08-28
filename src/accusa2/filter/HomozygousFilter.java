@@ -1,20 +1,19 @@
-package accusa2.filter.cache;
+package accusa2.filter;
 
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 
-public class HomozygousParallelPileupFilter extends AbstractParallelPileupFilter {
+public class HomozygousFilter extends AbstractParallelPileupFilter {
 
 	private int sample;
 
-	public HomozygousParallelPileupFilter(char c, int sample) {
+	public HomozygousFilter(char c, int sample) {
 		super(c);
 		this.sample = sample;
 	}
 
 	@Override
 	public boolean filter(final ParallelPileup parallelPileup) {
-		this.filtered = null;
 		Pileup pileup = null;
 
 		switch(sample) {
@@ -35,13 +34,7 @@ public class HomozygousParallelPileupFilter extends AbstractParallelPileupFilter
 			return true;
 		}
 
-		this.filtered = parallelPileup;
 		return false;
-	}
-
-	@Override
-	public boolean quitFiltering() {
-		return filtered == null;
 	}
 
 	public int getSample() {

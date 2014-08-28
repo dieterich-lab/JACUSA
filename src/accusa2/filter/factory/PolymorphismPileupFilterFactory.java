@@ -1,7 +1,7 @@
 package accusa2.filter.factory;
 
-import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
-import accusa2.filter.cache.PolymorphismParallelPileupFilter;
+import accusa2.filter.PolymorphismFilter;
+import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
 
 public class PolymorphismPileupFilterFactory extends AbstractFilterFactory {
 
@@ -10,12 +10,12 @@ public class PolymorphismPileupFilterFactory extends AbstractFilterFactory {
 	}
 
 	@Override
-	public PolymorphismParallelPileupFilter getFilterInstance() {
-		return new PolymorphismParallelPileupFilter(getC());
+	public PolymorphismFilter getFilterInstance() {
+		return new PolymorphismFilter(getC());
 	}
 
 	@Override
-	public AbstractPileupBuilderFilterCache getCacheInstance() {
+	public AbstractPileupBuilderFilterCount getFilterCountInstance() {
 		return null;
 	}
 	

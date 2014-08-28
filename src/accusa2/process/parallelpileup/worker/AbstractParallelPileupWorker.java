@@ -15,8 +15,8 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 
 	protected AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> parallelPileupWorkerDispatcher;
 
-	protected SAMFileReader[] readers1;
-	protected SAMFileReader[] readers2;
+	protected SAMFileReader[] readersA;
+	protected SAMFileReader[] readersB;
 
 	protected final Parameters parameters;
 	protected ParallelPileupIterator parallelPileupIterator;
@@ -38,8 +38,8 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	public AbstractParallelPileupWorker(AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> parallelPileupWorkerDispatcher, final Parameters parameters) {
 		this.parallelPileupWorkerDispatcher 	= parallelPileupWorkerDispatcher; 
 
-		readers1				= parallelPileupWorkerDispatcher.createBAMFileReaders1();
-		readers2				= parallelPileupWorkerDispatcher.createBAMFileReaders2();
+		readersA				= parallelPileupWorkerDispatcher.createBAMFileReaders1();
+		readersB				= parallelPileupWorkerDispatcher.createBAMFileReaders2();
 
 		this.parameters 		= parameters;
 		resultFormat 			= parameters.getResultFormat();
@@ -136,8 +136,8 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	}
 
 	protected void close() {
-		close(readers1);
-		close(readers2);
+		close(readersA);
+		close(readersB);
 	}
 
 	private void close(SAMFileReader[] readers) {

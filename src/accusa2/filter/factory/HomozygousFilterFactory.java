@@ -1,7 +1,7 @@
 package accusa2.filter.factory;
 
-import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
-import accusa2.filter.cache.HomozygousParallelPileupFilter;
+import accusa2.filter.HomozygousFilter;
+import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
 
 public class HomozygousFilterFactory extends AbstractFilterFactory {
 
@@ -13,12 +13,12 @@ public class HomozygousFilterFactory extends AbstractFilterFactory {
 	}
 
 	@Override
-	public HomozygousParallelPileupFilter getFilterInstance() {
-		return new HomozygousParallelPileupFilter(getC(), sample);
+	public HomozygousFilter getFilterInstance() {
+		return new HomozygousFilter(getC(), sample);
 	}
 
 	@Override
-	public AbstractPileupBuilderFilterCache getCacheInstance() {
+	public AbstractPileupBuilderFilterCount getFilterCountInstance() {
 		return null;
 	}
 	

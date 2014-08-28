@@ -253,17 +253,17 @@ public class ParallelPileupWindowIterator implements ParallelPileupIterator {
 				break;
 
 			case 0:
-				// TODO stranded
 				final STRAND strandA = parallelPileup.getStrandA();
 				final STRAND strandB = parallelPileup.getStrandB();
 
 				parallelPileup.setPosition(genomicPositionA);
 				
+				// complement bases if one sample is unstranded and 
+				// the other is stranded and maps to the opposite strand
 				parallelPileup.setPileupsA(getPileups(genomicPositionA, strandA, pileupBuildersA));
 				if(strandA == STRAND.UNKNOWN && strandB == STRAND.REVERSE) {
 					parallelPileup.setPileupsA(complementPileups(parallelPileup.getPileupsA()));
 				}
-				
 				parallelPileup.setPileupsB(getPileups(genomicPositionB, strandB, pileupBuildersB));
 				if(strandB == STRAND.UNKNOWN && strandA == STRAND.REVERSE) {
 					parallelPileup.setPileupsB(complementPileups(parallelPileup.getPileupsB()));
@@ -289,80 +289,6 @@ public class ParallelPileupWindowIterator implements ParallelPileupIterator {
 		return false;
 	}
 
-	/*
-	protected boolean findNext() {
-		while (parallelPileup.isValid()) {
-			int positionA = parallelPileup.getPooledPileupA().getPosition();
-			int positionB = parallelPileup.getPooledPileupB().getPosition();
-
-			final int compare = new Integer(positionA).compareTo(positionB);
-
-			switch (compare) {
-
-			case -1:
-				// adjust actualPosition; instead of iterating jump to specific position
-				
-			case 0:
-
-				final STRAND strandA = parallelPileup.getStrandA();
-				final STRAND strandB = parallelPileup.getStrandB();
-				/*
-				 * UGLY code!!
-				 * Do not update strand{1,2}, when pileups are changed/complemented in the following,
-				 * otherwise "UGLY code continued" won't work as expected 
-				 *
-				// change parallelPileup if U,S or S,U encountered
-				if(strandA == STRAND.UNKNOWN && strandB == STRAND.REVERSE) {
-					parallelPileup.setPileupsA(complementPileups(parallelPileup.getPileupsA()));
-				}
-				if(strandB == STRAND.UNKNOWN && strandA == STRAND.REVERSE) {
-					parallelPileup.setPileupsB(complementPileups(parallelPileup.getPileupsB()));
-				}
-				final boolean isVariant = isVariant(parallelPileup);
-
-				if(isVariant && strandA == strandB) {
-					return true;
-					/*
-					 * UGLY code continued!
-					 *
-				} else if(isVariant && (strandA == STRAND.UNKNOWN || strandB == STRAND.UNKNOWN)) {
-					return true;
-				} else if(strandA == STRAND.REVERSE) {
-					if(hasNext(pileupBuildersB)) {
-						parallelPileup.setPileupsB(getPileups(pileupBuildersB));
-					} else {
-						parallelPileup.setPileupsB(new DefaultPileup[0]);
-					}
-				} else if(strandB == STRAND.REVERSE) {
-					if(hasNext(pileupBuildersA)) {
-						parallelPileup.setExtendedPileupsA(next(pileupBuildersA));
-					} else {
-						parallelPileup.setPileupsA(new DefaultPileup[0]);
-					}					
-				} else {
-					if(hasNext(pileupBuildersA)) {
-						parallelPileup.setExtendedPileupsA(next(pileupBuildersA));
-					} else {
-						parallelPileup.setPileupsA(new DefaultPileup[0]);
-					}
-					if(hasNext(pileupBuildersB)) {
-						parallelPileup.setExtendedPileupsB(next(pileupBuildersB));
-					} else {
-						parallelPileup.setPileupsB(new DefaultPileup[0]);
-					}
-				}
-				break;
-
-			case 1:
-				// adjust actualPosition; instead of iterating jump to specific position
-				break;
-			}
-		}
-
-		// return false;
-	}
-	*/
-
 	public ParallelPileup next() {
 		if (! hasNext()) {
 			return null;
@@ -378,8 +304,29 @@ public class ParallelPileupWindowIterator implements ParallelPileupIterator {
 	}
 
 	private void advance() {
-		genomicPositionA++;
-		genomicPositionB++;
+		if (strandA == STRAND.UNKNOWN) {
+			if (strandB == STRAND.UNKNOWN || strandB == STRAND.REVERSE) {
+				genomicPositionA++;
+				genomicPositionB++;
+			} else if (strandB == STRAND.FORWARD){
+				strandB = STRAND.REVERSE;
+			}
+		}
+		if (strandB == STRAND.UNKNOWN) {
+			if (strandA == STRAND.REVERSE) {
+				genomicPositionA++;
+				genomicPositionB++;
+			} else if (strandA == STRAND.FORWARD){
+				strandA = STRAND.REVERSE;
+			}
+		}
+		if (strandA == STRAND.FORWARD && strandB == STRAND.FORWARD) {
+			strandA = STRAND.REVERSE;
+			strandB = STRAND.REVERSE;
+		} else {
+			genomicPositionA++;
+			genomicPositionB++;
+		}
 	}
 
 	public final AnnotatedCoordinate getAnnotatedCoordinate() {

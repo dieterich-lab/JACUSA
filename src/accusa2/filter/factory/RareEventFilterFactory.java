@@ -1,12 +1,12 @@
 package accusa2.filter.factory;
 
-import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
-import accusa2.filter.cache.RareEventParallelPileupFilter;
+import accusa2.filter.RareEventFilter;
+import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
 
 public class RareEventFilterFactory extends AbstractFilterFactory {
 
-	private int reads = 2;
-	private double level = 0.1;
+	private int reads 		= 2;
+	private double level 	= 0.1;
 
 	public RareEventFilterFactory() {
 		super('R', "");
@@ -14,13 +14,13 @@ public class RareEventFilterFactory extends AbstractFilterFactory {
 	}
 
 	@Override
-	public RareEventParallelPileupFilter getFilterInstance() {
-		return new RareEventParallelPileupFilter(getC(), getReads(), getLevel());
+	public RareEventFilter getFilterInstance() {
+		return new RareEventFilter(getC(), getReads(), getLevel());
 	}
 
 	@Override
-	public AbstractPileupBuilderFilterCache getCacheInstance() {
-		return null;
+	public AbstractPileupBuilderFilterCount getFilterCountInstance() {
+		return null; // no filter needed
 	}
 
 	@Override
