@@ -10,7 +10,7 @@ import accusa2.method.statistic.StatisticCalculator;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.iterator.ParallelPileupIterator;
-import accusa2.pileup.iterator.VariantParallelPileupIterator;
+import accusa2.pileup.iterator.VariantParallelPileupWindowIterator;
 import accusa2.process.parallelpileup.dispatcher.ACCUSA25_ParallelPileupWorkerDispatcher;
 import accusa2.util.AnnotatedCoordinate;
 
@@ -154,7 +154,7 @@ public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker 
 
 	@Override
 	protected ParallelPileupIterator buildParallelPileupIterator(final AnnotatedCoordinate coordinate, final Parameters parameters) {
-		return new VariantParallelPileupIterator(coordinate, readers1, readers2, parameters);
+		return new VariantParallelPileupWindowIterator(coordinate, readers1, readers2, parameters);
 	}
 
 }
