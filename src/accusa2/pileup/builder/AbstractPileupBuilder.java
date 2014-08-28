@@ -8,14 +8,13 @@ import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 import net.sf.samtools.SAMValidationError;
 import accusa2.cli.Parameters;
-import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
 import accusa2.filter.samtag.SamTagFilter;
 import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.DefaultPileup.STRAND;
+import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.Pileup;
 import accusa2.util.AnnotatedCoordinate;
 
-// TODO keep iterator
 public abstract class AbstractPileupBuilder {
 
 	// in genomic coordinates
@@ -30,26 +29,27 @@ public abstract class AbstractPileupBuilder {
 	protected int filteredSAMRecords;
 
 	protected Parameters parameters;
-	protected AbstractPileupBuilderFilterCache[] filterCaches;
 	
 	protected boolean isCached;
 
+	protected DefaultPileup pileup;
+	
 	public AbstractPileupBuilder(AnnotatedCoordinate annotatedCoordinate, SAMFileReader SAMFileReader, Parameters parameters) {
 		contig				= annotatedCoordinate.getSequenceName();
 		genomicWindowStart 	= annotatedCoordinate.getStart();
 		windowSize 			= parameters.getWindowSize();
 		maxGenomicPosition 	= Math.min(annotatedCoordinate.getEnd(), SAMFileReader.getFileHeader().getSequence(contig).getSequenceLength());
 
-		this.parameters		= parameters;
-		filterCaches		= parameters.getFilterConfig().createCache();
-
-		// build cache
 		SAMRecordsBuffer	= new SAMRecord[30000];
-
 		this.reader			= SAMFileReader;
-		isCached			= false;
 
 		filteredSAMRecords	= 0;
+
+		this.parameters		= parameters;
+
+		isCached			= false;
+
+		pileup 				= new DefaultPileup();
 	}
 
 	/**
@@ -57,7 +57,7 @@ public abstract class AbstractPileupBuilder {
 	 * @param targetPosition
 	 * @return
 	 */
-	public int getNextValidGenomicPosition(int targetPosition) {
+	public SAMRecord getNextValidRecord(int targetPosition) {
 		SAMRecordIterator iterator = reader.query(contig, targetPosition, maxGenomicPosition, false);
 		while(iterator.hasNext() ) {
 			SAMRecord record = iterator.next();
@@ -65,13 +65,13 @@ public abstract class AbstractPileupBuilder {
 			if(isValid(record)) {
 				iterator.close();
 				iterator = null;
-				return record.getAlignmentStart();
+				return record;
 			}
 		}
 		iterator.close();
 
 		// if no more reads are found 
-		return -1;
+		return null;
 	}
 
 	public boolean isCached() {
@@ -236,26 +236,6 @@ public abstract class AbstractPileupBuilder {
 
 	/**
 	 * 
-	 * @param record
-	 * @throws Exception
-	 */
-	protected void processRecord(final SAMRecord record) throws Exception {
-		// process alignment block
-		for (AlignmentBlock alignmentBlock : record.getAlignmentBlocks()) {
-			processAlignmentBlock(record, alignmentBlock);
-		}
-
-		// filter
-		// let the filter decide what data they need
-		for(AbstractPileupBuilderFilterCache pileupBuilderFilter : filterCaches) {
-			if(pileupBuilderFilter != null) {
-				pileupBuilderFilter.processRecord(genomicWindowStart, record);
-			}
-		}
-	}
-
-	/**
-	 * 
 	 * @return
 	 */
 	public Parameters getParameters() {
@@ -278,15 +258,52 @@ public abstract class AbstractPileupBuilder {
 	public int getCurrentGenomicPosition(int windowPosition) {
 		return genomicWindowStart + windowPosition;
 	}
+
+	protected void processAlignmentBlock(final SAMRecord record, final AlignmentBlock alignmentBlock) {
+		int readPosition = alignmentBlock.getReadStart() - 1;
+		int genomicPosition = alignmentBlock.getReferenceStart();
+
+		for (int offset = 0; offset < alignmentBlock.getLength(); ++offset) {
+			final int baseI = parameters.getBaseConfig().getBaseI(record.getReadBases()[readPosition + offset]);
+			final byte qual = record.getBaseQualities()[readPosition + offset];
+
+			if(qual >= parameters.getMinBASQ() && baseI != -1) {
+				// speedup: if windowPosition == -1 the remaining part of the read will be outside of the windowCache
+				// ignore the overhanging part of the read until it overlaps with the window cache
+				final int windowPosition = convertGenomicPosition2WindowPosition(genomicPosition + offset);
+				if (windowPosition < 0) {
+					return;
+				}
+
+				add2Cache(windowPosition, baseI, qual, record);
+			}
+		}
+	}
 	
+	/**
+	 * 
+	 * @param record
+	 * @throws Exception
+	 */
+	protected void processRecord(final SAMRecord record) throws Exception {
+		// process alignment block
+		for (AlignmentBlock alignmentBlock : record.getAlignmentBlocks()) {
+			processAlignmentBlock(record, alignmentBlock);
+		}
+
+		// collect filter information
+		processFilterCache(record);
+	}
+
 	// abstract methods
-	
+
 	// Reset all caches in windows
 	public abstract void clearCache();
-	public abstract boolean isCovered(int windowPosition);
+	public abstract boolean isCovered(int windowPosition, STRAND strand);
 	public abstract Pileup getPileup(int windowPosition, STRAND strand);
 	public abstract Counts[] getFilteredCounts(int windowPosition, STRAND strand);
 	public abstract int getCoverage(int windowPosition, STRAND strand);
-	protected abstract void processAlignmentBlock(SAMRecord record, AlignmentBlock alignmentBlock);
+	protected abstract void add2Cache(int windowPosition, int baseI, byte qual, SAMRecord record);
+	protected abstract void processFilterCache(final SAMRecord record) throws Exception;
 
 }

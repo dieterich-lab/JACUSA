@@ -29,9 +29,13 @@ public class DistanceParallelPileupFilter extends AbstractParallelPileupFilter {
 	@Override
 	public boolean filter(ParallelPileup parallelPileup) {
 		int[] variants = parallelPileup.getVariantBases();
-		if(variants.length == 0 || DefaultParallelPileup.isHoHo(parallelPileup)) {
+
+		
+		if (variants.length == 0 || DefaultParallelPileup.isHoHo(parallelPileup)) {
 			return false; // FIXME all other cases are currently ignored
 		}
+		char refBase = parallelPileup.getPooledPileup().getReferenceBase();
+		
 		int variantBaseI = variants[0]; 
 
 		int count1 = parallelPileup.getPooledPileupA().getBaseCount()[variantBaseI];

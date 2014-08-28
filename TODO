@@ -41,3 +41,21 @@ Stranded and Unstranded
 Restricted bases
 windowed
 
+Filtering
+	I	II	Ref	Variant
+	A	AG	A	G
+	A	AG	G	A
+	A	G	A	?
+	A	G	G	?
+	AG	AG	A	G
+	AG	AG	G	A
+	
+Ref: Save base - rest potential artefacts
+
+Stratify
+I VS I_filtered				one significant ?
+I VS II_filtered			one significant	?
+
+I_filtered VS II_filtered	Still significant
+
+Alignment position

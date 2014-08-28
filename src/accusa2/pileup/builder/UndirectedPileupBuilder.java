@@ -3,7 +3,6 @@
  */
 package accusa2.pileup.builder;
 
-import net.sf.samtools.AlignmentBlock;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import accusa2.cli.Parameters;
@@ -22,17 +21,20 @@ import accusa2.util.AnnotatedCoordinate;
 public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 
 	protected WindowCache windowCache;
+	protected AbstractPileupBuilderFilterCache[] filterCaches;
+
 	
-	protected DefaultPileup pileup;
 	protected STRAND strand;
 	protected int windowPosition;
 
 	public UndirectedPileupBuilder(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader reader, final Parameters parameters) {
 		super(annotatedCoordinate, reader, parameters);
-		int windowSize = parameters.getWindowSize();
 
-		windowCache = new WindowCache(windowSize, parameters.getBaseConfig().getBases().length);
-		pileup = new DefaultPileup();
+		int windowSize 	= parameters.getWindowSize();
+		windowCache 	= new WindowCache(windowSize, parameters.getBaseConfig().getBases().length);
+		filterCaches	= parameters.getFilterConfig().createCache();
+		
+		strand 			= STRAND.UNKNOWN;
 	}
 
 	// TODO check do I need to user System.arraycopy or just reassign
@@ -82,36 +84,31 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 	}
 	
 	@Override
-	protected void processAlignmentBlock(final SAMRecord record, final AlignmentBlock alignmentBlock) {
-		int readPosition = alignmentBlock.getReadStart() - 1;
-		int genomicPosition = alignmentBlock.getReferenceStart();
-
-		for (int offset = 0; offset < alignmentBlock.getLength(); ++offset) {
-			final int baseI = parameters.getBaseConfig().getBaseI(record.getReadBases()[readPosition + offset]);
-			final byte qual = record.getBaseQualities()[readPosition + offset];
-
-			if(qual >= parameters.getMinBASQ() && baseI != -1) {
-				// speedup: if windowPosition == -1 the remaining part of the read will be outside of the windowCache
-				// ignore the overhanging part of the read until it overlaps with the window cache
-				final int windowPosition = convertGenomicPosition2WindowPosition(genomicPosition + offset);
-				if (windowPosition < 0) {
-					return;
-				}
-
-				windowCache.add(windowPosition, baseI, qual);
+	protected void add2Cache(int windowPosition, int baseI, byte qual, SAMRecord record) {
+		windowCache.add(windowPosition, baseI, qual);
+	}
+	
+	@Override
+	protected void processFilterCache(SAMRecord record) {
+		// let the filter decide what data they need
+		for(AbstractPileupBuilderFilterCache pileupBuilderFilter : filterCaches) {
+			if(pileupBuilderFilter != null) {
+				pileupBuilderFilter.processRecord(genomicWindowStart, record);
 			}
 		}
 	}
-
+	
 	/**
 	 * 
 	 * @param windowPosition
 	 * @return
 	 */
-	public boolean isCovered(int windowPosition) {
+	@Override
+	public boolean isCovered(int windowPosition, STRAND strand) {
 		return getCoverage(windowPosition, STRAND.UNKNOWN) >= parameters.getMinCoverage();
 	}
 
+	@Override
 	public int getCoverage(int windowPosition, STRAND strand) {
 		return windowCache.getCoverage(windowPosition);
 	}

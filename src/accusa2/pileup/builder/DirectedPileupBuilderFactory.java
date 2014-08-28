@@ -15,4 +15,9 @@ public class DirectedPileupBuilderFactory implements PileupBuilderFactory {
 		return new DirectedPileupBuilder(coordinate, reader, parameters);
 	}
 
+	@Override
+	public boolean isDirected() {
+		return true;
+	}
+	
 }

@@ -8,4 +8,6 @@ public interface PileupBuilderFactory {
 
 	public AbstractPileupBuilder newInstance(final AnnotatedCoordinate coordinate, final SAMFileReader reader, final Parameters parameters);
 
+	public abstract boolean isDirected();
+	
 }

@@ -1,26 +1,46 @@
 package accusa2.pileup.builder;
 
 import net.sf.samtools.SAMFileReader;
+import net.sf.samtools.SAMRecord;
 import accusa2.cli.Parameters;
+import accusa2.filter.cache.AbstractPileupBuilderFilterCache;
+import accusa2.pileup.DefaultPileup;
+import accusa2.pileup.Pileup;
+import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.DefaultPileup.STRAND;
+import accusa2.process.phred2prob.Phred2Prob;
 import accusa2.util.AnnotatedCoordinate;
 
 /**
  * @author michael
  *
  */
-// TODO
-public class DirectedPileupBuilder extends UndirectedPileupBuilder {
+public class DirectedPileupBuilder extends AbstractPileupBuilder {
 
 	protected WindowCache forwardWindowCache;
 	protected WindowCache reverseWindowCache;
-	protected STRAND strand;
 
+	protected AbstractPileupBuilderFilterCache[] forwardFilterCaches;
+	protected AbstractPileupBuilderFilterCache[] reverseFilterCaches;
+	
+	protected STRAND strand;
+	protected int windowPosition;
+	
 	public DirectedPileupBuilder(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader reader, final Parameters parameters) {
 		super(annotatedCoordinate, reader, parameters);
+
+		int windowSize = parameters.getWindowSize();
+		forwardWindowCache = new WindowCache(windowSize, parameters.getBaseConfig().getBases().length);
+		reverseWindowCache = new WindowCache(windowSize, parameters.getBaseConfig().getBases().length);
+
+		forwardFilterCaches = parameters.getFilterConfig().createCache();
+		reverseFilterCaches = parameters.getFilterConfig().createCache();
+		
+		strand = STRAND.UNKNOWN;
 	}
 
-	protected void clearPileupCache() {
+	@Override
+	public void clearCache() {
 		forwardWindowCache.clear();
 		reverseWindowCache.clear();
 
@@ -28,28 +48,101 @@ public class DirectedPileupBuilder extends UndirectedPileupBuilder {
 		strand = STRAND.FORWARD;
 	}
 
-	public int getCoverage(int windowPosition) {
-		return forwardWindowCache.getCoverage(windowPosition) + reverseWindowCache.getCoverage(windowPosition);
+	@Override
+	public int getCoverage(int windowPosition, STRAND strand) {
+		switch (strand) {
+		case FORWARD:
+			return forwardWindowCache.getCoverage(windowPosition);
+
+		case REVERSE:
+			return reverseWindowCache.getCoverage(windowPosition);
+
+		case UNKNOWN:
+		default:
+			return forwardWindowCache.getCoverage(windowPosition) + reverseWindowCache.getCoverage(windowPosition);
+		}
+		
+		
 	}
 
-	/*
-	protected int cachePosition(final int windowPosition, final int readPosition, final int genomicPosition, final CigarElement cigarElement, final List<Coordinate> indels, final List<Coordinate> skipped, final SAMRecord record) {
-		//  || FIXME coverageCache[windowPosition] <= parameters.getMaxDepth()) 
-		if(windowPosition >= 0 && (parameters.getMaxDepth() == -1)) {
-			byte base = 0; // FIXME Pileup.BASE2INT.get((char)record.getReadBases()[readPosition]);
-			final byte qual = record.getBaseQualities()[readPosition];
+	@Override
+	public Counts[] getFilteredCounts(int windowPosition, STRAND strand) {
+		switch (strand) {
+		case FORWARD:
+			return null;
 
-			// FIXME
-			if(strand == STRAND.REVERSE) {
-				base = 0; // FIXME Pileup.COMPLEMENT[base];
-				reverseWindowCache.add(windowPosition, base, qual);
-			} else {
-				forwardWindowCache.add(windowPosition, base, qual);
-			}
+		case REVERSE:
+			return null;
+		
+		case UNKNOWN:
+		default:
+			return null;
+		}
+	}
+
+	@Override
+	public Pileup getPileup(int windowPosition, STRAND strand) {
+		final DefaultPileup pileup = new DefaultPileup(contig, getCurrentGenomicPosition(windowPosition), strand);
+
+		WindowCache windowCache;
+		switch (strand) {
+		case FORWARD:
+			windowCache = forwardWindowCache;
+			break;
+
+		case REVERSE:
+			windowCache = reverseWindowCache;
+			break;
+
+		case UNKNOWN:
+		default:
+			return pileup;
 		}
 
-		return windowPosition;
+		// copy base and qual info from cache
+		pileup.getCounts().setBaseCount(new int[windowCache.baseLength]);
+		System.arraycopy(windowCache.baseCount[windowPosition], 0, pileup.getBaseCount(), 0, windowCache.baseCount[windowPosition].length);
+		pileup.getCounts().setQualCount(new int[windowCache.baseLength][Phred2Prob.MAX_Q]);
+		for (int baseI = 0; baseI < windowCache.baseLength; ++baseI) {
+			System.arraycopy(windowCache.getQual(windowPosition)[baseI], 0, pileup.getQualCount()[baseI], 0, windowCache.getQual(windowPosition)[baseI].length);
+		}
+
+		return pileup;
 	}
-	*/
+
+	@Override
+	public boolean isCovered(int windowPosition, STRAND strand) {
+		return getCoverage(windowPosition, strand) >= parameters.getMinCoverage();
+	}
+
+	@Override
+	protected void add2Cache(int windowPosition, int baseI, byte qual, SAMRecord record) {
+		if (record.getReadNegativeStrandFlag()) {
+			reverseWindowCache.add(windowPosition, baseI, qual);
+		} else {
+			forwardWindowCache.add(windowPosition, baseI, qual);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param record
+	 * @throws Exception
+	 */
+	@Override
+	protected void processFilterCache(final SAMRecord record) {
+		AbstractPileupBuilderFilterCache[] filterCaches = forwardFilterCaches;
+		if (record.getReadNegativeStrandFlag()) {
+			filterCaches = reverseFilterCaches;
+		}
+
+		// filter
+		// let the filter decide what data they need
+		for(AbstractPileupBuilderFilterCache pileupBuilderFilter : filterCaches) {
+			if(pileupBuilderFilter != null) {
+				pileupBuilderFilter.processRecord(genomicWindowStart, record);
+			}
+		}
+	}
 
 }

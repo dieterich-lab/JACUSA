@@ -15,4 +15,9 @@ public class UndirectedPileupBuilderFactory implements PileupBuilderFactory {
 		return new UndirectedPileupBuilder(coordinate, reader, parameters);
 	}
 
+	@Override
+	public boolean isDirected() {
+		return false;
+	}
+	
 }
