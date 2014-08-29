@@ -30,7 +30,6 @@ public class ConsiderBasesOption extends AbstractACOption {
 	        .create(opt);
 	}
 
-	// TODO allow A->G
 	@Override
 	public void process(CommandLine line) throws Exception {
 		if(line.hasOption(opt)) {

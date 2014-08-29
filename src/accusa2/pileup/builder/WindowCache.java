@@ -12,7 +12,7 @@ public class WindowCache {
 	
 	protected int[] coverage;
 	protected int[][] baseCount;
-	protected int[][][] qualCount; // TODO make this more efficient
+	protected int[][][] qualCount;
 	
 	protected int minQualI;
 	

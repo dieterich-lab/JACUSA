@@ -11,15 +11,15 @@ import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.iterator.ParallelPileupIterator;
 import accusa2.pileup.iterator.VariantParallelPileupWindowIterator;
-import accusa2.process.parallelpileup.dispatcher.ACCUSA25_ParallelPileupWorkerDispatcher;
+import accusa2.process.parallelpileup.dispatcher.ParallelPileupWorkerDispatcher;
 import accusa2.util.AnnotatedCoordinate;
 
-public class ACCUSA25_ParallelPileupWorker extends AbstractParallelPileupWorker {
+public class ParallelPileupWorker extends AbstractParallelPileupWorker {
 
 	protected final StatisticCalculator statisticCalculator;
 	
-	public ACCUSA25_ParallelPileupWorker(
-			final ACCUSA25_ParallelPileupWorkerDispatcher threadDispatcher, 
+	public ParallelPileupWorker(
+			final ParallelPileupWorkerDispatcher threadDispatcher, 
 			final Parameters parameters) {
 		super(threadDispatcher, parameters);
 

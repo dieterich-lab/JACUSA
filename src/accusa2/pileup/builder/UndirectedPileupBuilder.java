@@ -11,7 +11,6 @@ import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.Pileup;
-import accusa2.process.phred2prob.Phred2Prob;
 import accusa2.util.AnnotatedCoordinate;
 
 /**
@@ -37,7 +36,7 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		strand 			= STRAND.UNKNOWN;
 	}
 
-	// TODO check do I need to user System.arraycopy or just reassign
+	/*
 	@Override
 	public Counts[] getFilteredCounts(int windowPosition, STRAND strand) {
 		Counts[] counts = new Counts[filterCaches.length];
@@ -58,18 +57,23 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 
 		return counts;
 	}
+	*/
 	
-	// TODO check if I need to copy
+	public Counts[] getFilteredCounts(int windowPosition, STRAND strand) {
+		Counts[] counts = new Counts[filterCaches.length];
+		for (int i = 0; i < counts.length; ++i) {
+			counts[i] = pileup.new Counts(windowCache.baseCount[windowPosition], windowCache.qualCount[windowPosition]);
+		}
+
+		return counts;
+	}
+	
 	public Pileup getPileup(int windowPosition, STRAND strand) {
 		final DefaultPileup pileup = new DefaultPileup(contig, getCurrentGenomicPosition(windowPosition), strand);
 
 		// copy base and qual info from cache
-		pileup.getCounts().setBaseCount(new int[windowCache.baseLength]);
-		System.arraycopy(windowCache.baseCount[windowPosition], 0, pileup.getBaseCount(), 0, windowCache.baseCount[windowPosition].length);
-		pileup.getCounts().setQualCount(new int[windowCache.baseLength][Phred2Prob.MAX_Q]);
-		for (int baseI = 0; baseI < windowCache.baseLength; ++baseI) {
-			System.arraycopy(windowCache.getQual(windowPosition)[baseI], 0, pileup.getQualCount()[baseI], 0, windowCache.getQual(windowPosition)[baseI].length);
-		}
+		pileup.getCounts().setBaseCount(windowCache.baseCount[windowPosition]);
+		pileup.getCounts().setQualCount(windowCache.qualCount[windowPosition]);
 
 		return pileup;
 	}

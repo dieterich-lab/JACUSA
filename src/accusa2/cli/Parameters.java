@@ -234,11 +234,11 @@ public class Parameters {
 		return maxThreads;
 	}
 
-	public int getReplicates1() {
+	public int getReplicatesA() {
 		return pathnames1.length;
 	}
 	
-	public int getReplicates2() {
+	public int getReplicatesB() {
 		return pathnames2.length;
 	}
 	

@@ -2,7 +2,7 @@ package accusa2.io.format;
 
 import accusa2.pileup.ParallelPileup;
 
-public abstract class AbstractResultFormat {
+public abstract class AbstractResultFormat implements ResultFormat {
 
 	private char c;
 	private String desc;
@@ -20,18 +20,10 @@ public abstract class AbstractResultFormat {
 		return desc;
 	}
 
-	public abstract String convert2String(ParallelPileup parallelPileup, double value);
-	public abstract String convert2String(ParallelPileup parallelPileup);
-
 	public String getHeader(ParallelPileup parallelPileup) {
 		return new String();
 	}
 
 	public abstract double extractValue(String line);
 
-	public abstract char getCOMMENT();
-	public abstract char getSEP();
-	public abstract char getSEP2();
-	public abstract char getEMPTY();
-	
 }

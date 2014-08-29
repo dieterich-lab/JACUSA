@@ -47,14 +47,14 @@ import accusa2.method.statistic.NumericalStatistic;
 import accusa2.method.statistic.WeightedMethodOfMomentsStatistic;
 //import accusa2.method.statistic.MinimalCoverageStatistic;
 import accusa2.method.statistic.StatisticCalculator;
-import accusa2.process.parallelpileup.dispatcher.ACCUSA25_ParallelPileupWorkerDispatcher;
+import accusa2.process.parallelpileup.dispatcher.ParallelPileupWorkerDispatcher;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
-import accusa2.process.parallelpileup.worker.ACCUSA25_ParallelPileupWorker;
+import accusa2.process.parallelpileup.worker.ParallelPileupWorker;
 import accusa2.util.CoordinateProvider;
 
 public class ACCUSA25Factory extends AbstractMethodFactory {
 
-	private static ACCUSA25_ParallelPileupWorkerDispatcher instance;
+	private static ParallelPileupWorkerDispatcher instance;
 	
 	public ACCUSA25Factory() {
 		super("call", "Call variants");
@@ -110,9 +110,9 @@ public class ACCUSA25Factory extends AbstractMethodFactory {
 	}
 
 	@Override
-	public AbstractParallelPileupWorkerDispatcher<ACCUSA25_ParallelPileupWorker> getInstance(CoordinateProvider coordinateProvider, Parameters parameters) {
+	public AbstractParallelPileupWorkerDispatcher<ParallelPileupWorker> getInstance(CoordinateProvider coordinateProvider, Parameters parameters) {
 		if(instance == null) {
-			instance = new ACCUSA25_ParallelPileupWorkerDispatcher(coordinateProvider, parameters);
+			instance = new ParallelPileupWorkerDispatcher(coordinateProvider, parameters);
 		}
 		return instance;
 	}

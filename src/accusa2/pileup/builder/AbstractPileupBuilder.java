@@ -106,7 +106,6 @@ public abstract class AbstractPileupBuilder {
 			if(isValid(record)) {
 				SAMRecordsBuffer[SAMReocordsInBuffer++] = record;
 			} else {
-				// TODO make proper statistics
 				filteredSAMRecords++;
 			}
 

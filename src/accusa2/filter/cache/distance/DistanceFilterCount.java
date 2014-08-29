@@ -26,8 +26,6 @@ public class DistanceFilterCount extends AbstractPileupBuilderFilterCount {
 	public void processRecord(int genomicWindowStart, SAMRecord record) {
 		processCigar(genomicWindowStart, record);
 
-		// TODO use direction
-
 		AlignmentBlock alignmentBlock;
 		int windowPosition;
 		
