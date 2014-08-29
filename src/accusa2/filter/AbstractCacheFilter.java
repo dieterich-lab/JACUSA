@@ -26,7 +26,7 @@ public abstract class AbstractCacheFilter extends AbstractParallelPileupFilter {
 		// A | G
 		// define all non-reference bases as potential variants
 		if (DefaultParallelPileup.isHoHo(parallelPileup)) {
-			final char refBase = parallelPileup.getPooledPileup().getReferenceBase();
+			final char refBase = parallelPileup.getPooledPileup().getRefBase();
 			if (refBase == 'N') {
 				return new int[0];
 			}

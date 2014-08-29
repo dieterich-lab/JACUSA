@@ -3,18 +3,18 @@ package accusa2.pileup;
 import accusa2.pileup.DefaultPileup.STRAND;
 
 // TODO
-public final class WindowedParallelPileup {
+public final class WindowedParallelPileup  {
 
-	private DefaultPileup pileup;
-
-	private DefaultPileup pileupA;
-	private DefaultPileup pileupB;
-
-	private DefaultPileup[] pileupsA;
-	private DefaultPileup[] pileupsB;
+	private int windowSize;
+	
+	private Pileup pileup;
+	private Pileup pileupA;
+	private Pileup pileupB;
 
 	private Pileup[] pileupsP;
-	
+	private Pileup[] pileupsA;
+	private Pileup[] pileupsB;
+
 	public WindowedParallelPileup(final WindowedParallelPileup parallelPileup) {
 		this.pileup = new DefaultPileup(parallelPileup.getPooledPileup());
 
@@ -52,11 +52,11 @@ public final class WindowedParallelPileup {
 		pileup = null;
 	}
 
-	public DefaultPileup[] getPileupsA() {
+	public Pileup[] getPileupsA() {
 		return pileupsA;
 	}
 
-	public DefaultPileup[] getPileupsB() {
+	public Pileup[] getPileupsB() {
 		return pileupsB;
 	}
 
@@ -128,7 +128,7 @@ public final class WindowedParallelPileup {
 		return getN1() > 0 && getN2() > 0;
 	}
 
-	public DefaultPileup getPooledPileupA() {
+	public Pileup getPooledPileupA() {
 		if(pileupA == null) {
 			pileupA = new DefaultPileup(pileupsA[0].getContig(), pileupsA[0].getPosition(), pileupsA[0].getStrand());
 			for(int i = 0; i < pileupsA.length; ++i) {
@@ -138,7 +138,7 @@ public final class WindowedParallelPileup {
 		return pileupA;
 	}
 	
-	public DefaultPileup getPooledPileupB() {
+	public Pileup getPooledPileupB() {
 		if(pileupB == null) {
 			pileupB = new DefaultPileup(pileupsB[0].getContig(), pileupsB[0].getPosition(), pileupsB[0].getStrand());
 			for(int i = 0; i < pileupsB.length; ++i) {
@@ -148,7 +148,7 @@ public final class WindowedParallelPileup {
 		return pileupB;
 	}
 
-	public DefaultPileup getPooledPileup() {
+	public Pileup getPooledPileup() {
 		if(pileup == null) {
 			pileup = new DefaultPileup();
 			pileup.setContig(getPooledPileupA().getContig());
@@ -167,22 +167,6 @@ public final class WindowedParallelPileup {
 		}
 
 		return pileup;
-	}
-
-	public boolean isHoHo() {
-		return getPooledPileup().getAlleles().length == 1 && 
-				getPooledPileupA().getAlleles().length == 1 && getPooledPileupB().getAlleles().length == 1;		
-	}
-	
-	public boolean isHeHe() {
-		return getPooledPileup().getAlleles().length == 2 && 
-				getPooledPileupA().getAlleles().length == 2 && getPooledPileupB().getAlleles().length == 2;
-	}
-
-	public boolean isHoHe() {
-		return getPooledPileup().getAlleles().length == 2 && 
-				( getPooledPileupA().getAlleles().length == 1 && getPooledPileupB().getAlleles().length == 2 ||
-				getPooledPileupA().getAlleles().length == 2 && getPooledPileupB().getAlleles().length == 1 );
 	}
 	
 	/**
@@ -209,5 +193,9 @@ public final class WindowedParallelPileup {
 
 		return variantBases;
 	}
-	
+
+	public int getWindowSize() {
+		return windowSize;
+	}
+
 }

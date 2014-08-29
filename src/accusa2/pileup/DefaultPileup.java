@@ -14,7 +14,7 @@ import accusa2.process.phred2prob.Phred2Prob;
  * 
  * Michael Piechotta: refactored
  */
-public final class DefaultPileup implements Pileup {
+public class DefaultPileup implements Pileup {
 
 	// container
 	private String contig;
@@ -46,7 +46,7 @@ public final class DefaultPileup implements Pileup {
 		contig 		= new String(pileup.getContig());
 		position 	= pileup.getPosition();
 		strand		= pileup.getStrand();
-		refBase 	= pileup.getReferenceBase();
+		refBase 	= pileup.getRefBase();
 
 		counts		= (Counts)pileup.getCounts().clone();
 	}
@@ -87,7 +87,7 @@ public final class DefaultPileup implements Pileup {
 	}
 	
 	@Override
-	public char getReferenceBase() {
+	public char getRefBase() {
 		return refBase;
 	}
 
@@ -130,7 +130,7 @@ public final class DefaultPileup implements Pileup {
 	}
 
 	@Override
-	public void setReferenceBase(final char referenceBase) {
+	public void setRefBase(final char referenceBase) {
 		this.refBase = referenceBase;
 	}
 

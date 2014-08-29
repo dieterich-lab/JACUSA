@@ -11,7 +11,7 @@ public interface Pileup {
 	 abstract String getContig();
 	 abstract int getPosition();
 	 abstract STRAND getStrand();
-	 abstract char getReferenceBase();
+	 abstract char getRefBase();
 	 abstract int getCoverage();
 
 	 abstract int[] getAlleles();
@@ -20,7 +20,7 @@ public interface Pileup {
 	 abstract int[][] getQualCount();
 
 	 abstract void setContig(String contig);
-	 abstract void setReferenceBase(char referenceBase);
+	 abstract void setRefBase(char refBase);
 	 abstract void setPosition(int position);
 	 abstract void setStrand(STRAND strand);
 
