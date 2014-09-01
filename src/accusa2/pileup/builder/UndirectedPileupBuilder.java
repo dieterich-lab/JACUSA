@@ -26,10 +26,9 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 	protected STRAND strand;
 	protected int windowPosition;
 
-	public UndirectedPileupBuilder(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader reader, final Parameters parameters) {
-		super(annotatedCoordinate, reader, parameters);
+	public UndirectedPileupBuilder(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader reader, final int windowSize, final Parameters parameters) {
+		super(annotatedCoordinate, reader, windowSize, parameters);
 
-		int windowSize 	= parameters.getWindowSize();
 		windowCache 	= new WindowCache(windowSize, parameters.getBaseConfig().getBases().length);
 		filterCaches	= parameters.getFilterConfig().createCache();
 		

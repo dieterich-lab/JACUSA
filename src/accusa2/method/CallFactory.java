@@ -52,11 +52,11 @@ import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDis
 import accusa2.process.parallelpileup.worker.ParallelPileupWorker;
 import accusa2.util.CoordinateProvider;
 
-public class ACCUSA25Factory extends AbstractMethodFactory {
+public class CallFactory extends AbstractMethodFactory {
 
 	private static ParallelPileupWorkerDispatcher instance;
 	
-	public ACCUSA25Factory() {
+	public CallFactory() {
 		super("call", "Call variants");
 	}
 

@@ -168,7 +168,7 @@ public final class NumericalStatistic implements StatisticCalculator {
 
 	@Override
 	public boolean filter(double value) {
-		return parameters.getT() < value;
+		return parameters.getStat() < value;
 	}
 
 	@Override

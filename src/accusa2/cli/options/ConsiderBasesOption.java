@@ -37,8 +37,7 @@ public class ConsiderBasesOption extends AbstractACOption {
 	    	if(values.length < 2 || values.length > BaseConfig.VALID.length) {
 	    		throw new IllegalArgumentException("Possible values for " + longOpt.toUpperCase() + ": TC, AG, ACGT, AT...");
 	    	}
-	    	char[] bases = new char[values.length];
-	    	parameters.getBaseConfig().setBases(bases);
+	    	parameters.getBaseConfig().setBases(values);
 	    }
 	}
 

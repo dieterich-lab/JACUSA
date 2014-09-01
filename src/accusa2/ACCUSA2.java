@@ -12,7 +12,7 @@ import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMSequenceRecord;
 import accusa2.cli.CLI;
 import accusa2.cli.Parameters;
-import accusa2.method.ACCUSA25Factory;
+import accusa2.method.CallFactory;
 import accusa2.method.AbstractMethodFactory;
 //import accusa2.method.ACCUSA2Factory;
 import accusa2.method.PileupFactory;
@@ -31,7 +31,7 @@ public class ACCUSA2 {
 
 	// timer used for all time measurements
 	private static SimpleTimer timer;
-	
+
 	// command line interface
 	private CLI cli;
 
@@ -47,7 +47,7 @@ public class ACCUSA2 {
 		AbstractMethodFactory methodFactory = null;
 
 		// instantiate different methods
-		methodFactory = new ACCUSA25Factory();
+		methodFactory = new CallFactory();
 		methodFactories.put(methodFactory.getName(), methodFactory);
 
 		methodFactory = new PileupFactory();
@@ -79,16 +79,16 @@ public class ACCUSA2 {
 
 	/**
 	 * 
-	 * @param pathnames1
-	 * @param pathnames2
+	 * @param pathnamesA
+	 * @param pathnamesB
 	 * @return
 	 * @throws Exception
 	 */
-	public List<SAMSequenceRecord> getSAMSequenceRecords(String[] pathnames1, String[] pathnames2) throws Exception {
+	public List<SAMSequenceRecord> getSAMSequenceRecords(String[] pathnamesA, String[] pathnamesB) throws Exception {
 		printLog("Computing overlap between sequence records.");
 		String error = "Sequence Dictionary of BAM files do not match";
 
-		SAMFileReader reader 				= new SAMFileReader(new File(pathnames1[0]));
+		SAMFileReader reader 				= new SAMFileReader(new File(pathnamesA[0]));
 		List<SAMSequenceRecord> records 	= reader.getFileHeader().getSequenceDictionary().getSequences();
 		// close readers
 		reader.close();
@@ -100,7 +100,7 @@ public class ACCUSA2 {
 			targetSequenceNames.add(record.getSequenceName());
 		}
 
-		if(!isValid(targetSequenceNames, pathnames1) || !isValid(targetSequenceNames, pathnames2)) {
+		if(!isValid(targetSequenceNames, pathnamesA) || !isValid(targetSequenceNames, pathnamesB)) {
 			throw new Exception(error);
 		}
 
@@ -186,9 +186,9 @@ public class ACCUSA2 {
 		}
 		Parameters parameters = cmd.getParameters();
 
-		String[] pathnames1 = parameters.getPathnames1();
-		String[] pathnames2 = parameters.getPathnames2();
-		List<SAMSequenceRecord> records = accusa2.getSAMSequenceRecords(pathnames1, pathnames2);
+		String[] pathnamesA = parameters.getPathnamesA();
+		String[] pathnamesB = parameters.getPathnamesB();
+		List<SAMSequenceRecord> records = accusa2.getSAMSequenceRecords(pathnamesA, pathnamesB);
 		CoordinateProvider coordinateProvider = new SAMCoordinateProvider(records);
 
 		if(!parameters.getBED_Pathname().isEmpty()) {

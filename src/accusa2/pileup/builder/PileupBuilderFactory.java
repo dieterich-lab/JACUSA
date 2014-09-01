@@ -6,7 +6,7 @@ import accusa2.util.AnnotatedCoordinate;
 
 public interface PileupBuilderFactory {
 
-	public AbstractPileupBuilder newInstance(final AnnotatedCoordinate coordinate, final SAMFileReader reader, final Parameters parameters);
+	public AbstractPileupBuilder newInstance(final AnnotatedCoordinate coordinate, final SAMFileReader reader, final int windowSize, final Parameters parameters);
 
 	public abstract boolean isDirected();
 	

@@ -7,12 +7,12 @@ import org.apache.commons.cli.OptionBuilder;
 
 import accusa2.cli.Parameters;
 
-public class FalseDiscoveryRateOption  extends AbstractACOption {
+public class FalseDiscoveryFilterOption  extends AbstractACOption {
 
-	public FalseDiscoveryRateOption(Parameters parameters) {
+	public FalseDiscoveryFilterOption(Parameters parameters) {
 		super(parameters);
-		opt = 'T';
-		longOpt = "test-statistic";
+		opt = 'q';
+		longOpt = "fdr";
 	}
 
 	@SuppressWarnings("static-access")
@@ -21,7 +21,7 @@ public class FalseDiscoveryRateOption  extends AbstractACOption {
 		return OptionBuilder.withLongOpt(longOpt)
 			.withArgName(longOpt.toUpperCase())
 			.hasArg(true)
-	        .withDescription("Filter positions dependening on the " + longOpt.toUpperCase() + "\n default: " + parameters.getT())
+	        .withDescription("Filter positions dependening on the " + longOpt.toUpperCase() + "\n default: " + parameters.getStat())
 	        .create(opt);
 	}
 
@@ -33,7 +33,7 @@ public class FalseDiscoveryRateOption  extends AbstractACOption {
 	    	if(fdr < 0 || fdr > 1) {
 	    		throw new Exception("Invalid value for " + longOpt.toUpperCase() + ". Allowed values are 0 <= " + longOpt.toUpperCase() + " <= 1");
 	    	}
-	    	parameters.setT(fdr);
+	    	parameters.setStat(fdr);
 		}
 	}
 

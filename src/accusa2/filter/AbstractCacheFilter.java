@@ -10,18 +10,19 @@ import accusa2.pileup.DefaultPileup.Counts;
 
 public abstract class AbstractCacheFilter extends AbstractParallelPileupFilter {
 
-	final protected int filterI;
-
+	protected final int filterI;
+	protected final BaseConfig baseConfig;
+		
 	public AbstractCacheFilter(char c, Parameters parameters) {
 		super(c);
-		this.filterI = parameters.getFilterConfig().c2i(c);
+		filterI = parameters.getFilterConfig().c2i(c);
+		baseConfig = parameters.getBaseConfig();
+		
 	}
 
 	// todo ORDER RESULTS [0] SHOULD BE THE VARIANT TO TEST AGAINST
 	protected int[] getVariantBaseI(ParallelPileup parallelPileup) {
 		int[] variantBaseIs = parallelPileup.getVariantBases();
-
-		BaseConfig baseConfig = Parameters.getInstance().getBaseConfig();
 
 		// A | G
 		// define all non-reference bases as potential variants
@@ -56,7 +57,7 @@ public abstract class AbstractCacheFilter extends AbstractParallelPileupFilter {
 			parallelPileup.getPooledPileup().getAlleles();
 		}
 
-		return null;
+		return new int[0];
 	}
 
 	/**

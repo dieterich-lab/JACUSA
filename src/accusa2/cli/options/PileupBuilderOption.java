@@ -15,7 +15,7 @@ public class PileupBuilderOption extends AbstractACOption {
 	private final char STRAND_SPECIFIC 	 = 'S';
 	private final char STRAND_UNSPECIFIC = 'U';
 	private final char SEP 				 = ',';
-	
+
 	public PileupBuilderOption(Parameters parameters) {
 		super(parameters);
 		opt = 'P';
@@ -64,5 +64,5 @@ public class PileupBuilderOption extends AbstractACOption {
 			throw new IllegalArgumentException("Unknown '" + c + "'! Possible values for " + longOpt.toUpperCase() + ": S,S or U,U or S,U or U,S");
 		}
 	}
-	
+
 }

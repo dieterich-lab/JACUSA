@@ -11,8 +11,8 @@ public class DirectedPileupBuilderFactory implements PileupBuilderFactory {
 	}
 
 	@Override
-	public DirectedPileupBuilder newInstance(final AnnotatedCoordinate coordinate, final SAMFileReader reader, final Parameters parameters) {
-		return new DirectedPileupBuilder(coordinate, reader, parameters);
+	public DirectedPileupBuilder newInstance(final AnnotatedCoordinate coordinate, final SAMFileReader reader, final int windowSize, final Parameters parameters) {
+		return new DirectedPileupBuilder(coordinate, reader, windowSize, parameters);
 	}
 
 	@Override

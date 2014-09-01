@@ -75,7 +75,7 @@ public final class LR2Statistic implements StatisticCalculator {
 
 	@Override
 	public boolean filter(double value) {
-		return parameters.getT() < value;
+		return parameters.getStat() < value;
 	}
 	
 	@Override

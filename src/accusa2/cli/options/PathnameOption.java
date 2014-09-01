@@ -53,9 +53,9 @@ public class PathnameOption extends AbstractACOption {
 	    	}
 	    	// beware of ugly code
 	    	if(c == '1') {
-	    		parameters.setPathnames1(pathnames);
+	    		parameters.setPathnamesA(pathnames);
 	    	} else if(c == '2') {
-	    		parameters.setPathnames2(pathnames);
+	    		parameters.setPathnamesB(pathnames);
 	    	} else {
 	    		throw new IllegalArgumentException(c + " is not supported!");
 	    	}

@@ -17,7 +17,7 @@ import accusa2.pileup.builder.PileupBuilderFactory;
 import accusa2.pileup.builder.UndirectedPileupBuilderFactory;
 
 public class Parameters {
-	
+
 	// cache related
 	private int windowSize;
 	private int maxDepth;
@@ -26,7 +26,7 @@ public class Parameters {
 	private byte minBASQ;
 	private int minMAPQ;
 	private int minCoverage;
-	
+
 	private BaseConfig baseConfig;
 
 	// filter: flags
@@ -35,17 +35,17 @@ public class Parameters {
 
 	// filter: statistic
 	private double stat;
-	
+
 	private int permutations;
 
 	private int maxThreads;
-	
+
 	// output format related
 	private Output output;
 	private AbstractResultFormat resultFormat;
 
 	// version
-	public final String VERSION = "ACCUSA 2.7";
+	public final String VERSION = "2.7 BETA";
 
 	// bed file to scan for variants
 	private String bedPathname;
@@ -56,8 +56,8 @@ public class Parameters {
 	private FilterConfig filterConfig;
 
 	// path to BAM files
-	private String[] pathnames1;
-	private String[] pathnames2;
+	private String[] pathnamesA;
+	private String[] pathnamesB;
 
 	// properties for BAM files
 	private PileupBuilderFactory pileupBuilderFactoryA;
@@ -82,7 +82,7 @@ public class Parameters {
 	 * 
 	 */
 	public Parameters() {
-		windowSize 		= 200;
+		windowSize 		= 10000;
 
 		minBASQ 		= Byte.parseByte(new String("20"));
 		minMAPQ 		= 20;
@@ -134,32 +134,32 @@ public class Parameters {
 	 * 
 	 * @return
 	 */
-	public String[] getPathnames1() {
-		return pathnames1;
+	public String[] getPathnamesA() {
+		return pathnamesA;
 	}
 
 	/**
 	 * 
 	 * @param pathname1
 	 */
-	public void setPathnames1(String[] pathnames1) {
-		this.pathnames1 = pathnames1; 
+	public void setPathnamesA(String[] pathnames) {
+		this.pathnamesA = pathnames; 
 	}
 
 	/**
 	 * 
 	 * @return
 	 */
-	public String[] getPathnames2() {
-		return pathnames2;
+	public String[] getPathnamesB() {
+		return pathnamesB;
 	}
 
 	/**
 	 * 
 	 * @param pathname2
 	 */
-	public void setPathnames2(String[] pathnames2) {
-		this.pathnames2 = pathnames2; 
+	public void setPathnamesB(String[] pathnames) {
+		this.pathnamesB = pathnames; 
 	}
 
 	/**
@@ -235,11 +235,11 @@ public class Parameters {
 	}
 
 	public int getReplicatesA() {
-		return pathnames1.length;
+		return pathnamesA.length;
 	}
 	
 	public int getReplicatesB() {
-		return pathnames2.length;
+		return pathnamesB.length;
 	}
 	
 	/**
@@ -268,17 +268,17 @@ public class Parameters {
 
 	/**
 	 * 
-	 * @param T
+	 * @param stat
 	 */
-	public void setT(double T) {
-		this.stat = T;
+	public void setStat(double stat) {
+		this.stat = stat;
 	}
 
 	/**
 	 * 
 	 * @return
 	 */
-	public double getT() {
+	public double getStat() {
 		return stat;
 	}
 

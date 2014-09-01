@@ -107,7 +107,7 @@ public final class WeightedMethodOfMomentsStatistic implements StatisticCalculat
 
 	@Override
 	public boolean filter(double value) {
-		return parameters.getT() < value;
+		return parameters.getStat() < value;
 	}
 
 	@Override

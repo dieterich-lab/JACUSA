@@ -38,7 +38,7 @@ public class DistanceFilterCount extends AbstractPileupBuilderFilterCount {
 		fillCache(windowPosition - distance, distance, alignmentBlock.getReadStart() - distance, record);
 
 		// read end
-		alignmentBlock = alignmentBlocks.get(alignmentBlocks.size() - 1);
+		alignmentBlock = alignmentBlocks.get(alignmentBlocks.size() - 1); // get last alignment
 		int offset = alignmentBlock.getReferenceStart() + alignmentBlock.getLength() - genomicWindowStart; // TODO check
 		if (offset > distance) {
 			return;

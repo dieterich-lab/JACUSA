@@ -11,8 +11,8 @@ public class UndirectedPileupBuilderFactory implements PileupBuilderFactory {
 	}
 
 	@Override
-	public UndirectedPileupBuilder newInstance(final AnnotatedCoordinate coordinate, final SAMFileReader reader, final Parameters parameters) {
-		return new UndirectedPileupBuilder(coordinate, reader, parameters);
+	public UndirectedPileupBuilder newInstance(final AnnotatedCoordinate coordinate, final SAMFileReader reader, final int windowSize, final Parameters parameters) {
+		return new UndirectedPileupBuilder(coordinate, reader, windowSize, parameters);
 	}
 
 	@Override

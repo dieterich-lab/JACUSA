@@ -34,10 +34,10 @@ public abstract class AbstractPileupBuilder {
 
 	protected DefaultPileup pileup;
 	
-	public AbstractPileupBuilder(AnnotatedCoordinate annotatedCoordinate, SAMFileReader SAMFileReader, Parameters parameters) {
+	public AbstractPileupBuilder(AnnotatedCoordinate annotatedCoordinate, SAMFileReader SAMFileReader, int windowSize, Parameters parameters) {
 		contig				= annotatedCoordinate.getSequenceName();
 		genomicWindowStart 	= annotatedCoordinate.getStart();
-		windowSize 			= parameters.getWindowSize();
+		this.windowSize 	= windowSize;
 		maxGenomicPosition 	= Math.min(annotatedCoordinate.getEnd(), SAMFileReader.getFileHeader().getSequence(contig).getSequenceLength());
 
 		SAMRecordsBuffer	= new SAMRecord[30000];

@@ -82,7 +82,7 @@ public final class LRStatistic implements StatisticCalculator {
 	}
 
 	public boolean filter(double value) {
-		return parameters.getT() < value;
+		return parameters.getStat() < value;
 	}
 
 	// redefined to use natural logarithm

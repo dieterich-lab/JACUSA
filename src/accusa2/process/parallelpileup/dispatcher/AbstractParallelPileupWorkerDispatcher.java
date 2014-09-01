@@ -201,7 +201,7 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 	 * @return
 	 */
 	public SAMFileReader[] createBAMFileReaders1() {
-		return initReaders(parameters.getPathnames1());
+		return initReaders(parameters.getPathnamesA());
 	}
 
 	/**
@@ -209,7 +209,7 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 	 * @return
 	 */
 	public SAMFileReader[] createBAMFileReaders2() {
-		return initReaders(parameters.getPathnames2());
+		return initReaders(parameters.getPathnamesB());
 	}
 
 	/**
