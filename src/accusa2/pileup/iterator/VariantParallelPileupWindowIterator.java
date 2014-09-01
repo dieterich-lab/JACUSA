@@ -9,7 +9,7 @@ import accusa2.util.AnnotatedCoordinate;
 /**
  * @author Michael Piechotta
  */
-public class VariantParallelPileupWindowIterator extends ParallelPileupWindowIterator {
+public class VariantParallelPileupWindowIterator extends UnstrandedParallelPileupWindowIterator {
 	
 	public VariantParallelPileupWindowIterator(AnnotatedCoordinate coordinate, SAMFileReader[] readers1, SAMFileReader[] readers2, Parameters parameters) {
 		super(coordinate, readers1, readers2, parameters);

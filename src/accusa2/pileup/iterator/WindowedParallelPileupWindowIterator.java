@@ -13,7 +13,7 @@ import accusa2.pileup.builder.PileupBuilderFactory;
 import accusa2.util.AnnotatedCoordinate;
 
 // TODO
-public class WindowedParallelPileupWindowIterator extends ParallelPileupWindowIterator {
+public class WindowedParallelPileupWindowIterator extends StrandedParallelPileupWindowIterator {
 
 	// output
 	protected ParallelPileup parallelPileup;
