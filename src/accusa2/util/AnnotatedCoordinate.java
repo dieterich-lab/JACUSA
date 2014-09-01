@@ -30,7 +30,7 @@ public class AnnotatedCoordinate {
 		this.start	= start;
 		this.end 	= end;
 
-		this.coordinateIndex 		= i;
+		this.coordinateIndex = i;
 	}
 	
 	public String getSequenceName() {

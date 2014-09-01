@@ -145,7 +145,7 @@ public class ParallelPileupWindowIterator implements ParallelPileupIterator {
 		return currentGenomicPosition;
 	}
 	
-	protected int hasNext(final int currentGenomicPosition, STRAND strand, final AbstractPileupBuilder[] pileupBuilders) {
+	protected int hasNext(int currentGenomicPosition, STRAND strand, final AbstractPileupBuilder[] pileupBuilders) {
 		// within
 		while (currentGenomicPosition <= coordinate.getEnd()) {
 			if (pileupBuilders[0].isContainedInWindow(currentGenomicPosition)) {
@@ -153,7 +153,7 @@ public class ParallelPileupWindowIterator implements ParallelPileupIterator {
 					return currentGenomicPosition;
 				} else {
 					// move along the window
-					advance(currentGenomicPosition, strand);
+					currentGenomicPosition = advance(currentGenomicPosition, strand);
 				}
 			} else {
 				final SAMRecord record = getNextValidRecord(currentGenomicPosition, pileupBuilders);

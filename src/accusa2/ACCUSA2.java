@@ -150,7 +150,7 @@ public class ACCUSA2 {
 	 * @param line
 	 */
 	public static void printLog(String line) {
-		String time = "[ " + getSimpleTimer().getTotalTimestring() + " ]";
+		String time = "[ INFO ] " + getSimpleTimer().getTotalTimestring() + ": ";
 		System.err.println(time + " " + line);
 	}
 

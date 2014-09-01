@@ -18,9 +18,7 @@ public class ParallelPileupWorker extends AbstractParallelPileupWorker {
 
 	protected final StatisticCalculator statisticCalculator;
 	
-	public ParallelPileupWorker(
-			final ParallelPileupWorkerDispatcher threadDispatcher, 
-			final Parameters parameters) {
+	public ParallelPileupWorker(final ParallelPileupWorkerDispatcher threadDispatcher,final Parameters parameters) {
 		super(threadDispatcher, parameters);
 
 		statisticCalculator = parameters.getStatisticCalculator().newInstance();
@@ -28,6 +26,7 @@ public class ParallelPileupWorker extends AbstractParallelPileupWorker {
 
 	@Override
 	protected void processParallelPileupIterator(final ParallelPileupIterator parallelPileupIterator) {
+		// print informative log
 		ACCUSA2.printLog("Started screening contig " + 
 				parallelPileupIterator.getAnnotatedCoordinate().getSequenceName() + 
 				":" + 
@@ -35,67 +34,36 @@ public class ParallelPileupWorker extends AbstractParallelPileupWorker {
 				"-" + 
 				parallelPileupIterator.getAnnotatedCoordinate().getEnd());
 
+		// iterate over parallel pileups
 		while (parallelPileupIterator.hasNext()) {
 			final ParallelPileup parallelPileup = parallelPileupIterator.next();
 
-
-			if(!isValidParallelPileup(parallelPileup)) {
-				continue;
-			}
-
 			// calculate unfiltered value
 			final double unfilteredValue = statisticCalculator.getStatistic(parallelPileup);
-			
-			if(!isValidValue(unfilteredValue)) {
-				continue;
-			}
 
 			final StringBuilder sb = new StringBuilder();
 			sb.append(resultFormat.convert2String(parallelPileup, unfilteredValue));
 
 			final int pileupFilterCount = parameters.getFilterConfig().getFactories().size();
 			int pileupFilterIndex = 0;
-			if(!parameters.getFilterConfig().hasFiters()) { // no filters
-
+			if (! parameters.getFilterConfig().hasFiters()) { 
+				// no filters
 			} else { // calculate filters or quit
 				// container for value(s)
 				double filteredValue = unfilteredValue;
 
 				// apply each filter
-				for(AbstractFilterFactory filterFactory : parameters.getFilterConfig().getFactories()) {
+				for (AbstractFilterFactory filterFactory : parameters.getFilterConfig().getFactories()) {
 					// container for pileups
 
 					ParallelPileup filteredParallelPileups = new DefaultParallelPileup(parallelPileup);
 					AbstractParallelPileupFilter filter = filterFactory.getFilterInstance();
 
 					// apply filter
-					if(filter.filter(filteredParallelPileups)) {
-
-						// quit filtering
-						//if(filter.quitFiltering()) {
-							// reset
-							filteredParallelPileups = new DefaultParallelPileup(parallelPileup.getNA(), parallelPileup.getNB());
-							filteredValue = -1;
-							break;
-						//}
-
-						/*
-						// change parallel pileup
-						filteredParallelPileups = filter.getFilteredParallelPileup();
-
-						// check coverage restrains
-						if(!isValidParallelPileup(filteredParallelPileups)) {
-							filteredValue = -1;
-							break;
-						}
-
-						// calculate value for filterePileups
-						filteredValue = statisticCalculator.getStatistic(filteredParallelPileups);
-
-						// append calculated result
-						sb.append(resultFormat.getSEP());
-						sb.append(filteredValue);
-						*/
+					if (filter.filter(filteredParallelPileups)) {
+						filteredParallelPileups = new DefaultParallelPileup(parallelPileup.getNA(), parallelPileup.getNB());
+						filteredValue = -1;
+						break;
 					} else {
 						// append dummy result
 						sb.append(resultFormat.getSEP());
@@ -106,7 +74,7 @@ public class ParallelPileupWorker extends AbstractParallelPileupWorker {
 				}
 
 				// append empty result
-				for(;pileupFilterIndex < pileupFilterCount; ++pileupFilterIndex) {
+				for (;pileupFilterIndex < pileupFilterCount; ++pileupFilterIndex) {
 					sb.append(resultFormat.getSEP());
 					sb.append("-1");
 				}
@@ -125,29 +93,6 @@ public class ParallelPileupWorker extends AbstractParallelPileupWorker {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-	}
-
-	/**
-	 * 
-	 * @param parallelPileup
-	 * @return
-	 */
-	protected final boolean isValidParallelPileup(final ParallelPileup parallelPileup) {
-		return parallelPileup.getPooledPileupA().getCoverage() >= parameters.getMinCoverage() && 
-				parallelPileup.getPooledPileupB().getCoverage() >= parameters.getMinCoverage();
-	}
-
-	/**
-	 * 
-	 * @param value
-	 * @return
-	 */
-	protected final boolean isValidValue(final double value) {
-		if(parameters.getDebug()) {
-			return value < 1.0;
-		} else {
-			return value <= 1.0;
 		}
 	}
 

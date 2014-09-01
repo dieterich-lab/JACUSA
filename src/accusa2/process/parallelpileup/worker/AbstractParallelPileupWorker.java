@@ -46,7 +46,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 
 		isFinished 				= false;
 		comparisons 			= 0;
-		
+
 		threadId				= parallelPileupWorkerDispatcher.getThreadContainer().size();
 		nextThreadId			= -1;
 		parallelPileupIterator  = buildParallelPileupIterator(parallelPileupWorkerDispatcher.next(this), parameters);
@@ -77,7 +77,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 				e.printStackTrace();
 			}
 		}
-		
+
 		if(getNextThreadId() >= 0) {
 			try {
 				tmpOutputWriter.write(resultFormat.getCOMMENT() + String.valueOf(getNextThreadId()));
@@ -141,8 +141,8 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	}
 
 	private void close(SAMFileReader[] readers) {
-		for(SAMFileReader reader : readers) {
-			if(reader != null) {
+		for (SAMFileReader reader : readers) {
+			if (reader != null) {
 				reader.close();
 			}
 		}
