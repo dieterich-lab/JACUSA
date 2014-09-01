@@ -1,13 +1,12 @@
 package accusa2.process.parallelpileup.worker;
 
-
 import java.io.IOException;
 
 import net.sf.samtools.SAMFileReader;
 import accusa2.cli.Parameters;
 import accusa2.io.format.AbstractResultFormat;
 import accusa2.io.output.TmpOutputWriter;
-import accusa2.pileup.iterator.ParallelPileupIterator;
+import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
 import accusa2.util.AnnotatedCoordinate;
 
@@ -19,7 +18,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	protected SAMFileReader[] readersB;
 
 	protected final Parameters parameters;
-	protected ParallelPileupIterator parallelPileupIterator;
+	protected AbstractParallelPileupWindowIterator parallelPileupIterator;
 
 	protected final int threadId;
 	protected int nextThreadId;
@@ -158,7 +157,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	 * 
 	 * @param parallelPileupIterator
 	 */
-	abstract protected void processParallelPileupIterator(ParallelPileupIterator parallelPileupIterator);
+	abstract protected void processParallelPileupIterator(AbstractParallelPileupWindowIterator parallelPileupIterator);
 
 	/**
 	 * 
@@ -166,7 +165,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	 * @param parameters
 	 * @return
 	 */
-	abstract protected ParallelPileupIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate, Parameters parameters);
+	abstract protected AbstractParallelPileupWindowIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate, Parameters parameters);
 
 	public final int getComparisons() {
 		return comparisons;

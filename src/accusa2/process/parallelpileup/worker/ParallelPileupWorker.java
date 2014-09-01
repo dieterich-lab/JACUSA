@@ -9,7 +9,7 @@ import accusa2.filter.factory.AbstractFilterFactory;
 import accusa2.method.statistic.StatisticCalculator;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.ParallelPileup;
-import accusa2.pileup.iterator.ParallelPileupIterator;
+import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
 import accusa2.pileup.iterator.VariantParallelPileupWindowIterator;
 import accusa2.process.parallelpileup.dispatcher.ParallelPileupWorkerDispatcher;
 import accusa2.util.AnnotatedCoordinate;
@@ -25,7 +25,7 @@ public class ParallelPileupWorker extends AbstractParallelPileupWorker {
 	}
 
 	@Override
-	protected void processParallelPileupIterator(final ParallelPileupIterator parallelPileupIterator) {
+	protected void processParallelPileupIterator(final AbstractParallelPileupWindowIterator parallelPileupIterator) {
 		// print informative log
 		ACCUSA2.printLog("Started screening contig " + 
 				parallelPileupIterator.getAnnotatedCoordinate().getSequenceName() + 
@@ -97,7 +97,7 @@ public class ParallelPileupWorker extends AbstractParallelPileupWorker {
 	}
 
 	@Override
-	protected ParallelPileupIterator buildParallelPileupIterator(final AnnotatedCoordinate coordinate, final Parameters parameters) {
+	protected AbstractParallelPileupWindowIterator buildParallelPileupIterator(final AnnotatedCoordinate coordinate, final Parameters parameters) {
 		return new VariantParallelPileupWindowIterator(coordinate, readersA, readersB, parameters);
 	}
 

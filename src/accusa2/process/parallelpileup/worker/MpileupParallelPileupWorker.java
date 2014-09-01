@@ -5,8 +5,8 @@ import java.io.IOException;
 import accusa2.ACCUSA2;
 import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
+import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
 import accusa2.pileup.iterator.UnstrandedParallelPileupWindowIterator;
-import accusa2.pileup.iterator.ParallelPileupIterator;
 import accusa2.process.parallelpileup.dispatcher.MpileupParallelPileupWorkerDispatcher;
 import accusa2.util.AnnotatedCoordinate;
 
@@ -17,7 +17,7 @@ public class MpileupParallelPileupWorker extends AbstractParallelPileupWorker {
 	}
 
 	@Override
-	protected void processParallelPileupIterator(ParallelPileupIterator parallelPileupIterator) {
+	protected void processParallelPileupIterator(AbstractParallelPileupWindowIterator parallelPileupIterator) {
 		ACCUSA2.printLog("Started screening contig " + 
 				parallelPileupIterator.getAnnotatedCoordinate().getSequenceName() + 
 				":" + 
@@ -41,7 +41,7 @@ public class MpileupParallelPileupWorker extends AbstractParallelPileupWorker {
 	}
 
 	@Override
-	protected ParallelPileupIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate, Parameters parameters) {
+	protected AbstractParallelPileupWindowIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate, Parameters parameters) {
 		return new UnstrandedParallelPileupWindowIterator(coordinate, readersA, readersB, parameters);
 	}
 
