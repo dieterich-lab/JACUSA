@@ -2,8 +2,7 @@ package accusa2.pileup;
 
 import java.util.Arrays;
 
-
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.Parameters;
 import accusa2.process.phred2prob.Phred2Prob;
 
 /**
@@ -116,9 +115,9 @@ public class DefaultPileup implements Pileup {
 		int[] alleles = new int[counts.baseCount.length];
 		int n = 0;
 	
-		for(int i = 0; i < counts.baseCount.length; ++i) {
-			if(counts.baseCount[i] > 0) {
-				alleles[i] = i;
+		for (int i = 0; i < counts.baseCount.length; ++i) {
+			if (counts.baseCount[i] > 0) {
+				alleles[n] = i;
 				++n;
 			}
 		}

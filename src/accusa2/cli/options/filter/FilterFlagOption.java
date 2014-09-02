@@ -4,13 +4,16 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
 import accusa2.cli.options.AbstractACOption;
+import accusa2.cli.parameters.SampleParameters;
 
 public class FilterFlagOption extends AbstractACOption {
 
-	public FilterFlagOption(Parameters parameters) {
-		super(parameters);
+	private SampleParameters parameters;
+	
+	public FilterFlagOption(SampleParameters parameters) {
+		this.parameters = parameters;
+
 		opt = 'F';
 		longOpt = "filter-flags";
 	}

@@ -4,8 +4,7 @@ import java.util.Arrays;
 
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
-
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.Parameters;
 import accusa2.pileup.builder.WindowCache;
 
 public abstract class AbstractPileupBuilderFilterCount {

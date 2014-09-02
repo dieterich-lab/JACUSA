@@ -4,15 +4,13 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.CLI;
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.CLI;
 
 public class VersionOption extends AbstractACOption {
 
 	private CLI cmd;
 
-	public VersionOption(Parameters parameters, CLI cmd) {
-		super(parameters);
+	public VersionOption(CLI cmd) {
 		opt = 'v';
 		longOpt = "version";
 

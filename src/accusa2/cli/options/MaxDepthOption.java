@@ -1,16 +1,18 @@
 package accusa2.cli.options;
 
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.SampleParameters;
 
 public class MaxDepthOption extends AbstractACOption {
 
-	public MaxDepthOption(Parameters parameters) {
-		super(parameters);
+	private SampleParameters parameters;
+	
+	public MaxDepthOption(SampleParameters parameters) {
+		this.parameters = parameters;
+
 		opt = 'd';
 		longOpt = "max-depth";
 	}

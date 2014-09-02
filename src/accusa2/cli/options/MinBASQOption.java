@@ -4,12 +4,15 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.SampleParameters;
 
 public class MinBASQOption extends AbstractACOption {
 
-	public MinBASQOption(Parameters parameters) {
-		super(parameters);
+	private SampleParameters parameters;
+	
+	public MinBASQOption(SampleParameters parameters) {
+		this.parameters = parameters;
+
 		opt = 'q';
 		longOpt = "min-basq";
 	}

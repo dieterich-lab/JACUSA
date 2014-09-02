@@ -1,4 +1,4 @@
-package accusa2.io.output;
+package accusa2.io;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

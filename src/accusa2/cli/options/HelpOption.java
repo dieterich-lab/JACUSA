@@ -4,15 +4,13 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.CLI;
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.CLI;
 
 public class HelpOption extends AbstractACOption {
 
 	private CLI cmd;
 	
-	public HelpOption(Parameters parameters, CLI cmd) {
-		super(parameters);
+	public HelpOption(CLI cmd) {
 		opt = 'h';
 		longOpt = "help";
 

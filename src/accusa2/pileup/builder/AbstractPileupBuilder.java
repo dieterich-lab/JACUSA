@@ -7,7 +7,7 @@ import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 import net.sf.samtools.SAMValidationError;
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.Parameters;
 import accusa2.filter.samtag.SamTagFilter;
 import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.DefaultPileup.STRAND;

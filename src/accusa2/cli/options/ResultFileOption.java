@@ -4,14 +4,17 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
-import accusa2.io.output.Output;
-import accusa2.io.output.OutputWriter;
+import accusa2.cli.parameters.AbstractParameters;
+import accusa2.io.Output;
+import accusa2.io.OutputWriter;
 
 public class ResultFileOption extends AbstractACOption {
 
-	public ResultFileOption(Parameters parameters) {
-		super(parameters);
+	private AbstractParameters parameters;
+	
+	public ResultFileOption(AbstractParameters parameters) {
+		this.parameters = parameters;
+
 		opt = 'r';
 		longOpt = "result-file";
 	}

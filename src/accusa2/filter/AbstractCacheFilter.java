@@ -1,6 +1,5 @@
 package accusa2.filter;
 
-import accusa2.cli.Parameters;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.DefaultPileup;
@@ -13,11 +12,10 @@ public abstract class AbstractCacheFilter extends AbstractParallelPileupFilter {
 	protected final int filterI;
 	protected final BaseConfig baseConfig;
 		
-	public AbstractCacheFilter(char c, Parameters parameters) {
+	public AbstractCacheFilter(char c,  parameters) {
 		super(c);
 		filterI = parameters.getFilterConfig().c2i(c);
 		baseConfig = parameters.getBaseConfig();
-		
 	}
 
 	// todo ORDER RESULTS [0] SHOULD BE THE VARIANT TO TEST AGAINST

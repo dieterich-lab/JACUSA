@@ -4,12 +4,15 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.AbstractParameters;
 
 public class MaxThreadOption extends AbstractACOption {
 
-	public MaxThreadOption(Parameters parametrs) {
-		super(parametrs);
+	private AbstractParameters parameters;
+	
+	public MaxThreadOption(AbstractParameters parameters) {
+		this.parameters = parameters;
+
 		opt = 'p';
 		longOpt = "threads";
 	}

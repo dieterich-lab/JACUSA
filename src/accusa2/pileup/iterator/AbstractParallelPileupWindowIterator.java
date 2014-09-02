@@ -4,7 +4,8 @@ import java.util.Iterator;
 
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.AbstractParameters;
+import accusa2.cli.parameters.Parameters;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.DefaultPileup.Counts;
@@ -24,7 +25,7 @@ public abstract class AbstractParallelPileupWindowIterator implements Iterator<P
 	protected STRAND strandB;
 	
 	protected final AnnotatedCoordinate coordinate;
-	protected final Parameters parameters;
+	protected final AbstractParameters parameters;
 
 	// pileupBuilders
 	protected final AbstractPileupBuilder[] pileupBuildersA;
@@ -35,7 +36,7 @@ public abstract class AbstractParallelPileupWindowIterator implements Iterator<P
 	// output
 	protected ParallelPileup parallelPileup;
 
-	public AbstractParallelPileupWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader[] readersA, final SAMFileReader[] readersB, final Parameters parameters) {
+	public AbstractParallelPileupWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader[] readersA, final SAMFileReader[] readersB, final AbstractParameters parameters) {
 		this.coordinate = annotatedCoordinate;
 		this.parameters = parameters;
 
@@ -155,7 +156,7 @@ public abstract class AbstractParallelPileupWindowIterator implements Iterator<P
 	}
 
 	protected boolean isVariant(ParallelPileup parallelPileup)  {
-		return parallelPileup.getPooledPileup().getAlleles().length > 0;
+		return true;
 	}
 
 	protected boolean adjustCurrentGenomicPosition(int targetGenomicPosition, AbstractPileupBuilder[] pileupBuilders) {

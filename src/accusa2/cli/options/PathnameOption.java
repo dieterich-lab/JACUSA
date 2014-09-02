@@ -10,16 +10,20 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.ParseException;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.AbstractParameters;
+import accusa2.cli.parameters.SampleParameters;
 
 public class PathnameOption extends AbstractACOption {
 
 	public static final char SEP = ',';
-	
+
+	private SampleParameters parameters;
 	private char c;
 	
-	public PathnameOption(Parameters paramters, char c) {
-		super(paramters);
+	// TODO make two classes of this
+	public PathnameOption(SampleParameters paramteres, char c) {
+		this.parameters = paramteres;
+
 		this.c = c;
 		opt = c;
 		longOpt = "bam" + c;

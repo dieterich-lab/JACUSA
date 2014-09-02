@@ -4,12 +4,15 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.AbstractParameters;
 
 public class DebugOption extends AbstractACOption {
 
-	public DebugOption(Parameters parameters) {
-		super(parameters);
+	private AbstractParameters parameters;
+	
+	public DebugOption(AbstractParameters parameters) {
+		this.parameters = parameters;
+
 		opt = 'D';
 		longOpt = "debug";
 	}

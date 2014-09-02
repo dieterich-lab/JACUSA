@@ -2,7 +2,7 @@ package accusa2.pileup.builder;
 
 import java.util.Arrays;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.Parameters;
 import accusa2.process.phred2prob.Phred2Prob;
 
 public class WindowCache {

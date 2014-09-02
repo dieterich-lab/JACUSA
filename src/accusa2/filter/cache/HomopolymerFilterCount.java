@@ -2,7 +2,7 @@ package accusa2.filter.cache;
 
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.Parameters;
 
 public class HomopolymerFilterCount extends AbstractPileupBuilderFilterCount {
 

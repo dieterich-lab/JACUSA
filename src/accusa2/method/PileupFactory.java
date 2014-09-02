@@ -3,10 +3,8 @@ package accusa2.method;
 import java.util.HashMap;
 import java.util.Map;
 
-import accusa2.cli.CLI;
-import accusa2.cli.Parameters;
 import accusa2.cli.options.PileupBuilderOption;
-import accusa2.cli.options.ConsiderBasesOption;
+import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
 import accusa2.cli.options.HelpOption;
 import accusa2.cli.options.MaxDepthOption;
@@ -16,22 +14,25 @@ import accusa2.cli.options.MinCoverageOption;
 import accusa2.cli.options.MinMAPQOption;
 import accusa2.cli.options.PathnameOption;
 import accusa2.cli.options.ResultFileOption;
-import accusa2.cli.options.ResultFormatOption;
+import accusa2.cli.options.FormatOption;
 import accusa2.cli.options.RetainFlagOption;
-import accusa2.cli.options.BED_CoordinatesOption;
+import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
 import accusa2.cli.options.filter.FilterFlagOption;
-import accusa2.io.format.AbstractResultFormat;
-import accusa2.io.format.PileupFormat;
+import accusa2.cli.parameters.CLI;
+import accusa2.cli.parameters.Parameters;
+import accusa2.io.format.output.AbstractOutputFormat;
+import accusa2.io.format.output.PileupFormat;
+import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
-import accusa2.process.parallelpileup.dispatcher.MpileupParallelPileupWorkerDispatcher;
-import accusa2.process.parallelpileup.worker.MpileupParallelPileupWorker;
+import accusa2.process.parallelpileup.dispatcher.MpileupWorkerDispatcher;
+import accusa2.process.parallelpileup.worker.MpileupWorker;
 import accusa2.util.CoordinateProvider;
 
 public class PileupFactory extends AbstractMethodFactory {
 
-	private static MpileupParallelPileupWorkerDispatcher instance;
+	private static MpileupWorkerDispatcher instance;
 	
 	public PileupFactory() {
 		super("pileup", "SAMtools like mpileup");
@@ -41,17 +42,17 @@ public class PileupFactory extends AbstractMethodFactory {
 		acOptions.add(new PathnameOption(parameters, '1'));
 		acOptions.add(new PathnameOption(parameters, '2'));
 
-		acOptions.add(new BED_CoordinatesOption(parameters));
+		acOptions.add(new BedCoordinatesOption(parameters));
 		acOptions.add(new ResultFileOption(parameters));
 		
-		if(getResultFormats().size() == 1 ) {
-			Character[] a = getResultFormats().keySet().toArray(new Character[1]);
-			parameters.setResultFormat(getResultFormats().get(a[0]));
+		if(getOuptutFormats().size() == 1 ) {
+			Character[] a = getOuptutFormats().keySet().toArray(new Character[1]);
+			parameters.setResultFormat(getOuptutFormats().get(a[0]));
 		} else {
-			acOptions.add(new ResultFormatOption(parameters, getResultFormats()));
+			acOptions.add(new FormatOption(parameters, getOuptutFormats()));
 		}
 		
-		acOptions.add(new ConsiderBasesOption(parameters));
+		acOptions.add(new BaseConfigOption(parameters));
 		acOptions.add(new MinCoverageOption(parameters));
 		acOptions.add(new MinBASQOption(parameters));
 		acOptions.add(new MinMAPQOption(parameters));
@@ -70,20 +71,20 @@ public class PileupFactory extends AbstractMethodFactory {
 	}
 
 	@Override
-	public AbstractParallelPileupWorkerDispatcher<MpileupParallelPileupWorker> getInstance(CoordinateProvider coordinateProvider, Parameters parameters) {
+	public AbstractParallelPileupWorkerDispatcher<MpileupWorker> getInstance(CoordinateProvider coordinateProvider, Parameters parameters) {
 		if(instance == null) {
-			instance = new MpileupParallelPileupWorkerDispatcher(coordinateProvider, parameters);
+			instance = new MpileupWorkerDispatcher(coordinateProvider, parameters);
 		}
 		return instance;
 	}
 
-	public Map<Character, AbstractResultFormat> getResultFormats() {
-		Map<Character, AbstractResultFormat> resultFormats = new HashMap<Character, AbstractResultFormat>();
+	public Map<Character, AbstractOutputFormat> getOuptutFormats() {
+		Map<Character, AbstractOutputFormat> outputFormats = new HashMap<Character, AbstractOutputFormat>();
 
-		AbstractResultFormat resultFormat = new PileupFormat();
-		resultFormats.put(resultFormat.getC(), resultFormat);
+		AbstractOutputFormat outputFormat = new PileupFormat();
+		outputFormats.put(outputFormat.getC(), outputFormat);
 
-		return resultFormats;
+		return outputFormats;
 	}
 
 }

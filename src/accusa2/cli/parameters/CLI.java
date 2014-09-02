@@ -1,4 +1,4 @@
-package accusa2.cli;
+package accusa2.cli.parameters;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,25 +10,25 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 
-import accusa2.cli.options.ACOption;
+import accusa2.ACCUSA2;
+import accusa2.cli.options.AbstractACOption;
 import accusa2.method.AbstractMethodFactory;
 
 public class CLI {
 
 	private static CLI CLI;
-	private Parameters parameters;
 	private Map<String, AbstractMethodFactory> methodFactories;
-
+	private AbstractMethodFactory methodFactory;
+	
 	/**
 	 * 
 	 */
 	private CLI() {
-		parameters 				= new Parameters();
-		this.methodFactories 	= new HashMap<String, AbstractMethodFactory>(); 
+		this.methodFactories 	= new HashMap<String, AbstractMethodFactory>();
 	}
 
 	public static CLI getSingleton() {
-		if(CLI == null) {
+		if (CLI == null) {
 			CLI = new CLI();
 		}
 
@@ -49,26 +49,25 @@ public class CLI {
 	 * @return
 	 */
 	public boolean processArgs(String[] args) {
-		if(args.length == 0) {
+		if (args.length == 0) {
 			printUsage();
 			System.exit(0);
-		} else if(args.length > 0 && !methodFactories.containsKey(args[0].toLowerCase())) {
+		} else if (args.length > 0 && !methodFactories.containsKey(args[0].toLowerCase())) {
 			printUsage();
 			System.exit(0);
 		}
-		AbstractMethodFactory methodFactory = methodFactories.get(args[0].toLowerCase());
+		methodFactory = methodFactories.get(args[0].toLowerCase());
 		// init method factory (populate: parameters)
-		methodFactory.setParameters(parameters);
 		methodFactory.initACOptions();
-		parameters.setMethodFactory(methodFactory);
 
-		Set<ACOption> acoptions = parameters.getMethodFactory().getACOptions();
+		
+		Set<AbstractACOption> acoptions = methodFactory.getACOptions();
 		Options options = new Options();
-		for(ACOption acoption : acoptions) {
+		for (AbstractACOption acoption : acoptions) {
 			options.addOption(acoption.getOption());
 		}
 
-		if(args.length == 1) {
+		if (args.length == 1) {
 			printUsage(options);
 			System.exit(0);
 		}
@@ -80,10 +79,10 @@ public class CLI {
 		CommandLineParser parser = new PosixParser();
 		try {
 			CommandLine line = parser.parse(options, args2);
-			for(ACOption acption : acoptions) {
+			for (AbstractACOption acption : acoptions) {
 				acption.process(line);
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			printUsage(options);
 			return false;
@@ -109,7 +108,7 @@ public class CLI {
 	public void printUsage() {
 		StringBuilder sb = new StringBuilder();
 		
-		for(AbstractMethodFactory methodFactory : methodFactories.values()) {
+		for (AbstractMethodFactory methodFactory : methodFactories.values()) {
 			sb.append('\t');
 			sb.append(methodFactory.getName());
 			sb.append('\t');
@@ -117,16 +116,12 @@ public class CLI {
 			sb.append('\n');
 		}
 
-		sb.append(parameters.VERSION + "\n");
+		sb.append(ACCUSA2.VERSION + "\n");
 		System.err.print(sb.toString());
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
-	public Parameters getParameters() {
-		return parameters;
+	public AbstractMethodFactory getMethodFactory() {
+		return methodFactory;
 	}
-
+	
 }

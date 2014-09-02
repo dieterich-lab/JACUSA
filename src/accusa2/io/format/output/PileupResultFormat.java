@@ -1,23 +1,21 @@
-package accusa2.io.format;
+package accusa2.io.format.output;
 
-import net.sf.samtools.SAMUtils;
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.Parameters;
 import accusa2.filter.factory.AbstractFilterFactory;
-import accusa2.pileup.BaseConfig;
-import accusa2.pileup.DefaultPileup.STRAND;
+import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.pileup.ParallelPileup;
-import accusa2.pileup.Pileup;
-import accusa2.process.phred2prob.Phred2Prob;
 
-public class PileupResultFormat extends PileupFormat {
+public class PileupResultFormat extends AbstractResultFormat {
 
 	private Parameters parameters;
-
+	private PileupFormat pileupFormat; 
+	
 	public PileupResultFormat(Parameters paramters) {
 		super('A', "pileup like ACCUSA result format");
+		pileupFormat = new PileupFormat();
 		this.parameters = paramters;
 	}
-
+	
 	public String getHeader() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("#");
@@ -68,50 +66,40 @@ public class PileupResultFormat extends PileupFormat {
 	public String convert2String(ParallelPileup parallelPileup, double value) {
 		StringBuilder sb = new StringBuilder(convert2String(parallelPileup));
 		// add unfiltered value
-		sb.append(SEP);
+		sb.append(pileupFormat.getSEP());
 		sb.append(value);
 		return sb.toString();
 	}
+
+	
 	
 	@Override
 	public double extractValue(String line) {
-		String[] cols = line.split(Character.toString(SEP));
+		String[] cols = line.split(Character.toString(pileupFormat.getSEP()));
 		return Double.parseDouble(cols[cols.length - 1]);
 	}
 	
 	@Override
-	protected void addPileups(StringBuilder sb, STRAND strand, Pileup[] pileups) {
-		sb.append(SEP);
-		sb.append(strand.character());
-		
-		for(Pileup pileup : pileups) {
+	public String convert2String(ParallelPileup parallelPileup) {
+		return pileupFormat.convert2String(parallelPileup);
+	}
 
-			sb.append(SEP);
-			
-			for(int base : pileup.getAlleles()) {
-				
-				// print bases 
-				for(int i = 0; i < pileup.getCounts().getBaseCount()[base]; ++i) {
-					sb.append(BaseConfig.VALID[base]);
-				}
-			}
-
-			sb.append(SEP);
-
-			// print quals
-			for(int base : pileup.getAlleles()) {
-				for(byte qual = 0; qual < Phred2Prob.MAX_Q; ++qual) {
-
-					int count = pileup.getCounts().getQualCount(base, qual);
-					if(count > 0) {
-						// repeat count times
-						for(int j = 0; j < count; ++j) {
-							sb.append(SAMUtils.phredToFastq(qual));
-						}
-					}
-				}
-			}
-		}
+	@Override
+	public char getCOMMENT() {
+		return pileupFormat.getCOMMENT();
+	}
+	
+	@Override
+	public char getEMPTY() {
+		return pileupFormat.getEMPTY();
+	}
+	
+	public char getSEP() {
+		return pileupFormat.getSEP(); 
+	}
+	
+	public char getSEP2() {
+		return pileupFormat.getSEP2(); 
 	}
 	
 }

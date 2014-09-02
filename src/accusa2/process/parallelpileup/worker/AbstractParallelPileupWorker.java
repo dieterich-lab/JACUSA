@@ -3,9 +3,8 @@ package accusa2.process.parallelpileup.worker;
 import java.io.IOException;
 
 import net.sf.samtools.SAMFileReader;
-import accusa2.cli.Parameters;
-import accusa2.io.format.AbstractResultFormat;
-import accusa2.io.output.TmpOutputWriter;
+import accusa2.io.TmpOutputWriter;
+import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
 import accusa2.util.AnnotatedCoordinate;

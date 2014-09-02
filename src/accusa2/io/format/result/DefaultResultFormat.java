@@ -1,6 +1,6 @@
-package accusa2.io.format;
+package accusa2.io.format.result;
 
-import accusa2.cli.Parameters;
+import accusa2.filter.FilterConfig;
 import accusa2.filter.factory.AbstractFilterFactory;
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.ParallelPileup;
@@ -14,11 +14,11 @@ public class DefaultResultFormat extends AbstractResultFormat {
 	public static final char SEP 	= '\t';
 	public static final char SEP2 	= ',';
 
-	private Parameters parameters;
+	private FilterConfig filterConfig;
 
-	public DefaultResultFormat(Parameters parameters) {
+	public DefaultResultFormat(FilterConfig filterConfig) {
 		super('D', "ACCUSA2 default output");
-		this.parameters = parameters;
+		this.filterConfig = filterConfig;
 	}
 
 	@Override
@@ -43,20 +43,10 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		// unfiltered value
 		sb.append("unfiltered");
 
-		// values from filters
-		for(final AbstractFilterFactory abstractPileupFilterFactory : parameters.getFilterConfig().getFactories()) {
-			sb.append(getSEP());
-			sb.append("filtered_");
-			sb.append(abstractPileupFilterFactory.getC());
-		}
-
-		/*
-		// final value used to calculate STAT
-		if(parameters.getPileupBuilderFilters().hasFiters()) {
+		if (filterConfig.hasFiters()) {
 			sb.append(getSEP());
 			sb.append("filtered");
 		}
-		*/
 
 		//add means and vars
 		sb.append(getSEP());

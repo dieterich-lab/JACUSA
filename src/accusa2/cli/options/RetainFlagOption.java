@@ -4,12 +4,15 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.SampleParameters;
 
 public class RetainFlagOption extends AbstractACOption {
 
-	public RetainFlagOption(Parameters parameters) {
-		super(parameters);
+	private SampleParameters parameters;
+	
+	public RetainFlagOption(SampleParameters parameters) {
+		this.parameters = parameters;
+
 		opt = 'R';
 		longOpt = "retain-flags";
 	}

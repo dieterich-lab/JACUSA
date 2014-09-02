@@ -4,16 +4,16 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
 import accusa2.cli.options.AbstractACOption;
+import accusa2.cli.parameters.SampleParameters;
 import accusa2.filter.samtag.SamTagFilter;
 
 public abstract class AbstractFilterSamTagOption extends AbstractACOption {
 
+	private SampleParameters parameters;
 	private String tag;
 
-	public AbstractFilterSamTagOption(Parameters parameters, String tag) {
-		super(parameters);
+	public AbstractFilterSamTagOption(SampleParameters parameters, String tag) {
 		this.tag = tag;
 		longOpt = "filter" + tag;
 	}
@@ -22,7 +22,7 @@ public abstract class AbstractFilterSamTagOption extends AbstractACOption {
 	public void process(CommandLine line) throws Exception {
 		if(line.hasOption(longOpt)) {
 	    	int value = Integer.parseInt(line.getOptionValue(longOpt));
-	    	parameters.getSamTagFilter().add(createSamTagFilter(value));
+	    	parameters.getSamTagFilters().add(createSamTagFilter(value));
 	    }
 	}
 
@@ -37,5 +37,5 @@ public abstract class AbstractFilterSamTagOption extends AbstractACOption {
 	}
 
 	protected abstract SamTagFilter createSamTagFilter(int value);  
-	
+
 }

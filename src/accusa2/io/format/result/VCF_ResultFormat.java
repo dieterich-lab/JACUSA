@@ -1,4 +1,4 @@
-package accusa2.io.format;
+package accusa2.io.format.result;
 
 import accusa2.pileup.ParallelPileup;
 

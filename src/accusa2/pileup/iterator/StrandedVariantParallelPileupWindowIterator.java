@@ -9,9 +9,9 @@ import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.util.AnnotatedCoordinate;
 
-public class StrandedParallelPileupWindowIterator extends AbstractParallelPileupWindowIterator {
+public class StrandedVariantParallelPileupWindowIterator extends AbstractParallelPileupWindowIterator {
 
-	public StrandedParallelPileupWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader[] readersA, final SAMFileReader[] readersB, final Parameters parameters) {
+	public StrandedVariantParallelPileupWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader[] readersA, final SAMFileReader[] readersB, final Parameters parameters) {
 		super(annotatedCoordinate, readersA, readersB, parameters);
 	}
 
@@ -33,6 +33,11 @@ public class StrandedParallelPileupWindowIterator extends AbstractParallelPileup
 		}
 
 		return currentGenomicPosition;
+	}
+
+	@Override
+	protected boolean isVariant(ParallelPileup parallelPileup)  {
+		return parallelPileup.getPooledPileup().getAlleles().length > 1;
 	}
 
 	@Override

@@ -1,16 +1,17 @@
 package accusa2.cli.options;
 
 import org.apache.commons.cli.CommandLine;
-
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.StatisticParameters;
 
 public class StatisticFilterOption  extends AbstractACOption {
 
-	public StatisticFilterOption(Parameters parameters) {
-		super(parameters);
+	private StatisticParameters parameters;
+	
+	public StatisticFilterOption(StatisticParameters parameters) {
+		this.parameters = parameters;
 		opt = 'T';
 		longOpt = "stat";
 	}

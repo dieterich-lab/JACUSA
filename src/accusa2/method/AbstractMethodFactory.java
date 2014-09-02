@@ -4,8 +4,8 @@ package accusa2.method;
 import java.util.HashSet;
 import java.util.Set;
 
-import accusa2.cli.Parameters;
-import accusa2.cli.options.ACOption;
+import accusa2.cli.options.AbstractACOption;
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
 import accusa2.process.parallelpileup.worker.AbstractParallelPileupWorker;
 import accusa2.util.CoordinateProvider;
@@ -13,23 +13,22 @@ import accusa2.util.CoordinateProvider;
 
 public abstract class AbstractMethodFactory {
 
-	protected Parameters parameters;
-	protected Set<ACOption> acOptions;
+	protected Set<AbstractACOption> acOptions;
 
 	private String name;
 	private String desc;
 
 	public abstract void initACOptions();
-	public abstract AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> getInstance(CoordinateProvider coordinateProvider, Parameters parameters); 
+	public abstract AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> getInstance(CoordinateProvider coordinateProvider, AbstractParameters parameters); 
 
 	public AbstractMethodFactory(String name, String desc) {
 		this.name = name;
 		this.desc = desc;
 
-		acOptions = new HashSet<ACOption>();
+		acOptions = new HashSet<AbstractACOption>();
 	}
 
-	public Set<ACOption> getACOptions() {
+	public Set<AbstractACOption> getACOptions() {
 		return acOptions;
 	}
 
@@ -39,14 +38,6 @@ public abstract class AbstractMethodFactory {
 
 	public final String getDescription() {
 		return desc;
-	}
-
-	public final Parameters getParameters() {
-		return parameters;
-	}
-
-	public final void setParameters(Parameters parameters) {
-		this.parameters = parameters;
 	}
 
 }

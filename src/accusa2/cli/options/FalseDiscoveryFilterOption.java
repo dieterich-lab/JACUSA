@@ -1,12 +1,12 @@
 package accusa2.cli.options;
 
 import org.apache.commons.cli.CommandLine;
-
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.Parameters;
 
+@Deprecated
 public class FalseDiscoveryFilterOption  extends AbstractACOption {
 
 	public FalseDiscoveryFilterOption(Parameters parameters) {

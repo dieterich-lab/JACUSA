@@ -1,4 +1,4 @@
-package accusa2.io.format;
+package accusa2.io.format.output;
 
 import accusa2.pileup.ParallelPileup;
 
@@ -7,15 +7,15 @@ import accusa2.pileup.ParallelPileup;
  * @author michael
  *
  */
-public class TmpResultFormat extends AbstractResultFormat {
+public class TmpOutputFormat extends AbstractOutputFormat {
 
-	private AbstractResultFormat resultFormat;
+	private AbstractOutputFormat resultFormat;
 	
 	/**
 	 * 
 	 * @param parameters
 	 */
-	public TmpResultFormat(AbstractResultFormat resultFormat) {
+	public TmpOutputFormat(AbstractOutputFormat resultFormat) {
 		super(resultFormat.getC(), resultFormat.getDesc());
 		this.resultFormat = resultFormat;
 	}
@@ -28,16 +28,6 @@ public class TmpResultFormat extends AbstractResultFormat {
 	@Override
 	public String convert2String(ParallelPileup parallelPileup) {
 		return resultFormat.convert2String(parallelPileup);
-	}
-
-	@Override
-	public String convert2String(ParallelPileup parallelPileup, double value) {
-		return resultFormat.convert2String(parallelPileup, value);
-	}
-
-	@Override
-	public double extractValue(String line) {
-		return resultFormat.extractValue(line);
 	}
 
 	@Override

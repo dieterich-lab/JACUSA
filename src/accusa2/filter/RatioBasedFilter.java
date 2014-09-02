@@ -1,14 +1,13 @@
 package accusa2.filter;
 
-import accusa2.cli.Parameters;
 import accusa2.pileup.ParallelPileup;
 
 public class RatioBasedFilter extends AbstractCacheFilter {
 
 	private double minRatio;
 	
-	public RatioBasedFilter(char c, double minRatio, Parameters parameters) {
-		super(c, parameters);
+	public RatioBasedFilter(char c, double minRatio) {
+		super(c);
 		this.minRatio = minRatio;
 	}
 

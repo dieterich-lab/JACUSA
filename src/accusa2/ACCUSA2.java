@@ -10,11 +10,9 @@ import java.util.TreeMap;
 
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMSequenceRecord;
-import accusa2.cli.CLI;
-import accusa2.cli.Parameters;
-import accusa2.method.CallFactory;
+import accusa2.cli.parameters.CLI;
+import accusa2.method.TwoSampleCallFactory;
 import accusa2.method.AbstractMethodFactory;
-//import accusa2.method.ACCUSA2Factory;
 import accusa2.method.PileupFactory;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
 import accusa2.process.parallelpileup.worker.AbstractParallelPileupWorker;
@@ -31,7 +29,8 @@ public class ACCUSA2 {
 
 	// timer used for all time measurements
 	private static SimpleTimer timer;
-
+	public static final String VERSION = "2.7";
+	
 	// command line interface
 	private CLI cli;
 
@@ -47,7 +46,7 @@ public class ACCUSA2 {
 		AbstractMethodFactory methodFactory = null;
 
 		// instantiate different methods
-		methodFactory = new CallFactory();
+		methodFactory = new TwoSampleCallFactory();
 		methodFactories.put(methodFactory.getName(), methodFactory);
 
 		methodFactory = new PileupFactory();
@@ -95,12 +94,12 @@ public class ACCUSA2 {
 
 		List<AnnotatedCoordinate> coordinates = new ArrayList<AnnotatedCoordinate>();
 		Set<String> targetSequenceNames = new HashSet<String>();
-		for(SAMSequenceRecord record : records) {
+		for (SAMSequenceRecord record : records) {
 			coordinates.add(new AnnotatedCoordinate(record.getSequenceName(), 1, record.getSequenceLength()));
 			targetSequenceNames.add(record.getSequenceName());
 		}
 
-		if(!isValid(targetSequenceNames, pathnamesA) || !isValid(targetSequenceNames, pathnamesB)) {
+		if (! isValid(targetSequenceNames, pathnamesA) || !isValid(targetSequenceNames, pathnamesB)) {
 			throw new Exception(error);
 		}
 
@@ -109,16 +108,16 @@ public class ACCUSA2 {
 
 	private boolean isValid(Set<String> targetSequenceNames, String[] pathnames) {
 		Set<String> sequenceNames = new HashSet<String>();
-		for(String pathname : pathnames) {
+		for (String pathname : pathnames) {
 			SAMFileReader reader = new SAMFileReader(new File(pathname));
 			List<SAMSequenceRecord> records	= reader.getFileHeader().getSequenceDictionary().getSequences();
-			for(SAMSequenceRecord record : records) {
+			for (SAMSequenceRecord record : records) {
 				sequenceNames.add(record.getSequenceName());
 			}	
 			reader.close();
 		}
 		
-		if(!sequenceNames.containsAll(targetSequenceNames) || !targetSequenceNames.containsAll(sequenceNames)) {
+		if (! sequenceNames.containsAll(targetSequenceNames) || !targetSequenceNames.containsAll(sequenceNames)) {
 			return false;
 		}
 
@@ -160,9 +159,9 @@ public class ACCUSA2 {
 	 */
 	public void printEpilog(int comparisons) {
 		// print statistics to STDERR
-		printLog("Screening done using " + cli.getParameters().getMaxThreads() + " thread(s)");
+		printLog("Screening done using " + cli.getMethodFactory().getParameters().getMaxThreads() + " thread(s)");
 
-		System.err.println("Results can be found in: " + cli.getParameters().getOutput().getInfo());
+		System.err.println("Results can be found in: " + cli.getMethodFactory().getParameters().getOutput().getInfo());
 
 		String lineSep = "--------------------------------------------------------------------------------";
 
@@ -181,9 +180,10 @@ public class ACCUSA2 {
 		ACCUSA2 accusa2 = new ACCUSA2();
 		CLI cmd = accusa2.getCLI();
 
-		if(!cmd.processArgs(args)) {
+		if (! cmd.processArgs(args)) {
 			System.exit(1);
 		}
+		// FIXME
 		Parameters parameters = cmd.getParameters();
 
 		String[] pathnamesA = parameters.getPathnamesA();
@@ -191,7 +191,7 @@ public class ACCUSA2 {
 		List<SAMSequenceRecord> records = accusa2.getSAMSequenceRecords(pathnamesA, pathnamesB);
 		CoordinateProvider coordinateProvider = new SAMCoordinateProvider(records);
 
-		if(!parameters.getBED_Pathname().isEmpty()) {
+		if (! parameters.getBED_Pathname().isEmpty()) {
 			coordinateProvider.close();
 			// BED file
 			coordinateProvider = new BEDCoordinateProvider(parameters.getBED_Pathname());

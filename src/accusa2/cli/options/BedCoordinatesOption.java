@@ -7,12 +7,15 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.AbstractParameters;
 
-public class BED_CoordinatesOption extends AbstractACOption {
+public class BedCoordinatesOption extends AbstractACOption {
 
-	public BED_CoordinatesOption(Parameters parameters) {
-		super(parameters);
+	private AbstractParameters parameters;
+	
+	public BedCoordinatesOption(AbstractParameters parameters) {
+		this.parameters = parameters;
+
 		opt = 'b';
 		longOpt = "bed";
 	}
@@ -35,7 +38,7 @@ public class BED_CoordinatesOption extends AbstractACOption {
 	    	if(!file.exists()) {
 	    		throw new FileNotFoundException("BED file (" + pathname + ") in not accessible!");
 	    	}
-    		parameters.setBED_Pathname(pathname);
+    		parameters.setBedPathname(pathname);
 	    }
 	}
 

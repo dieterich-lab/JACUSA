@@ -1,9 +1,8 @@
 package accusa2.method.statistic;
 
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
-
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;

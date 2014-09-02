@@ -1,21 +1,22 @@
 package accusa2.cli.options;
 
-
 import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.StatisticParameters;
 import accusa2.method.statistic.StatisticCalculator;
 
-public class StatisticOption extends AbstractACOption {
-	
+public class StatisticCalculatorOption extends AbstractACOption {
+
+	private StatisticParameters parameters;
 	private Map<String,StatisticCalculator> statistics;
 
-	public StatisticOption(Parameters parameters, Map<String,StatisticCalculator> pileup2Statistic) {
-		super(parameters);
+	public StatisticCalculatorOption(StatisticParameters parameters, Map<String,StatisticCalculator> pileup2Statistic) {
+		this.parameters = parameters;
+
 		opt = 'u';
 		longOpt = "modus";
 
@@ -55,7 +56,7 @@ public class StatisticOption extends AbstractACOption {
 			if(! statistics.containsKey(name)) {
 				throw new IllegalArgumentException("Unknown statistic: " + name);
 			}
-			parameters.setStatistic(statistics.get(name));
+			parameters.setStatisticCalculator(statistics.get(name));
 		}
 	}
 

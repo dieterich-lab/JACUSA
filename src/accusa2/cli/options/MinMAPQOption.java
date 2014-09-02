@@ -4,12 +4,14 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.SampleParameters;
 
 public class MinMAPQOption extends AbstractACOption {
 
-	public MinMAPQOption(Parameters parameters) {
-		super(parameters);
+	private SampleParameters parameters;
+	
+	public MinMAPQOption(SampleParameters parameters) {
+		this.parameters = parameters;
 		opt = 'm';
 		longOpt = "min-mapq";
 	}

@@ -4,13 +4,16 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.pileup.BaseConfig;
 
-public class ConsiderBasesOption extends AbstractACOption {
+public class BaseConfigOption extends AbstractACOption {
 
-	public ConsiderBasesOption(Parameters parameters) {
-		super(parameters);
+	private AbstractParameters parameters;
+	
+	public BaseConfigOption(AbstractParameters parameters) {
+		this.parameters = parameters;
+
 		opt = 'B';
 		longOpt = "bases";
 	}

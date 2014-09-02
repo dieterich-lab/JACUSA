@@ -30,12 +30,12 @@ public class DistanceFilterFactory extends AbstractFilterFactory {
 
 	@Override
 	public RatioBasedFilter getFilterInstance() {
-		return new RatioBasedFilter(getC(), 0.5, getParameters());
+		return new RatioBasedFilter(getC(), 0.5);
 	}
 
 	@Override
 	public AbstractPileupBuilderFilterCount getFilterCountInstance() {
-		return new DistanceFilterCount(getC(), distance, getParameters());
+		return new DistanceFilterCount(getC(), distance);
 	}
 
 }

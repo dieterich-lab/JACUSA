@@ -5,7 +5,7 @@ package accusa2.pileup.builder;
 
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.Parameters;
 import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
 import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.DefaultPileup.Counts;

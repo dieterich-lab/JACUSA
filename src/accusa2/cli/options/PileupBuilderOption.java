@@ -5,7 +5,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.SampleParameters;
 import accusa2.pileup.builder.DirectedPileupBuilderFactory;
 import accusa2.pileup.builder.PileupBuilderFactory;
 import accusa2.pileup.builder.UndirectedPileupBuilderFactory;
@@ -16,8 +16,11 @@ public class PileupBuilderOption extends AbstractACOption {
 	private final char STRAND_UNSPECIFIC = 'U';
 	private final char SEP 				 = ',';
 
-	public PileupBuilderOption(Parameters parameters) {
-		super(parameters);
+	private SampleParameters parameters;
+	
+	public PileupBuilderOption(SampleParameters parameters) {
+		this.parameters = parameters;
+
 		opt = 'P';
 		longOpt = "build-pileup";
 	}

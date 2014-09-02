@@ -6,9 +6,9 @@ import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.util.AnnotatedCoordinate;
 
-public class UnstrandedParallelPileupWindowIterator extends AbstractParallelPileupWindowIterator {
+public class UnstrandedVariantParallelPileupWindowIterator extends AbstractParallelPileupWindowIterator {
 
-	public UnstrandedParallelPileupWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader[] readersA, final SAMFileReader[] readersB, final Parameters parameters) {
+	public UnstrandedVariantParallelPileupWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader[] readersA, final SAMFileReader[] readersB, final Parameters parameters) {
 		super(annotatedCoordinate, readersA, readersB, parameters);
 	}
 
@@ -35,6 +35,11 @@ public class UnstrandedParallelPileupWindowIterator extends AbstractParallelPile
 		advance();
 
 		return parallelPileup;
+	}
+	
+	@Override
+	protected boolean isVariant(ParallelPileup parallelPileup)  {
+		return parallelPileup.getPooledPileup().getAlleles().length > 1;
 	}
 	
 	@Override

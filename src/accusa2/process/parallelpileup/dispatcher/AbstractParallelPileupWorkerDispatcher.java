@@ -6,13 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.samtools.SAMFileReader;
-import accusa2.cli.Parameters;
-import accusa2.io.format.ResultFormat;
-import accusa2.io.format.TmpResultFormat;
-import accusa2.io.output.Output;
-import accusa2.io.output.OutputWriter;
-import accusa2.io.output.TmpOutputReader;
-import accusa2.io.output.TmpOutputWriter;
+import accusa2.cli.parameters.Parameters;
+import accusa2.io.Output;
+import accusa2.io.OutputWriter;
+import accusa2.io.TmpOutputReader;
+import accusa2.io.TmpOutputWriter;
+import accusa2.io.format.output.AbstractOutputFormat;
+import accusa2.io.format.result.AbstractResultFormat;
+import accusa2.io.format.result.TmpResultFormat;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.process.parallelpileup.worker.AbstractParallelPileupWorker;
 import accusa2.util.AnnotatedCoordinate;
@@ -123,7 +124,7 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 
 	protected abstract void processFinishedWorker(final T processParallelPileup);
 	protected abstract T buildNextParallelPileupWorker();	
-	protected abstract void processTmpLine(final ResultFormat resultFormat, final Output output, final Output filtered, final String line) throws IOException;
+	protected abstract void processTmpLine(final AbstractOutputFormat outputFormat, final Output output, final Output filtered, final String line) throws IOException;
 	
 	protected void writeOuptut() {
 		// write tmp file
@@ -135,7 +136,7 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 			e.printStackTrace();
 			return;
 		}
-		final ResultFormat resultFormat = new TmpResultFormat(parameters.getResultFormat());
+		final AbstractResultFormat resultFormat = new TmpResultFormat(parameters.getResultFormat());
 
 		// write Header
 		try {

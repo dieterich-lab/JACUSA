@@ -1,6 +1,6 @@
 package accusa2.filter;
 
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.Parameters;
 import accusa2.pileup.ParallelPileup;
 
 public class CountBasedFilter extends AbstractCacheFilter {

@@ -5,7 +5,7 @@ import java.util.List;
 import net.sf.samtools.AlignmentBlock;
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.Parameters;
 import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
 
 public class DistanceFilterCount extends AbstractPileupBuilderFilterCount {

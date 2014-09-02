@@ -3,14 +3,15 @@ package accusa2.process.parallelpileup.worker;
 import java.io.IOException;
 
 import accusa2.ACCUSA2;
-import accusa2.cli.Parameters;
+import accusa2.cli.parameters.Parameters;
 import accusa2.filter.AbstractParallelPileupFilter;
 import accusa2.filter.factory.AbstractFilterFactory;
 import accusa2.method.statistic.StatisticCalculator;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
-import accusa2.pileup.iterator.VariantParallelPileupWindowIterator;
+import accusa2.pileup.iterator.StrandedVariantParallelPileupWindowIterator;
+import accusa2.pileup.iterator.UnstrandedVariantParallelPileupWindowIterator;
 import accusa2.process.parallelpileup.dispatcher.ParallelPileupWorkerDispatcher;
 import accusa2.util.AnnotatedCoordinate;
 
@@ -98,7 +99,11 @@ public class ParallelPileupWorker extends AbstractParallelPileupWorker {
 
 	@Override
 	protected AbstractParallelPileupWindowIterator buildParallelPileupIterator(final AnnotatedCoordinate coordinate, final Parameters parameters) {
-		return new VariantParallelPileupWindowIterator(coordinate, readersA, readersB, parameters);
+		if (parameters.getPileupBuilderFactoryA().isDirected() || parameters.getPileupBuilderFactoryB().isDirected()) {
+			return new StrandedVariantParallelPileupWindowIterator(coordinate, readersA, readersB, parameters);
+		}
+		
+		return new UnstrandedVariantParallelPileupWindowIterator(coordinate, readersA, readersB, parameters);
 	}
 
 }

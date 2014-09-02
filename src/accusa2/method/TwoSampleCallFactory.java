@@ -5,10 +5,8 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Map;
 
-import accusa2.cli.CLI;
-import accusa2.cli.Parameters;
 import accusa2.cli.options.PileupBuilderOption;
-import accusa2.cli.options.ConsiderBasesOption;
+import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
 import accusa2.cli.options.StatisticFilterOption;
 import accusa2.cli.options.HelpOption;
@@ -19,15 +17,20 @@ import accusa2.cli.options.MinCoverageOption;
 import accusa2.cli.options.MinMAPQOption;
 import accusa2.cli.options.PathnameOption;
 //import accusa2.cli.options.PermutationsOption;
-import accusa2.cli.options.FilterOption;
-import accusa2.cli.options.StatisticOption;
+import accusa2.cli.options.FilterConfigOption;
+import accusa2.cli.options.StatisticCalculatorOption;
 import accusa2.cli.options.ResultFileOption;
-import accusa2.cli.options.ResultFormatOption;
+import accusa2.cli.options.FormatOption;
 import accusa2.cli.options.RetainFlagOption;
-import accusa2.cli.options.BED_CoordinatesOption;
+import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
 import accusa2.cli.options.filter.FilterFlagOption;
+import accusa2.cli.parameters.CLI;
+import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.SampleParameters;
+import accusa2.cli.parameters.TwoSampleCallParameters;
+import accusa2.filter.FilterConfig;
 //import accusa2.cli.options.filter.FilterNHsamTagOption;
 //import accusa2.cli.options.filter.FilterNMsamTagOption;
 import accusa2.filter.factory.AbstractFilterFactory;
@@ -35,10 +38,12 @@ import accusa2.filter.factory.HomopolymerFilterFactory;
 import accusa2.filter.factory.HomozygousFilterFactory;
 //import accusa2.filter.factory.PolymorphismPileupFilterFactory;
 import accusa2.filter.factory.DistanceFilterFactory;
+import accusa2.filter.factory.PolymorphismPileupFilterFactory;
+import accusa2.filter.factory.RareEventFilterFactory;
 //import accusa2.filter.factory.RareEventFilterFactory;
-import accusa2.io.format.AbstractResultFormat;
-import accusa2.io.format.DefaultResultFormat;
-import accusa2.io.format.PileupResultFormat;
+import accusa2.io.format.output.PileupResultFormat;
+import accusa2.io.format.result.AbstractResultFormat;
+import accusa2.io.format.result.DefaultResultFormat;
 import accusa2.method.statistic.LR2Statistic;
 import accusa2.method.statistic.LRStatistic;
 import accusa2.method.statistic.MethodOfMomentsStatistic;
@@ -52,50 +57,57 @@ import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDis
 import accusa2.process.parallelpileup.worker.ParallelPileupWorker;
 import accusa2.util.CoordinateProvider;
 
-public class CallFactory extends AbstractMethodFactory {
+public class TwoSampleCallFactory extends AbstractMethodFactory {
 
 	private static ParallelPileupWorkerDispatcher instance;
 	
-	public CallFactory() {
+	private TwoSampleCallParameters parameters;
+	
+	public TwoSampleCallFactory() {
 		super("call", "Call variants");
+
 	}
 
 	public void initACOptions() {
-		acOptions.add(new PathnameOption(parameters, '1'));
-		acOptions.add(new PathnameOption(parameters, '2'));
+		SampleParameters sampleA = parameters.getSampleA();
+		acOptions.add(new PathnameOption(sampleA, 'A'));
+		
+		SampleParameters sampleB = parameters.getSampleB();
+		acOptions.add(new PathnameOption(sampleA, 'B'));
 
-		acOptions.add(new BED_CoordinatesOption(parameters));
+		acOptions.add(new BedCoordinatesOption(parameters));
 		acOptions.add(new ResultFileOption(parameters));
 		if(getResultFormats().size() == 1 ) {
 			Character[] a = getResultFormats().keySet().toArray(new Character[1]);
 			parameters.setResultFormat(getResultFormats().get(a[0]));
 		} else {
-			acOptions.add(new ResultFormatOption(parameters, getResultFormats()));
+			acOptions.add(new FormatOption(parameters, getResultFormats()));
 		}
 
 		acOptions.add(new MaxThreadOption(parameters));
 		acOptions.add(new WindowSizeOption(parameters));
 
+		/* TODO set for each sample 
 		acOptions.add(new MinCoverageOption(parameters));
 		acOptions.add(new MinBASQOption(parameters));
 		acOptions.add(new MinMAPQOption(parameters));
 		acOptions.add(new MaxDepthOption(parameters));
-		
-		acOptions.add(new ResultFormatOption(parameters, getResultFormats()));
-		
 		acOptions.add(new FilterFlagOption(parameters));
 		acOptions.add(new RetainFlagOption(parameters));
+		*/
+		
+		acOptions.add(new FormatOption(parameters, getResultFormats()));
 
-		if(getStatistics().size() == 1 ) {
+		if (getStatistics().size() == 1 ) {
 			String[] a = getStatistics().keySet().toArray(new String[1]);
 			parameters.setStatistic(getStatistics().get(a[0]));
 		} else {
-			acOptions.add(new StatisticOption(parameters, getStatistics()));
+			acOptions.add(new StatisticCalculatorOption(parameters, getStatistics()));
 		}
 
-		acOptions.add(new FilterOption(parameters, getFilterFactories()));
+		acOptions.add(new FilterConfigOption(parameters, getFilterFactories()));
 
-		acOptions.add(new ConsiderBasesOption(parameters));
+		acOptions.add(new BaseConfigOption(parameters));
 		acOptions.add(new StatisticFilterOption(parameters));
 		//acOptions.add(new PermutationsOption(parameters));
 		acOptions.add(new PileupBuilderOption(parameters));
@@ -106,7 +118,6 @@ public class CallFactory extends AbstractMethodFactory {
 		
 		//acOptions.add(new FilterNHsamTagOption(parameters));
 		//acOptions.add(new FilterNMsamTagOption(parameters));
-		
 	}
 
 	@Override
@@ -146,29 +157,18 @@ public class CallFactory extends AbstractMethodFactory {
 	public Map<Character, AbstractFilterFactory> getFilterFactories() {
 		Map<Character, AbstractFilterFactory> abstractPileupFilters = new HashMap<Character, AbstractFilterFactory>();
 
-		AbstractFilterFactory abstractFilterFactory = null;
-
-		abstractFilterFactory = new DistanceFilterFactory();
-		abstractFilterFactory.setParameters(parameters);
-		abstractPileupFilters.put(abstractFilterFactory.getC(), abstractFilterFactory);
-
-		abstractFilterFactory = new HomozygousFilterFactory();
-		abstractFilterFactory.setParameters(parameters);
-		abstractPileupFilters.put(abstractFilterFactory.getC(), abstractFilterFactory);
-
-		abstractFilterFactory = new HomopolymerFilterFactory();
-		abstractFilterFactory.setParameters(parameters);
-		abstractPileupFilters.put(abstractFilterFactory.getC(), abstractFilterFactory);
-		/*
-		abstractFilterFactory = new RareEventFilterFactory();
-		abstractFilterFactory.setParameters(parameters);
-		abstractPileupFilters.put(abstractFilterFactory.getC(), abstractFilterFactory);
-		*/
-		/*
-		abstractFilterFactory = new PolymorphismPileupFilterFactory();
-		abstractFilterFactory.setParameters(parameters);
-		abstractPileupFilters.put(abstractFilterFactory.getC(), abstractFilterFactory);
-		*/
+		FilterConfig filterConfig = parameters.getStatisticParameters().getFilterConfig();
+		AbstractFilterFactory[] filters = new AbstractFilterFactory[] {
+				new DistanceFilterFactory(),
+				new HomozygousFilterFactory(),
+				new HomopolymerFilterFactory(),
+				new RareEventFilterFactory(),
+				new PolymorphismPileupFilterFactory()
+		};
+		for (AbstractFilterFactory filter : filters) {
+			filter.setFilterConfig(filterConfig);
+			abstractPileupFilters.put(filter.getC(), filter);
+		}
 
 		return abstractPileupFilters;
 	}

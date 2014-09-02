@@ -7,14 +7,14 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.Parameters;
-import accusa2.io.format.AbstractResultFormat;
+import accusa2.cli.parameters.Parameters;
+import accusa2.io.format.result.AbstractResultFormat;
 
-public class ResultFormatOption extends AbstractACOption {
+public class FormatOption extends AbstractACOption {
 
 	private Map<Character, AbstractResultFormat> resultFormats;
 
-	public ResultFormatOption(Parameters parameters, Map<Character, AbstractResultFormat> resultFormats) {
+	public FormatOption(Parameters parameters, Map<Character, AbstractResultFormat> resultFormats) {
 		super(parameters);
 		opt = 'f';
 		longOpt = "output-format";
