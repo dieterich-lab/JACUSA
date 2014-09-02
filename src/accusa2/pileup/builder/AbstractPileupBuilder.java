@@ -7,8 +7,9 @@ import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 import net.sf.samtools.SAMValidationError;
-import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.SampleParameters;
 import accusa2.filter.samtag.SamTagFilter;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.DefaultPileup;
@@ -28,13 +29,14 @@ public abstract class AbstractPileupBuilder {
 
 	protected int filteredSAMRecords;
 
-	protected Parameters parameters;
+	protected BaseConfig baseConfig;
+	protected SampleParameters parameters;
 	
 	protected boolean isCached;
 
 	protected DefaultPileup pileup;
 	
-	public AbstractPileupBuilder(AnnotatedCoordinate annotatedCoordinate, SAMFileReader SAMFileReader, int windowSize, Parameters parameters) {
+	public AbstractPileupBuilder(AnnotatedCoordinate annotatedCoordinate, SAMFileReader SAMFileReader, int windowSize, BaseConfig baseConfig, SampleParameters parameters) {
 		contig				= annotatedCoordinate.getSequenceName();
 		genomicWindowStart 	= annotatedCoordinate.getStart();
 		this.windowSize 	= windowSize;
@@ -179,7 +181,7 @@ public abstract class AbstractPileupBuilder {
 				&& errors == null // isValid is expensive
 				) { // only store valid records that contain mapped reads
 			// custom filter 
-			for(SamTagFilter samTagFilter : parameters.getSamTagFilter()) {
+			for(SamTagFilter samTagFilter : parameters.getSamTagFilters()) {
 				if(samTagFilter.filter(samRecord)) {
 					return false;
 				}
@@ -237,14 +239,6 @@ public abstract class AbstractPileupBuilder {
 	 * 
 	 * @return
 	 */
-	public Parameters getParameters() {
-		return parameters;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
 	public int getGenomicWindowStart() {
 		return genomicWindowStart;
 	}
@@ -263,7 +257,7 @@ public abstract class AbstractPileupBuilder {
 		int genomicPosition = alignmentBlock.getReferenceStart();
 
 		for (int offset = 0; offset < alignmentBlock.getLength(); ++offset) {
-			final int baseI = parameters.getBaseConfig().getBaseI(record.getReadBases()[readPosition + offset]);
+			final int baseI = baseConfig.getBaseI(record.getReadBases()[readPosition + offset]);
 			final byte qual = record.getBaseQualities()[readPosition + offset];
 
 			if(qual >= parameters.getMinBASQ() && baseI != -1) {

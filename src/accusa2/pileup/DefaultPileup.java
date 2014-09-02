@@ -2,7 +2,6 @@ package accusa2.pileup;
 
 import java.util.Arrays;
 
-import accusa2.cli.parameters.Parameters;
 import accusa2.process.phred2prob.Phred2Prob;
 
 /**
@@ -23,7 +22,7 @@ public class DefaultPileup implements Pileup {
 
 	private Counts counts;
 
-	private int minQualI = Parameters.getInstance().getMinBASQ();
+	private int minQualI = 0; // FIXME Parameters.getInstance().getMinBASQ();
 
 	public DefaultPileup() {
 		contig 		= new String();
@@ -198,7 +197,7 @@ public class DefaultPileup implements Pileup {
 		private int[][] qualCount;
 
 		public Counts() {
-			int baseLength = Parameters.getInstance().getBaseConfig().getBases().length;
+			int baseLength = 0; // FIXME Parameters.getInstance().getBaseConfig().getBases().length;
 			baseCount 	= new int[baseLength];
 			qualCount	= new int[baseLength][Phred2Prob.MAX_Q];
 		}

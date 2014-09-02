@@ -1,6 +1,5 @@
 package accusa2.cli.parameters;
 
-import accusa2.filter.FilterConfig;
 import accusa2.method.statistic.StatisticCalculator;
 
 public class StatisticParameters {
@@ -8,23 +7,24 @@ public class StatisticParameters {
 	// filter: statistic
 	private double stat;
 	private StatisticCalculator statisticCalculator;
-	private FilterConfig filterConfig;
+	private int permutations;
 	
 	public StatisticParameters() {
 		stat				= 0.3;
 		statisticCalculator = getDefaultStatisticCalculator();
-		filterConfig 		= new FilterConfig(this); // TODO
+		permutations		= 100;
 	}
 
-	/**
-	 * @return the filterConfig
-	 */
-	public FilterConfig getFilterConfig() {
-		return filterConfig;
+	public int getPermutations() {
+		return permutations;
+	}
+
+	public void setPermutations(int permutations) {
+		this.permutations = permutations;
 	}
 
 	protected StatisticCalculator getDefaultStatisticCalculator() {
-		return null; // TODO
+		return null; // FIXME
 	}
 
 	/**

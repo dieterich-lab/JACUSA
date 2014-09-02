@@ -1,30 +1,21 @@
-package accusa2.cli.options;
-
+package accusa2.cli.options.pileupbuilder;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
 import accusa2.cli.parameters.SampleParameters;
-import accusa2.pileup.builder.DirectedPileupBuilderFactory;
-import accusa2.pileup.builder.PileupBuilderFactory;
-import accusa2.pileup.builder.UndirectedPileupBuilderFactory;
 
-public class PileupBuilderOption extends AbstractACOption {
+public class TwoSamplePileupBuilderOption extends AbstractPileupBuilderOption {
 
-	private final char STRAND_SPECIFIC 	 = 'S';
-	private final char STRAND_UNSPECIFIC = 'U';
-	private final char SEP 				 = ',';
-
-	private SampleParameters parameters;
+	private SampleParameters parametersA;
+	private SampleParameters parametersB;
 	
-	public PileupBuilderOption(SampleParameters parameters) {
-		this.parameters = parameters;
-
-		opt = 'P';
-		longOpt = "build-pileup";
+	public TwoSamplePileupBuilderOption(SampleParameters parametersA, SampleParameters parametersB) {
+		this.parametersA = parametersA;
+		this.parametersB = parametersB;
 	}
-	
+
 	@SuppressWarnings("static-access")
 	@Override
 	public Option getOption() {
@@ -42,20 +33,12 @@ public class PileupBuilderOption extends AbstractACOption {
 	    	if(value.length != 3) {
 	    		throw new IllegalArgumentException("Possible values for " + longOpt.toUpperCase() + ": S,S or U,U or S,U or U,S");
 	    	}
-	    	parameters.setPileupBuilderFactoryA(buildPileupBuilderFactory(parse(value[0])));
-	    	parameters.setPileupBuilderFactoryB(buildPileupBuilderFactory(parse(value[2])));
+	    	parametersA.setPileupBuilderFactory(buildPileupBuilderFactory(parse(value[0])));
+	    	parametersB.setPileupBuilderFactory(buildPileupBuilderFactory(parse(value[2])));
 	    }
 	}
 
-	private PileupBuilderFactory buildPileupBuilderFactory(boolean isDirected) {
-		if(isDirected) {
-			return new DirectedPileupBuilderFactory();
-		} else {
-			return new UndirectedPileupBuilderFactory();
-		}
-	}
-	
-	private boolean parse(char c) {
+	protected boolean parse(char c) {
 		switch(c) {
 		case STRAND_SPECIFIC:
 			return true;

@@ -9,13 +9,15 @@ import accusa2.pileup.DefaultPileup.Counts;
 
 public abstract class AbstractCacheFilter extends AbstractParallelPileupFilter {
 
-	protected final int filterI;
 	protected final BaseConfig baseConfig;
-		
-	public AbstractCacheFilter(char c,  parameters) {
+	protected final FilterConfig filterConfig;
+	protected final int filterI;
+	
+	public AbstractCacheFilter(char c, BaseConfig baseConfig, FilterConfig filterConfig) {
 		super(c);
-		filterI = parameters.getFilterConfig().c2i(c);
-		baseConfig = parameters.getBaseConfig();
+		this.baseConfig 	= baseConfig;
+		this.filterConfig 	= filterConfig;
+		filterI				= filterConfig.c2i(c);
 	}
 
 	// todo ORDER RESULTS [0] SHOULD BE THE VARIANT TO TEST AGAINST

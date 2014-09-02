@@ -1,7 +1,9 @@
 package accusa2.cli.parameters;
 
+import accusa2.filter.FilterConfig;
 import accusa2.io.Output;
 import accusa2.io.OutputPrinter;
+import accusa2.io.format.output.AbstractOutputFormat;
 import accusa2.method.AbstractMethodFactory;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.builder.PileupBuilderFactory;
@@ -25,9 +27,11 @@ public abstract class AbstractParameters implements hasSampleA {
 	private SampleParameters sampleA;
 	
 	private Output output;
+	private AbstractOutputFormat format;
+	private FilterConfig filterConfig;
 	
 	// debug flag
-	private boolean debug; 
+	private boolean debug;
 	
 	public AbstractParameters() {
 		windowSize 	= 10000;
@@ -39,10 +43,26 @@ public abstract class AbstractParameters implements hasSampleA {
 		sampleA		= new SampleParameters();
 		
 		output		= new OutputPrinter();
-
+		filterConfig= new FilterConfig();
+		
 		debug		= false;
 	}
 
+	public AbstractOutputFormat getFormat() {
+		return format;
+	}
+
+	public void setFormat(AbstractOutputFormat format) {
+		this.format = format;
+	}
+	
+	/**
+	 * @return the filterConfig
+	 */
+	public FilterConfig getFilterConfig() {
+		return filterConfig;
+	}
+	
 	/**
 	 * @return the output
 	 */

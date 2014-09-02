@@ -25,7 +25,7 @@ public class PermutationsOption  extends AbstractACOption {
 		return OptionBuilder.withLongOpt(longOpt)
 			.withArgName(longOpt.toUpperCase())
 			.hasArg(true)
-			// FIXME .withDescription("Number of " + longOpt.toUpperCase() + " to estimate FDR\n default: " + parameters.getPermutations())
+			.withDescription("Number of " + longOpt.toUpperCase() + " to estimate FDR\n default: " + parameters.getPermutations())
 	        .create(opt);
 	}
 
@@ -34,7 +34,7 @@ public class PermutationsOption  extends AbstractACOption {
 		if(line.hasOption(opt)) {
 		    String value = line.getOptionValue(opt);
 	    	int permutations = Integer.parseInt(value);
-	    	// FIXME //parameters.setPermutations(permutations);
+	    	parameters.setPermutations(permutations);
 		}
 	}
 

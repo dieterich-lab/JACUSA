@@ -2,10 +2,10 @@ package accusa2.method.statistic;
 
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
-import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.StatisticParameters;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
-import accusa2.process.phred2prob.Phred2Prob;
 
 /**
  * 
@@ -21,24 +21,18 @@ import accusa2.process.phred2prob.Phred2Prob;
 
 public final class LRStatistic implements StatisticCalculator {
 
-	protected final Parameters parameters;
-	
-	protected final Phred2Prob phred2Prob;
 	protected final DefaultStatistic defaultStatistic;
 
 	// TODO test what is the best??? 2*k - 2 : k = dimension of modeled prob. vector
 	protected final ChiSquareDist dist = new ChiSquareDist(6);
 
-	public LRStatistic(Parameters parameters) {
-		this.parameters = parameters;
-
-		phred2Prob = Phred2Prob.getInstance(parameters.getBaseConfig().getBases().length);
-		defaultStatistic = new DefaultStatistic(parameters);
+	public LRStatistic(BaseConfig baseConfig, StatisticParameters parameters) {
+		defaultStatistic = new DefaultStatistic(baseConfig, parameters);
 	}
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new LRStatistic(parameters);
+		return new LRStatistic(defaultStatistic.getBaseConfig(), defaultStatistic.getParameters());
 	}
 
 	@Override
@@ -81,7 +75,7 @@ public final class LRStatistic implements StatisticCalculator {
 	}
 
 	public boolean filter(double value) {
-		return parameters.getStat() < value;
+		return defaultStatistic.getParameters().getStat() < value;
 	}
 
 	// redefined to use natural logarithm

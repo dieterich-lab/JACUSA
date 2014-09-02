@@ -1,11 +1,9 @@
-package accusa2.method;
-
+package accusa2.method.call;
 
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Map;
 
-import accusa2.cli.options.PileupBuilderOption;
 import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
 import accusa2.cli.options.StatisticFilterOption;
@@ -26,8 +24,9 @@ import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
 import accusa2.cli.options.filter.FilterFlagOption;
+import accusa2.cli.options.pileupbuilder.AbstractPileupBuilderOption;
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
-import accusa2.cli.parameters.Parameters;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.cli.parameters.TwoSampleCallParameters;
 import accusa2.filter.FilterConfig;
@@ -44,6 +43,7 @@ import accusa2.filter.factory.RareEventFilterFactory;
 import accusa2.io.format.output.PileupResultFormat;
 import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.io.format.result.DefaultResultFormat;
+import accusa2.method.AbstractMethodFactory;
 import accusa2.method.statistic.LR2Statistic;
 import accusa2.method.statistic.LRStatistic;
 import accusa2.method.statistic.MethodOfMomentsStatistic;
@@ -54,26 +54,30 @@ import accusa2.method.statistic.WeightedMethodOfMomentsStatistic;
 import accusa2.method.statistic.StatisticCalculator;
 import accusa2.process.parallelpileup.dispatcher.ParallelPileupWorkerDispatcher;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
+import accusa2.process.parallelpileup.worker.AbstractParallelPileupWorker;
 import accusa2.process.parallelpileup.worker.ParallelPileupWorker;
 import accusa2.util.CoordinateProvider;
 
 public class TwoSampleCallFactory extends AbstractMethodFactory {
 
+	public static final char sample1 = 'A';
+	public static final char sample2 = 'B';
+	
 	private static ParallelPileupWorkerDispatcher instance;
 	
 	private TwoSampleCallParameters parameters;
 	
 	public TwoSampleCallFactory() {
 		super("call", "Call variants");
-
+		parameters = new TwoSampleCallParameters();
 	}
 
 	public void initACOptions() {
 		SampleParameters sampleA = parameters.getSampleA();
-		acOptions.add(new PathnameOption(sampleA, 'A'));
+		acOptions.add(new PathnameOption(sample1, sampleA ));
 		
 		SampleParameters sampleB = parameters.getSampleB();
-		acOptions.add(new PathnameOption(sampleA, 'B'));
+		acOptions.add(new PathnameOption(sample2, sampleB));
 
 		acOptions.add(new BedCoordinatesOption(parameters));
 		acOptions.add(new ResultFileOption(parameters));
@@ -81,47 +85,37 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 			Character[] a = getResultFormats().keySet().toArray(new Character[1]);
 			parameters.setResultFormat(getResultFormats().get(a[0]));
 		} else {
-			acOptions.add(new FormatOption(parameters, getResultFormats()));
+			acOptions.add(new FormatOption<AbstractResultFormat>(parameters, getResultFormats()));
 		}
 
 		acOptions.add(new MaxThreadOption(parameters));
 		acOptions.add(new WindowSizeOption(parameters));
 
-		/* TODO set for each sample 
-		acOptions.add(new MinCoverageOption(parameters));
-		acOptions.add(new MinBASQOption(parameters));
-		acOptions.add(new MinMAPQOption(parameters));
-		acOptions.add(new MaxDepthOption(parameters));
-		acOptions.add(new FilterFlagOption(parameters));
-		acOptions.add(new RetainFlagOption(parameters));
-		*/
-		
-		acOptions.add(new FormatOption(parameters, getResultFormats()));
-
 		if (getStatistics().size() == 1 ) {
 			String[] a = getStatistics().keySet().toArray(new String[1]);
-			parameters.setStatistic(getStatistics().get(a[0]));
+			parameters.getStatisticParameters().setStatisticCalculator(getStatistics().get(a[0]));
 		} else {
-			acOptions.add(new StatisticCalculatorOption(parameters, getStatistics()));
+			acOptions.add(new StatisticCalculatorOption(parameters.getStatisticParameters(), getStatistics()));
 		}
 
 		acOptions.add(new FilterConfigOption(parameters, getFilterFactories()));
 
 		acOptions.add(new BaseConfigOption(parameters));
-		acOptions.add(new StatisticFilterOption(parameters));
+		acOptions.add(new StatisticFilterOption(parameters.getStatisticParameters()));
 		//acOptions.add(new PermutationsOption(parameters));
-		acOptions.add(new PileupBuilderOption(parameters));
 		
 		acOptions.add(new DebugOption(parameters));
-		acOptions.add(new HelpOption(parameters, CLI.getSingleton()));
-		acOptions.add(new VersionOption(parameters, CLI.getSingleton()));
-		
+		acOptions.add(new HelpOption(CLI.getSingleton()));
+		acOptions.add(new VersionOption(CLI.getSingleton()));
+
 		//acOptions.add(new FilterNHsamTagOption(parameters));
 		//acOptions.add(new FilterNMsamTagOption(parameters));
 	}
 
 	@Override
-	public AbstractParallelPileupWorkerDispatcher<ParallelPileupWorker> getInstance(CoordinateProvider coordinateProvider, Parameters parameters) {
+	public AbstractParallelPileupWorkerDispatcher<ParallelPileupWorker> getInstance(
+			CoordinateProvider coordinateProvider, 
+			Parameters parameters) {
 		if(instance == null) {
 			instance = new ParallelPileupWorkerDispatcher(coordinateProvider, parameters);
 		}
@@ -133,22 +127,22 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 
 		StatisticCalculator statistic = null;
 
-		statistic = new LRStatistic(parameters);
+		statistic = new LRStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 	
-		statistic = new LR2Statistic(parameters);
+		statistic = new LR2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
-		statistic = new MethodOfMomentsStatistic(parameters);
+		statistic = new MethodOfMomentsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 		
-		statistic = new WeightedMethodOfMomentsStatistic(parameters);
+		statistic = new WeightedMethodOfMomentsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 		
-		statistic = new MixtureDirichletStatistic(parameters);
+		statistic = new MixtureDirichletStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 		
-		statistic = new NumericalStatistic(parameters);
+		statistic = new NumericalStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 		
 		return statistics;
@@ -157,9 +151,9 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 	public Map<Character, AbstractFilterFactory> getFilterFactories() {
 		Map<Character, AbstractFilterFactory> abstractPileupFilters = new HashMap<Character, AbstractFilterFactory>();
 
-		FilterConfig filterConfig = parameters.getStatisticParameters().getFilterConfig();
+		FilterConfig filterConfig = parameters.getFilterConfig();
 		AbstractFilterFactory[] filters = new AbstractFilterFactory[] {
-				new DistanceFilterFactory(),
+				new DistanceFilterFactory(parameters.getBaseConfig(), parameters.getFilterConfig()),
 				new HomozygousFilterFactory(),
 				new HomopolymerFilterFactory(),
 				new RareEventFilterFactory(),
@@ -176,13 +170,21 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 	public Map<Character, AbstractResultFormat> getResultFormats() {
 		Map<Character, AbstractResultFormat> resultFormats = new HashMap<Character, AbstractResultFormat>();
 
-		AbstractResultFormat resultFormat = new DefaultResultFormat(parameters);
+		AbstractResultFormat resultFormat = new DefaultResultFormat(parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
-		resultFormat = new PileupResultFormat(parameters);
+		resultFormat = new PileupResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;
+	}
+
+	@Override
+	public AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> getInstance(
+			CoordinateProvider coordinateProvider, 
+			AbstractParameters parameters) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

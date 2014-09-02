@@ -6,19 +6,19 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.parameters.StatisticParameters;
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.filter.factory.AbstractFilterFactory;
 
 public class FilterConfigOption extends AbstractACOption {
 
-	private StatisticParameters parameters;
+	private AbstractParameters parameters;
 	
 	private static char OR = ',';
 	//private static char AND = '&'; // Future Feature add logic
 
 	private Map<Character, AbstractFilterFactory> pileupFilterFactories;
 
-	public FilterConfigOption(StatisticParameters parameters, Map<Character, AbstractFilterFactory> pileupFilterFactories) {
+	public FilterConfigOption(AbstractParameters parameters, Map<Character, AbstractFilterFactory> pileupFilterFactories) {
 		this.parameters = parameters;
 		
 		opt = 'a';

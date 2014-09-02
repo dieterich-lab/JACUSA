@@ -1,14 +1,14 @@
 package accusa2.filter;
 
-import accusa2.cli.parameters.Parameters;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 
 public class CountBasedFilter extends AbstractCacheFilter {
 
 	private double range;
 	
-	public CountBasedFilter(char c, double range, Parameters parameters) {
-		super(c, parameters);
+	public CountBasedFilter(char c, double range, BaseConfig baseConfig, FilterConfig filterConfig) {
+		super(c, baseConfig, filterConfig);
 		this.range = range;
 	}
 

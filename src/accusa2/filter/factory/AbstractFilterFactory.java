@@ -12,9 +12,10 @@ public abstract class AbstractFilterFactory {
 	protected String desc;
 	protected FilterConfig filterConfig;
 	
-	public AbstractFilterFactory(char c, String desc) {
+	public AbstractFilterFactory(char c, String desc, FilterConfig filterConfig) {
 		this.c = c;
 		this.desc = desc;
+		this.filterConfig = filterConfig;
 	}
 
 	public abstract AbstractParallelPileupFilter getFilterInstance();
@@ -32,6 +33,7 @@ public abstract class AbstractFilterFactory {
 		// implement to change behavior via CLI
 	}
 
+	@Deprecated
 	public void setFilterConfig(FilterConfig filterConfig) {
 		this.filterConfig = filterConfig;
 	}

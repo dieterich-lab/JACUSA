@@ -5,7 +5,7 @@ import java.util.Iterator;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import accusa2.cli.parameters.AbstractParameters;
-import accusa2.cli.parameters.Parameters;
+import accusa2.filter.FilterConfig;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.DefaultPileup.Counts;
@@ -31,7 +31,7 @@ public abstract class AbstractParallelPileupWindowIterator implements Iterator<P
 	protected final AbstractPileupBuilder[] pileupBuildersA;
 	protected final AbstractPileupBuilder[] pileupBuildersB;
 
-	protected int filterCount;
+	protected FilterConfig filterconfig;
 
 	// output
 	protected ParallelPileup parallelPileup;
@@ -46,7 +46,7 @@ public abstract class AbstractParallelPileupWindowIterator implements Iterator<P
 		strandA 		= STRAND.UNKNOWN;
 		strandB 		= STRAND.UNKNOWN;
 		
-		filterCount 	= parameters.getFilterConfig().getFactories().size();
+		filterconfig 	= parameters.getFilterConfig().getFactories().size();
 
 		// init
 		parallelPileup = new DefaultParallelPileup(pileupBuildersA.length, pileupBuildersB.length);

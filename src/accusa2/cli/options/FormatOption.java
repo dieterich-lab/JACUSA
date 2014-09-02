@@ -1,25 +1,26 @@
 package accusa2.cli.options;
 
-
 import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.parameters.Parameters;
-import accusa2.io.format.result.AbstractResultFormat;
+import accusa2.cli.parameters.AbstractParameters;
+import accusa2.io.format.output.AbstractOutputFormat;
 
-public class FormatOption extends AbstractACOption {
+public class FormatOption<T extends AbstractOutputFormat> extends AbstractACOption {
 
-	private Map<Character, AbstractResultFormat> resultFormats;
+	private AbstractParameters parameters;
+	private Map<Character, T> formats;
 
-	public FormatOption(Parameters parameters, Map<Character, AbstractResultFormat> resultFormats) {
-		super(parameters);
+	public FormatOption(AbstractParameters parameters, Map<Character, T> formats) {
+		this.parameters = parameters;
+
 		opt = 'f';
 		longOpt = "output-format";
 
-		this.resultFormats = resultFormats;
+		this.formats = formats;
 	}
 
 	@SuppressWarnings("static-access")
@@ -27,16 +28,16 @@ public class FormatOption extends AbstractACOption {
 	public Option getOption() {
 		StringBuffer sb = new StringBuffer();
 
-		for(char c : resultFormats.keySet()) {
-			AbstractResultFormat resultFormat = resultFormats.get(c);
-			if(resultFormat.getC() == parameters.getResultFormat().getC()) {
+		for(char c : formats.keySet()) {
+			T format = formats.get(c);
+			if(format.getC() == parameters.getFormat().getC()) {
 				sb.append("<*>");
 			} else {
 				sb.append("< >");
 			}
 			sb.append(" " + c);
 			sb.append(": ");
-			sb.append(resultFormat.getDesc());
+			sb.append(format.getDesc());
 			sb.append("\n");
 		}
 		
@@ -53,10 +54,10 @@ public class FormatOption extends AbstractACOption {
 			String s = line.getOptionValue(opt);
 			for(int i = 0; i < s.length(); ++i) {
 				char c = s.charAt(i);
-				if(!resultFormats.containsKey(c)) {
+				if(!formats.containsKey(c)) {
 					throw new IllegalArgumentException("Unknown output format: " + c);
 				}
-				parameters.setResultFormat(resultFormats.get(c));
+				parameters.setFormat(formats.get(c));
 			}
 		}
 	}

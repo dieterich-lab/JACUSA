@@ -2,10 +2,10 @@ package accusa2.method.statistic;
 
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
-import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.StatisticParameters;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
-import accusa2.process.phred2prob.Phred2Prob;
 
 /**
  * 
@@ -19,24 +19,18 @@ import accusa2.process.phred2prob.Phred2Prob;
 
 public final class LR2Statistic implements StatisticCalculator {
 
-	protected final Parameters parameters; 
-	
-	protected final Phred2Prob phred2Prob;
 	protected final DefaultStatistic defaultStatistic;
 
 	// TODO test what is the best??? 2*k - 2 : k = dimension of modeled prob. vector
 	protected ChiSquareDist dist = new ChiSquareDist(6);
 	
-	public LR2Statistic(Parameters parameters) {
-		this.parameters 	= parameters;
-		
-		phred2Prob 			= Phred2Prob.getInstance(parameters.getBaseConfig().getBases().length);
-		defaultStatistic 	= new DefaultStatistic(parameters);
+	public LR2Statistic(BaseConfig baseConfig, StatisticParameters parameters) {
+		defaultStatistic 	= new DefaultStatistic(baseConfig, parameters);
 	}
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new LR2Statistic(parameters);
+		return new LR2Statistic(defaultStatistic.getBaseConfig(), defaultStatistic.getParameters());
 	}
 
 	public double getStatistic(final ParallelPileup parallelPileup) {
@@ -75,7 +69,7 @@ public final class LR2Statistic implements StatisticCalculator {
 
 	@Override
 	public boolean filter(double value) {
-		return parameters.getStat() < value;
+		return defaultStatistic.getParameters().getStat() < value;
 	}
 	
 	@Override

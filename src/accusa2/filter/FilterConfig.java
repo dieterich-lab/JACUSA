@@ -5,19 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import accusa2.cli.parameters.StatisticParameters;
 import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
 import accusa2.filter.factory.AbstractFilterFactory;
 
 public class FilterConfig implements Cloneable {
 
-	private final StatisticParameters parameters;
 	private final Map<Character, AbstractFilterFactory> c2Factory;
 	private final List<AbstractFilterFactory> i2Factory;
 	private final Map<Character, Integer> c2i;
 
-	public FilterConfig(StatisticParameters paramters) {
-		this.parameters = paramters;
+	public FilterConfig() {
 		int n = 6;
 
 		c2Factory = new HashMap<Character, AbstractFilterFactory>(n);
@@ -31,7 +28,6 @@ public class FilterConfig implements Cloneable {
 	 * @throws Exception
 	 */
 	public void addFactory(final AbstractFilterFactory filterFactory) throws Exception {
-		filterFactory.setParameters(parameters);
 		final char c = filterFactory.getC();
 
 		if(c2Factory.containsKey(c)) {
@@ -64,7 +60,5 @@ public class FilterConfig implements Cloneable {
 	public int c2i(char c) {
 		return c2i.get(c);
 	}
-
-	
 	
 }

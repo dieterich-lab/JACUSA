@@ -2,7 +2,6 @@ package accusa2.process.parallelpileup.dispatcher;
 
 import java.io.IOException;
 
-import accusa2.cli.parameters.Parameters;
 import accusa2.io.Output;
 import accusa2.io.format.output.AbstractOutputFormat;
 import accusa2.process.parallelpileup.worker.ParallelPileupWorker;

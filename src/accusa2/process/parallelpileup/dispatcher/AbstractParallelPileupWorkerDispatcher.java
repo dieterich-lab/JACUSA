@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.samtools.SAMFileReader;
-import accusa2.cli.parameters.Parameters;
 import accusa2.io.Output;
 import accusa2.io.OutputWriter;
 import accusa2.io.TmpOutputReader;

@@ -3,7 +3,7 @@ package accusa2.cli.parameters;
 import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.io.format.result.DefaultResultFormat;
 
-public class TwoSampleCallParameters extends AbstractParameters implements hasSampleB, hasStatisticCalculator {
+public class TwoSampleCallParameters extends AbstractParameters implements hasSampleB, hasStatisticCalculator, hasResultFormat {
 
 	private SampleParameters sampleB;
 	private StatisticParameters statisticParameters;

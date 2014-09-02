@@ -1,19 +1,19 @@
 package accusa2.io.format.output;
 
-import accusa2.cli.parameters.Parameters;
+import accusa2.filter.FilterConfig;
 import accusa2.filter.factory.AbstractFilterFactory;
 import accusa2.io.format.result.AbstractResultFormat;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 
 public class PileupResultFormat extends AbstractResultFormat {
 
-	private Parameters parameters;
+	private FilterConfig filterConfig;
 	private PileupFormat pileupFormat; 
 	
-	public PileupResultFormat(Parameters paramters) {
+	public PileupResultFormat(BaseConfig baseConfig, FilterConfig fitlerConfig) {
 		super('A', "pileup like ACCUSA result format");
-		pileupFormat = new PileupFormat();
-		this.parameters = paramters;
+		pileupFormat = new PileupFormat(baseConfig);
 	}
 	
 	public String getHeader() {
@@ -46,13 +46,13 @@ public class PileupResultFormat extends AbstractResultFormat {
 
 		sb.append("unfiltered");
 
-		for(final AbstractFilterFactory abstractPileupFilterFactory : parameters.getFilterConfig().getFactories()) {
+		for (final AbstractFilterFactory abstractPileupFilterFactory : filterConfig.getFactories()) {
 			sb.append(getSEP());
 			sb.append("filtered_");
 			sb.append(abstractPileupFilterFactory.getC());
 		}
 
-		if(parameters.getFilterConfig().hasFiters()) {
+		if (filterConfig.hasFiters()) {
 			sb.append(getSEP());
 			sb.append("filtered");
 		}

@@ -1,7 +1,6 @@
 package accusa2.io.format.output;
 
 import net.sf.samtools.SAMUtils;
-import accusa2.cli.parameters.Parameters;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.ParallelPileup;
@@ -15,8 +14,11 @@ public class PileupFormat extends AbstractOutputFormat {
 	public static char SEP 	= '\t';
 	public static char SEP2 	= ',';
 
-	public PileupFormat() {
+	private BaseConfig baseConfig;
+
+	public PileupFormat(BaseConfig baseConfig) {
 		super('M', "samtools mpileup like format (base columns without: $ ^ < > *)");
+		this.baseConfig = baseConfig;
 	}
 
 	@Override
@@ -37,8 +39,6 @@ public class PileupFormat extends AbstractOutputFormat {
 	protected void addPileups(StringBuilder sb, STRAND strand, Pileup[] pileups) {
 		sb.append(SEP);
 		sb.append(strand.character());
-		
-		BaseConfig baseConfig = Parameters.getInstance().getBaseConfig(); 
 		
 		for(Pileup pileup : pileups) {
 

@@ -3,7 +3,6 @@ package accusa2.method;
 import java.util.HashMap;
 import java.util.Map;
 
-import accusa2.cli.options.PileupBuilderOption;
 import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
 import accusa2.cli.options.HelpOption;
@@ -20,6 +19,7 @@ import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
 import accusa2.cli.options.filter.FilterFlagOption;
+import accusa2.cli.options.pileupbuilder.AbstractPileupBuilderOption;
 import accusa2.cli.parameters.CLI;
 import accusa2.cli.parameters.Parameters;
 import accusa2.io.format.output.AbstractOutputFormat;
@@ -65,7 +65,7 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 		
 		acOptions.add(new WindowSizeOption(parameters));
 		
-		acOptions.add(new PileupBuilderOption(parameters));
+		acOptions.add(new AbstractPileupBuilderOption(parameters));
 
 		acOptions.add(new DebugOption(parameters));
 		acOptions.add(new HelpOption(parameters, CLI.getSingleton()));

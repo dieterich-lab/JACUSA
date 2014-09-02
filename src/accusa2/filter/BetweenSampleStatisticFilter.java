@@ -1,7 +1,8 @@
 package accusa2.filter;
 
-import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.StatisticParameters;
 import accusa2.method.statistic.StatisticCalculator;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 
 public class BetweenSampleStatisticFilter extends AbstractCacheFilter {
@@ -9,8 +10,13 @@ public class BetweenSampleStatisticFilter extends AbstractCacheFilter {
 	final private StatisticCalculator statistic;
 	final private double minScore;
 	
-	public BetweenSampleStatisticFilter(final char c, final double minScore, final Parameters parameters) {
-		super(c, parameters);
+	public BetweenSampleStatisticFilter(
+			final char c, 
+			final double minScore,
+			final BaseConfig baseConfig, 
+			final FilterConfig filterConfig,
+			final StatisticParameters parameters) {
+		super(c, baseConfig, filterConfig);
 		statistic = parameters.getStatisticCalculator().newInstance();
 		this.minScore = minScore;
 	}

@@ -2,8 +2,10 @@ package accusa2.pileup.builder;
 
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
-import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.SampleParameters;
+import accusa2.filter.FilterConfig;
 import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.Pileup;
 import accusa2.pileup.DefaultPileup.Counts;
@@ -26,15 +28,21 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 	protected STRAND strand;
 	protected int windowPosition;
 	
-	public DirectedPileupBuilder(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader reader, final int windowSize, final Parameters parameters) {
-		super(annotatedCoordinate, reader, windowSize, parameters);
+	public DirectedPileupBuilder(
+			final AnnotatedCoordinate annotatedCoordinate, 
+			final SAMFileReader reader, 
+			final int windowSize, 
+			final BaseConfig baseConfig, 
+			final FilterConfig filterConfig, 
+			final SampleParameters parameters) {
+		super(annotatedCoordinate, reader, windowSize, baseConfig, parameters);
 
-		forwardWindowCache = new WindowCache(windowSize, parameters.getBaseConfig().getBases().length);
-		reverseWindowCache = new WindowCache(windowSize, parameters.getBaseConfig().getBases().length);
+		forwardWindowCache = new WindowCache(windowSize, baseConfig.getBases().length);
+		reverseWindowCache = new WindowCache(windowSize, baseConfig.getBases().length);
 
-		forwardFilterCaches = parameters.getFilterConfig().createCache();
-		reverseFilterCaches = parameters.getFilterConfig().createCache();
-		
+		forwardFilterCaches = filterConfig.createCache();
+		reverseFilterCaches = filterConfig.createCache();
+
 		strand = STRAND.UNKNOWN;
 	}
 

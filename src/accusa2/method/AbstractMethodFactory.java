@@ -1,6 +1,5 @@
 package accusa2.method;
 
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,7 +8,6 @@ import accusa2.cli.parameters.AbstractParameters;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
 import accusa2.process.parallelpileup.worker.AbstractParallelPileupWorker;
 import accusa2.util.CoordinateProvider;
-
 
 public abstract class AbstractMethodFactory {
 

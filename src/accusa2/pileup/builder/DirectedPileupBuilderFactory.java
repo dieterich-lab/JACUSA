@@ -1,7 +1,9 @@
 package accusa2.pileup.builder;
 
 import net.sf.samtools.SAMFileReader;
-import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.SampleParameters;
+import accusa2.filter.FilterConfig;
+import accusa2.pileup.BaseConfig;
 import accusa2.util.AnnotatedCoordinate;
 
 public class DirectedPileupBuilderFactory implements PileupBuilderFactory {
@@ -11,8 +13,14 @@ public class DirectedPileupBuilderFactory implements PileupBuilderFactory {
 	}
 
 	@Override
-	public DirectedPileupBuilder newInstance(final AnnotatedCoordinate coordinate, final SAMFileReader reader, final int windowSize, final Parameters parameters) {
-		return new DirectedPileupBuilder(coordinate, reader, windowSize, parameters);
+	public DirectedPileupBuilder newInstance(
+			final AnnotatedCoordinate coordinate, 
+			final SAMFileReader reader, 
+			final int windowSize, 
+			final BaseConfig baseConfig, 
+			final FilterConfig filterConfig, 
+			final SampleParameters parameters) {
+		return new DirectedPileupBuilder(coordinate, reader, windowSize, baseConfig, filterConfig, parameters);
 	}
 
 	@Override

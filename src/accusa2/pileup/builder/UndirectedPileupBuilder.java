@@ -5,8 +5,10 @@ package accusa2.pileup.builder;
 
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
-import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.SampleParameters;
+import accusa2.filter.FilterConfig;
 import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.DefaultPileup.STRAND;
@@ -26,11 +28,17 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 	protected STRAND strand;
 	protected int windowPosition;
 
-	public UndirectedPileupBuilder(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader reader, final int windowSize, final Parameters parameters) {
-		super(annotatedCoordinate, reader, windowSize, parameters);
+	public UndirectedPileupBuilder(
+			final AnnotatedCoordinate annotatedCoordinate, 
+			final SAMFileReader reader, 
+			final int windowSize,
+			final BaseConfig baseConfig,
+			final FilterConfig filterConfig,
+			final SampleParameters parameters) {
+		super(annotatedCoordinate, reader, windowSize, baseConfig, parameters);
 
-		windowCache 	= new WindowCache(windowSize, parameters.getBaseConfig().getBases().length);
-		filterCaches	= parameters.getFilterConfig().createCache();
+		windowCache 	= new WindowCache(windowSize, baseConfig.getBases().length);
+		filterCaches	= filterConfig.createCache();
 		
 		strand 			= STRAND.UNKNOWN;
 	}

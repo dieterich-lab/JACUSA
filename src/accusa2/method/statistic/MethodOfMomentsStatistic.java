@@ -4,7 +4,8 @@ import java.util.Arrays;
 
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
-import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.StatisticParameters;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
@@ -17,21 +18,22 @@ import accusa2.util.MathUtil;
 
 public final class MethodOfMomentsStatistic implements StatisticCalculator {
 
-	protected final Parameters parameters; 
-	
+	protected final BaseConfig baseConfig;
+	protected final StatisticParameters parameters; 
 	protected final Phred2Prob phred2Prob;
 
 	protected ChiSquareDist dist = new ChiSquareDist(6);
 	
-	public MethodOfMomentsStatistic(Parameters parameters) {
-		this.parameters 	= parameters;
+	public MethodOfMomentsStatistic(BaseConfig baseConfig, StatisticParameters parameters) {
+		this.baseConfig	= baseConfig;
+		this.parameters = parameters;
 		
-		phred2Prob 			= Phred2Prob.getInstance(parameters.getBaseConfig().getBases().length);
+		phred2Prob 		= Phred2Prob.getInstance(baseConfig.getBases().length);
 	}
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new MethodOfMomentsStatistic(parameters);
+		return new MethodOfMomentsStatistic(baseConfig, parameters);
 	}
 
 	protected double getDensity(final int[] bases, final Pileup[] pileups) {

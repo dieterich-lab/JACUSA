@@ -3,7 +3,6 @@ package accusa2.process.parallelpileup.worker;
 import java.io.IOException;
 
 import accusa2.ACCUSA2;
-import accusa2.cli.parameters.Parameters;
 import accusa2.filter.AbstractParallelPileupFilter;
 import accusa2.filter.factory.AbstractFilterFactory;
 import accusa2.method.statistic.StatisticCalculator;

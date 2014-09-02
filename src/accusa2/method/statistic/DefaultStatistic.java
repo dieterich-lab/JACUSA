@@ -1,7 +1,8 @@
 package accusa2.method.statistic;
 
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
-import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.StatisticParameters;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
@@ -15,17 +16,19 @@ import accusa2.process.phred2prob.Phred2Prob;
  */
 public class DefaultStatistic implements StatisticCalculator {
 
-	protected final Parameters parameters;
+	protected final StatisticParameters parameters;
+	protected final BaseConfig baseConfig;
 	protected final Phred2Prob phred2Prob;
 
-	public DefaultStatistic(Parameters parameters) {
-		this.parameters 	= parameters;
-		phred2Prob 			= Phred2Prob.getInstance(parameters.getBaseConfig().getBases().length);
+	public DefaultStatistic(BaseConfig baseConfig, StatisticParameters parameters) {
+		this.baseConfig = baseConfig;
+		this.parameters = parameters;
+		phred2Prob 		= Phred2Prob.getInstance(baseConfig.getBases().length);
 	}
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new DefaultStatistic(parameters);
+		return new DefaultStatistic(baseConfig, parameters);
 	}
 
 	/**
@@ -197,4 +200,12 @@ public class DefaultStatistic implements StatisticCalculator {
 		return "default";
 	}
 
+	public StatisticParameters getParameters() {
+		return parameters;
+	}
+	
+	public BaseConfig getBaseConfig() {
+		return baseConfig;
+	}
+	
 }
