@@ -4,7 +4,8 @@ import java.util.Arrays;
 
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
-import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.AbstractParameters;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.builder.WindowCache;
 
 public abstract class AbstractPileupBuilderFilterCount {
@@ -12,17 +13,18 @@ public abstract class AbstractPileupBuilderFilterCount {
 	private char c;
 	protected WindowCache cache;
 	protected boolean[] visited;
-	protected Parameters parameters;
+	protected BaseConfig baseConfig;
 
-	public AbstractPileupBuilderFilterCount(char c, Parameters parameters) {
+	public AbstractPileupBuilderFilterCount(char c, AbstractParameters parameters) {
 		this.c = c;
-		this.parameters = parameters;
 
 		int windowSize = parameters.getWindowSize();
 		int baseLength = parameters.getBaseConfig().getBases().length;
 
 		cache = new WindowCache(windowSize, baseLength);
 		Arrays.fill(visited, false);
+		
+		baseConfig = parameters.getBaseConfig();
 	}
 
 	protected void fillCache(int windowPosition, int length, int readPosition, SAMRecord record) {
@@ -33,7 +35,7 @@ public abstract class AbstractPileupBuilderFilterCount {
 			readPosition += i;
 			
 			if (! visited[windowPosition]) {
-				int baseI = parameters.getBaseConfig().getBaseI(record.getReadBases()[readPosition]);
+				int baseI = baseConfig.getBaseI(record.getReadBases()[readPosition]);
 				byte qual = record.getBaseQualities()[readPosition];
 				cache.add(windowPosition, baseI, qual);
 			}

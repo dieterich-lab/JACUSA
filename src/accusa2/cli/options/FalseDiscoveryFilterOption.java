@@ -4,13 +4,16 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
-import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.StatisticParameters;
 
 @Deprecated
 public class FalseDiscoveryFilterOption  extends AbstractACOption {
 
-	public FalseDiscoveryFilterOption(Parameters parameters) {
-		super(parameters);
+	private StatisticParameters parameters;
+	
+	public FalseDiscoveryFilterOption(StatisticParameters parameters) {
+		this.parameters = parameters;
+
 		opt = 'q';
 		longOpt = "fdr";
 	}

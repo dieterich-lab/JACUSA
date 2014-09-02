@@ -13,7 +13,7 @@ import net.sf.samtools.SAMSequenceRecord;
 import accusa2.cli.parameters.CLI;
 import accusa2.method.TwoSampleCallFactory;
 import accusa2.method.AbstractMethodFactory;
-import accusa2.method.PileupFactory;
+import accusa2.method.TwoSamplePileupFactory;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
 import accusa2.process.parallelpileup.worker.AbstractParallelPileupWorker;
 import accusa2.util.AnnotatedCoordinate;
@@ -49,7 +49,7 @@ public class ACCUSA2 {
 		methodFactory = new TwoSampleCallFactory();
 		methodFactories.put(methodFactory.getName(), methodFactory);
 
-		methodFactory = new PileupFactory();
+		methodFactory = new TwoSamplePileupFactory();
 		methodFactories.put(methodFactory.getName(), methodFactory);
 
 		// add to cli 

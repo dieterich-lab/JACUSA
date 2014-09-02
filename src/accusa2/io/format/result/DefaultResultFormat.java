@@ -1,7 +1,6 @@
 package accusa2.io.format.result;
 
 import accusa2.filter.FilterConfig;
-import accusa2.filter.factory.AbstractFilterFactory;
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
@@ -136,7 +135,7 @@ public class DefaultResultFormat extends AbstractResultFormat {
 			int baseI = 0;
 			sb.append(pileup.getCounts().getBaseCount()[baseI]);
 			baseI++;
-			for (; baseI < parameters.getFilterFlags() ; ++baseI) {
+			for (; baseI < pileup.getCounts().getBaseCount().length ; ++baseI) {
 				sb.append(SEP2);
 				sb.append(pileup.getCounts().getBaseCount()[baseI]);
 			}

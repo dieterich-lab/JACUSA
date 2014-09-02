@@ -30,11 +30,13 @@ import accusa2.process.parallelpileup.dispatcher.MpileupWorkerDispatcher;
 import accusa2.process.parallelpileup.worker.MpileupWorker;
 import accusa2.util.CoordinateProvider;
 
-public class PileupFactory extends AbstractMethodFactory {
+public class TwoSamplePileupFactory extends AbstractMethodFactory {
 
 	private static MpileupWorkerDispatcher instance;
 	
-	public PileupFactory() {
+	private TwoSamplePileupParameters parameters;
+	
+	public TwoSamplePileupFactory() {
 		super("pileup", "SAMtools like mpileup");
 	}
 
