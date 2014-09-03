@@ -1,10 +1,13 @@
 package accusa2.method.call;
 
+
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.Map;
 
+import net.sf.samtools.SAMSequenceRecord;
 import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
 import accusa2.cli.options.PermutationsOption;
@@ -20,6 +23,7 @@ import accusa2.cli.options.FormatOption;
 import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
 import accusa2.cli.parameters.OneSampleCallParameters;
 import accusa2.cli.parameters.SampleParameters;
@@ -44,17 +48,16 @@ import accusa2.method.call.statistic.StatisticCalculator;
 import accusa2.method.call.statistic.WeightedMethodOfMomentsStatistic;
 import accusa2.process.parallelpileup.dispatcher.call.OneSampleCallWorkerDispatcher;
 import accusa2.util.CoordinateProvider;
+import accusa2.util.SAMCoordinateProvider;
 
 public class OneSampleCallFactory extends AbstractMethodFactory {
 
-	private OneSampleCallParameters parameters;
+	private OneSampleCallParameters parameters = new OneSampleCallParameters();
 	
 	private static OneSampleCallWorkerDispatcher instance;
 
 	public OneSampleCallFactory() {
 		super("call-1", "Call variants - one sample");
-
-		parameters = new OneSampleCallParameters();
 	}
 
 	public void initACOptions() {
@@ -158,4 +161,17 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 		return resultFormats;
 	}
 
+	@Override
+	public void initCoordinateProvider() throws Exception {
+		String[] pathnames = parameters.getSampleA().getPathnames();
+
+		List<SAMSequenceRecord> records = getSAMSequenceRecords(pathnames);
+		coordinateProvider = new SAMCoordinateProvider(records);
+	}
+
+	@Override
+	public AbstractParameters getParameters() {
+		return parameters;
+	}
+	
 }

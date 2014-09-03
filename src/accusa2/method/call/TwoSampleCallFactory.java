@@ -3,9 +3,11 @@ package accusa2.method.call;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.Map;
 
+import net.sf.samtools.SAMSequenceRecord;
 import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
 import accusa2.cli.options.StatisticFilterOption;
@@ -20,6 +22,7 @@ import accusa2.cli.options.FormatOption;
 import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.cli.parameters.TwoSampleCallParameters;
@@ -28,11 +31,9 @@ import accusa2.cli.parameters.TwoSampleCallParameters;
 import accusa2.filter.factory.AbstractFilterFactory;
 import accusa2.filter.factory.HomopolymerFilterFactory;
 import accusa2.filter.factory.HomozygousFilterFactory;
-//import accusa2.filter.factory.PolymorphismPileupFilterFactory;
 import accusa2.filter.factory.DistanceFilterFactory;
 import accusa2.filter.factory.PolymorphismPileupFilterFactory;
 import accusa2.filter.factory.RareEventFilterFactory;
-//import accusa2.filter.factory.RareEventFilterFactory;
 import accusa2.io.format.output.PileupResultFormat;
 import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.io.format.result.DefaultResultFormat;
@@ -44,9 +45,9 @@ import accusa2.method.call.statistic.MixtureDirichletStatistic;
 import accusa2.method.call.statistic.NumericalStatistic;
 import accusa2.method.call.statistic.StatisticCalculator;
 import accusa2.method.call.statistic.WeightedMethodOfMomentsStatistic;
-//import accusa2.method.statistic.MinimalCoverageStatistic;
 import accusa2.process.parallelpileup.dispatcher.call.TwoSampleCallWorkerDispatcher;
 import accusa2.util.CoordinateProvider;
+import accusa2.util.SAMCoordinateProvider;
 
 public class TwoSampleCallFactory extends AbstractMethodFactory {
 
@@ -165,4 +166,17 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		return resultFormats;
 	}
 
+	@Override
+	public void initCoordinateProvider() throws Exception {
+		String[] pathnamesA = parameters.getSampleA().getPathnames();
+		String[] pathnames2 = parameters.getSampleB().getPathnames();
+		List<SAMSequenceRecord> records = getSAMSequenceRecords(pathnamesA, pathnames2);
+		coordinateProvider = new SAMCoordinateProvider(records);
+	}
+
+	@Override
+	public AbstractParameters getParameters() {
+		return parameters;
+	}
+	
 }

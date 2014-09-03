@@ -10,26 +10,27 @@ import java.util.TreeMap;
 
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMSequenceRecord;
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
 import accusa2.method.AbstractMethodFactory;
+import accusa2.method.call.OneSampleCallFactory;
 import accusa2.method.call.TwoSampleCallFactory;
 import accusa2.method.pileup.TwoSamplePileupFactory;
 import accusa2.process.parallelpileup.dispatcher.AbstractWorkerDispatcher;
 import accusa2.process.parallelpileup.worker.AbstractWorker;
 import accusa2.util.AnnotatedCoordinate;
-import accusa2.util.BEDCoordinateProvider;
+import accusa2.util.BedCoordinateProvider;
 import accusa2.util.CoordinateProvider;
-import accusa2.util.SAMCoordinateProvider;
 import accusa2.util.SimpleTimer;
 
 /**
  * @author Michael Piechotta
  */
-public class ACCUSA2 {
+public class ACCUSA {
 
 	// timer used for all time measurements
 	private static SimpleTimer timer;
-	public static final String VERSION = "2.7";
+	public static final String VERSION = "2.99";
 	
 	// command line interface
 	private CLI cli;
@@ -37,21 +38,17 @@ public class ACCUSA2 {
 	/**
 	 * 
 	 */
-	public ACCUSA2() {
+	public ACCUSA() {
 		cli = CLI.getSingleton();
 
 		// container for available methods (e.g.: call, pileup)
 		Map<String, AbstractMethodFactory> methodFactories = new TreeMap<String, AbstractMethodFactory>();
 
-		AbstractMethodFactory methodFactory = null;
-
-		// instantiate different methods
-		methodFactory = new TwoSampleCallFactory();
-		methodFactories.put(methodFactory.getName(), methodFactory);
-
-		methodFactory = new TwoSamplePileupFactory();
-		methodFactories.put(methodFactory.getName(), methodFactory);
-
+		AbstractMethodFactory[] factories = new AbstractMethodFactory[] {new OneSampleCallFactory(), new TwoSampleCallFactory(), new TwoSamplePileupFactory()};
+		for (AbstractMethodFactory factory : factories) {
+			methodFactories.put(factory.getName(), factory);
+		}
+		
 		// add to cli 
 		cli.setMethodFactories(methodFactories);
 	}
@@ -129,7 +126,7 @@ public class ACCUSA2 {
 	 * @param size
 	 * @param args
 	 */
-	public void printProlog(int size, String[] args) {
+	public void printProlog(String[] args) {
 		String lineSep = "--------------------------------------------------------------------------------";
 
 		System.err.println(lineSep);
@@ -177,33 +174,31 @@ public class ACCUSA2 {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		ACCUSA2 accusa2 = new ACCUSA2();
-		CLI cmd = accusa2.getCLI();
+		ACCUSA accusa = new ACCUSA();
+		CLI cmd = accusa.getCLI();
 
 		if (! cmd.processArgs(args)) {
 			System.exit(1);
 		}
-		// FIXME
-		Parameters parameters = cmd.getParameters();
 
-		String[] pathnamesA = parameters.getPathnamesA();
-		String[] pathnamesB = parameters.getPathnamesB();
-		List<SAMSequenceRecord> records = accusa2.getSAMSequenceRecords(pathnamesA, pathnamesB);
-		CoordinateProvider coordinateProvider = new SAMCoordinateProvider(records);
-
-		if (! parameters.getBED_Pathname().isEmpty()) {
-			coordinateProvider.close();
-			// BED file
-			coordinateProvider = new BEDCoordinateProvider(parameters.getBED_Pathname());
+		AbstractMethodFactory methodFactory = cmd.getMethodFactory();
+		AbstractParameters parameters = methodFactory.getParameters();
+		
+		CoordinateProvider coordinateProvider = null;
+		if (parameters.getBedPathname().isEmpty()) {
+			methodFactory.initCoordinateProvider();
+			coordinateProvider = methodFactory.getCoordinateProvider();
+		} else {
+			coordinateProvider = new BedCoordinateProvider(parameters.getBedPathname());
 		}
 
 		// prolog
-		accusa2.printProlog(records.size(), args);
+		accusa.printProlog(args);
 		// main
-		AbstractWorkerDispatcher<? extends AbstractWorker> threadDispatcher = parameters.getMethodFactory().getInstance(coordinateProvider, parameters);
-		int comparisons = threadDispatcher.run();
+		AbstractWorkerDispatcher<? extends AbstractWorker> workerDispatcher = methodFactory.getInstance(coordinateProvider);
+		int comparisons = workerDispatcher.run();
 		// epilog
-		accusa2.printEpilog(comparisons);
+		accusa.printEpilog(comparisons);
 
 		// cleaup
 		parameters.getOutput().close();

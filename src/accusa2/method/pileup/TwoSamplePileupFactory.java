@@ -1,8 +1,11 @@
 package accusa2.method.pileup;
 
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import net.sf.samtools.SAMSequenceRecord;
 import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
 import accusa2.cli.options.HelpOption;
@@ -12,6 +15,7 @@ import accusa2.cli.options.FormatOption;
 import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.cli.parameters.TwoSamplePileupParameters;
@@ -20,6 +24,7 @@ import accusa2.io.format.output.PileupFormat;
 import accusa2.method.AbstractMethodFactory;
 import accusa2.process.parallelpileup.dispatcher.pileup.MpileupWorkerDispatcher;
 import accusa2.util.CoordinateProvider;
+import accusa2.util.SAMCoordinateProvider;
 
 public class TwoSamplePileupFactory extends AbstractMethodFactory {
 
@@ -75,4 +80,18 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 		return instance;
 	}
 
+	@Override
+	public void initCoordinateProvider() throws Exception {
+		String[] pathnamesA = parameters.getSampleA().getPathnames();
+		String[] pathnamesB = parameters.getSampleB().getPathnames();
+		
+		List<SAMSequenceRecord> records = getSAMSequenceRecords(pathnamesA, pathnamesB);
+		coordinateProvider = new SAMCoordinateProvider(records);
+	}
+
+	@Override
+	public AbstractParameters getParameters() {
+		return parameters;
+	}
+	
 }

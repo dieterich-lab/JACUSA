@@ -3,7 +3,7 @@ package accusa2.process.parallelpileup.worker;
 import java.io.IOException;
 
 import net.sf.samtools.SAMFileReader;
-import accusa2.ACCUSA2;
+import accusa2.ACCUSA;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.cli.parameters.TwoSamplePileupParameters;
 import accusa2.pileup.ParallelPileup;
@@ -30,7 +30,7 @@ public class MpileupWorker extends AbstractWorker {
 
 	@Override
 	protected void processParallelPileupIterator(AbstractParallelPileupWindowIterator parallelPileupIterator) {
-		ACCUSA2.printLog("Started screening contig " + 
+		ACCUSA.printLog("Started screening contig " + 
 				parallelPileupIterator.getAnnotatedCoordinate().getSequenceName() + 
 				":" + 
 				parallelPileupIterator.getAnnotatedCoordinate().getStart() + 

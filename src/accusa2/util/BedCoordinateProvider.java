@@ -13,12 +13,12 @@ import java.io.IOException;
  * @author mpiechotta
  *
  */
-public class BEDCoordinateProvider implements CoordinateProvider {
+public class BedCoordinateProvider implements CoordinateProvider {
 
 	private String filename;
 	private BufferedReader br;
 	
-	public BEDCoordinateProvider(String filename) {
+	public BedCoordinateProvider(String filename) {
 		this.filename = filename;
 		File file = new File(filename);
 

@@ -10,7 +10,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 
-import accusa2.ACCUSA2;
+import accusa2.ACCUSA;
 import accusa2.cli.options.AbstractACOption;
 import accusa2.method.AbstractMethodFactory;
 
@@ -19,7 +19,7 @@ public class CLI {
 	private static CLI CLI;
 	private Map<String, AbstractMethodFactory> methodFactories;
 	private AbstractMethodFactory methodFactory;
-	
+
 	/**
 	 * 
 	 */
@@ -60,7 +60,6 @@ public class CLI {
 		// init method factory (populate: parameters)
 		methodFactory.initACOptions();
 
-		
 		Set<AbstractACOption> acoptions = methodFactory.getACOptions();
 		Options options = new Options();
 		for (AbstractACOption acoption : acoptions) {
@@ -116,7 +115,7 @@ public class CLI {
 			sb.append('\n');
 		}
 
-		sb.append(ACCUSA2.VERSION + "\n");
+		sb.append(ACCUSA.VERSION + "\n");
 		System.err.print(sb.toString());
 	}
 

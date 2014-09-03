@@ -2,7 +2,7 @@ package accusa2.process.parallelpileup.worker;
 
 import java.io.IOException;
 
-import accusa2.ACCUSA2;
+import accusa2.ACCUSA;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.filter.FilterConfig;
 import accusa2.filter.factory.AbstractFilterFactory;
@@ -33,7 +33,7 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 	@Override
 	protected void processParallelPileupIterator(final AbstractParallelPileupWindowIterator parallelPileupIterator) {
 		// print informative log
-		ACCUSA2.printLog("Started screening contig " + 
+		ACCUSA.printLog("Started screening contig " + 
 				parallelPileupIterator.getAnnotatedCoordinate().getSequenceName() + 
 				":" + 
 				parallelPileupIterator.getAnnotatedCoordinate().getStart() + 
