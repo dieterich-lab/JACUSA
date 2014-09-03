@@ -12,10 +12,10 @@ import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMSequenceRecord;
 import accusa2.cli.parameters.CLI;
 import accusa2.method.AbstractMethodFactory;
-import accusa2.method.TwoSamplePileupFactory;
 import accusa2.method.call.TwoSampleCallFactory;
-import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
-import accusa2.process.parallelpileup.worker.AbstractParallelPileupWorker;
+import accusa2.method.pileup.TwoSamplePileupFactory;
+import accusa2.process.parallelpileup.dispatcher.AbstractWorkerDispatcher;
+import accusa2.process.parallelpileup.worker.AbstractWorker;
 import accusa2.util.AnnotatedCoordinate;
 import accusa2.util.BEDCoordinateProvider;
 import accusa2.util.CoordinateProvider;
@@ -200,7 +200,7 @@ public class ACCUSA2 {
 		// prolog
 		accusa2.printProlog(records.size(), args);
 		// main
-		AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> threadDispatcher = parameters.getMethodFactory().getInstance(coordinateProvider, parameters);
+		AbstractWorkerDispatcher<? extends AbstractWorker> threadDispatcher = parameters.getMethodFactory().getInstance(coordinateProvider, parameters);
 		int comparisons = threadDispatcher.run();
 		// epilog
 		accusa2.printEpilog(comparisons);

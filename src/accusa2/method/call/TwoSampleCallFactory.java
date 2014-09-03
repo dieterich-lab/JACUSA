@@ -1,5 +1,7 @@
 package accusa2.method.call;
 
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Map;
@@ -8,28 +10,19 @@ import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
 import accusa2.cli.options.StatisticFilterOption;
 import accusa2.cli.options.HelpOption;
-import accusa2.cli.options.MaxDepthOption;
 import accusa2.cli.options.MaxThreadOption;
-import accusa2.cli.options.MinBASQOption;
-import accusa2.cli.options.MinCoverageOption;
-import accusa2.cli.options.MinMAPQOption;
 import accusa2.cli.options.PathnameOption;
 //import accusa2.cli.options.PermutationsOption;
 import accusa2.cli.options.FilterConfigOption;
 import accusa2.cli.options.StatisticCalculatorOption;
 import accusa2.cli.options.ResultFileOption;
 import accusa2.cli.options.FormatOption;
-import accusa2.cli.options.RetainFlagOption;
 import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
-import accusa2.cli.options.filter.FilterFlagOption;
-import accusa2.cli.options.pileupbuilder.AbstractPileupBuilderOption;
-import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.cli.parameters.TwoSampleCallParameters;
-import accusa2.filter.FilterConfig;
 //import accusa2.cli.options.filter.FilterNHsamTagOption;
 //import accusa2.cli.options.filter.FilterNMsamTagOption;
 import accusa2.filter.factory.AbstractFilterFactory;
@@ -52,23 +45,19 @@ import accusa2.method.call.statistic.NumericalStatistic;
 import accusa2.method.call.statistic.StatisticCalculator;
 import accusa2.method.call.statistic.WeightedMethodOfMomentsStatistic;
 //import accusa2.method.statistic.MinimalCoverageStatistic;
-import accusa2.process.parallelpileup.dispatcher.ParallelPileupWorkerDispatcher;
-import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
-import accusa2.process.parallelpileup.worker.AbstractParallelPileupWorker;
-import accusa2.process.parallelpileup.worker.ParallelPileupWorker;
+import accusa2.process.parallelpileup.dispatcher.call.TwoSampleCallWorkerDispatcher;
 import accusa2.util.CoordinateProvider;
 
 public class TwoSampleCallFactory extends AbstractMethodFactory {
 
 	public static final char sample1 = 'A';
 	public static final char sample2 = 'B';
-	
-	private static ParallelPileupWorkerDispatcher instance;
-	
 	private TwoSampleCallParameters parameters;
-	
+
+	private static TwoSampleCallWorkerDispatcher instance;
+
 	public TwoSampleCallFactory() {
-		super("call", "Call variants");
+		super("call-2", "Call variants - two samples");
 		parameters = new TwoSampleCallParameters();
 	}
 
@@ -113,11 +102,9 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 	}
 
 	@Override
-	public AbstractParallelPileupWorkerDispatcher<ParallelPileupWorker> getInstance(
-			CoordinateProvider coordinateProvider, 
-			Parameters parameters) {
+	public TwoSampleCallWorkerDispatcher getInstance(CoordinateProvider coordinateProvider) throws IOException {
 		if(instance == null) {
-			instance = new ParallelPileupWorkerDispatcher(coordinateProvider, parameters);
+			instance = new TwoSampleCallWorkerDispatcher(coordinateProvider, parameters);
 		}
 		return instance;
 	}
@@ -151,13 +138,12 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 	public Map<Character, AbstractFilterFactory> getFilterFactories() {
 		Map<Character, AbstractFilterFactory> abstractPileupFilters = new HashMap<Character, AbstractFilterFactory>();
 
-		FilterConfig filterConfig = parameters.getFilterConfig();
 		AbstractFilterFactory[] filters = new AbstractFilterFactory[] {
 				new DistanceFilterFactory(parameters),
-				new HomozygousFilterFactory(parameters.getFilterConfig()),
+				new HomozygousFilterFactory(),
 				new HomopolymerFilterFactory(parameters),
-				new RareEventFilterFactory(parameters.getFilterConfig()),
-				new PolymorphismPileupFilterFactory(parameters.getFilterConfig())
+				new RareEventFilterFactory(),
+				new PolymorphismPileupFilterFactory()
 		};
 		for (AbstractFilterFactory filter : filters) {
 			// TODO filter.setFilterConfig(filterConfig);
@@ -177,14 +163,6 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;
-	}
-
-	@Override
-	public AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> getInstance(
-			CoordinateProvider coordinateProvider, 
-			AbstractParameters parameters) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

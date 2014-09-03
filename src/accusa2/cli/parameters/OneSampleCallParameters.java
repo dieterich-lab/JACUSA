@@ -1,8 +1,11 @@
 package accusa2.cli.parameters;
 
-public class OneSampleCallParameters extends AbstractParameters implements hasStatisticCalculator {
+import accusa2.io.format.result.AbstractResultFormat;
+
+public class OneSampleCallParameters extends AbstractParameters implements hasStatisticCalculator, hasResultFormat {
 
 	private StatisticParameters statisticParameters;
+	private AbstractResultFormat format;
 	
 	public OneSampleCallParameters() {
 		super();
@@ -13,6 +16,16 @@ public class OneSampleCallParameters extends AbstractParameters implements hasSt
 	@Override
 	public StatisticParameters getStatisticParameters() {
 		return statisticParameters;
+	}
+
+	@Override
+	public void setFormat(AbstractResultFormat format) {
+		this.format = format;
+	}
+	
+	@Override
+	public AbstractResultFormat getFormat() {
+		return format;
 	}
 	
 }

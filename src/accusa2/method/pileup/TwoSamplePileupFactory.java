@@ -1,4 +1,4 @@
-package accusa2.method;
+package accusa2.method.pileup;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,42 +6,29 @@ import java.util.Map;
 import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
 import accusa2.cli.options.HelpOption;
-import accusa2.cli.options.MaxDepthOption;
-import accusa2.cli.options.MaxThreadOption;
-import accusa2.cli.options.MinBASQOption;
-import accusa2.cli.options.MinCoverageOption;
-import accusa2.cli.options.MinMAPQOption;
 import accusa2.cli.options.PathnameOption;
 import accusa2.cli.options.ResultFileOption;
 import accusa2.cli.options.FormatOption;
-import accusa2.cli.options.RetainFlagOption;
 import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
-import accusa2.cli.options.filter.FilterFlagOption;
-import accusa2.cli.options.pileupbuilder.AbstractPileupBuilderOption;
-import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.cli.parameters.TwoSamplePileupParameters;
 import accusa2.io.format.output.AbstractOutputFormat;
 import accusa2.io.format.output.PileupFormat;
-import accusa2.io.format.result.AbstractResultFormat;
-import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
-import accusa2.process.parallelpileup.dispatcher.MpileupWorkerDispatcher;
-import accusa2.process.parallelpileup.worker.AbstractParallelPileupWorker;
-import accusa2.process.parallelpileup.worker.MpileupWorker;
+import accusa2.method.AbstractMethodFactory;
+import accusa2.process.parallelpileup.dispatcher.pileup.MpileupWorkerDispatcher;
 import accusa2.util.CoordinateProvider;
 
 public class TwoSamplePileupFactory extends AbstractMethodFactory {
 
 	private static MpileupWorkerDispatcher instance;
-	
 	private TwoSamplePileupParameters parameters;
-	
+
 	public TwoSamplePileupFactory() {
 		super("pileup", "SAMtools like mpileup");
-		
+
 		parameters = new TwoSamplePileupParameters();
 	}
 
@@ -80,13 +67,12 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 	}
 
 	@Override
-	public AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> getInstance(
-			CoordinateProvider coordinateProvider, AbstractParameters parameters) {
+	public MpileupWorkerDispatcher getInstance(CoordinateProvider coordinateProvider) {
 		if(instance == null) {
 			instance = new MpileupWorkerDispatcher(coordinateProvider, parameters);
 		}
 
-		return instance;;
+		return instance;
 	}
 
 }

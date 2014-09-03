@@ -5,8 +5,8 @@ import java.util.Iterator;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import accusa2.cli.parameters.AbstractParameters;
+import accusa2.cli.parameters.SampleParameters;
 import accusa2.filter.FilterConfig;
-import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.ParallelPileup;
@@ -18,42 +18,13 @@ import accusa2.util.AnnotatedCoordinate;
 
 public abstract class AbstractParallelPileupWindowIterator implements Iterator<ParallelPileup> {
 
-	protected int genomicPositionA;
-	protected int genomicPositionB;
-	
-	protected STRAND strandA;
-	protected STRAND strandB;
-	
-	protected final AnnotatedCoordinate coordinate;
-	protected final AbstractParameters parameters;
+	private final AnnotatedCoordinate coordinate;
+	private FilterConfig filterconfig;
 
-	// pileupBuilders
-	protected final AbstractPileupBuilder[] pileupBuildersA;
-	protected final AbstractPileupBuilder[] pileupBuildersB;
-
-	protected FilterConfig filterconfig;
-
-	// output
-	protected ParallelPileup parallelPileup;
-
-	public AbstractParallelPileupWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader[] readersA, final SAMFileReader[] readersB, final AbstractParameters parameters) {
+	public AbstractParallelPileupWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final AbstractParameters parameters) {
 		this.coordinate = annotatedCoordinate;
-		this.parameters = parameters;
 
-		pileupBuildersA = createPileupBuilders(parameters.getPileupBuilderFactoryA(), annotatedCoordinate, readersA, parameters);
-		pileupBuildersB = createPileupBuilders(parameters.getPileupBuilderFactoryB(), annotatedCoordinate, readersB, parameters);
-
-		strandA 		= STRAND.UNKNOWN;
-		strandB 		= STRAND.UNKNOWN;
-		
-		filterconfig 	= parameters.getFilterConfig().getFactories().size();
-
-		// init
-		parallelPileup = new DefaultParallelPileup(pileupBuildersA.length, pileupBuildersB.length);
-		parallelPileup.setContig(annotatedCoordinate.getSequenceName());
-		
-		genomicPositionA = init(strandA, parameters.getPileupBuilderFactoryA().isDirected(), pileupBuildersA);
-		genomicPositionB = init(strandB, parameters.getPileupBuilderFactoryA().isDirected(), pileupBuildersB);
+		filterconfig 	= parameters.getFilterConfig();
 	}
 
 	protected int init(STRAND strand, final boolean isDirectional, final AbstractPileupBuilder[] pileupBuilders) {
@@ -78,8 +49,6 @@ public abstract class AbstractParallelPileupWindowIterator implements Iterator<P
 
 		return genomicPosition;
 	}
-	
-	
 		
 	public abstract boolean hasNext();
 	public abstract ParallelPileup next();
@@ -94,11 +63,16 @@ public abstract class AbstractParallelPileupWindowIterator implements Iterator<P
 	 * @param parameters
 	 * @return
 	 */
-	protected AbstractPileupBuilder[] createPileupBuilders(final PileupBuilderFactory pileupBuilderFactory, final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader[] readers, final Parameters parameters) {
+	protected AbstractPileupBuilder[] createPileupBuilders(
+			final PileupBuilderFactory pileupBuilderFactory, 
+			final AnnotatedCoordinate annotatedCoordinate, 
+			final SAMFileReader[] readers, 
+			final SampleParameters sample,
+			final AbstractParameters parameters) {
 		AbstractPileupBuilder[] pileupBuilders = new AbstractPileupBuilder[readers.length];
 
 		for(int i = 0; i < readers.length; ++i) {
-			pileupBuilders[i] = pileupBuilderFactory.newInstance(annotatedCoordinate, readers[i], parameters.getWindowSize(), parameters);
+			pileupBuilders[i] = pileupBuilderFactory.newInstance(annotatedCoordinate, readers[i], sample, parameters);
 		}
 
 		return pileupBuilders;
@@ -145,7 +119,7 @@ public abstract class AbstractParallelPileupWindowIterator implements Iterator<P
 
 	protected Counts[][] getCounts(int genomicPosition, STRAND strand, AbstractPileupBuilder[] pileupBuilders) {
 		int n = pileupBuilders.length;
-		Counts[][] counts = new Counts[n][filterCount];
+		Counts[][] counts = new Counts[n][filterconfig.getFactories().size()];
 
 		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(genomicPosition);
 		for(int i = 0; i < n; ++i) {
@@ -202,24 +176,29 @@ public abstract class AbstractParallelPileupWindowIterator implements Iterator<P
 		return -1;
 	}
 
-	protected boolean hasNextA() {
-		int newGenomicPosition = hasNext(genomicPositionA, strandA, pileupBuildersA);
-		if (newGenomicPosition < 0) {
-			return false;
+	protected Pileup[] complementPileups(Pileup[] pileups) {
+		Pileup[] complementedPileups = new DefaultPileup[pileups.length];
+
+		for (int i = 0; i < pileups.length; ++i) {
+			complementedPileups[i] = pileups[i].complement();
 		}
 
-		genomicPositionA = newGenomicPosition;
-		return true;
+		return complementedPileups;
 	}
 	
-	protected boolean hasNextB() {
-		int newGenomicPosition = hasNext(genomicPositionB, strandB, pileupBuildersB);
-		if (newGenomicPosition < 0) {
-			return false;
+	protected Counts[][] complementCounts(Counts[][] counts) {
+		int replicates = counts.length;
+		int filterCount = filterconfig.getFactories().size();
+		Counts[][] complementedCounts = new Counts[replicates][filterCount];
+
+		for (int i = 0; i < replicates; ++i) {
+			for (int j = 0; j < filterCount; ++j) {
+				complementedCounts[i][j] = counts[i][j]; // TODO check
+				complementedCounts[i][j].invertCounts();
+			}
 		}
-		
-		genomicPositionB = newGenomicPosition;
-		return true;
+
+		return complementedCounts;
 	}
 	
 	public AnnotatedCoordinate getAnnotatedCoordinate() {

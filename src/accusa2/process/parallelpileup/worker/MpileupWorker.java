@@ -2,19 +2,30 @@ package accusa2.process.parallelpileup.worker;
 
 import java.io.IOException;
 
+import net.sf.samtools.SAMFileReader;
 import accusa2.ACCUSA2;
+import accusa2.cli.parameters.SampleParameters;
 import accusa2.cli.parameters.TwoSamplePileupParameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
-import accusa2.pileup.iterator.StrandedParallelPileupWindowIterator;
-import accusa2.pileup.iterator.UnstrandedParallelPileupWindowIterator;
-import accusa2.process.parallelpileup.dispatcher.MpileupWorkerDispatcher;
+import accusa2.pileup.iterator.TwoSampleIterator;
+import accusa2.pileup.iterator.TwoSampleStrandedIterator;
+import accusa2.pileup.iterator.TwoSampleUnstrandedIterator;
+import accusa2.process.parallelpileup.dispatcher.pileup.MpileupWorkerDispatcher;
 import accusa2.util.AnnotatedCoordinate;
 
-public class MpileupWorker extends AbstractParallelPileupWorker {
+public class MpileupWorker extends AbstractWorker {
 
-	public MpileupWorker(MpileupWorkerDispatcher workerDispatcher, Parameters parameters) {
-		super(workerDispatcher, parameters);
+	private final TwoSamplePileupParameters parameters;
+	private final SAMFileReader[] readersA;
+	private final SAMFileReader[] readersB;
+
+	public MpileupWorker(MpileupWorkerDispatcher workerDispatcher, TwoSamplePileupParameters parameters) {
+		super(workerDispatcher, parameters.getMaxThreads(), parameters.getOutput(), parameters.getFormat());
+		this.parameters = parameters;
+
+		readersA = initReaders(parameters.getSampleA().getPathnames());
+		readersB = initReaders(parameters.getSampleB().getPathnames());
 	}
 
 	@Override
@@ -32,7 +43,7 @@ public class MpileupWorker extends AbstractParallelPileupWorker {
 
 			StringBuilder sb = new StringBuilder();
 			ParallelPileup parallelPileup = parallelPileupIterator.next();
-			sb.append(format.convert2String(parallelPileup, 0));
+			sb.append(parameters.getFormat().convert2String(parallelPileup));
 			try {
 				tmpOutputWriter.write(sb.toString());
 			} catch (IOException e) {
@@ -41,15 +52,23 @@ public class MpileupWorker extends AbstractParallelPileupWorker {
 		}
 	}
 
-	//@Override
-	protected AbstractParallelPileupWindowIterator buildParallelPileupIterator(
-			AnnotatedCoordinate coordinate, 
-			TwoSamplePileupParameters parameters) {
-		if (parameters.getPileupBuilderFactoryA().isDirected() || parameters.getPileupBuilderFactoryB().isDirected()) {
-			return new StrandedParallelPileupWindowIterator(coordinate, readersA, readersB, parameters);
+	@Override
+	protected TwoSampleIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate) {
+		SampleParameters sampleA = parameters.getSampleA();
+		SampleParameters sampleB = parameters.getSampleB();
+
+		if (sampleA.getPileupBuilderFactory().isDirected() || 
+				sampleB.getPileupBuilderFactory().isDirected()) {
+			return new TwoSampleStrandedIterator(coordinate, readersA, readersB, sampleA, sampleB, parameters);
 		}
 		
-		return new UnstrandedParallelPileupWindowIterator(coordinate, readersA, readersB, parameters);
+		return new TwoSampleUnstrandedIterator(coordinate, readersA, readersB, sampleA, sampleB, parameters);
+	}
+
+	@Override
+	protected void close() {
+		close(readersA);
+		close(readersB);
 	}
 
 }

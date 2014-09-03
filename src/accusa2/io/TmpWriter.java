@@ -6,12 +6,12 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.zip.GZIPOutputStream;
 
-public class TmpOutputWriter implements Output {
+public class TmpWriter implements Output {
 
 	private String filename;
 	private Writer writer;
 
-	public TmpOutputWriter(String filename) throws IOException {
+	public TmpWriter(String filename) throws IOException {
 		this.filename = filename;
 
 		writer = new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(filename)));

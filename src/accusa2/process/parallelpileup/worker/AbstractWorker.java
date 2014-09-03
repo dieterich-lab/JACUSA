@@ -1,56 +1,54 @@
 package accusa2.process.parallelpileup.worker;
 
+import java.io.File;
 import java.io.IOException;
 
 import net.sf.samtools.SAMFileReader;
-import accusa2.cli.parameters.AbstractParameters;
-import accusa2.io.TmpOutputWriter;
-import accusa2.io.format.result.AbstractResultFormat;
+import accusa2.io.Output;
+import accusa2.io.TmpWriter;
+import accusa2.io.format.output.AbstractOutputFormat;
 import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
-import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
+import accusa2.process.parallelpileup.dispatcher.AbstractWorkerDispatcher;
 import accusa2.util.AnnotatedCoordinate;
 
-public abstract class AbstractParallelPileupWorker extends Thread {
+public abstract class AbstractWorker extends Thread {
 
-	protected AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> parallelPileupWorkerDispatcher;
-
-	protected SAMFileReader[] readersA;
-	protected SAMFileReader[] readersB;
-
-	protected final Parameters parameters;
+	protected AbstractWorkerDispatcher<? extends AbstractWorker> workerDispatcher;
 	protected AbstractParallelPileupWindowIterator parallelPileupIterator;
 
+	protected final int maxThreads;
 	protected final int threadId;
 	protected int nextThreadId;
-	
+
 	protected int comparisons;
 
 	// output related
 	// current writer
-	protected TmpOutputWriter tmpOutputWriter;
+	protected TmpWriter tmpOutputWriter;
+	protected Output output;
+	protected AbstractOutputFormat format;
 
 	// indicates if computation is finished
 	private boolean isFinished;
 
-	public AbstractParallelPileupWorker(AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> parallelPileupWorkerDispatcher, final AbstractParameters parameters) {
-		this.parallelPileupWorkerDispatcher 	= parallelPileupWorkerDispatcher; 
+	public AbstractWorker(
+			AbstractWorkerDispatcher<? extends AbstractWorker> workerDispatcher, 
+			int maxThreads, 
+			Output output, 
+			AbstractOutputFormat format) {
+		this.workerDispatcher 	= workerDispatcher; 
 
-		readersA				= parallelPileupWorkerDispatcher.createBAMFileReaders1();
-		readersB				= parallelPileupWorkerDispatcher.createBAMFileReaders2();
-
-		this.parameters 		= parameters;
-		format 					= parameters.getFormat();
-
+		this.maxThreads			= maxThreads;
 		isFinished 				= false;
 		comparisons 			= 0;
 
-		threadId				= parallelPileupWorkerDispatcher.getThreadContainer().size();
+		threadId				= workerDispatcher.getThreadContainer().size();
 		nextThreadId			= -1;
-		parallelPileupIterator  = buildParallelPileupIterator(parallelPileupWorkerDispatcher.next(this), parameters);
+		// FIXME parallelPileupIterator  = buildParallelPileupIterator(workerDispatcher.next(this), parameters);
 
-		final String tmpFilename = parameters.getOutput().getInfo() + "_tmp" + String.valueOf(threadId) + ".gz";
+		final String tmpFilename = output.getInfo() + "_tmp" + String.valueOf(threadId) + ".gz";
 		try {
-			tmpOutputWriter		= new TmpOutputWriter(tmpFilename);
+			tmpOutputWriter		= new TmpWriter(tmpFilename);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;
@@ -87,34 +85,35 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 
 	public final void run() {
 		processParallelPileupIterator(parallelPileupIterator);
-		if (parameters.getMaxThreads() > 1) {
+
+		if (maxThreads > 1) {
 			writeNextThreadID();
 		}
 
 		while (! isFinished) {
 			AnnotatedCoordinate annotatedCoordinate = null;
 
-			synchronized (parallelPileupWorkerDispatcher) {
-				if(parallelPileupWorkerDispatcher.hasNext()) {
-					annotatedCoordinate = parallelPileupWorkerDispatcher.next(this);
+			synchronized (workerDispatcher) {
+				if(workerDispatcher.hasNext()) {
+					annotatedCoordinate = workerDispatcher.next(this);
 				} else {
 					isFinished = true;
 				}
 			}
 
 			if (annotatedCoordinate != null) {
-				parallelPileupIterator = buildParallelPileupIterator(annotatedCoordinate, parameters);
+				parallelPileupIterator = buildParallelPileupIterator(annotatedCoordinate);
 				processParallelPileupIterator(parallelPileupIterator);
 
-				if (parameters.getMaxThreads() > 1) {
+				if (maxThreads > 1) {
 					writeNextThreadID();
 				}
 			}
 		}
 
 		// this thread is done - tell dispatcher
-		synchronized (parallelPileupWorkerDispatcher) {
-			parallelPileupWorkerDispatcher.notify();
+		synchronized (workerDispatcher) {
+			workerDispatcher.notify();
 		}
 
 		close();
@@ -132,12 +131,44 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 		return threadId;
 	}
 
-	protected void close() {
-		close(readersA);
-		close(readersB);
+	protected abstract void close();
+
+	/**
+	 * 
+	 * @return
+	 */
+	protected SAMFileReader[] createBAMFileReaders(String[] pathnames) {
+		return initReaders(pathnames);
 	}
 
-	private void close(SAMFileReader[] readers) {
+	/**
+	 * 
+	 * @param pathnames
+	 * @return
+	 */
+	protected SAMFileReader[] initReaders(String[] pathnames) {
+		SAMFileReader[] readers = new SAMFileReader[pathnames.length];
+		for(int i = 0; i < pathnames.length; ++i) {
+			readers[i] = initReader(pathnames[i]);
+		}
+		return readers;
+	}
+
+	/**
+	 * 
+	 * @param pathname
+	 * @return
+	 */
+	protected SAMFileReader initReader(final String pathname) {
+		SAMFileReader reader = new SAMFileReader(new File(pathname));
+		// be silent
+		reader.setValidationStringency(SAMFileReader.ValidationStringency.LENIENT);
+		// disable memory mapping
+		reader.enableIndexMemoryMapping(false);
+		return reader;
+	}
+
+	protected void close(SAMFileReader[] readers) {
 		for (SAMFileReader reader : readers) {
 			if (reader != null) {
 				reader.close();
@@ -163,7 +194,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	 * @param parameters
 	 * @return
 	 */
-	abstract protected AbstractParallelPileupWindowIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate, Parameters parameters);
+	abstract protected AbstractParallelPileupWindowIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate);
 
 	public final int getComparisons() {
 		return comparisons;
@@ -173,7 +204,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 		return isFinished;
 	}
 
-	public final TmpOutputWriter getTmpOutputWriter() {
+	public final TmpWriter getTmpOutputWriter() {
 		return tmpOutputWriter;
 	}
 

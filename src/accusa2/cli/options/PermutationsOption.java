@@ -6,8 +6,6 @@ import org.apache.commons.cli.OptionBuilder;
 
 import accusa2.cli.parameters.StatisticParameters;
 
-// FIXME
-@Deprecated
 public class PermutationsOption  extends AbstractACOption {
 
 	private StatisticParameters parameters;

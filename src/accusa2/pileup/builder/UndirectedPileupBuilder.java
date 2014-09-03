@@ -5,10 +5,9 @@ package accusa2.pileup.builder;
 
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.SampleParameters;
-import accusa2.filter.FilterConfig;
 import accusa2.filter.cache.AbstractFilterCount;
-import accusa2.pileup.BaseConfig;
 import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.DefaultPileup.STRAND;
@@ -24,21 +23,18 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 	protected WindowCache windowCache;
 	protected AbstractFilterCount[] filterCaches;
 
-	
 	protected STRAND strand;
 	protected int windowPosition;
 
 	public UndirectedPileupBuilder(
 			final AnnotatedCoordinate annotatedCoordinate, 
 			final SAMFileReader reader, 
-			final int windowSize,
-			final BaseConfig baseConfig,
-			final FilterConfig filterConfig,
-			final SampleParameters parameters) {
-		super(annotatedCoordinate, reader, windowSize, baseConfig, parameters);
+			final SampleParameters sample,
+			final AbstractParameters parameters) {
+		super(annotatedCoordinate, reader, sample, parameters);
 
 		windowCache 	= new WindowCache(windowSize, baseConfig.getBases().length);
-		filterCaches	= filterConfig.createCache();
+		filterCaches	= parameters.getFilterConfig().createCache();
 		
 		strand 			= STRAND.UNKNOWN;
 	}
@@ -116,7 +112,7 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 	 */
 	@Override
 	public boolean isCovered(int windowPosition, STRAND strand) {
-		return getCoverage(windowPosition, STRAND.UNKNOWN) >= parameters.getMinCoverage();
+		return getCoverage(windowPosition, STRAND.UNKNOWN) >= sample.getMinCoverage();
 	}
 
 	@Override

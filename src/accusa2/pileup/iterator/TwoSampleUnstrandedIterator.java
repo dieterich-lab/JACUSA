@@ -1,46 +1,24 @@
 package accusa2.pileup.iterator;
 
 import net.sf.samtools.SAMFileReader;
-import accusa2.pileup.ParallelPileup;
+import accusa2.cli.parameters.AbstractParameters;
+import accusa2.cli.parameters.SampleParameters;
 import accusa2.pileup.DefaultPileup.STRAND;
+import accusa2.pileup.ParallelPileup;
 import accusa2.util.AnnotatedCoordinate;
 
-public class UnstrandedVariantParallelPileupWindowIterator extends AbstractParallelPileupWindowIterator {
+public class TwoSampleUnstrandedIterator extends TwoSampleIterator {
 
-	public UnstrandedVariantParallelPileupWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader[] readersA, final SAMFileReader[] readersB, final Parameters parameters) {
-		super(annotatedCoordinate, readersA, readersB, parameters);
+	public TwoSampleUnstrandedIterator(
+			final AnnotatedCoordinate annotatedCoordinate,
+			final SAMFileReader[] readersA,
+			final SAMFileReader[] readersB,
+			final SampleParameters sampleA,
+			final SampleParameters sampleB,
+			AbstractParameters parameters) {
+		super(annotatedCoordinate, readersA, readersB, sampleA, sampleB, parameters);
 	}
 
-	protected void advance() {
-		++genomicPositionA;
-		++genomicPositionB;
-	}
-
-	@Override
-	protected int advance(int genomicPosition, STRAND strand) {
-		return ++genomicPosition;
-	}
-
-	@Override
-	public ParallelPileup next() {
-		if (! hasNext()) {
-			return null;
-		}
-
-		parallelPileup.setFilterCountsA(getCounts(genomicPositionA, strandB, pileupBuildersA));
-		parallelPileup.setFilterCountsB(getCounts(genomicPositionB, strandB, pileupBuildersB));
-
-		// advance to the next position
-		advance();
-
-		return parallelPileup;
-	}
-	
-	@Override
-	protected boolean isVariant(ParallelPileup parallelPileup)  {
-		return parallelPileup.getPooledPileup().getAlleles().length > 1;
-	}
-	
 	@Override
 	public boolean hasNext() {
 		while (hasNextA() && hasNextB()) {
@@ -82,10 +60,31 @@ public class UnstrandedVariantParallelPileupWindowIterator extends AbstractParal
 
 		return false;
 	}
-	
+
 	@Override
-	public void remove() {
-		// not needed
+	public ParallelPileup next() {
+		if (! hasNext()) {
+			return null;
+		}
+
+		parallelPileup.setFilterCountsA(getCounts(genomicPositionA, strandB, pileupBuildersA));
+		parallelPileup.setFilterCountsB(getCounts(genomicPositionB, strandB, pileupBuildersB));
+
+		// advance to the next position
+		advance();
+
+		return parallelPileup;
+	}
+
+	@Override
+	protected void advance() {
+		++genomicPositionA;
+		++genomicPositionB;
+	}
+
+	@Override
+	protected int advance(int genomicPosition, STRAND strand) {
+		return ++genomicPosition;
 	}
 
 }

@@ -3,25 +3,31 @@ package accusa2.process.parallelpileup.worker;
 import java.io.IOException;
 
 import accusa2.ACCUSA2;
+import accusa2.cli.parameters.AbstractParameters;
+import accusa2.filter.FilterConfig;
 import accusa2.filter.factory.AbstractFilterFactory;
 import accusa2.filter.feature.AbstractFeatureFilter;
+import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.method.call.statistic.StatisticCalculator;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
-import accusa2.pileup.iterator.StrandedVariantParallelPileupWindowIterator;
-import accusa2.pileup.iterator.UnstrandedVariantParallelPileupWindowIterator;
-import accusa2.process.parallelpileup.dispatcher.ParallelPileupWorkerDispatcher;
-import accusa2.util.AnnotatedCoordinate;
+import accusa2.process.parallelpileup.dispatcher.call.AbstractCallWorkerDispatcher;
 
-public class ParallelPileupWorker extends AbstractParallelPileupWorker {
+public abstract class AbstractCallWorker extends AbstractWorker {
 
-	protected final StatisticCalculator statisticCalculator;
+	private final StatisticCalculator statisticCalculator;
+	private FilterConfig filterConfig;
+	private AbstractResultFormat format;
 	
-	public ParallelPileupWorker(final ParallelPileupWorkerDispatcher threadDispatcher,final Parameters parameters) {
-		super(threadDispatcher, parameters);
-
-		statisticCalculator = parameters.getStatisticCalculator().newInstance();
+	public AbstractCallWorker(final AbstractCallWorkerDispatcher<? extends AbstractCallWorker> threadDispatcher, 
+			final StatisticCalculator statisticCalculator, 
+			final AbstractResultFormat format,
+			final AbstractParameters parameters) {
+		super(threadDispatcher, parameters.getMaxThreads(), parameters.getOutput(), format);
+		this.statisticCalculator = statisticCalculator;
+		this.filterConfig = parameters.getFilterConfig();
+		this.format = format;
 	}
 
 	@Override
@@ -42,18 +48,18 @@ public class ParallelPileupWorker extends AbstractParallelPileupWorker {
 			final double unfilteredValue = statisticCalculator.getStatistic(parallelPileup);
 
 			final StringBuilder sb = new StringBuilder();
-			sb.append(resultFormat.convert2String(parallelPileup, unfilteredValue));
+			sb.append(format.convert2String(parallelPileup, unfilteredValue));
 
-			final int pileupFilterCount = parameters.getFilterConfig().getFactories().size();
+			final int pileupFilterCount = filterConfig.getFactories().size();
 			int pileupFilterIndex = 0;
-			if (! parameters.getFilterConfig().hasFiters()) { 
+			if (! filterConfig.hasFiters()) { 
 				// no filters
 			} else { // calculate filters or quit
 				// container for value(s)
 				double filteredValue = unfilteredValue;
 
 				// apply each filter
-				for (AbstractFilterFactory filterFactory : parameters.getFilterConfig().getFactories()) {
+				for (AbstractFilterFactory filterFactory : filterConfig.getFactories()) {
 					// container for pileups
 
 					ParallelPileup filteredParallelPileups = new DefaultParallelPileup(parallelPileup);
@@ -66,7 +72,7 @@ public class ParallelPileupWorker extends AbstractParallelPileupWorker {
 						break;
 					} else {
 						// append dummy result
-						sb.append(resultFormat.getSEP());
+						sb.append(format.getSEP());
 						sb.append("*");
 					}
 
@@ -75,12 +81,12 @@ public class ParallelPileupWorker extends AbstractParallelPileupWorker {
 
 				// append empty result
 				for (;pileupFilterIndex < pileupFilterCount; ++pileupFilterIndex) {
-					sb.append(resultFormat.getSEP());
+					sb.append(format.getSEP());
 					sb.append("-1");
 				}
 
 				// append filtered result
-				sb.append(resultFormat.getSEP());
+				sb.append(format.getSEP());
 				sb.append(filteredValue);
 			}
 
@@ -94,15 +100,6 @@ public class ParallelPileupWorker extends AbstractParallelPileupWorker {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	@Override
-	protected AbstractParallelPileupWindowIterator buildParallelPileupIterator(final AnnotatedCoordinate coordinate, final Parameters parameters) {
-		if (parameters.getPileupBuilderFactoryA().isDirected() || parameters.getPileupBuilderFactoryB().isDirected()) {
-			return new StrandedVariantParallelPileupWindowIterator(coordinate, readersA, readersB, parameters);
-		}
-		
-		return new UnstrandedVariantParallelPileupWindowIterator(coordinate, readersA, readersB, parameters);
 	}
 
 }

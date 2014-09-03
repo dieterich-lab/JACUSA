@@ -7,6 +7,7 @@ import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 import net.sf.samtools.SAMValidationError;
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.filter.samtag.SamTagFilter;
 import accusa2.pileup.BaseConfig;
@@ -30,16 +31,20 @@ public abstract class AbstractPileupBuilder {
 	protected int filteredSAMRecords;
 
 	protected BaseConfig baseConfig;
-	protected SampleParameters parameters;
+	protected SampleParameters sample;
 	
 	protected boolean isCached;
 
 	protected DefaultPileup pileup;
 	
-	public AbstractPileupBuilder(AnnotatedCoordinate annotatedCoordinate, SAMFileReader SAMFileReader, int windowSize, BaseConfig baseConfig, SampleParameters parameters) {
+	public AbstractPileupBuilder(
+			final AnnotatedCoordinate annotatedCoordinate, 
+			final SAMFileReader SAMFileReader, 
+			final SampleParameters sample,
+			final AbstractParameters parameters) {
 		contig				= annotatedCoordinate.getSequenceName();
 		genomicWindowStart 	= annotatedCoordinate.getStart();
-		this.windowSize 	= windowSize;
+		this.windowSize 	= parameters.getWindowSize();
 		maxGenomicPosition 	= Math.min(annotatedCoordinate.getEnd(), SAMFileReader.getFileHeader().getSequence(contig).getSequenceLength());
 
 		SAMRecordsBuffer	= new SAMRecord[30000];
@@ -47,7 +52,7 @@ public abstract class AbstractPileupBuilder {
 
 		filteredSAMRecords	= 0;
 
-		this.parameters		= parameters;
+		this.sample		= sample;
 
 		isCached			= false;
 
@@ -175,13 +180,13 @@ public abstract class AbstractPileupBuilder {
 
 		if(!samRecord.getReadUnmappedFlag()
 				&& !samRecord.getNotPrimaryAlignmentFlag() // ignore non-primary alignments
-				&& (mapq < 0 || mapq >= parameters.getMinMAPQ()) // filter by mapping quality
-				&& (parameters.getFilterFlags() == 0 || (parameters.getFilterFlags() > 0 && ((samRecord.getFlags() & parameters.getFilterFlags()) == 0)))
-				&& (parameters.getRetainFlags() == 0 || (parameters.getRetainFlags() > 0 && ((samRecord.getFlags() & parameters.getRetainFlags()) > 0)))
+				&& (mapq < 0 || mapq >= sample.getMinMAPQ()) // filter by mapping quality
+				&& (sample.getFilterFlags() == 0 || (sample.getFilterFlags() > 0 && ((samRecord.getFlags() & sample.getFilterFlags()) == 0)))
+				&& (sample.getRetainFlags() == 0 || (sample.getRetainFlags() > 0 && ((samRecord.getFlags() & sample.getRetainFlags()) > 0)))
 				&& errors == null // isValid is expensive
 				) { // only store valid records that contain mapped reads
 			// custom filter 
-			for(SamTagFilter samTagFilter : parameters.getSamTagFilters()) {
+			for(SamTagFilter samTagFilter : sample.getSamTagFilters()) {
 				if(samTagFilter.filter(samRecord)) {
 					return false;
 				}
@@ -260,7 +265,7 @@ public abstract class AbstractPileupBuilder {
 			final int baseI = baseConfig.getBaseI(record.getReadBases()[readPosition + offset]);
 			final byte qual = record.getBaseQualities()[readPosition + offset];
 
-			if(qual >= parameters.getMinBASQ() && baseI != -1) {
+			if(qual >= sample.getMinBASQ() && baseI != -1) {
 				// speedup: if windowPosition == -1 the remaining part of the read will be outside of the windowCache
 				// ignore the overhanging part of the read until it overlaps with the window cache
 				final int windowPosition = convertGenomicPosition2WindowPosition(genomicPosition + offset);
