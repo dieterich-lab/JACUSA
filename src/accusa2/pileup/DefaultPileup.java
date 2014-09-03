@@ -22,19 +22,17 @@ public class DefaultPileup implements Pileup {
 
 	private Counts counts;
 
-	private int minQualI = 0; // FIXME Parameters.getInstance().getMinBASQ();
-
-	public DefaultPileup() {
+	public DefaultPileup(final int baseLength) {
 		contig 		= new String();
 		position	= -1;
 		strand		= STRAND.UNKNOWN;
 		refBase		= 'N';
-		
-		counts 		= new Counts();
+
+		counts 		= new Counts(baseLength, 0);
 	}
 	
-	public DefaultPileup(final String contig, final int position, final STRAND strand) {
-		this();
+	public DefaultPileup(final String contig, final int position, final STRAND strand, final int baseLength) {
+		this(baseLength);
 		this.contig = contig;
 		this.position = position;
 		this.strand = strand;
@@ -63,7 +61,7 @@ public class DefaultPileup implements Pileup {
 	public void substractPileup(final Pileup pileup) {
 		for(int baseI : pileup.getCounts().baseCount) {
 			counts.baseCount[baseI] -= pileup.getCounts().baseCount[baseI];
-			for(int qualI = minQualI; qualI < pileup.getCounts().getQualCount()[baseI].length; ++qualI) {
+			for(int qualI = counts.minQualI; qualI < pileup.getCounts().getQualCount()[baseI].length; ++qualI) {
 				counts.qualCount[baseI][qualI] -= pileup.getCounts().getQualCount()[baseI][qualI];
 			}
 		}
@@ -196,14 +194,17 @@ public class DefaultPileup implements Pileup {
 		private int[] baseCount;
 		private int[][] qualCount;
 
-		public Counts() {
-			int baseLength = 0; // FIXME Parameters.getInstance().getBaseConfig().getBases().length;
-			baseCount 	= new int[baseLength];
-			qualCount	= new int[baseLength][Phred2Prob.MAX_Q];
+		private int minQualI;
+
+		public Counts(final int baseLength, final int minQualI) {
+			baseCount 		= new int[baseLength];
+			qualCount		= new int[baseLength][Phred2Prob.MAX_Q];
+			
+			this.minQualI = minQualI;
 		}
 
 		public Counts(Counts count) {
-			this();
+			this(count.baseCount.length, count.minQualI);
 			System.arraycopy(count.baseCount, 0, this.baseCount, 0, count.baseCount.length);
 
 			for(int baseI = minQualI; baseI < count.baseCount.length; ++baseI) {

@@ -38,9 +38,23 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 	}
 
 	@Override
-	protected int advance(int genomicPosition, STRAND strand) {
-		// TODO Auto-generated method stub
-		return 0;
+	protected int advance(int currentGenomicPosition, STRAND strand) {
+		switch (strand) {
+		case FORWARD:
+			strand = STRAND.REVERSE;
+			break;
+		
+		case REVERSE:
+			strand = STRAND.FORWARD;
+			currentGenomicPosition++;
+		
+		case UNKNOWN:
+		default:
+			currentGenomicPosition++;
+			break;
+		}
+
+		return currentGenomicPosition;
 	}
 	
 }

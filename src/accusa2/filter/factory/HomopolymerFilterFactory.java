@@ -19,7 +19,7 @@ public class HomopolymerFilterFactory extends AbstractFilterFactory {
 
 	@Override
 	public AbstractFeatureFilter getFilterInstance() {
-		return new CountBasedFilter(getC(), 1, null, null); // TODO
+		return new CountBasedFilter(getC(), 1, parameters.getBaseConfig(), parameters.getFilterConfig());
 	}
 
 	@Override

@@ -37,7 +37,7 @@ public class PermutateParallelPileupQualWithoutReplacement implements PermutateP
 
 		for(int j = 0; j < pileups.length; ++j) {
 			Pileup pileup = pileups[j];
-			permutated[j] = new DefaultPileup();
+			permutated[j] = new DefaultPileup(pileup.getBaseCount().length);
 			// copy base count
 			for(int k = 0; k < pileup.getCounts().getBaseCount().length; ++k) {
 				permutated[j].getCounts().getBaseCount()[k] = pileup.getCounts().getBaseCount()[k];

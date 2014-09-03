@@ -56,7 +56,7 @@ public abstract class AbstractPileupBuilder {
 
 		isCached			= false;
 
-		pileup 				= new DefaultPileup();
+		pileup 				= new DefaultPileup(baseConfig.getBases().length);
 	}
 
 	/**

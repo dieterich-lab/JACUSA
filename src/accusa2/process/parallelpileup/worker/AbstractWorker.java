@@ -44,7 +44,8 @@ public abstract class AbstractWorker extends Thread {
 
 		threadId				= workerDispatcher.getThreadContainer().size();
 		nextThreadId			= -1;
-		// FIXME parallelPileupIterator  = buildParallelPileupIterator(workerDispatcher.next(this), parameters);
+
+		parallelPileupIterator  = buildParallelPileupIterator(workerDispatcher.next(this));
 
 		final String tmpFilename = output.getInfo() + "_tmp" + String.valueOf(threadId) + ".gz";
 		try {

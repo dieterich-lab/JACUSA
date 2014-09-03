@@ -11,8 +11,8 @@ public class WindowedPileup implements Pileup {
 	private Pileup aggregatedPileup;
 	private List<Pileup> pileupsWithinWindow;
 
-	public WindowedPileup() {
-		aggregatedPileup 	= new DefaultPileup();
+	public WindowedPileup(BaseConfig baseConfig) {
+		aggregatedPileup 	= new DefaultPileup(baseConfig.getBases().length);
 		pileupsWithinWindow = new ArrayList<Pileup>(50); // what is a good value?
 	}
 

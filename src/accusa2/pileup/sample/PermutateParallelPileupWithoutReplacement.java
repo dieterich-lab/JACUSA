@@ -31,7 +31,7 @@ public class PermutateParallelPileupWithoutReplacement implements PermutateParal
 
 		for(int j = 0; j < pileups.length; ++j) {
 			Pileup pileup = pileups[j];
-			permutated[j] = new DefaultPileup(); 
+			permutated[j] = new DefaultPileup(pileup.getBaseCount().length); 
 
 			for(int i = 0; i < pileup.getCoverage(); ++i) {
 				int base = sampleBase(pooled);

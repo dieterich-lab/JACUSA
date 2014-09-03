@@ -86,7 +86,7 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 
 	@Override
 	public Pileup getPileup(int windowPosition, STRAND strand) {
-		final DefaultPileup pileup = new DefaultPileup(contig, getCurrentGenomicPosition(windowPosition), strand);
+		final Pileup pileup = new DefaultPileup(contig, getCurrentGenomicPosition(windowPosition), strand, baseConfig.getBases().length);
 
 		WindowCache windowCache;
 		switch (strand) {

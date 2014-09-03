@@ -23,6 +23,8 @@ import accusa2.cli.options.FormatOption;
 import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
+import accusa2.cli.options.filter.FilterNHsamTagOption;
+import accusa2.cli.options.filter.FilterNMsamTagOption;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
 import accusa2.cli.parameters.OneSampleCallParameters;
@@ -93,8 +95,8 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new HelpOption(CLI.getSingleton()));
 		acOptions.add(new VersionOption(CLI.getSingleton()));
 		
-		// TODO acOptions.add(new FilterNHsamTagOption(parameters));
-		// TODO acOptions.add(new FilterNMsamTagOption(parameters));
+		acOptions.add(new FilterNHsamTagOption(parameters.getSampleA()));
+		acOptions.add(new FilterNMsamTagOption(parameters.getSampleA()));
 	}
 
 	@Override
@@ -142,7 +144,6 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 				new PolymorphismPileupFilterFactory()
 		};
 		for (AbstractFilterFactory filter : filters) {
-			// TODO filter.setFilterConfig(filterConfig);
 			abstractPileupFilters.put(filter.getC(), filter);
 		}
 

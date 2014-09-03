@@ -20,11 +20,11 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 	private FilterConfig filterConfig;
 	private AbstractResultFormat format;
 	
-	public AbstractCallWorker(final AbstractCallWorkerDispatcher<? extends AbstractCallWorker> threadDispatcher, 
+	public AbstractCallWorker(final AbstractCallWorkerDispatcher<? extends AbstractCallWorker> workerDispatcher, 
 			final StatisticCalculator statisticCalculator, 
 			final AbstractResultFormat format,
 			final AbstractParameters parameters) {
-		super(threadDispatcher, parameters.getMaxThreads(), parameters.getOutput(), format);
+		super(workerDispatcher, parameters.getMaxThreads(), parameters.getOutput(), format);
 		this.statisticCalculator = statisticCalculator;
 		this.filterConfig = parameters.getFilterConfig();
 		this.format = format;

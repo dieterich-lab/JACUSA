@@ -5,27 +5,27 @@ import accusa2.pileup.DefaultPileup.STRAND;
 
 public interface Pileup {
 
-	 abstract void addPileup(Pileup pileup);
-	 abstract void substractPileup(Pileup pileup);
+	 void addPileup(Pileup pileup);
+	 void substractPileup(Pileup pileup);
 
-	 abstract String getContig();
-	 abstract int getPosition();
-	 abstract STRAND getStrand();
-	 abstract char getRefBase();
-	 abstract int getCoverage();
+	 String getContig();
+	 int getPosition();
+	 STRAND getStrand();
+	 char getRefBase();
+	 int getCoverage();
 
-	 abstract int[] getAlleles();
+	 int[] getAlleles();
 
-	 abstract int[] getBaseCount();
-	 abstract int[][] getQualCount();
+	 int[] getBaseCount();
+	 int[][] getQualCount();
 
-	 abstract void setContig(String contig);
-	 abstract void setRefBase(char refBase);
-	 abstract void setPosition(int position);
-	 abstract void setStrand(STRAND strand);
+	 void setContig(String contig);
+	 void setRefBase(char refBase);
+	 void setPosition(int position);
+	 void setStrand(STRAND strand);
 
-	 abstract Counts getCounts();
+	 Counts getCounts();
 
-	 abstract Pileup complement();
+	 Pileup complement();
 
 }

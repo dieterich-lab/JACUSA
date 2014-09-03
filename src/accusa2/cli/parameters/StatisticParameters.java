@@ -11,20 +11,20 @@ public class StatisticParameters {
 	
 	public StatisticParameters() {
 		stat				= 0.3;
-		statisticCalculator = getDefaultStatisticCalculator();
 		permutations		= 100;
 	}
 
+	public StatisticParameters(StatisticCalculator statisticCalculator) {
+		this();
+		this.statisticCalculator = statisticCalculator;
+	}
+	
 	public int getPermutations() {
 		return permutations;
 	}
 
 	public void setPermutations(int permutations) {
 		this.permutations = permutations;
-	}
-
-	protected StatisticCalculator getDefaultStatisticCalculator() {
-		return null; // FIXME
 	}
 
 	/**

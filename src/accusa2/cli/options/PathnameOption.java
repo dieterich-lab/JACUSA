@@ -19,7 +19,6 @@ public class PathnameOption extends AbstractACOption {
 	private char c;
 	private SampleParameters parameters;
 	
-	// TODO make two classes of this
 	public PathnameOption(char c, SampleParameters paramteres) {
 		this.c = c;
 		this.parameters = paramteres;
