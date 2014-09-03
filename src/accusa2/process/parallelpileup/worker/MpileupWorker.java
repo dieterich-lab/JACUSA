@@ -8,7 +8,7 @@ import accusa2.cli.parameters.SampleParameters;
 import accusa2.cli.parameters.TwoSamplePileupParameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
-import accusa2.pileup.iterator.TwoSampleIterator;
+import accusa2.pileup.iterator.AbstractTwoSampleIterator;
 import accusa2.pileup.iterator.TwoSampleStrandedIterator;
 import accusa2.pileup.iterator.TwoSampleUnstrandedIterator;
 import accusa2.process.parallelpileup.dispatcher.pileup.MpileupWorkerDispatcher;
@@ -53,7 +53,7 @@ public class MpileupWorker extends AbstractWorker {
 	}
 
 	@Override
-	protected TwoSampleIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate) {
+	protected AbstractTwoSampleIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate) {
 		SampleParameters sampleA = parameters.getSampleA();
 		SampleParameters sampleB = parameters.getSampleB();
 

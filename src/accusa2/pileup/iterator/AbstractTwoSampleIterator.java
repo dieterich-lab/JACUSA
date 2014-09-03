@@ -9,7 +9,7 @@ import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.util.AnnotatedCoordinate;
 
-public abstract class TwoSampleIterator extends AbstractParallelPileupWindowIterator {
+public abstract class AbstractTwoSampleIterator extends AbstractParallelPileupWindowIterator {
 
 	// sample A
 	protected SampleParameters sampleA;
@@ -26,7 +26,7 @@ public abstract class TwoSampleIterator extends AbstractParallelPileupWindowIter
 	// output
 	protected ParallelPileup parallelPileup;
 	
-	public TwoSampleIterator(
+	public AbstractTwoSampleIterator(
 			final AnnotatedCoordinate annotatedCoordinate,
 			final SAMFileReader[] readersA,
 			final SAMFileReader[] readersB,

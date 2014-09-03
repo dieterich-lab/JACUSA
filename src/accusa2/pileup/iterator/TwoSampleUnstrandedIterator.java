@@ -7,7 +7,7 @@ import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.ParallelPileup;
 import accusa2.util.AnnotatedCoordinate;
 
-public class TwoSampleUnstrandedIterator extends TwoSampleIterator {
+public class TwoSampleUnstrandedIterator extends AbstractTwoSampleIterator {
 
 	public TwoSampleUnstrandedIterator(
 			final AnnotatedCoordinate annotatedCoordinate,
