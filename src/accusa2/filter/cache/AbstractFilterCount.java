@@ -8,14 +8,14 @@ import accusa2.cli.parameters.AbstractParameters;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.builder.WindowCache;
 
-public abstract class AbstractPileupBuilderFilterCount {
+public abstract class AbstractFilterCount {
 
 	private char c;
 	protected WindowCache cache;
 	protected boolean[] visited;
 	protected BaseConfig baseConfig;
 
-	public AbstractPileupBuilderFilterCount(char c, AbstractParameters parameters) {
+	public AbstractFilterCount(char c, AbstractParameters parameters) {
 		this.c = c;
 
 		int windowSize = parameters.getWindowSize();

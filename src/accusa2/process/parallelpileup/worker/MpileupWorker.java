@@ -3,7 +3,7 @@ package accusa2.process.parallelpileup.worker;
 import java.io.IOException;
 
 import accusa2.ACCUSA2;
-import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.TwoSamplePileupParameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
 import accusa2.pileup.iterator.StrandedParallelPileupWindowIterator;
@@ -32,7 +32,7 @@ public class MpileupWorker extends AbstractParallelPileupWorker {
 
 			StringBuilder sb = new StringBuilder();
 			ParallelPileup parallelPileup = parallelPileupIterator.next();
-			sb.append(resultFormat.convert2String(parallelPileup, 0));
+			sb.append(format.convert2String(parallelPileup, 0));
 			try {
 				tmpOutputWriter.write(sb.toString());
 			} catch (IOException e) {
@@ -41,8 +41,10 @@ public class MpileupWorker extends AbstractParallelPileupWorker {
 		}
 	}
 
-	@Override
-	protected AbstractParallelPileupWindowIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate, Parameters parameters) {
+	//@Override
+	protected AbstractParallelPileupWindowIterator buildParallelPileupIterator(
+			AnnotatedCoordinate coordinate, 
+			TwoSamplePileupParameters parameters) {
 		if (parameters.getPileupBuilderFactoryA().isDirected() || parameters.getPileupBuilderFactoryB().isDirected()) {
 			return new StrandedParallelPileupWindowIterator(coordinate, readersA, readersB, parameters);
 		}

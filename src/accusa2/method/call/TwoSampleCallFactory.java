@@ -44,14 +44,14 @@ import accusa2.io.format.output.PileupResultFormat;
 import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.io.format.result.DefaultResultFormat;
 import accusa2.method.AbstractMethodFactory;
-import accusa2.method.statistic.LR2Statistic;
-import accusa2.method.statistic.LRStatistic;
-import accusa2.method.statistic.MethodOfMomentsStatistic;
-import accusa2.method.statistic.MixtureDirichletStatistic;
-import accusa2.method.statistic.NumericalStatistic;
-import accusa2.method.statistic.WeightedMethodOfMomentsStatistic;
+import accusa2.method.call.statistic.LR2Statistic;
+import accusa2.method.call.statistic.LRStatistic;
+import accusa2.method.call.statistic.MethodOfMomentsStatistic;
+import accusa2.method.call.statistic.MixtureDirichletStatistic;
+import accusa2.method.call.statistic.NumericalStatistic;
+import accusa2.method.call.statistic.StatisticCalculator;
+import accusa2.method.call.statistic.WeightedMethodOfMomentsStatistic;
 //import accusa2.method.statistic.MinimalCoverageStatistic;
-import accusa2.method.statistic.StatisticCalculator;
 import accusa2.process.parallelpileup.dispatcher.ParallelPileupWorkerDispatcher;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
 import accusa2.process.parallelpileup.worker.AbstractParallelPileupWorker;
@@ -83,7 +83,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new ResultFileOption(parameters));
 		if(getResultFormats().size() == 1 ) {
 			Character[] a = getResultFormats().keySet().toArray(new Character[1]);
-			parameters.setResultFormat(getResultFormats().get(a[0]));
+			parameters.setFormat(getResultFormats().get(a[0]));
 		} else {
 			acOptions.add(new FormatOption<AbstractResultFormat>(parameters, getResultFormats()));
 		}
@@ -153,14 +153,14 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 
 		FilterConfig filterConfig = parameters.getFilterConfig();
 		AbstractFilterFactory[] filters = new AbstractFilterFactory[] {
-				new DistanceFilterFactory(parameters.getBaseConfig(), parameters.getFilterConfig()),
-				new HomozygousFilterFactory(),
-				new HomopolymerFilterFactory(),
-				new RareEventFilterFactory(),
-				new PolymorphismPileupFilterFactory()
+				new DistanceFilterFactory(parameters),
+				new HomozygousFilterFactory(parameters.getFilterConfig()),
+				new HomopolymerFilterFactory(parameters),
+				new RareEventFilterFactory(parameters.getFilterConfig()),
+				new PolymorphismPileupFilterFactory(parameters.getFilterConfig())
 		};
 		for (AbstractFilterFactory filter : filters) {
-			filter.setFilterConfig(filterConfig);
+			// TODO filter.setFilterConfig(filterConfig);
 			abstractPileupFilters.put(filter.getC(), filter);
 		}
 

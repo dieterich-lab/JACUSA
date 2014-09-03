@@ -1,9 +1,9 @@
-package accusa2.filter;
+package accusa2.filter.feature;
 
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 
-public class RareEventFilter extends AbstractParallelPileupFilter {
+public class RareEventFilter extends AbstractFeatureFilter {
 
 	private int reads;
 	private double level;

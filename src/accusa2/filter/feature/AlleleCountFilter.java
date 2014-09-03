@@ -1,8 +1,8 @@
-package accusa2.filter;
+package accusa2.filter.feature;
 
 import accusa2.pileup.ParallelPileup;
 
-public class AlleleCountFilter extends AbstractParallelPileupFilter {
+public class AlleleCountFilter extends AbstractFeatureFilter {
 
 	public AlleleCountFilter(char c) {
 		super(c);

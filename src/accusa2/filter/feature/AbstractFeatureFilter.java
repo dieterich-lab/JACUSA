@@ -1,12 +1,12 @@
-package accusa2.filter;
+package accusa2.filter.feature;
 
 import accusa2.pileup.ParallelPileup;
 
-public abstract class AbstractParallelPileupFilter {
+public abstract class AbstractFeatureFilter {
 
 	final private char c;
 
-	public AbstractParallelPileupFilter(char c) {
+	public AbstractFeatureFilter(char c) {
 		this.c = c;
 	}
 

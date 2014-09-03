@@ -1,16 +1,22 @@
 package accusa2.filter;
 
-import accusa2.cli.parameters.Parameters;
-import accusa2.method.statistic.StatisticCalculator;
+import accusa2.cli.parameters.StatisticParameters;
+import accusa2.method.call.statistic.StatisticCalculator;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 
-public class WithinSampleStatisticFilter extends AbstractCacheFilter {
+public class WithinSampleStatisticFilter extends AbstractCountFilter {
 
 	private double minScore;
 	private StatisticCalculator statistic;
 	
-	public WithinSampleStatisticFilter(char c, double minScore, Parameters parameters) {
-		super(c, parameters);
+	public WithinSampleStatisticFilter(
+			char c, 
+			double minScore, 
+			BaseConfig baseConfig, 
+			FilterConfig filterConfig,
+			StatisticParameters parameters) {
+		super(c, baseConfig, filterConfig);
 		this.minScore = minScore;
 		statistic = parameters.getStatisticCalculator().newInstance();
 	}

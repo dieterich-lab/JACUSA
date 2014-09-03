@@ -1,8 +1,8 @@
-package accusa2.filter;
+package accusa2.filter.feature;
 
 import accusa2.pileup.ParallelPileup;
 
-public class PolymorphismFilter extends AbstractParallelPileupFilter {
+public class PolymorphismFilter extends AbstractFeatureFilter {
 
 	public PolymorphismFilter(char c) {
 		super(c);

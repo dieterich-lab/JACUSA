@@ -1,7 +1,6 @@
 package accusa2.pileup.iterator;
 
 import net.sf.samtools.SAMFileReader;
-import accusa2.cli.parameters.Parameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.util.AnnotatedCoordinate;

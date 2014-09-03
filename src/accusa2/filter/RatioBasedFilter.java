@@ -1,13 +1,14 @@
 package accusa2.filter;
 
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 
-public class RatioBasedFilter extends AbstractCacheFilter {
+public class RatioBasedFilter extends AbstractCountFilter {
 
 	private double minRatio;
 	
-	public RatioBasedFilter(char c, double minRatio) {
-		super(c);
+	public RatioBasedFilter(char c, double minRatio, BaseConfig baseConfig, FilterConfig filterConfig) {
+		super(c, baseConfig, filterConfig);
 		this.minRatio = minRatio;
 	}
 

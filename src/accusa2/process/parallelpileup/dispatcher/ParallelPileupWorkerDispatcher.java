@@ -29,17 +29,17 @@ public class ParallelPileupWorkerDispatcher extends AbstractParallelPileupWorker
 	protected void processTmpLine(final AbstractOutputFormat outputFormat, Output output, Output filtered, String line) throws IOException {
 		final double p = outputFormat.extractValue(line); // TODO
 		if (parameters.getDebug()) {
-			if (!parameters.getStatisticCalculator().filter(p)) {
+			if (! parameters.getStatisticCalculator().filter(p)) {
 				output.write(line + "\t" + p);
 
 			}
 		} else {
 			if (p < 0.0) {
 				filtered.write(line + "\t" + p);
-			} else if(!parameters.getStatisticCalculator().filter(p)) {
+			} else if (! parameters.getStatisticCalculator().filter(p)) {
 				output.write(line + "\t" + p);
 			}
 		}
 	}
-	
+
 }

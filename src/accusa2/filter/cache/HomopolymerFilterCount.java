@@ -4,7 +4,7 @@ import accusa2.cli.parameters.AbstractParameters;
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
 
-public class HomopolymerFilterCount extends AbstractPileupBuilderFilterCount {
+public class HomopolymerFilterCount extends AbstractFilterCount {
 
 	private int length;
 	private int minDistance;

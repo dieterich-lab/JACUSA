@@ -1,4 +1,4 @@
-package accusa2.method.statistic;
+package accusa2.method.call.statistic;
 
 import java.util.Arrays;
 
@@ -9,22 +9,23 @@ import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
+import accusa2.util.MathUtil;
 
 /**
  * 
  * @author michael
  */
 
-public final class MixtureDirichletStatistic implements StatisticCalculator {
+public final class WeightedMethodOfMomentsStatistic implements StatisticCalculator {
 
 	protected final BaseConfig baseConfig;
 	protected final StatisticParameters parameters; 
 	
 	protected final Phred2Prob phred2Prob;
-
+	
 	protected ChiSquareDist dist = new ChiSquareDist(6);
 	
-	public MixtureDirichletStatistic(BaseConfig baseConfig, StatisticParameters parameters) {
+	public WeightedMethodOfMomentsStatistic(BaseConfig baseConfig, StatisticParameters parameters) {
 		this.baseConfig	= baseConfig;
 		this.parameters = parameters;
 		
@@ -33,7 +34,7 @@ public final class MixtureDirichletStatistic implements StatisticCalculator {
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new MixtureDirichletStatistic(baseConfig, parameters);
+		return new WeightedMethodOfMomentsStatistic(baseConfig, parameters);
 	}
 
 	protected double getDensity(final int[] bases, final Pileup[] pileups) {
@@ -46,7 +47,6 @@ public final class MixtureDirichletStatistic implements StatisticCalculator {
 		// prob. vector per pileup
 		final double[][] pileupProbVectors = new double[pileupN][bases.length];
 		// alpha
-		final double alphas[][] = new double[pileupN][bases.length];
 		final double alpha[] = new double[bases.length];
 		Arrays.fill(alpha, 0.0);
 		
@@ -60,16 +60,18 @@ public final class MixtureDirichletStatistic implements StatisticCalculator {
 			// calculate prob. vectors
 			double[] probVector = phred2Prob.colSum(bases, pileup);
 			pileupProbVectors[pileupI] = probVector;
-			
-			for (int baseI = 0; baseI < bases.length; ++baseI) {
-				alphas[pileupI][baseI] = probVector[baseI] * coverage;
-			}
+		}
+		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
+			weights[pileupI] /= (double)totalCoverage;
 		}
 		
+		double[] weightedMean = MathUtil.weightedMean(weights, pileupProbVectors);
+		double[] weightedVariance = MathUtil.weightedVariance(weights, weightedMean, pileupProbVectors);
+
 		// calculate alphas need to be divided by total coverage
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI = 0; baseI < bases.length; ++baseI) {
-				alpha[baseI] += alphas[pileupI][baseI] * weights[pileupI] / totalCoverage;
+				alpha[baseI] = Math.pow(weightedMean[baseI], 2.0) * (1 - weightedMean[baseI]) / weightedVariance[baseI];
 			}
 		}
 		
@@ -113,12 +115,12 @@ public final class MixtureDirichletStatistic implements StatisticCalculator {
 
 	@Override
 	public String getDescription() {
-		return "Mixture of Dirichlets";
+		return "Weighted Method of Moments estimation";
 	}
 
 	@Override
 	public String getName() {
-		return "mix";
+		return "wmom";
 	}
 
 }

@@ -1,6 +1,6 @@
 package accusa2.cli.parameters;
 
-import accusa2.method.statistic.StatisticCalculator;
+import accusa2.method.call.statistic.StatisticCalculator;
 
 public class StatisticParameters {
 

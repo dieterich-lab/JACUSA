@@ -3,6 +3,7 @@ package accusa2.process.parallelpileup.worker;
 import java.io.IOException;
 
 import net.sf.samtools.SAMFileReader;
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.io.TmpOutputWriter;
 import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
@@ -27,20 +28,18 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 	// output related
 	// current writer
 	protected TmpOutputWriter tmpOutputWriter;
-	// final result format
-	protected AbstractResultFormat resultFormat;
 
 	// indicates if computation is finished
 	private boolean isFinished;
 
-	public AbstractParallelPileupWorker(AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> parallelPileupWorkerDispatcher, final Parameters parameters) {
+	public AbstractParallelPileupWorker(AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> parallelPileupWorkerDispatcher, final AbstractParameters parameters) {
 		this.parallelPileupWorkerDispatcher 	= parallelPileupWorkerDispatcher; 
 
 		readersA				= parallelPileupWorkerDispatcher.createBAMFileReaders1();
 		readersB				= parallelPileupWorkerDispatcher.createBAMFileReaders2();
 
 		this.parameters 		= parameters;
-		resultFormat 			= parameters.getResultFormat();
+		format 					= parameters.getFormat();
 
 		isFinished 				= false;
 		comparisons 			= 0;
@@ -62,7 +61,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 		while(getNextThreadId() == -1) {
 			if(getNextThreadId() >= 0) {
 				try {
-					tmpOutputWriter.write(resultFormat.getCOMMENT() + String.valueOf(getNextThreadId()));
+					tmpOutputWriter.write(format.getCOMMENT() + String.valueOf(getNextThreadId()));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -78,7 +77,7 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 
 		if(getNextThreadId() >= 0) {
 			try {
-				tmpOutputWriter.write(resultFormat.getCOMMENT() + String.valueOf(getNextThreadId()));
+				tmpOutputWriter.write(format.getCOMMENT() + String.valueOf(getNextThreadId()));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -88,11 +87,11 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 
 	public final void run() {
 		processParallelPileupIterator(parallelPileupIterator);
-		if(parameters.getMaxThreads() > 1) {
+		if (parameters.getMaxThreads() > 1) {
 			writeNextThreadID();
 		}
 
-		while(!isFinished) {
+		while (! isFinished) {
 			AnnotatedCoordinate annotatedCoordinate = null;
 
 			synchronized (parallelPileupWorkerDispatcher) {
@@ -103,11 +102,11 @@ public abstract class AbstractParallelPileupWorker extends Thread {
 				}
 			}
 
-			if(annotatedCoordinate != null) {
+			if (annotatedCoordinate != null) {
 				parallelPileupIterator = buildParallelPileupIterator(annotatedCoordinate, parameters);
 				processParallelPileupIterator(parallelPileupIterator);
 
-				if(parameters.getMaxThreads() > 1) {
+				if (parameters.getMaxThreads() > 1) {
 					writeNextThreadID();
 				}
 			}

@@ -1,10 +1,10 @@
 package accusa2.filter.factory;
 
 import accusa2.cli.parameters.AbstractParameters;
-import accusa2.filter.AbstractParallelPileupFilter;
 import accusa2.filter.CountBasedFilter;
-import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
+import accusa2.filter.cache.AbstractFilterCount;
 import accusa2.filter.cache.HomopolymerFilterCount;
+import accusa2.filter.feature.AbstractFeatureFilter;
 
 public class HomopolymerFilterFactory extends AbstractFilterFactory {
 
@@ -18,12 +18,12 @@ public class HomopolymerFilterFactory extends AbstractFilterFactory {
 	}
 
 	@Override
-	public AbstractParallelPileupFilter getFilterInstance() {
+	public AbstractFeatureFilter getFilterInstance() {
 		return new CountBasedFilter(getC(), 1, null, null); // TODO
 	}
 
 	@Override
-	public AbstractPileupBuilderFilterCount getFilterCountInstance() {
+	public AbstractFilterCount getFilterCountInstance() {
 		return new HomopolymerFilterCount(getC(), length, distance, parameters);
 	}
 

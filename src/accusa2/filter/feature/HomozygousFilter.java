@@ -1,9 +1,9 @@
-package accusa2.filter;
+package accusa2.filter.feature;
 
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 
-public class HomozygousFilter extends AbstractParallelPileupFilter {
+public class HomozygousFilter extends AbstractFeatureFilter {
 
 	private int sample;
 

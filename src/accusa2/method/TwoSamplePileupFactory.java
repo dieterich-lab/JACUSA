@@ -20,13 +20,16 @@ import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
 import accusa2.cli.options.filter.FilterFlagOption;
 import accusa2.cli.options.pileupbuilder.AbstractPileupBuilderOption;
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
-import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.SampleParameters;
+import accusa2.cli.parameters.TwoSamplePileupParameters;
 import accusa2.io.format.output.AbstractOutputFormat;
 import accusa2.io.format.output.PileupFormat;
 import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.process.parallelpileup.dispatcher.AbstractParallelPileupWorkerDispatcher;
 import accusa2.process.parallelpileup.dispatcher.MpileupWorkerDispatcher;
+import accusa2.process.parallelpileup.worker.AbstractParallelPileupWorker;
 import accusa2.process.parallelpileup.worker.MpileupWorker;
 import accusa2.util.CoordinateProvider;
 
@@ -38,55 +41,52 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 	
 	public TwoSamplePileupFactory() {
 		super("pileup", "SAMtools like mpileup");
+		
+		parameters = new TwoSamplePileupParameters();
 	}
 
 	public void initACOptions() {
-		acOptions.add(new PathnameOption(parameters, '1'));
-		acOptions.add(new PathnameOption(parameters, '2'));
+		SampleParameters sampleA = parameters.getSampleA();
+		acOptions.add(new PathnameOption('A', sampleA));
+
+		SampleParameters sampleB = parameters.getSampleB();
+		acOptions.add(new PathnameOption('B', sampleB));
 
 		acOptions.add(new BedCoordinatesOption(parameters));
 		acOptions.add(new ResultFileOption(parameters));
 		
 		if(getOuptutFormats().size() == 1 ) {
 			Character[] a = getOuptutFormats().keySet().toArray(new Character[1]);
-			parameters.setResultFormat(getOuptutFormats().get(a[0]));
+			parameters.setFormat(getOuptutFormats().get(a[0]));
 		} else {
-			acOptions.add(new FormatOption(parameters, getOuptutFormats()));
+			acOptions.add(new FormatOption<AbstractOutputFormat>(parameters, getOuptutFormats()));
 		}
 		
 		acOptions.add(new BaseConfigOption(parameters));
-		acOptions.add(new MinCoverageOption(parameters));
-		acOptions.add(new MinBASQOption(parameters));
-		acOptions.add(new MinMAPQOption(parameters));
-		acOptions.add(new MaxDepthOption(parameters));
-		acOptions.add(new MaxThreadOption(parameters));
-		acOptions.add(new FilterFlagOption(parameters));
-		acOptions.add(new RetainFlagOption(parameters));
-		
-		acOptions.add(new WindowSizeOption(parameters));
-		
-		acOptions.add(new AbstractPileupBuilderOption(parameters));
-
+			acOptions.add(new WindowSizeOption(parameters));
+	
 		acOptions.add(new DebugOption(parameters));
-		acOptions.add(new HelpOption(parameters, CLI.getSingleton()));
-		acOptions.add(new VersionOption(parameters, CLI.getSingleton()));
-	}
-
-	@Override
-	public AbstractParallelPileupWorkerDispatcher<MpileupWorker> getInstance(CoordinateProvider coordinateProvider, Parameters parameters) {
-		if(instance == null) {
-			instance = new MpileupWorkerDispatcher(coordinateProvider, parameters);
-		}
-		return instance;
+		acOptions.add(new HelpOption(CLI.getSingleton()));
+		acOptions.add(new VersionOption(CLI.getSingleton()));
 	}
 
 	public Map<Character, AbstractOutputFormat> getOuptutFormats() {
 		Map<Character, AbstractOutputFormat> outputFormats = new HashMap<Character, AbstractOutputFormat>();
 
-		AbstractOutputFormat outputFormat = new PileupFormat();
+		AbstractOutputFormat outputFormat = new PileupFormat(parameters.getBaseConfig());
 		outputFormats.put(outputFormat.getC(), outputFormat);
 
 		return outputFormats;
+	}
+
+	@Override
+	public AbstractParallelPileupWorkerDispatcher<? extends AbstractParallelPileupWorker> getInstance(
+			CoordinateProvider coordinateProvider, AbstractParameters parameters) {
+		if(instance == null) {
+			instance = new MpileupWorkerDispatcher(coordinateProvider, parameters);
+		}
+
+		return instance;;
 	}
 
 }

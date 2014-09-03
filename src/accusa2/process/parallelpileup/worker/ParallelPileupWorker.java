@@ -3,9 +3,9 @@ package accusa2.process.parallelpileup.worker;
 import java.io.IOException;
 
 import accusa2.ACCUSA2;
-import accusa2.filter.AbstractParallelPileupFilter;
 import accusa2.filter.factory.AbstractFilterFactory;
-import accusa2.method.statistic.StatisticCalculator;
+import accusa2.filter.feature.AbstractFeatureFilter;
+import accusa2.method.call.statistic.StatisticCalculator;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
@@ -57,7 +57,7 @@ public class ParallelPileupWorker extends AbstractParallelPileupWorker {
 					// container for pileups
 
 					ParallelPileup filteredParallelPileups = new DefaultParallelPileup(parallelPileup);
-					AbstractParallelPileupFilter filter = filterFactory.getFilterInstance();
+					AbstractFeatureFilter filter = filterFactory.getFilterInstance();
 
 					// apply filter
 					if (filter.filter(filteredParallelPileups)) {

@@ -3,7 +3,7 @@ package accusa2.filter;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 
-public class CountBasedFilter extends AbstractCacheFilter {
+public class CountBasedFilter extends AbstractCountFilter {
 
 	private double range;
 	

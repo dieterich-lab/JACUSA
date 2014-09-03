@@ -1,7 +1,7 @@
 package accusa2.filter.factory;
 
-import accusa2.filter.HomozygousFilter;
-import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
+import accusa2.filter.cache.AbstractFilterCount;
+import accusa2.filter.feature.HomozygousFilter;
 
 public class HomozygousFilterFactory extends AbstractFilterFactory {
 
@@ -18,7 +18,7 @@ public class HomozygousFilterFactory extends AbstractFilterFactory {
 	}
 
 	@Override
-	public AbstractPileupBuilderFilterCount getFilterCountInstance() {
+	public AbstractFilterCount getFilterCountInstance() {
 		return null;
 	}
 	

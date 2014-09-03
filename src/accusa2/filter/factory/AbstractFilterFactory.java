@@ -1,8 +1,7 @@
 package accusa2.filter.factory;
 
-import accusa2.filter.AbstractParallelPileupFilter;
-import accusa2.filter.FilterConfig;
-import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
+import accusa2.filter.cache.AbstractFilterCount;
+import accusa2.filter.feature.AbstractFeatureFilter;
 
 public abstract class AbstractFilterFactory {
 
@@ -10,16 +9,14 @@ public abstract class AbstractFilterFactory {
 
 	protected char c;
 	protected String desc;
-	protected FilterConfig filterConfig;
 	
-	public AbstractFilterFactory(char c, String desc, FilterConfig filterConfig) {
+	public AbstractFilterFactory(char c, String desc) {
 		this.c = c;
 		this.desc = desc;
-		this.filterConfig = filterConfig;
 	}
 
-	public abstract AbstractParallelPileupFilter getFilterInstance();
-	public abstract AbstractPileupBuilderFilterCount getFilterCountInstance();
+	public abstract AbstractFeatureFilter getFilterInstance();
+	public abstract AbstractFilterCount getFilterCountInstance();
 
 	public final char getC() {
 		return c;
@@ -31,11 +28,6 @@ public abstract class AbstractFilterFactory {
 
 	public void processCLI(final String line) throws IllegalArgumentException {
 		// implement to change behavior via CLI
-	}
-
-	@Deprecated
-	public void setFilterConfig(FilterConfig filterConfig) {
-		this.filterConfig = filterConfig;
 	}
 
 }

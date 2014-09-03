@@ -7,14 +7,14 @@ public class TwoSampleCallParameters extends AbstractParameters implements hasSa
 
 	private SampleParameters sampleB;
 	private StatisticParameters statisticParameters;
-	private AbstractResultFormat resultFormat;
+	private AbstractResultFormat format;
 
 	public TwoSampleCallParameters() {
 		super();
 
 		sampleB				= new SampleParameters();
 		statisticParameters = new StatisticParameters();
-		resultFormat		= new DefaultResultFormat(this);
+		format		= new DefaultResultFormat(getFilterConfig());
 	}
 
 	@Override
@@ -27,8 +27,12 @@ public class TwoSampleCallParameters extends AbstractParameters implements hasSa
 		return statisticParameters;
 	}
 
-	public AbstractResultFormat getResultFormat() {
-		return resultFormat;
+	public AbstractResultFormat getFormat() {
+		return format;
+	}
+
+	public void setFormat(AbstractResultFormat format) {
+		this.format = format;
 	}
 
 }

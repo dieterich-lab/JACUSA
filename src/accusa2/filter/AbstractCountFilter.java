@@ -1,5 +1,6 @@
 package accusa2.filter;
 
+import accusa2.filter.feature.AbstractFeatureFilter;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.DefaultPileup;
@@ -7,13 +8,13 @@ import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.pileup.DefaultPileup.Counts;
 
-public abstract class AbstractCacheFilter extends AbstractParallelPileupFilter {
+public abstract class AbstractCountFilter extends AbstractFeatureFilter {
 
 	protected final BaseConfig baseConfig;
 	protected final FilterConfig filterConfig;
 	protected final int filterI;
 	
-	public AbstractCacheFilter(char c, BaseConfig baseConfig, FilterConfig filterConfig) {
+	public AbstractCountFilter(char c, BaseConfig baseConfig, FilterConfig filterConfig) {
 		super(c);
 		this.baseConfig 	= baseConfig;
 		this.filterConfig 	= filterConfig;

@@ -1,11 +1,11 @@
 package accusa2.filter;
 
 import accusa2.cli.parameters.StatisticParameters;
-import accusa2.method.statistic.StatisticCalculator;
+import accusa2.method.call.statistic.StatisticCalculator;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 
-public class BetweenSampleStatisticFilter extends AbstractCacheFilter {
+public class BetweenSampleStatisticFilter extends AbstractCountFilter {
 
 	final private StatisticCalculator statistic;
 	final private double minScore;

@@ -7,7 +7,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 
 import accusa2.cli.parameters.StatisticParameters;
-import accusa2.method.statistic.StatisticCalculator;
+import accusa2.method.call.statistic.StatisticCalculator;
 
 public class StatisticCalculatorOption extends AbstractACOption {
 

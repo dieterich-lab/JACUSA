@@ -1,18 +1,17 @@
 package accusa2.filter.factory;
 
 import accusa2.cli.parameters.AbstractParameters;
-import accusa2.filter.FilterConfig;
 import accusa2.filter.RatioBasedFilter;
-import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
+import accusa2.filter.cache.AbstractFilterCount;
 import accusa2.filter.cache.distance.DistanceFilterCount;
-import accusa2.pileup.BaseConfig;
 
 public class DistanceFilterFactory extends AbstractFilterFactory {
 
 	private int distance = 6;
+	private AbstractParameters parameters;
 	
-	public DistanceFilterFactory(BaseConfig baseConfig, FilterConfig filterConfig) {
-		super('D', "", filterConfig);
+	public DistanceFilterFactory(AbstractParameters parameters) {
+		super('D', "");
 		desc = "Filter distance to start/end of read, intron and INDEL position. Default: " + distance;
 	}
 
@@ -33,11 +32,11 @@ public class DistanceFilterFactory extends AbstractFilterFactory {
 
 	@Override
 	public RatioBasedFilter getFilterInstance() {
-		return new RatioBasedFilter(getC(), 0.5);
+		return new RatioBasedFilter(getC(), 0.5, parameters.getBaseConfig(), parameters.getFilterConfig());
 	}
 
 	@Override
-	public AbstractPileupBuilderFilterCount getFilterCountInstance() {
+	public AbstractFilterCount getFilterCountInstance() {
 		return new DistanceFilterCount(getC(), distance, parameters);
 	}
 

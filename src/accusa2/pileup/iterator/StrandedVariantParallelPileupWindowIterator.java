@@ -1,7 +1,7 @@
 package accusa2.pileup.iterator;
 
 import net.sf.samtools.SAMFileReader;
-import accusa2.cli.parameters.Parameters;
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
@@ -11,7 +11,11 @@ import accusa2.util.AnnotatedCoordinate;
 
 public class StrandedVariantParallelPileupWindowIterator extends AbstractParallelPileupWindowIterator {
 
-	public StrandedVariantParallelPileupWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final SAMFileReader[] readersA, final SAMFileReader[] readersB, final Parameters parameters) {
+	public StrandedVariantParallelPileupWindowIterator(
+			final AnnotatedCoordinate annotatedCoordinate, 
+			final SAMFileReader[] readersA, 
+			final SAMFileReader[] readersB, 
+			final AbstractParameters parameters) {
 		super(annotatedCoordinate, readersA, readersB, parameters);
 	}
 
@@ -153,7 +157,7 @@ public class StrandedVariantParallelPileupWindowIterator extends AbstractParalle
 	
 	protected Counts[][] complementCounts(Counts[][] counts) {
 		int replicates = counts.length;
-		Counts[][] complementedCounts = new Counts[replicates][filterCount];
+		Counts[][] complementedCounts = new Counts[replicates][filterCount]; // FIXME
 
 		for (int i = 0; i < replicates; ++i) {
 			for (int j = 0; j < filterCount; ++j) {

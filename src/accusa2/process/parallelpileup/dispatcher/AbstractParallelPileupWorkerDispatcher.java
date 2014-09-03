@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.samtools.SAMFileReader;
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.io.Output;
 import accusa2.io.OutputWriter;
 import accusa2.io.TmpOutputReader;
@@ -21,7 +22,7 @@ import accusa2.util.CoordinateProvider;
 public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractParallelPileupWorker> {
 
 	protected CoordinateProvider coordinateProvider;
-	protected final Parameters parameters;
+	protected final AbstractParameters parameters;
 
 	protected final List<T> threadContainer;
 	protected final List<T> runningThreads;
@@ -30,7 +31,7 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 
 	protected int lastThreadId;
 
-	public AbstractParallelPileupWorkerDispatcher(CoordinateProvider coordinateProvider, Parameters parameters) {
+	public AbstractParallelPileupWorkerDispatcher(CoordinateProvider coordinateProvider, AbstractParameters parameters) {
 		this.coordinateProvider = coordinateProvider;
 		this.parameters = parameters;
 
@@ -135,7 +136,7 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 			e.printStackTrace();
 			return;
 		}
-		final AbstractResultFormat resultFormat = new TmpResultFormat(parameters.getResultFormat());
+		final AbstractResultFormat resultFormat = new TmpResultFormat(parameters.getFormat());
 
 		// write Header
 		try {
@@ -176,14 +177,14 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 			return;
 		}
 
-		for(int i = 0; i < threadContainer.size(); ++i) {
+		for (int i = 0; i < threadContainer.size(); ++i) {
 			try {
 				tmpOutputReaders[i].close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			// leave tmp files if needed
-			if(!parameters.getDebug()) {
+			if (! parameters.isDebug()) {
 				new File(threadContainer.get(i).getTmpOutputWriter().getInfo()).delete();
 			}
 		}
@@ -200,16 +201,8 @@ public abstract class AbstractParallelPileupWorkerDispatcher<T extends AbstractP
 	 * 
 	 * @return
 	 */
-	public SAMFileReader[] createBAMFileReaders1() {
-		return initReaders(parameters.getPathnamesA());
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public SAMFileReader[] createBAMFileReaders2() {
-		return initReaders(parameters.getPathnamesB());
+	public SAMFileReader[] createBAMFileReaders(String[] pathnames) {
+		return initReaders(pathnames);
 	}
 
 	/**

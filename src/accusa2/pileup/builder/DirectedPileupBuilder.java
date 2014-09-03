@@ -4,7 +4,7 @@ import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.filter.FilterConfig;
-import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
+import accusa2.filter.cache.AbstractFilterCount;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.Pileup;
@@ -22,8 +22,8 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 	protected WindowCache forwardWindowCache;
 	protected WindowCache reverseWindowCache;
 
-	protected AbstractPileupBuilderFilterCount[] forwardFilterCaches;
-	protected AbstractPileupBuilderFilterCount[] reverseFilterCaches;
+	protected AbstractFilterCount[] forwardFilterCaches;
+	protected AbstractFilterCount[] reverseFilterCaches;
 	
 	protected STRAND strand;
 	protected int windowPosition;
@@ -138,14 +138,14 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 	 */
 	@Override
 	protected void processFilterCache(final SAMRecord record) {
-		AbstractPileupBuilderFilterCount[] filterCaches = forwardFilterCaches;
+		AbstractFilterCount[] filterCaches = forwardFilterCaches;
 		if (record.getReadNegativeStrandFlag()) {
 			filterCaches = reverseFilterCaches;
 		}
 
 		// filter
 		// let the filter decide what data they need
-		for(AbstractPileupBuilderFilterCount pileupBuilderFilter : filterCaches) {
+		for(AbstractFilterCount pileupBuilderFilter : filterCaches) {
 			if(pileupBuilderFilter != null) {
 				pileupBuilderFilter.processRecord(genomicWindowStart, record);
 			}

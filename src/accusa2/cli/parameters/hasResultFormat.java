@@ -4,7 +4,7 @@ import accusa2.io.format.result.AbstractResultFormat;
 
 public interface hasResultFormat {
 
-	AbstractResultFormat getResultFormat();
-	void setResultFormat(AbstractResultFormat resultFormat);
+	AbstractResultFormat getFormat();
+	void setFormat(AbstractResultFormat format);
 
 }

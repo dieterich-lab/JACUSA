@@ -1,7 +1,7 @@
 package accusa2.filter.factory;
 
-import accusa2.filter.RareEventFilter;
-import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
+import accusa2.filter.cache.AbstractFilterCount;
+import accusa2.filter.feature.RareEventFilter;
 
 public class RareEventFilterFactory extends AbstractFilterFactory {
 
@@ -19,7 +19,7 @@ public class RareEventFilterFactory extends AbstractFilterFactory {
 	}
 
 	@Override
-	public AbstractPileupBuilderFilterCount getFilterCountInstance() {
+	public AbstractFilterCount getFilterCountInstance() {
 		return null; // no filter needed
 	}
 

@@ -2,7 +2,6 @@ package accusa2.pileup.iterator;
 
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
-import accusa2.cli.parameters.Parameters;
 import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.ParallelPileup;

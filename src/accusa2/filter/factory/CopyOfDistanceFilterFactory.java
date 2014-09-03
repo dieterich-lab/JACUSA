@@ -1,14 +1,13 @@
 package accusa2.filter.factory;
 
-import accusa2.filter.AbstractParallelPileupFilter;
-import accusa2.filter.cache.AbstractPileupBuilderFilterCount;
-import accusa2.filter.cache.distance.DistanceFilterCount;
+import accusa2.filter.cache.AbstractFilterCount;
+import accusa2.filter.feature.AbstractFeatureFilter;
 
 //TODO make this generic
 public class CopyOfDistanceFilterFactory extends AbstractFilterFactory {
 
 	@Override
-	public AbstractParallelPileupFilter getFilterInstance() {
+	public AbstractFeatureFilter getFilterInstance() {
 		return null;
 	}
 	
@@ -63,8 +62,8 @@ public class CopyOfDistanceFilterFactory extends AbstractFilterFactory {
 */
 	
 	@Override
-	public AbstractPileupBuilderFilterCount getFilterCountInstance() {
-		return new DistanceFilterCount(getC(), 0, getParameters());
+	public AbstractFilterCount getFilterCountInstance() {
+		return null; // FIXME
 	}
 
 	public enum DISTANCE_FILTER {ALL, RS, RE, SJ, ID, HP}

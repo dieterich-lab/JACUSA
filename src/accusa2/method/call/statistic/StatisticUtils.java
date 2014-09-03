@@ -1,4 +1,4 @@
-package accusa2.method.statistic;
+package accusa2.method.call.statistic;
 
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 
