@@ -25,7 +25,7 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 	
 	public AbstractWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final Variant filter, final AbstractParameters parameters) {
 		this.coordinate = annotatedCoordinate;
-		
+
 		this.filter		= filter;
 		filterconfig 	= parameters.getFilterConfig();
 	}
@@ -83,17 +83,17 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 
 	// TODO at least two need to be covered
 	protected SAMRecord getNextValidRecord(final int targetGenomicPosition, final AbstractPileupBuilder[] pileupBuilders) {
-		SAMRecord record = null;
-
+		return pileupBuilders[0].getNextValidRecord(targetGenomicPosition);
+	}
+	/*
 		for (AbstractPileupBuilder pileupBuilder : pileupBuilders) {
 			record = pileupBuilder.getNextValidRecord(targetGenomicPosition);
 			if (record != null) {
 				return record;
 			}
 		}
-
-		return record;
 	}
+	*/
 
 	// TODO make this more quantitative
 	protected boolean isCovered(Location location, AbstractPileupBuilder[] pileupBuilders) {
@@ -146,13 +146,20 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 	}
 
 	protected boolean adjustWindowStart(Location location, AbstractPileupBuilder[] pileupBuilders) {
-		boolean ret = false;
-
-		for (AbstractPileupBuilder pileupBuilder : pileupBuilders) {
-			ret |= pileupBuilder.adjustWindowStart(location.genomicPosition);
+		if (! pileupBuilders[0].adjustWindowStart(location.genomicPosition)) {
+			SAMRecord record = getNextValidRecord(pileupBuilders[0].getWindowEnd(), pileupBuilders);
+			if (record == null) {
+				return false;
+			}
+			location.genomicPosition = record.getAlignmentStart();
+			return adjustWindowStart(location, pileupBuilders);
+		}
+		location.genomicPosition = pileupBuilders[0].getGenomicWindowStart();
+		for (int i = 1; i < pileupBuilders.length; ++i) {
+			pileupBuilders[i].adjustWindowStart(location.genomicPosition);
 		}
 
-		return ret;
+		return true;
 	}
 
 	protected boolean hasNext(Location location, final AbstractPileupBuilder[] pileupBuilders) {
@@ -166,10 +173,7 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 					advance(location);
 				}
 			} else {
-				final SAMRecord record = getNextValidRecord(location.genomicPosition, pileupBuilders);
-				if (record == null) {
-					return false;
-				} if (! adjustWindowStart(location, pileupBuilders)) {
+				if (! adjustWindowStart(location, pileupBuilders)) {
 					return false;
 				}
 			}

@@ -54,7 +54,7 @@ public class OneSampleStrandedIterator extends AbstractOneSampleIterator {
 
 		return parallelPileup;
 	}
-	
+
 	@Override
 	public boolean hasNext() {
 		while (hasNextA()) {

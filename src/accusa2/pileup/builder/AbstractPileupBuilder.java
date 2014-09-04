@@ -85,10 +85,6 @@ public abstract class AbstractPileupBuilder {
 	public boolean isCached() {
 		return isCached;
 	}
-
-	public boolean adjustWindowStart() {
-		return adjustWindowStart(getWindowEnd());
-	}
 	
 	/**
 	 * Tries to adjust to target position
@@ -103,12 +99,13 @@ public abstract class AbstractPileupBuilder {
 		this.genomicWindowStart = genomicWindowStart;
 
 		// get iterator to fill the window
-		SAMRecordIterator iterator = reader.query(contig, genomicWindowStart, maxGenomicPosition, false);
+		SAMRecordIterator iterator = reader.query(contig, this.genomicWindowStart, Math.min(getWindowEnd(), maxGenomicPosition), false);
 
 		// true if a valid read is found within genomicWindowStart and genomicWindowStart + windowSize
 		boolean windowHit = false;
 		int SAMReocordsInBuffer = 0;
-		while(iterator.hasNext()) {
+
+		while (iterator.hasNext()) {
 			SAMRecord record = iterator.next();
 
 			if(isValid(record)) {
@@ -119,7 +116,7 @@ public abstract class AbstractPileupBuilder {
 
 			// process buffer
 			if (SAMReocordsInBuffer >= SAMRecordsBuffer.length) {
-				for(SAMRecord bufferedRecord : SAMRecordsBuffer) {
+				for (SAMRecord bufferedRecord : SAMRecordsBuffer) {
 					try {
 						processRecord(bufferedRecord);
 					} catch (Exception e) {
@@ -229,7 +226,7 @@ public abstract class AbstractPileupBuilder {
 	 * End of window (inclusive)
 	 * @return
 	 */
-	protected int getWindowEnd() {
+	public int getWindowEnd() {
 		return genomicWindowStart + windowSize - 1;
 	}
 
@@ -254,7 +251,7 @@ public abstract class AbstractPileupBuilder {
 	 * @param windowPosition
 	 * @return
 	 */
-	public int getCurrentGenomicPosition(int windowPosition) {
+	public int getGenomicPosition(int windowPosition) {
 		return genomicWindowStart + windowPosition;
 	}
 

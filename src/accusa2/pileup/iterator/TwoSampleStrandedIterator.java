@@ -88,9 +88,11 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 
 	@Override
 	public ParallelPileup next() {
+		/*
 		if (! hasNext()) {
 			return null;
 		}
+		*/
 
 		if (filterconfig.hasFiters()) {
 			parallelPileup.setFilterCountsA(getCounts(locationA, pileupBuildersA));
