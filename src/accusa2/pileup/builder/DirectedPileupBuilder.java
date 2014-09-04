@@ -67,6 +67,7 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 		
 	}
 
+	// TODO add Objects
 	@Override
 	public Counts[] getFilteredCounts(int windowPosition, STRAND strand) {
 		switch (strand) {
