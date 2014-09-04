@@ -22,31 +22,28 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 	@Override
 	public boolean hasNext() {
 		while (hasNextA() && hasNextB()) {
-			final int compare = new Integer(genomicPositionA).compareTo(genomicPositionB);
+			final int compare = new Integer(locationA.genomicPosition).compareTo(locationB.genomicPosition);
 
 			switch (compare) {
 
 			case -1:
 				// adjust actualPosition; instead of iterating jump to specific
 				// position
-				adjustCurrentGenomicPosition(genomicPositionB, pileupBuildersA);
-				genomicPositionA = genomicPositionB;
+				adjustCurrentGenomicPosition(locationB.genomicPosition, pileupBuildersA);
+				locationA.genomicPosition = locationB.genomicPosition;
 				break;
 
 			case 0:
-				final STRAND strandA = parallelPileup.getStrandA();
-				final STRAND strandB = parallelPileup.getStrandB();
-
-				parallelPileup.setPosition(genomicPositionA);
+				parallelPileup.setPosition(locationA.genomicPosition);
 				
 				// complement bases if one sample is unstranded and 
 				// the other is stranded and maps to the opposite strand
-				parallelPileup.setPileupsA(getPileups(genomicPositionA, strandA, pileupBuildersA));
-				if(strandA == STRAND.UNKNOWN && strandB == STRAND.REVERSE) {
+				parallelPileup.setPileupsA(getPileups(locationA, pileupBuildersA));
+				if(locationA.strand == STRAND.UNKNOWN && locationB.strand == STRAND.REVERSE) {
 					parallelPileup.setPileupsA(complementPileups(parallelPileup.getPileupsA()));
 				}
-				parallelPileup.setPileupsB(getPileups(genomicPositionB, strandB, pileupBuildersB));
-				if(strandB == STRAND.UNKNOWN && strandA == STRAND.REVERSE) {
+				parallelPileup.setPileupsB(getPileups(locationB, pileupBuildersB));
+				if(locationB.strand == STRAND.UNKNOWN && locationA.strand == STRAND.REVERSE) {
 					parallelPileup.setPileupsB(complementPileups(parallelPileup.getPileupsB()));
 				}
 
@@ -61,8 +58,8 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 			case 1:
 				// adjust actualPosition; instead of iterating jump to specific
 				// position
-				adjustCurrentGenomicPosition(genomicPositionA, pileupBuildersB);
-				genomicPositionB = genomicPositionA;
+				adjustCurrentGenomicPosition(locationA.genomicPosition, pileupBuildersB);
+				locationB.genomicPosition = locationA.genomicPosition;
 				break;
 			}
 		}
@@ -76,8 +73,10 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 			return null;
 		}
 
-		parallelPileup.setFilterCountsA(getCounts(genomicPositionA, strandA, pileupBuildersA));
-		parallelPileup.setFilterCountsB(getCounts(genomicPositionB, strandB, pileupBuildersB));
+		if (filterconfig.hasFiters()) {
+			parallelPileup.setFilterCountsA(getCounts(locationA, pileupBuildersA));
+			parallelPileup.setFilterCountsB(getCounts(locationB, pileupBuildersB));
+		}
 
 		// advance to the next position
 		advance();
@@ -87,49 +86,47 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 
 	@Override
 	protected void advance() {
-		if (strandA == STRAND.UNKNOWN) {
-			if (strandB == STRAND.UNKNOWN || strandB == STRAND.REVERSE) {
-				genomicPositionA++;
-				genomicPositionB++;
-			} else if (strandB == STRAND.FORWARD){
-				strandB = STRAND.REVERSE;
+		if (locationA.strand == STRAND.UNKNOWN) {
+			if (locationB.strand == STRAND.UNKNOWN || locationB.strand == STRAND.REVERSE) {
+				++locationA.genomicPosition;
+				++locationB.genomicPosition;
+			} else if (locationB.strand == STRAND.FORWARD){
+				locationB.strand = STRAND.REVERSE;
 			}
 		}
-		if (strandB == STRAND.UNKNOWN) {
-			if (strandA == STRAND.REVERSE) {
-				genomicPositionA++;
-				genomicPositionB++;
-			} else if (strandA == STRAND.FORWARD){
-				strandA = STRAND.REVERSE;
+		if (locationB.strand == STRAND.UNKNOWN) {
+			if (locationA.strand == STRAND.REVERSE) {
+				++locationA.genomicPosition;
+				++locationB.genomicPosition;
+			} else if (locationA.strand == STRAND.FORWARD){
+				locationA.strand = STRAND.REVERSE;
 			}
 		}
-		if (strandA == STRAND.FORWARD && strandB == STRAND.FORWARD) {
-			strandA = STRAND.REVERSE;
-			strandB = STRAND.REVERSE;
+		if (locationA.strand == STRAND.FORWARD && locationB.strand == STRAND.FORWARD) {
+			locationA.strand = STRAND.REVERSE;
+			locationB.strand = STRAND.REVERSE;
 		} else {
-			genomicPositionA++;
-			genomicPositionB++;
+			++locationA.genomicPosition;
+			++locationB.genomicPosition;
 		}
 	}
 
 	@Override
-	protected int advance(int currentGenomicPosition, STRAND strand) {
-		switch (strand) {
+	protected void advance(Location location) {
+		switch (location.strand) {
 		case FORWARD:
-			strand = STRAND.REVERSE;
+			location.strand = STRAND.REVERSE;
 			break;
 		
 		case REVERSE:
-			strand = STRAND.FORWARD;
-			currentGenomicPosition++;
+			location.strand = STRAND.FORWARD;
+			++location.genomicPosition;
 		
 		case UNKNOWN:
 		default:
-			currentGenomicPosition++;
+			++location.genomicPosition;
 			break;
 		}
-
-		return currentGenomicPosition;
 	}
 	
 }

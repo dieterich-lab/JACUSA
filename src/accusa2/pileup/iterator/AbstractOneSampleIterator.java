@@ -9,13 +9,12 @@ import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.util.AnnotatedCoordinate;
 
-public abstract class AbstractOneSampleIterator extends AbstractParallelPileupWindowIterator {
+public abstract class AbstractOneSampleIterator extends AbstractWindowIterator {
 
 	protected SampleParameters sample;
 
-	protected int genomicPositionA;
-	protected STRAND strandA;
-	protected final AbstractPileupBuilder[] pileupBuildersA;	
+	protected Location location;
+	protected final AbstractPileupBuilder[] pileupBuilders;	
 
 	// output
 	protected ParallelPileup parallelPileup;
@@ -27,30 +26,24 @@ public abstract class AbstractOneSampleIterator extends AbstractParallelPileupWi
 			AbstractParameters parameters) {
 		super(annotatedCoordinate, parameters);
 
+		location = new Location(-1, STRAND.UNKNOWN);
 		this.sample = sample;
-		pileupBuildersA = createPileupBuilders(
+		pileupBuilders = createPileupBuilders(
 				sample.getPileupBuilderFactory(), 
 				annotatedCoordinate, 
 				readers,
 				sample,
 				parameters);
-		genomicPositionA = init(strandA, sample.getPileupBuilderFactory().isDirected(), pileupBuildersA);
-		strandA = STRAND.UNKNOWN;
+		initLocation(location, sample.getPileupBuilderFactory().isDirected(), pileupBuilders);
 		
-		parallelPileup = new DefaultParallelPileup(pileupBuildersA.length, 0);
+		parallelPileup = new DefaultParallelPileup(pileupBuilders.length, 0);
 		parallelPileup.setContig(annotatedCoordinate.getSequenceName());
 
 		
 	}
 
 	protected boolean hasNextA() {
-		int newGenomicPosition = hasNext(genomicPositionA, strandA, pileupBuildersA);
-		if (newGenomicPosition < 0) {
-			return false;
-		}
-
-		genomicPositionA = newGenomicPosition;
-		return true;
+		return hasNext(location, pileupBuilders);
 	}
 	
 }

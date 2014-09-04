@@ -2,7 +2,7 @@ package accusa2.process.parallelpileup.worker;
 
 import net.sf.samtools.SAMFileReader;
 import accusa2.cli.parameters.OneSampleCallParameters;
-import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
+import accusa2.pileup.iterator.AbstractWindowIterator;
 import accusa2.pileup.iterator.OneSampleStrandedIterator;
 import accusa2.pileup.iterator.OneSampleUnstrandedIterator;
 import accusa2.process.parallelpileup.dispatcher.call.OneSampleCallWorkerDispatcher;
@@ -18,10 +18,12 @@ public class OneSampleCallWorker extends AbstractCallWorker {
 
 		this.parameters = parameters;
 		readersA = initReaders(parameters.getSampleA().getPathnames());
+
+		parallelPileupIterator  = buildIterator(workerDispatcher.next(this));
 	}
 
 	@Override
-	protected AbstractParallelPileupWindowIterator buildParallelPileupIterator(final AnnotatedCoordinate coordinate) {
+	protected AbstractWindowIterator buildIterator(final AnnotatedCoordinate coordinate) {
 		if (parameters.getSampleA().getPileupBuilderFactory().isDirected()) {
 			return new OneSampleStrandedIterator(coordinate, readersA, parameters.getSampleA(), parameters);
 		}
@@ -32,11 +34,6 @@ public class OneSampleCallWorker extends AbstractCallWorker {
 	@Override
 	protected void close() {
 		close(readersA);
-	}
-
-	@Override
-	protected void processParallelPileupIterator(AbstractParallelPileupWindowIterator parallelPileupIterator) {
-		// TODO Auto-generated method stub
 	}
 
 }

@@ -52,7 +52,8 @@ public abstract class AbstractPileupBuilder {
 
 		filteredSAMRecords	= 0;
 
-		this.sample		= sample;
+		baseConfig			= parameters.getBaseConfig();
+		this.sample			= sample;
 
 		isCached			= false;
 

@@ -11,7 +11,7 @@ import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.method.call.statistic.StatisticCalculator;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.ParallelPileup;
-import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
+import accusa2.pileup.iterator.AbstractWindowIterator;
 import accusa2.process.parallelpileup.dispatcher.call.AbstractCallWorkerDispatcher;
 
 public abstract class AbstractCallWorker extends AbstractWorker {
@@ -31,7 +31,7 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 	}
 
 	@Override
-	protected void processParallelPileupIterator(final AbstractParallelPileupWindowIterator parallelPileupIterator) {
+	protected void processParallelPileupIterator(final AbstractWindowIterator parallelPileupIterator) {
 		// print informative log
 		ACCUSA.printLog("Started screening contig " + 
 				parallelPileupIterator.getAnnotatedCoordinate().getSequenceName() + 

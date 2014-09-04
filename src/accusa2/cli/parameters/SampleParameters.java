@@ -5,6 +5,7 @@ import java.util.List;
 
 import accusa2.filter.samtag.SamTagFilter;
 import accusa2.pileup.builder.PileupBuilderFactory;
+import accusa2.pileup.builder.UndirectedPileupBuilderFactory;
 
 public class SampleParameters {
 
@@ -39,6 +40,8 @@ public class SampleParameters {
 		retainFlags	 	= 0;
 
 		samTagFilters 	= new ArrayList<SamTagFilter>();
+		pathnames 		= new String[0];
+		pileupBuilderFactory = new UndirectedPileupBuilderFactory();
 	}
 
 	/**

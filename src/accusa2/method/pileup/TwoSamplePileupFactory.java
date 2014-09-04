@@ -9,12 +9,14 @@ import net.sf.samtools.SAMSequenceRecord;
 import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
 import accusa2.cli.options.HelpOption;
+import accusa2.cli.options.MaxThreadOption;
 import accusa2.cli.options.PathnameOption;
 import accusa2.cli.options.ResultFileOption;
 import accusa2.cli.options.FormatOption;
 import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
+import accusa2.cli.options.pileupbuilder.TwoSamplePileupBuilderOption;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
 import accusa2.cli.parameters.SampleParameters;
@@ -44,6 +46,8 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 		SampleParameters sampleB = parameters.getSampleB();
 		acOptions.add(new PathnameOption('B', sampleB));
 
+		acOptions.add(new TwoSamplePileupBuilderOption(sampleA, sampleB));
+
 		acOptions.add(new BedCoordinatesOption(parameters));
 		acOptions.add(new ResultFileOption(parameters));
 		
@@ -53,10 +57,11 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 		} else {
 			acOptions.add(new FormatOption<AbstractOutputFormat>(parameters, getOuptutFormats()));
 		}
-		
+
 		acOptions.add(new BaseConfigOption(parameters));
-			acOptions.add(new WindowSizeOption(parameters));
-	
+		acOptions.add(new WindowSizeOption(parameters));
+
+		acOptions.add(new MaxThreadOption(parameters));
 		acOptions.add(new DebugOption(parameters));
 		acOptions.add(new HelpOption(CLI.getSingleton()));
 		acOptions.add(new VersionOption(CLI.getSingleton()));
@@ -84,7 +89,7 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 	public void initCoordinateProvider() throws Exception {
 		String[] pathnamesA = parameters.getSampleA().getPathnames();
 		String[] pathnamesB = parameters.getSampleB().getPathnames();
-		
+
 		List<SAMSequenceRecord> records = getSAMSequenceRecords(pathnamesA, pathnamesB);
 		coordinateProvider = new SAMCoordinateProvider(records);
 	}

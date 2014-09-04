@@ -25,6 +25,7 @@ import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
 import accusa2.cli.options.filter.FilterNHsamTagOption;
 import accusa2.cli.options.filter.FilterNMsamTagOption;
+import accusa2.cli.options.pileupbuilder.OneSamplePileupBuilderOption;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
 import accusa2.cli.parameters.OneSampleCallParameters;
@@ -65,7 +66,8 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 	public void initACOptions() {
 		SampleParameters sampleA = parameters.getSampleA();
 		acOptions.add(new PathnameOption(TwoSampleCallFactory.sample1, sampleA));
-
+		acOptions.add(new OneSamplePileupBuilderOption(sampleA));
+		
 		acOptions.add(new BedCoordinatesOption(parameters));
 		acOptions.add(new ResultFileOption(parameters));
 		if(getFormats().size() == 1 ) {

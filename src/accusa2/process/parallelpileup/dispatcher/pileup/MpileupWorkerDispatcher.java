@@ -22,7 +22,7 @@ public class MpileupWorkerDispatcher extends AbstractWorkerDispatcher<MpileupWor
 	}
 
 	@Override
-	protected MpileupWorker buildNextParallelPileupWorker() {
+	protected MpileupWorker buildNextWorker() {
 		return new MpileupWorker(this, parameters);
 	}
 

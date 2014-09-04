@@ -4,7 +4,6 @@ import net.sf.samtools.SAMFileReader;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.pileup.ParallelPileup;
-import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.util.AnnotatedCoordinate;
 
 public class OneSampleUnstrandedIterator extends AbstractOneSampleIterator {
@@ -18,12 +17,12 @@ public class OneSampleUnstrandedIterator extends AbstractOneSampleIterator {
 	}
 
 	protected void advance() {
-		++genomicPositionA;
+		location.genomicPosition++;
 	}
 
 	@Override
-	protected int advance(int genomicPosition, STRAND strand) {
-		return ++genomicPosition;
+	protected void advance(Location location) {
+		location.genomicPosition++;
 	}
 
 	@Override
@@ -32,7 +31,7 @@ public class OneSampleUnstrandedIterator extends AbstractOneSampleIterator {
 			return null;
 		}
 
-		parallelPileup.setFilterCountsA(getCounts(genomicPositionA, strandA, pileupBuildersA));
+		parallelPileup.setFilterCountsA(getCounts(null, pileupBuilders));
 
 		// advance to the next position
 		advance();
@@ -43,11 +42,11 @@ public class OneSampleUnstrandedIterator extends AbstractOneSampleIterator {
 	@Override
 	public boolean hasNext() {
 		while (hasNextA()) {
-			parallelPileup.setPosition(genomicPositionA);
+			parallelPileup.setPosition(location.genomicPosition);
 				
 			// complement bases if one sample is unstranded and 
 			// the other is stranded and maps to the opposite strand
-			parallelPileup.setPileupsA(getPileups(genomicPositionA, strandA, pileupBuildersA));
+			parallelPileup.setPileupsA(getPileups(null, pileupBuilders));
 			// set B
 			final boolean isVariant = isVariant(parallelPileup);
 			if (isVariant) {

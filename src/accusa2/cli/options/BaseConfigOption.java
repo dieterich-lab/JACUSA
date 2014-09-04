@@ -14,8 +14,8 @@ public class BaseConfigOption extends AbstractACOption {
 	public BaseConfigOption(AbstractParameters parameters) {
 		this.parameters = parameters;
 
-		opt = 'B';
-		longOpt = "bases";
+		opt = 'C';
+		longOpt = "base-config";
 	}
 	
 	@SuppressWarnings("static-access")

@@ -6,7 +6,6 @@ import accusa2.cli.parameters.SampleParameters;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.ParallelPileup;
-import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.WindowedPileup;
 import accusa2.pileup.builder.AbstractPileupBuilder;
 import accusa2.util.AnnotatedCoordinate;
@@ -34,16 +33,16 @@ public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
 		return true;
 	}
 
-	protected int advance(int currentGenomicPosition, STRAND strand) {
-		return currentGenomicPosition;
+	protected void advance(Location location) {
+		location.genomicPosition++;
 	}
 
-	protected int hasNext(final int currentGenomicPosition, STRAND strand, final AbstractPileupBuilder[] pileupBuilders) {
-		return -1;
+	protected boolean hasNext(Location location, final AbstractPileupBuilder[] pileupBuilders) {
+		return false; // TODO
 	}
 
 	@Override
-	protected WindowedPileup[] getPileups(int genomicPosition, STRAND strand, AbstractPileupBuilder[] pileupBuilders) {
+	protected WindowedPileup[] getPileups(Location location, AbstractPileupBuilder[] pileupBuilders) {
 		int replicates = pileupBuilders.length;
 		
 		WindowedPileup[] pileups = new WindowedPileup[replicates];
@@ -51,10 +50,10 @@ public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
 			pileups[replicate] = new WindowedPileup(baseConfig);
 		}
 
-		for (; genomicPosition < getAnnotatedCoordinate().getEnd(); ++genomicPosition) {
-			int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(genomicPosition);
+		for (; location.genomicPosition < getAnnotatedCoordinate().getEnd(); ++location.genomicPosition) {
+			int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(location.genomicPosition);
 			for(int replicate = 0; replicate < replicates; ++replicate) {
-				pileups[replicate].addPileup(pileupBuilders[replicate].getPileup(windowPosition, strand));
+				pileups[replicate].addPileup(pileupBuilders[replicate].getPileup(windowPosition, location.strand));
 			}
 		}
 
@@ -63,7 +62,7 @@ public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
 
 	// FIXME currently no filtering
 	@Override
-	protected Counts[][] getCounts(int genomicPosition, STRAND strand, AbstractPileupBuilder[] pileupBuilders) {
+	protected Counts[][] getCounts(Location location, AbstractPileupBuilder[] pileupBuilders) {
 		/*
 		int n = pileupBuilders.length;
 		Counts[][] counts = new Counts[n][filterCount];
@@ -97,8 +96,8 @@ public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
 	}
 
 	protected void advance() {
-		genomicPositionA++;
-		genomicPositionB++;
+		locationA.genomicPosition++;
+		locationB.genomicPosition++;
 	}
 
 }

@@ -23,7 +23,7 @@ public class TwoSampleCallWorkerDispatcher extends AbstractCallWorkerDispatcher<
 	}
 
 	@Override
-	protected TwoSampleCallWorker buildNextParallelPileupWorker() {
+	protected TwoSampleCallWorker buildNextWorker() {
 		return new TwoSampleCallWorker(this, parameters);
 	}
 

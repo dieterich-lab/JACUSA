@@ -16,18 +16,18 @@ import accusa2.util.CoordinateProvider;
 
 public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 
-	private CoordinateProvider coordinateProvider;
+	protected CoordinateProvider coordinateProvider;
 
-	private int maxThreads;
-	private final List<T> threadContainer;
-	private final List<T> runningThreads;
-	private int lastThreadId;
+	protected int maxThreads;
+	protected final List<T> workerContainer;
+	protected final List<T> runningWorkers;
+	protected int lastThreadId;
 	
-	private Integer comparisons;
+	protected Integer comparisons;
 
 	protected Output output;
-	private AbstractOutputFormat format;
-	private boolean isDebug;
+	protected AbstractOutputFormat format;
+	protected boolean isDebug;
 
 	public AbstractWorkerDispatcher(
 			final CoordinateProvider coordinateProvider, 
@@ -38,8 +38,8 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 		this.coordinateProvider = coordinateProvider;
 
 		this.maxThreads = maxThreads;
-		threadContainer = new ArrayList<T>(maxThreads);
-		runningThreads	= new ArrayList<T>(maxThreads);
+		workerContainer = new ArrayList<T>(maxThreads);
+		runningWorkers	= new ArrayList<T>(maxThreads);
 		lastThreadId	= -1;
 		
 		comparisons 	= 0;
@@ -49,7 +49,7 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 	}
 
 	protected abstract void processFinishedWorker(final T processParallelPileup);
-	protected abstract T buildNextParallelPileupWorker();	
+	protected abstract T buildNextWorker();	
 	protected abstract void processTmpLine(final String line) throws IOException;
 	protected abstract String getHeader();
 	
@@ -57,7 +57,7 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 		final int threadId = worker.getThreadId();
 
 		if (lastThreadId >= 0) {
-			threadContainer.get(lastThreadId).setNextThreadId(threadId);
+			workerContainer.get(lastThreadId).setNextThreadId(threadId);
 		}
 		lastThreadId = threadId;
 		AnnotatedCoordinate annotatedCoordinate = coordinateProvider.next();
@@ -79,30 +79,30 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 	public final int run() {
 		synchronized (this) {
 
-			while (hasNext() || !threadContainer.isEmpty()) {
+			while (hasNext() || !workerContainer.isEmpty()) {
 
 				// clean finished threads
-				for (int i = 0; i < runningThreads.size(); ++i) {
-					T processParallelPileupThread = runningThreads.get(i);
+				for (int i = 0; i < runningWorkers.size(); ++i) {
+					T processParallelPileupThread = runningWorkers.get(i);
 
 					if(processParallelPileupThread.isFinished()) {
 						comparisons += processParallelPileupThread.getComparisons();
 						processFinishedWorker(processParallelPileupThread);
-						runningThreads.remove(processParallelPileupThread);
+						runningWorkers.remove(processParallelPileupThread);
 					}
 				}
 
 				// fill thread container
-				while (runningThreads.size() < maxThreads && hasNext()) {
-					T processParallelPileupThread = buildNextParallelPileupWorker();
-					threadContainer.add(processParallelPileupThread);
-					runningThreads.add(processParallelPileupThread);
+				while (runningWorkers.size() < maxThreads && hasNext()) {
+					T worker = buildNextWorker();
+					workerContainer.add(worker);
+					runningWorkers.add(worker);
 
-					processParallelPileupThread.start();
+					worker.start();
 				}
 
 				// computation finished
-				if (! hasNext() && runningThreads.isEmpty()) {
+				if (! hasNext() && runningWorkers.isEmpty()) {
 					break;
 				}
 
@@ -125,7 +125,7 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 	 */
 
 	public List<T> getThreadContainer() {
-		return threadContainer;
+		return workerContainer;
 	}
 
 	public void addComparisons(int comparisons) {
@@ -144,7 +144,10 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 
 		// write Header
 		try {
-			output.write(getHeader());
+			String header = getHeader();
+			if (header != null) {
+				output.write(getHeader());
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;

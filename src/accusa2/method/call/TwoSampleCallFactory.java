@@ -1,6 +1,5 @@
 package accusa2.method.call;
 
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +21,7 @@ import accusa2.cli.options.FormatOption;
 import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
+import accusa2.cli.options.pileupbuilder.TwoSamplePileupBuilderOption;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
 import accusa2.cli.parameters.SampleParameters;
@@ -69,6 +69,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		SampleParameters sampleB = parameters.getSampleB();
 		acOptions.add(new PathnameOption(sample2, sampleB));
 
+		acOptions.add(new TwoSamplePileupBuilderOption(sampleA, sampleB));
+		
 		acOptions.add(new BedCoordinatesOption(parameters));
 		acOptions.add(new ResultFileOption(parameters));
 		if(getResultFormats().size() == 1 ) {

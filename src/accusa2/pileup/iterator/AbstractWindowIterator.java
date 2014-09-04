@@ -16,22 +16,22 @@ import accusa2.pileup.builder.AbstractPileupBuilder;
 import accusa2.pileup.builder.PileupBuilderFactory;
 import accusa2.util.AnnotatedCoordinate;
 
-public abstract class AbstractParallelPileupWindowIterator implements Iterator<ParallelPileup> {
+public abstract class AbstractWindowIterator implements Iterator<ParallelPileup> {
 
-	private final AnnotatedCoordinate coordinate;
-	private FilterConfig filterconfig;
+	protected final AnnotatedCoordinate coordinate;
+	protected FilterConfig filterconfig;
 
-	public AbstractParallelPileupWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final AbstractParameters parameters) {
+	public AbstractWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final AbstractParameters parameters) {
 		this.coordinate = annotatedCoordinate;
 
 		filterconfig 	= parameters.getFilterConfig();
 	}
 
-	protected int init(STRAND strand, final boolean isDirectional, final AbstractPileupBuilder[] pileupBuilders) {
+	protected void initLocation(Location location, final boolean isDirectional, final AbstractPileupBuilder[] pileupBuilders) {
 		final SAMRecord record = getNextValidRecord(coordinate.getStart(), pileupBuilders);
 		if (record == null) {
-			strand = STRAND.UNKNOWN;
-			return -1;
+			location.strand = STRAND.UNKNOWN;
+			location.genomicPosition = -1;
 		}
 
 		final int genomicPosition = record.getAlignmentStart();
@@ -39,21 +39,20 @@ public abstract class AbstractParallelPileupWindowIterator implements Iterator<P
 			pileupBuilder.adjustWindowStart(genomicPosition);
 		}
 
+		location.genomicPosition = genomicPosition;
 		if (isDirectional) {
 			if (record.getReadNegativeStrandFlag()) {
-				strand = STRAND.REVERSE;
+				location.strand = STRAND.REVERSE;
 			} else {
-				strand = STRAND.FORWARD;
+				location.strand = STRAND.FORWARD;
 			}
 		}
-
-		return genomicPosition;
 	}
 		
 	public abstract boolean hasNext();
 	public abstract ParallelPileup next();
 	protected abstract void advance();
-	protected abstract int advance(int genomicPosition, STRAND strand);
+	protected abstract void advance(Location location);
 	
 	/**
 	 * 
@@ -93,11 +92,11 @@ public abstract class AbstractParallelPileupWindowIterator implements Iterator<P
 	}
 
 	// TODO make this more quantitative
-	protected boolean isCovered(int genomicPosition, STRAND strand, AbstractPileupBuilder[] pileupBuilders) {
-		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(genomicPosition);
+	protected boolean isCovered(Location location, AbstractPileupBuilder[] pileupBuilders) {
+		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(location.genomicPosition);
 
 		for (AbstractPileupBuilder pileupBuilder : pileupBuilders) {
-			if (! pileupBuilder.isCovered(windowPosition, strand)) {
+			if (! pileupBuilder.isCovered(windowPosition, location.strand)) {
 				return false;
 			}
 		}
@@ -105,25 +104,25 @@ public abstract class AbstractParallelPileupWindowIterator implements Iterator<P
 		return true;
 	}
 
-	protected Pileup[] getPileups(int genomicPosition, STRAND strand, AbstractPileupBuilder[] pileupBuilders) {
+	protected Pileup[] getPileups(Location location, AbstractPileupBuilder[] pileupBuilders) {
 		int n = pileupBuilders.length;
 		Pileup[] pileups = new DefaultPileup[n];
 
-		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(genomicPosition);
+		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(location.genomicPosition);
 		for(int i = 0; i < n; ++i) {
-			pileups[i] = pileupBuilders[i].getPileup(windowPosition, strand);
+			pileups[i] = pileupBuilders[i].getPileup(windowPosition, location.strand);
 		}
 
 		return pileups;
 	}
 
-	protected Counts[][] getCounts(int genomicPosition, STRAND strand, AbstractPileupBuilder[] pileupBuilders) {
+	protected Counts[][] getCounts(Location location, AbstractPileupBuilder[] pileupBuilders) {
 		int n = pileupBuilders.length;
 		Counts[][] counts = new Counts[n][filterconfig.getFactories().size()];
 
-		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(genomicPosition);
+		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(location.genomicPosition);
 		for(int i = 0; i < n; ++i) {
-			counts[i] = pileupBuilders[i].getFilteredCounts(windowPosition, strand);
+			counts[i] = pileupBuilders[i].getFilteredCounts(windowPosition, location.strand);
 		}
 
 		return counts;
@@ -153,27 +152,27 @@ public abstract class AbstractParallelPileupWindowIterator implements Iterator<P
 		return ret;
 	}
 
-	protected int hasNext(int currentGenomicPosition, STRAND strand, final AbstractPileupBuilder[] pileupBuilders) {
+	protected boolean hasNext(Location location, final AbstractPileupBuilder[] pileupBuilders) {
 		// within
-		while (currentGenomicPosition <= coordinate.getEnd()) {
-			if (pileupBuilders[0].isContainedInWindow(currentGenomicPosition)) {
-				if (isCovered(currentGenomicPosition, strand, pileupBuilders)) {
-					return currentGenomicPosition;
+		while (location.genomicPosition <= coordinate.getEnd()) {
+			if (pileupBuilders[0].isContainedInWindow(location.genomicPosition)) {
+				if (isCovered(location, pileupBuilders)) {
+					return true;
 				} else {
 					// move along the window
-					currentGenomicPosition = advance(currentGenomicPosition, strand);
+					advance(location);
 				}
 			} else {
-				final SAMRecord record = getNextValidRecord(currentGenomicPosition, pileupBuilders);
+				final SAMRecord record = getNextValidRecord(location.genomicPosition, pileupBuilders);
 				if (record == null) {
-					return -1;
-				} if (! adjustWindowStart(currentGenomicPosition, pileupBuilders)) {
-					return -1;
+					return false;
+				} if (! adjustWindowStart(location.genomicPosition, pileupBuilders)) {
+					return false;
 				}
 			}
 		}
 
-		return -1;
+		return false;
 	}
 
 	protected Pileup[] complementPileups(Pileup[] pileups) {
@@ -208,6 +207,18 @@ public abstract class AbstractParallelPileupWindowIterator implements Iterator<P
 	@Override
 	public void remove() {
 		// not needed
+	}
+
+	protected class Location {
+
+		protected int genomicPosition;
+		protected STRAND strand;
+
+		public Location(int genomicPosition, STRAND strand) {
+			this.genomicPosition = genomicPosition;
+			this.strand = strand;
+		}
+
 	}
 
 }

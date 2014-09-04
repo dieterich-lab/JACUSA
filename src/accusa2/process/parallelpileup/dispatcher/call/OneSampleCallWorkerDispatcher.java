@@ -33,7 +33,7 @@ public class OneSampleCallWorkerDispatcher extends AbstractCallWorkerDispatcher<
 	}
 
 	@Override
-	protected OneSampleCallWorker buildNextParallelPileupWorker() {
+	protected OneSampleCallWorker buildNextWorker() {
 		return new OneSampleCallWorker(this, parameters);
 	}
 

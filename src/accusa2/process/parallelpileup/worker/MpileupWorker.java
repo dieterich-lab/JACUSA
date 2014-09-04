@@ -7,7 +7,7 @@ import accusa2.ACCUSA;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.cli.parameters.TwoSamplePileupParameters;
 import accusa2.pileup.ParallelPileup;
-import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
+import accusa2.pileup.iterator.AbstractWindowIterator;
 import accusa2.pileup.iterator.AbstractTwoSampleIterator;
 import accusa2.pileup.iterator.TwoSampleStrandedIterator;
 import accusa2.pileup.iterator.TwoSampleUnstrandedIterator;
@@ -26,10 +26,12 @@ public class MpileupWorker extends AbstractWorker {
 
 		readersA = initReaders(parameters.getSampleA().getPathnames());
 		readersB = initReaders(parameters.getSampleB().getPathnames());
+		
+		parallelPileupIterator  = buildIterator(workerDispatcher.next(this));
 	}
 
 	@Override
-	protected void processParallelPileupIterator(AbstractParallelPileupWindowIterator parallelPileupIterator) {
+	protected void processParallelPileupIterator(AbstractWindowIterator parallelPileupIterator) {
 		ACCUSA.printLog("Started screening contig " + 
 				parallelPileupIterator.getAnnotatedCoordinate().getSequenceName() + 
 				":" + 
@@ -53,7 +55,7 @@ public class MpileupWorker extends AbstractWorker {
 	}
 
 	@Override
-	protected AbstractTwoSampleIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate) {
+	protected AbstractTwoSampleIterator buildIterator(AnnotatedCoordinate coordinate) {
 		SampleParameters sampleA = parameters.getSampleA();
 		SampleParameters sampleB = parameters.getSampleB();
 

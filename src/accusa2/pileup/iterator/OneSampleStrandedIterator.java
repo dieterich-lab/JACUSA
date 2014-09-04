@@ -18,23 +18,21 @@ public class OneSampleStrandedIterator extends AbstractOneSampleIterator {
 	}
 
 	@Override
-	protected int advance(int currentGenomicPosition, STRAND strand) {
-		switch (strand) {
+	protected void advance(Location location) {
+		switch (location.strand) {
 		case FORWARD:
-			strand = STRAND.REVERSE;
+			location.strand = STRAND.REVERSE;
 			break;
 		
 		case REVERSE:
-			strand = STRAND.FORWARD;
-			currentGenomicPosition++;
+			location.strand = STRAND.FORWARD;
+			location.genomicPosition++;
 		
 		case UNKNOWN:
 		default:
-			currentGenomicPosition++;
+			location.genomicPosition++;
 			break;
 		}
-
-		return currentGenomicPosition;
 	}
 
 	@Override
@@ -43,8 +41,8 @@ public class OneSampleStrandedIterator extends AbstractOneSampleIterator {
 			return null;
 		}
 
-		if(strandA == STRAND.REVERSE) {
-			parallelPileup.setFilterCountsA(complementCounts(getCounts(genomicPositionA, strandA, pileupBuildersA)));
+		if(location.strand == STRAND.REVERSE) {
+			parallelPileup.setFilterCountsA(complementCounts(getCounts(location, pileupBuilders)));
 		}
 
 		// TODO set B
@@ -58,14 +56,12 @@ public class OneSampleStrandedIterator extends AbstractOneSampleIterator {
 	@Override
 	public boolean hasNext() {
 		while (hasNextA()) {
-			final STRAND strandA = parallelPileup.getStrandA();
-
-			parallelPileup.setPosition(genomicPositionA);
+			parallelPileup.setPosition(location.genomicPosition);
 
 			// complement bases if one sample is unstranded and 
 			// the other is stranded and maps to the opposite strand
-			parallelPileup.setPileupsA(getPileups(genomicPositionA, strandA, pileupBuildersA));
-			if(strandA == STRAND.REVERSE) {
+			parallelPileup.setPileupsA(getPileups(location, pileupBuilders));
+			if(location.strand == STRAND.REVERSE) {
 				parallelPileup.setPileupsA(complementPileups(parallelPileup.getPileupsA()));
 			}
 
@@ -83,10 +79,10 @@ public class OneSampleStrandedIterator extends AbstractOneSampleIterator {
 	}
 
 	protected void advance() {
-		if (strandA == STRAND.FORWARD) {
-			strandA = STRAND.REVERSE;
+		if (location.strand == STRAND.FORWARD) {
+			location.strand = STRAND.REVERSE;
 		} else {
-			genomicPositionA++;
+			location.genomicPosition++;
 		}
 	}
 

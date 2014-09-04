@@ -7,14 +7,14 @@ import net.sf.samtools.SAMFileReader;
 import accusa2.io.Output;
 import accusa2.io.TmpWriter;
 import accusa2.io.format.output.AbstractOutputFormat;
-import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
+import accusa2.pileup.iterator.AbstractWindowIterator;
 import accusa2.process.parallelpileup.dispatcher.AbstractWorkerDispatcher;
 import accusa2.util.AnnotatedCoordinate;
 
 public abstract class AbstractWorker extends Thread {
 
 	protected AbstractWorkerDispatcher<? extends AbstractWorker> workerDispatcher;
-	protected AbstractParallelPileupWindowIterator parallelPileupIterator;
+	protected AbstractWindowIterator parallelPileupIterator;
 
 	protected final int maxThreads;
 	protected final int threadId;
@@ -45,8 +45,6 @@ public abstract class AbstractWorker extends Thread {
 		threadId				= workerDispatcher.getThreadContainer().size();
 		nextThreadId			= -1;
 
-		parallelPileupIterator  = buildParallelPileupIterator(workerDispatcher.next(this));
-
 		final String tmpFilename = output.getInfo() + "_tmp" + String.valueOf(threadId) + ".gz";
 		try {
 			tmpOutputWriter		= new TmpWriter(tmpFilename);
@@ -54,6 +52,9 @@ public abstract class AbstractWorker extends Thread {
 			e.printStackTrace();
 			return;
 		}
+		this.output				= output;
+		this.format				= format;
+		
 	}
 
 	private synchronized void writeNextThreadID() {
@@ -103,7 +104,7 @@ public abstract class AbstractWorker extends Thread {
 			}
 
 			if (annotatedCoordinate != null) {
-				parallelPileupIterator = buildParallelPileupIterator(annotatedCoordinate);
+				parallelPileupIterator = buildIterator(annotatedCoordinate);
 				processParallelPileupIterator(parallelPileupIterator);
 
 				if (maxThreads > 1) {
@@ -187,7 +188,7 @@ public abstract class AbstractWorker extends Thread {
 	 * 
 	 * @param parallelPileupIterator
 	 */
-	abstract protected void processParallelPileupIterator(AbstractParallelPileupWindowIterator parallelPileupIterator);
+	abstract protected void processParallelPileupIterator(AbstractWindowIterator parallelPileupIterator);
 
 	/**
 	 * 
@@ -195,7 +196,7 @@ public abstract class AbstractWorker extends Thread {
 	 * @param parameters
 	 * @return
 	 */
-	abstract protected AbstractParallelPileupWindowIterator buildParallelPileupIterator(AnnotatedCoordinate coordinate);
+	abstract protected AbstractWindowIterator buildIterator(AnnotatedCoordinate coordinate);
 
 	public final int getComparisons() {
 		return comparisons;

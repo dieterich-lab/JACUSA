@@ -3,7 +3,6 @@ package accusa2.pileup.iterator;
 import net.sf.samtools.SAMFileReader;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.SampleParameters;
-import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.ParallelPileup;
 import accusa2.util.AnnotatedCoordinate;
 
@@ -22,24 +21,24 @@ public class TwoSampleUnstrandedIterator extends AbstractTwoSampleIterator {
 	@Override
 	public boolean hasNext() {
 		while (hasNextA() && hasNextB()) {
-			final int compare = new Integer(genomicPositionA).compareTo(genomicPositionB);
+			final int compare = new Integer(locationA.genomicPosition).compareTo(locationB.genomicPosition);
 
 			switch (compare) {
 
 			case -1:
 				// adjust actualPosition; instead of iterating jump to specific
 				// position
-				adjustCurrentGenomicPosition(genomicPositionB, pileupBuildersA);
-				genomicPositionA = genomicPositionB;
+				adjustCurrentGenomicPosition(locationB.genomicPosition, pileupBuildersA);
+				locationA.genomicPosition = locationB.genomicPosition;
 				break;
 
 			case 0:
-				parallelPileup.setPosition(genomicPositionA);
+				parallelPileup.setPosition(locationA.genomicPosition);
 				
 				// complement bases if one sample is unstranded and 
 				// the other is stranded and maps to the opposite strand
-				parallelPileup.setPileupsA(getPileups(genomicPositionA, strandA, pileupBuildersA));
-				parallelPileup.setPileupsB(getPileups(genomicPositionB, strandB, pileupBuildersB));
+				parallelPileup.setPileupsA(getPileups(locationA, pileupBuildersA));
+				parallelPileup.setPileupsB(getPileups(locationB, pileupBuildersB));
 
 				final boolean isVariant = isVariant(parallelPileup);
 				if (isVariant) {
@@ -52,8 +51,8 @@ public class TwoSampleUnstrandedIterator extends AbstractTwoSampleIterator {
 			case 1:
 				// adjust actualPosition; instead of iterating jump to specific
 				// position
-				adjustCurrentGenomicPosition(genomicPositionA, pileupBuildersB);
-				genomicPositionB = genomicPositionA;
+				adjustCurrentGenomicPosition(locationA.genomicPosition, pileupBuildersB);
+				locationB.genomicPosition = locationA.genomicPosition;
 				break;
 			}
 		}
@@ -67,8 +66,10 @@ public class TwoSampleUnstrandedIterator extends AbstractTwoSampleIterator {
 			return null;
 		}
 
-		parallelPileup.setFilterCountsA(getCounts(genomicPositionA, strandB, pileupBuildersA));
-		parallelPileup.setFilterCountsB(getCounts(genomicPositionB, strandB, pileupBuildersB));
+		if (filterconfig.hasFiters()) {
+			parallelPileup.setFilterCountsA(getCounts(locationA, pileupBuildersA));
+			parallelPileup.setFilterCountsB(getCounts(locationB, pileupBuildersB));
+		}
 
 		// advance to the next position
 		advance();
@@ -78,13 +79,13 @@ public class TwoSampleUnstrandedIterator extends AbstractTwoSampleIterator {
 
 	@Override
 	protected void advance() {
-		++genomicPositionA;
-		++genomicPositionB;
+		locationA.genomicPosition++;
+		locationB.genomicPosition++;
 	}
 
 	@Override
-	protected int advance(int genomicPosition, STRAND strand) {
-		return ++genomicPosition;
+	protected void advance(Location location) {
+		location.genomicPosition++;
 	}
 
 }

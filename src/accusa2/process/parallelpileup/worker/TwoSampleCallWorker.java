@@ -3,7 +3,7 @@ package accusa2.process.parallelpileup.worker;
 import net.sf.samtools.SAMFileReader;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.cli.parameters.TwoSampleCallParameters;
-import accusa2.pileup.iterator.AbstractParallelPileupWindowIterator;
+import accusa2.pileup.iterator.AbstractWindowIterator;
 import accusa2.pileup.iterator.TwoSampleStrandedIterator;
 import accusa2.pileup.iterator.TwoSampleUnstrandedIterator;
 import accusa2.process.parallelpileup.dispatcher.call.TwoSampleCallWorkerDispatcher;
@@ -21,10 +21,12 @@ public class TwoSampleCallWorker extends AbstractCallWorker {
 
 		readersA = initReaders(parameters.getSampleA().getPathnames());
 		readersB = initReaders(parameters.getSampleA().getPathnames());
+
+		parallelPileupIterator  = buildIterator(workerDispatcher.next(this));
 	}
 
 	@Override
-	protected AbstractParallelPileupWindowIterator buildParallelPileupIterator(final AnnotatedCoordinate coordinate) {
+	protected AbstractWindowIterator buildIterator(final AnnotatedCoordinate coordinate) {
 		SampleParameters sampleA = parameters.getSampleA();
 		SampleParameters sampleB = parameters.getSampleB();
 
