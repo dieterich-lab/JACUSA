@@ -1,6 +1,6 @@
 package accusa2.filter.factory;
 
-import accusa2.filter.cache.AbstractFilterCount;
+import accusa2.filter.cache.AbstractCountFilterCache;
 import accusa2.filter.feature.AbstractFeatureFilter;
 
 //TODO make this generic
@@ -62,7 +62,7 @@ public class CopyOfDistanceFilterFactory extends AbstractFilterFactory {
 */
 	
 	@Override
-	public AbstractFilterCount getFilterCountInstance() {
+	public AbstractCountFilterCache getFilterCountInstance() {
 		return null; // FIXME
 	}
 

@@ -8,20 +8,21 @@ import accusa2.cli.parameters.AbstractParameters;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.builder.WindowCache;
 
-public abstract class AbstractFilterCount {
+public abstract class AbstractCountFilterCache {
 
 	private char c;
 	protected WindowCache cache;
 	protected boolean[] visited;
 	protected BaseConfig baseConfig;
 
-	public AbstractFilterCount(char c, AbstractParameters parameters) {
+	public AbstractCountFilterCache(char c, AbstractParameters parameters) {
 		this.c = c;
 
 		int windowSize = parameters.getWindowSize();
 		int baseLength = parameters.getBaseConfig().getBases().length;
 
 		cache = new WindowCache(windowSize, baseLength);
+		visited = new boolean[windowSize];
 		Arrays.fill(visited, false);
 		
 		baseConfig = parameters.getBaseConfig();

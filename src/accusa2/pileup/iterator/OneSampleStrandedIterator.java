@@ -5,16 +5,18 @@ import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.DefaultPileup.STRAND;
+import accusa2.pileup.iterator.variant.Variant;
 import accusa2.util.AnnotatedCoordinate;
 
 public class OneSampleStrandedIterator extends AbstractOneSampleIterator {
 
 	public OneSampleStrandedIterator(
-			final AnnotatedCoordinate annotatedCoordinate, 
+			final AnnotatedCoordinate annotatedCoordinate,
+			final Variant filter,
 			final SAMFileReader[] readers, 
 			final SampleParameters sample,
 			final AbstractParameters parameters) {
-		super(annotatedCoordinate, readers, sample, parameters);
+		super(annotatedCoordinate, filter, readers, sample, parameters);
 	}
 
 	@Override
@@ -56,6 +58,7 @@ public class OneSampleStrandedIterator extends AbstractOneSampleIterator {
 	@Override
 	public boolean hasNext() {
 		while (hasNextA()) {
+			parallelPileup.setContig(coordinate.getSequenceName());
 			parallelPileup.setPosition(location.genomicPosition);
 
 			// complement bases if one sample is unstranded and 
@@ -67,8 +70,7 @@ public class OneSampleStrandedIterator extends AbstractOneSampleIterator {
 
 			// TODO set B
 
-			final boolean isVariant = isVariant(parallelPileup);
-			if (isVariant) {
+			if (filter.isValid(parallelPileup)) {
 				return true;
 			} else {
 				advance();

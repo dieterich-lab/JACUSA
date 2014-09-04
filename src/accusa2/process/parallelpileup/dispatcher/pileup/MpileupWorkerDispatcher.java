@@ -15,7 +15,7 @@ public class MpileupWorkerDispatcher extends AbstractWorkerDispatcher<MpileupWor
 		super(coordinateProvider, parameters.getMaxThreads(), parameters.getOutput(), parameters.getFormat(), parameters.isDebug());
 		this.parameters = parameters;
 	}
-	
+
 	@Override
 	protected void processFinishedWorker(MpileupWorker processParallelPileup) {
 		addComparisons(processParallelPileup.getComparisons());

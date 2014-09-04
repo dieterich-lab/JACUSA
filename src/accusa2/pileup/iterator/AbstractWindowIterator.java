@@ -14,16 +14,19 @@ import accusa2.pileup.Pileup;
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.builder.AbstractPileupBuilder;
 import accusa2.pileup.builder.PileupBuilderFactory;
+import accusa2.pileup.iterator.variant.Variant;
 import accusa2.util.AnnotatedCoordinate;
 
 public abstract class AbstractWindowIterator implements Iterator<ParallelPileup> {
 
 	protected final AnnotatedCoordinate coordinate;
 	protected FilterConfig filterconfig;
-
-	public AbstractWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final AbstractParameters parameters) {
+	protected Variant filter;
+	
+	public AbstractWindowIterator(final AnnotatedCoordinate annotatedCoordinate, final Variant filter, final AbstractParameters parameters) {
 		this.coordinate = annotatedCoordinate;
-
+		
+		this.filter		= filter;
 		filterconfig 	= parameters.getFilterConfig();
 	}
 
@@ -32,6 +35,7 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 		if (record == null) {
 			location.strand = STRAND.UNKNOWN;
 			location.genomicPosition = -1;
+			return;
 		}
 
 		final int genomicPosition = record.getAlignmentStart();
@@ -94,7 +98,10 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 	// TODO make this more quantitative
 	protected boolean isCovered(Location location, AbstractPileupBuilder[] pileupBuilders) {
 		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(location.genomicPosition);
-
+		if (windowPosition < 0) {
+			return false;
+		}
+		
 		for (AbstractPileupBuilder pileupBuilder : pileupBuilders) {
 			if (! pileupBuilder.isCovered(windowPosition, location.strand)) {
 				return false;
@@ -128,25 +135,21 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 		return counts;
 	}
 
-	protected boolean isVariant(ParallelPileup parallelPileup)  {
-		return true;
-	}
-
-	protected boolean adjustCurrentGenomicPosition(int targetGenomicPosition, AbstractPileupBuilder[] pileupBuilders) {
+	protected boolean adjustCurrentGenomicPosition(Location location, AbstractPileupBuilder[] pileupBuilders) {
 		boolean ret = false;
 
-		if (! pileupBuilders[0].isContainedInWindow(targetGenomicPosition)) {
-			ret = adjustWindowStart(targetGenomicPosition, pileupBuilders);
+		if (! pileupBuilders[0].isContainedInWindow(location.genomicPosition)) {
+			ret = adjustWindowStart(location, pileupBuilders);
 		}
 
 		return ret;
 	}
 
-	protected boolean adjustWindowStart(int genomicWindowStart, AbstractPileupBuilder[] pileupBuilders) {
+	protected boolean adjustWindowStart(Location location, AbstractPileupBuilder[] pileupBuilders) {
 		boolean ret = false;
 
 		for (AbstractPileupBuilder pileupBuilder : pileupBuilders) {
-			ret |= pileupBuilder.adjustWindowStart(genomicWindowStart);
+			ret |= pileupBuilder.adjustWindowStart(location.genomicPosition);
 		}
 
 		return ret;
@@ -166,7 +169,7 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 				final SAMRecord record = getNextValidRecord(location.genomicPosition, pileupBuilders);
 				if (record == null) {
 					return false;
-				} if (! adjustWindowStart(location.genomicPosition, pileupBuilders)) {
+				} if (! adjustWindowStart(location, pileupBuilders)) {
 					return false;
 				}
 			}
@@ -208,6 +211,10 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 	public void remove() {
 		// not needed
 	}
+
+	/*
+	 * Mean to be used only by Iterator(s)
+	 */
 
 	protected class Location {
 

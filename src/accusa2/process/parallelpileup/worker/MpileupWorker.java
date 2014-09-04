@@ -11,6 +11,8 @@ import accusa2.pileup.iterator.AbstractWindowIterator;
 import accusa2.pileup.iterator.AbstractTwoSampleIterator;
 import accusa2.pileup.iterator.TwoSampleStrandedIterator;
 import accusa2.pileup.iterator.TwoSampleUnstrandedIterator;
+import accusa2.pileup.iterator.variant.AllParallelPileup;
+import accusa2.pileup.iterator.variant.Variant;
 import accusa2.process.parallelpileup.dispatcher.pileup.MpileupWorkerDispatcher;
 import accusa2.util.AnnotatedCoordinate;
 
@@ -20,12 +22,16 @@ public class MpileupWorker extends AbstractWorker {
 	private final SAMFileReader[] readersA;
 	private final SAMFileReader[] readersB;
 
+	private final Variant variant;
+	
 	public MpileupWorker(MpileupWorkerDispatcher workerDispatcher, TwoSamplePileupParameters parameters) {
 		super(workerDispatcher, parameters.getMaxThreads(), parameters.getOutput(), parameters.getFormat());
 		this.parameters = parameters;
 
 		readersA = initReaders(parameters.getSampleA().getPathnames());
 		readersB = initReaders(parameters.getSampleB().getPathnames());
+		
+		variant = new AllParallelPileup();
 		
 		parallelPileupIterator  = buildIterator(workerDispatcher.next(this));
 	}
@@ -61,10 +67,10 @@ public class MpileupWorker extends AbstractWorker {
 
 		if (sampleA.getPileupBuilderFactory().isDirected() || 
 				sampleB.getPileupBuilderFactory().isDirected()) {
-			return new TwoSampleStrandedIterator(coordinate, readersA, readersB, sampleA, sampleB, parameters);
+			return new TwoSampleStrandedIterator(coordinate, variant, readersA, readersB, sampleA, sampleB, parameters);
 		}
 		
-		return new TwoSampleUnstrandedIterator(coordinate, readersA, readersB, sampleA, sampleB, parameters);
+		return new TwoSampleUnstrandedIterator(coordinate, variant, readersA, readersB, sampleA, sampleB, parameters);
 	}
 
 	@Override

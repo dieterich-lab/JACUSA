@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import accusa2.filter.cache.AbstractFilterCount;
+import accusa2.filter.cache.AbstractCountFilterCache;
 import accusa2.filter.factory.AbstractFilterFactory;
 
 public class FilterConfig implements Cloneable {
@@ -39,8 +39,8 @@ public class FilterConfig implements Cloneable {
 		}
 	}
 
-	public AbstractFilterCount[] createCache() {
-		AbstractFilterCount[] filterCache = new AbstractFilterCount[c2Factory.size()];
+	public AbstractCountFilterCache[] createCache() {
+		AbstractCountFilterCache[] filterCache = new AbstractCountFilterCache[c2Factory.size()];
 
 		for(int i = 0; i < i2Factory.size(); ++i) {
 			filterCache[i] = i2Factory.get(i).getFilterCountInstance();

@@ -5,6 +5,7 @@ import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.builder.AbstractPileupBuilder;
+import accusa2.pileup.iterator.variant.Variant;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.ParallelPileup;
 import accusa2.util.AnnotatedCoordinate;
@@ -26,12 +27,13 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 	
 	public AbstractTwoSampleIterator(
 			final AnnotatedCoordinate annotatedCoordinate,
+			final Variant filter,
 			final SAMFileReader[] readersA,
 			final SAMFileReader[] readersB,
 			final SampleParameters sampleA,
 			final SampleParameters sampleB,
 			AbstractParameters parameters) {
-		super(annotatedCoordinate, parameters);
+		super(annotatedCoordinate, filter, parameters);
 
 		locationA = new Location(-1, STRAND.UNKNOWN);
 		this.sampleA = sampleA;
@@ -54,7 +56,6 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 		initLocation(locationB, sampleB.getPileupBuilderFactory().isDirected(), pileupBuildersB);
 
 		parallelPileup = new DefaultParallelPileup(pileupBuildersA.length, pileupBuildersB.length);
-		parallelPileup.setContig(annotatedCoordinate.getSequenceName());
 	}
 
 	protected boolean hasNextA() {

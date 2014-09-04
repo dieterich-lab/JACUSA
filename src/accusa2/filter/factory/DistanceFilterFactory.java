@@ -2,7 +2,7 @@ package accusa2.filter.factory;
 
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.filter.RatioBasedFilter;
-import accusa2.filter.cache.AbstractFilterCount;
+import accusa2.filter.cache.AbstractCountFilterCache;
 import accusa2.filter.cache.distance.DistanceFilterCount;
 
 public class DistanceFilterFactory extends AbstractFilterFactory {
@@ -13,6 +13,7 @@ public class DistanceFilterFactory extends AbstractFilterFactory {
 	public DistanceFilterFactory(AbstractParameters parameters) {
 		super('D', "");
 		desc = "Filter distance to start/end of read, intron and INDEL position. Default: " + distance;
+		this.parameters = parameters;
 	}
 
 	@Override
@@ -36,7 +37,7 @@ public class DistanceFilterFactory extends AbstractFilterFactory {
 	}
 
 	@Override
-	public AbstractFilterCount getFilterCountInstance() {
+	public AbstractCountFilterCache getFilterCountInstance() {
 		return new DistanceFilterCount(getC(), distance, parameters);
 	}
 

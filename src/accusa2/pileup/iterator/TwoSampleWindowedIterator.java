@@ -8,6 +8,7 @@ import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.WindowedPileup;
 import accusa2.pileup.builder.AbstractPileupBuilder;
+import accusa2.pileup.iterator.variant.Variant;
 import accusa2.util.AnnotatedCoordinate;
 
 public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
@@ -16,12 +17,13 @@ public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
 	
 	public TwoSampleWindowedIterator(
 			final AnnotatedCoordinate annotatedCoordinate, 
+			final Variant filter,
 			final SAMFileReader[] readersA, 
 			final SAMFileReader[] readersB,
 			final SampleParameters sampleA,
 			final SampleParameters sampleB,
 			final AbstractParameters parameters) {
-		super(annotatedCoordinate, readersA, readersB, sampleA, sampleB, parameters);
+		super(annotatedCoordinate, filter, readersA, readersB, sampleA, sampleB, parameters);
 		this.baseConfig = parameters.getBaseConfig();
 	}
 

@@ -103,11 +103,11 @@ public final class DefaultParallelPileup implements ParallelPileup {
 			pileupsP = new Pileup[getNA() + getNB()];
 
 			if (getNA() > 0) {
-				System.arraycopy(pileupA, 0, pileupsA, 0, getNA());
+				System.arraycopy(pileupA, 0, pileupsP, 0, getNA());
 			}
 			
 			if (getNB() > 0) {
-				System.arraycopy(pileupB, 0, pileupsA, getNA(), getNB());
+				System.arraycopy(pileupB, 0, pileupsP, getNA(), getNB());
 			}
 		}
 
@@ -211,7 +211,7 @@ public final class DefaultParallelPileup implements ParallelPileup {
 
 	@Override
 	public Pileup getPooledPileupA() {
-		if(pileupA == null) {
+		if(pileupA == null && pileupsA[0] != null) {
 			pileupA = new DefaultPileup(pileupsA[0].getContig(), pileupsA[0].getPosition(), pileupsA[0].getStrand(), pileupsA[0].getBaseCount().length);
 			for(int i = 0; i < pileupsA.length; ++i) {
 				pileupA.addPileup(pileupsA[i]);
@@ -222,7 +222,7 @@ public final class DefaultParallelPileup implements ParallelPileup {
 	
 	@Override
 	public Pileup getPooledPileupB() {
-		if(pileupB == null) {
+		if(pileupB == null && pileupsA[0] != null) {
 			pileupB = new DefaultPileup(pileupsB[0].getContig(), pileupsB[0].getPosition(), pileupsB[0].getStrand(), pileupsB[0].getBaseCount().length);
 			for(int i = 0; i < pileupsB.length; ++i) {
 				pileupB.addPileup(pileupsB[i]);
@@ -233,7 +233,7 @@ public final class DefaultParallelPileup implements ParallelPileup {
 
 	@Override
 	public Pileup getPooledPileup() {
-		if(pileupP == null) {
+		if(pileupP == null && getPooledPileupA() != null) {
 			pileupP = new DefaultPileup(getPooledPileupA().getBaseCount().length);
 			pileupP.setContig(getPooledPileupA().getContig());
 			pileupP.setPosition(getPooledPileupA().getPosition());

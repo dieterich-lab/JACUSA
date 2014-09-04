@@ -6,9 +6,9 @@ import net.sf.samtools.AlignmentBlock;
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
 import accusa2.cli.parameters.AbstractParameters;
-import accusa2.filter.cache.AbstractFilterCount;
+import accusa2.filter.cache.AbstractCountFilterCache;
 
-public class DistanceFilterCount extends AbstractFilterCount {
+public class DistanceFilterCount extends AbstractCountFilterCache {
 
 	private int distance;
 

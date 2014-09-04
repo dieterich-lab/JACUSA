@@ -34,7 +34,7 @@ public abstract class AbstractParameters implements hasSampleA {
 	private boolean debug;
 	
 	public AbstractParameters() {
-		windowSize 	= 10000;
+		windowSize 	= 1000;
 		baseConfig	= new BaseConfig(BaseConfig.VALID);
 		
 		maxThreads	= 1;

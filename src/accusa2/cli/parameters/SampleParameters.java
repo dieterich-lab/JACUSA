@@ -31,10 +31,10 @@ public class SampleParameters {
 	private PileupBuilderFactory pileupBuilderFactory;
 
 	public SampleParameters() {
-		maxDepth 		= -1; // Unlimited
-		minBASQ			= 20;
-		minMAPQ 		= 20;
-		minCoverage 	= 10;
+		maxDepth 		= 4000; //-1; // Unlimited
+		minBASQ			= 0; //20;
+		minMAPQ 		= 0; //20;
+		minCoverage 	= 1; //10;
 
 		filterFlags 	= 0;
 		retainFlags	 	= 0;

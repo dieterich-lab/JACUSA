@@ -4,6 +4,7 @@ import net.sf.samtools.SAMFileReader;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.pileup.DefaultPileup.STRAND;
+import accusa2.pileup.iterator.variant.Variant;
 import accusa2.pileup.ParallelPileup;
 import accusa2.util.AnnotatedCoordinate;
 
@@ -11,12 +12,13 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 
 	public TwoSampleStrandedIterator(
 			final AnnotatedCoordinate annotatedCoordinate,
+			final Variant filter,
 			final SAMFileReader[] readersA,
 			final SAMFileReader[] readersB,
 			final SampleParameters sampleA,
 			final SampleParameters sampleB,
 			AbstractParameters parameters) {
-		super(annotatedCoordinate, readersA, readersB, sampleA, sampleB, parameters);
+		super(annotatedCoordinate, filter, readersA, readersB, sampleA, sampleB, parameters);
 	}
 
 	@Override
@@ -29,13 +31,24 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 			case -1:
 				// adjust actualPosition; instead of iterating jump to specific
 				// position
-				adjustCurrentGenomicPosition(locationB.genomicPosition, pileupBuildersA);
+				adjustCurrentGenomicPosition(locationB, pileupBuildersA);
 				locationA.genomicPosition = locationB.genomicPosition;
+				locationA.strand = locationB.strand;
 				break;
 
 			case 0:
+				if (locationA.strand != STRAND.UNKNOWN && locationB.strand != STRAND.UNKNOWN && locationA.strand != locationB.strand) {
+					locationA.strand = STRAND.REVERSE;
+					locationB.strand = STRAND.REVERSE;
+					if (! isCovered(locationA, pileupBuildersA) || ! isCovered(locationB, pileupBuildersB)) {
+						advance();
+						break;
+					}
+				}
+
+				parallelPileup.setContig(coordinate.getSequenceName());
 				parallelPileup.setPosition(locationA.genomicPosition);
-				
+
 				// complement bases if one sample is unstranded and 
 				// the other is stranded and maps to the opposite strand
 				parallelPileup.setPileupsA(getPileups(locationA, pileupBuildersA));
@@ -47,8 +60,13 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 					parallelPileup.setPileupsB(complementPileups(parallelPileup.getPileupsB()));
 				}
 
-				final boolean isVariant = isVariant(parallelPileup);
-				if (isVariant) {
+				// 
+				if(locationA.strand == STRAND.REVERSE && locationB.strand == STRAND.REVERSE) {
+					parallelPileup.setPileupsA(complementPileups(parallelPileup.getPileupsA()));
+					parallelPileup.setPileupsB(complementPileups(parallelPileup.getPileupsB()));
+				}
+
+				if (filter.isValid(parallelPileup)) {
 					return true;
 				} else {
 					advance();
@@ -58,8 +76,9 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 			case 1:
 				// adjust actualPosition; instead of iterating jump to specific
 				// position
-				adjustCurrentGenomicPosition(locationA.genomicPosition, pileupBuildersB);
+				adjustCurrentGenomicPosition(locationA, pileupBuildersB);
 				locationB.genomicPosition = locationA.genomicPosition;
+				locationB.strand = locationA.strand;
 				break;
 			}
 		}
@@ -94,6 +113,7 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 				locationB.strand = STRAND.REVERSE;
 			}
 		}
+
 		if (locationB.strand == STRAND.UNKNOWN) {
 			if (locationA.strand == STRAND.REVERSE) {
 				++locationA.genomicPosition;
@@ -102,12 +122,16 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 				locationA.strand = STRAND.REVERSE;
 			}
 		}
+
 		if (locationA.strand == STRAND.FORWARD && locationB.strand == STRAND.FORWARD) {
 			locationA.strand = STRAND.REVERSE;
 			locationB.strand = STRAND.REVERSE;
 		} else {
 			++locationA.genomicPosition;
 			++locationB.genomicPosition;
+
+			locationA.strand = STRAND.FORWARD;
+			locationB.strand = STRAND.FORWARD;
 		}
 	}
 
@@ -117,11 +141,12 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 		case FORWARD:
 			location.strand = STRAND.REVERSE;
 			break;
-		
+
 		case REVERSE:
-			location.strand = STRAND.FORWARD;
 			++location.genomicPosition;
-		
+			location.strand = STRAND.FORWARD;
+			break;
+
 		case UNKNOWN:
 		default:
 			++location.genomicPosition;

@@ -103,7 +103,7 @@ public abstract class AbstractPileupBuilder {
 		this.genomicWindowStart = genomicWindowStart;
 
 		// get iterator to fill the window
-		SAMRecordIterator iterator = reader.query(contig, genomicWindowStart, Math.min(getWindowEnd(), maxGenomicPosition), false);
+		SAMRecordIterator iterator = reader.query(contig, genomicWindowStart, maxGenomicPosition, false);
 
 		// true if a valid read is found within genomicWindowStart and genomicWindowStart + windowSize
 		boolean windowHit = false;

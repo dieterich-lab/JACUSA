@@ -144,6 +144,7 @@ public class DefaultPileup implements Pileup {
 	public Pileup complement() {
 		final Pileup complement = new DefaultPileup(this);
 
+		/*
 		// invert orientation
 		switch (complement.getStrand()) {
 		case FORWARD:
@@ -155,6 +156,7 @@ public class DefaultPileup implements Pileup {
 			complement.setStrand(STRAND.FORWARD);
 			break;
 		}
+		*/
 
 		// invert base and qual count
 		complement.getCounts().invertCounts();
@@ -289,7 +291,7 @@ public class DefaultPileup implements Pileup {
 
 			for(int baseI = 0; baseI < baseCount.length; ++baseI) {
 				// int complementaryBase = Bases.COMPLEMENT[base];
-				int complementaryBaseI = baseCount.length - baseI;  
+				int complementaryBaseI = baseCount.length - baseI - 1;  
 
 				// invert base count
 				tmpBaseCount[complementaryBaseI] = baseCount[baseI];
