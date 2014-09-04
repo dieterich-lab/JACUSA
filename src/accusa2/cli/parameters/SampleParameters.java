@@ -32,7 +32,7 @@ public class SampleParameters {
 
 	public SampleParameters() {
 		maxDepth 		= 4000; //-1; // Unlimited
-		minBASQ			= 0; //20;
+		minBASQ			= Byte.parseByte("0"); //20;
 		minMAPQ 		= 0; //20;
 		minCoverage 	= 1; //10;
 
