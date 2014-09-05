@@ -54,10 +54,6 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 		}
 
 		location.genomicPosition = genomicPosition;
-		if (isDirectional) {
-			location.strand = STRAND.FORWARD;
-		}
-
 		return location;
 	}
 		

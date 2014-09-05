@@ -45,9 +45,10 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 		forwardWindowCache.clear();
 		reverseWindowCache.clear();
 
-		// TODO clear FilterCaches
-		
-		// always consider forward strand first
+		for (int i = 0; i < forwardFilterCaches.length; ++i) {
+			forwardFilterCaches[i].getCache().clear();
+			reverseFilterCaches[i].getCache().clear();
+		}
 	}
 
 	@Override
@@ -63,8 +64,6 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 		default:
 			return forwardWindowCache.getCoverage(windowPosition) + reverseWindowCache.getCoverage(windowPosition);
 		}
-		
-		
 	}
 
 	// TODO add Objects
@@ -72,6 +71,7 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 	public Counts[] getFilteredCounts(int windowPosition, STRAND strand) {
 		switch (strand) {
 		case FORWARD:
+			
 			return null;
 
 		case REVERSE:

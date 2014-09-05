@@ -2,6 +2,7 @@ package accusa2.cli.parameters;
 
 import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.io.format.result.DefaultResultFormat;
+import accusa2.method.call.statistic.LR2Statistic;
 
 public class TwoSampleCallParameters extends AbstractParameters implements hasSampleB, hasStatisticCalculator, hasResultFormat {
 
@@ -14,6 +15,8 @@ public class TwoSampleCallParameters extends AbstractParameters implements hasSa
 
 		sampleB				= new SampleParameters();
 		statisticParameters = new StatisticParameters();
+		statisticParameters.setStatisticCalculator(new LR2Statistic(getBaseConfig(), statisticParameters));
+		
 		format		= new DefaultResultFormat(getBaseConfig());
 	}
 

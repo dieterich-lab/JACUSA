@@ -34,8 +34,8 @@ public final class LR2Statistic implements StatisticCalculator {
 	}
 
 	public double getStatistic(final ParallelPileup parallelPileup) {
-		final int bases[] = {0, 1, 2, 3};
-		//final int bases[] = parallelPileup.getPooledPileup().getAlleles();
+		//final int bases[] = {0, 1, 2, 3};
+		final int bases[] = parallelPileup.getPooledPileup().getAlleles();
 
 		final int coverage1 = defaultStatistic.getMeanCoverage(parallelPileup.getPileupsA());
 		final int coverage2 = defaultStatistic.getMeanCoverage(parallelPileup.getPileupsB());

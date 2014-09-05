@@ -28,10 +28,10 @@ public class DistanceFilterCount extends AbstractCountFilterCache {
 
 		AlignmentBlock alignmentBlock;
 		int windowPosition;
-		
+
 		// process read start and end
 		List<AlignmentBlock> alignmentBlocks = record.getAlignmentBlocks();
-		
+
 		// read start
 		alignmentBlock = alignmentBlocks.get(0);
 		windowPosition = alignmentBlock.getReferenceStart() - genomicWindowStart;

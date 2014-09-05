@@ -9,6 +9,10 @@ import java.util.Map;
 import net.sf.samtools.SAMSequenceRecord;
 import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
+import accusa2.cli.options.MaxDepthOption;
+import accusa2.cli.options.MinBASQOption;
+import accusa2.cli.options.MinCoverageOption;
+import accusa2.cli.options.MinMAPQOption;
 import accusa2.cli.options.StatisticFilterOption;
 import accusa2.cli.options.HelpOption;
 import accusa2.cli.options.MaxThreadOption;
@@ -22,6 +26,10 @@ import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
 import accusa2.cli.options.pileupbuilder.TwoSamplePileupBuilderOption;
+import accusa2.cli.options.sample.MaxDepthSampleOption;
+import accusa2.cli.options.sample.MinBASQSampleOption;
+import accusa2.cli.options.sample.MinCoverageSampleOption;
+import accusa2.cli.options.sample.MinMAPQSampleOption;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
 import accusa2.cli.parameters.SampleParameters;
@@ -65,10 +73,24 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 	public void initACOptions() {
 		SampleParameters sampleA = parameters.getSampleA();
 		acOptions.add(new PathnameOption(sample1, sampleA ));
-		
+		acOptions.add(new MinMAPQSampleOption(sample1, sampleA));
+		acOptions.add(new MinBASQSampleOption(sample1, sampleA));
+		acOptions.add(new MinCoverageSampleOption(sample1, sampleA));
+		acOptions.add(new MaxDepthSampleOption(sample1, sampleA));
+				
 		SampleParameters sampleB = parameters.getSampleB();
 		acOptions.add(new PathnameOption(sample2, sampleB));
-
+		acOptions.add(new MinMAPQSampleOption(sample2, sampleB));
+		acOptions.add(new MinBASQSampleOption(sample2, sampleB));
+		acOptions.add(new MinCoverageSampleOption(sample2, sampleB));
+		acOptions.add(new MaxDepthSampleOption(sample2, sampleB));
+		
+		// global settings
+		acOptions.add(new MinMAPQOption(sampleA, sampleB));
+		acOptions.add(new MinBASQOption(sampleA, sampleB));
+		acOptions.add(new MinCoverageOption(sampleA, sampleB));
+		acOptions.add(new MaxDepthOption(sampleA, sampleB));
+		
 		acOptions.add(new TwoSamplePileupBuilderOption(sampleA, sampleB));
 		
 		acOptions.add(new BedCoordinatesOption(parameters));

@@ -14,7 +14,7 @@ public abstract class AbstractCountFilterCache {
 	protected WindowCache cache;
 	protected boolean[] visited;
 	protected BaseConfig baseConfig;
-
+	
 	public AbstractCountFilterCache(char c, AbstractParameters parameters) {
 		this.c = c;
 
@@ -30,11 +30,22 @@ public abstract class AbstractCountFilterCache {
 
 	protected void fillCache(int windowPosition, int length, int readPosition, SAMRecord record) {
 		int end = Math.min(cache.getWindowSize(), windowPosition + length);
+		end = Math.min(end, record.getReadLength());
+
+		int offset = 0;
+		if (readPosition < 0) {
+			offset += Math.abs(readPosition);
+		}
+		if (windowPosition < 0) {
+			offset += Math.abs(windowPosition);
+		}
+		windowPosition += offset;
+		readPosition += offset;
 
 		for (int i = 0; i < length && windowPosition < end && readPosition < record.getReadLength(); ++i) {
 			windowPosition += i;
 			readPosition += i;
-			
+
 			if (! visited[windowPosition]) {
 				int baseI = baseConfig.getBaseI(record.getReadBases()[readPosition]);
 				byte qual = record.getBaseQualities()[readPosition];

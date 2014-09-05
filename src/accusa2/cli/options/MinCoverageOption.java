@@ -8,10 +8,12 @@ import accusa2.cli.parameters.SampleParameters;
 
 public class MinCoverageOption extends AbstractACOption {
 
-	private SampleParameters parameters;
+	private SampleParameters sampleA;
+	private SampleParameters sampleB;
 	
-	public MinCoverageOption(SampleParameters parameters) {
-		this.parameters = parameters;
+	public MinCoverageOption(SampleParameters sampleA, SampleParameters sampleB) {
+		this.sampleA = sampleA;
+		this.sampleB = sampleB;
 
 		opt = 'c';
 		longOpt = "min-coverage";
@@ -23,7 +25,7 @@ public class MinCoverageOption extends AbstractACOption {
 		return OptionBuilder.withLongOpt(longOpt)
 					.withArgName(longOpt.toUpperCase())
 					.hasArg(true)
-			        .withDescription("filter positions with coverage < " + longOpt.toUpperCase() + " \n default: " + parameters.getMinCoverage())
+			        .withDescription("filter positions with coverage < " + longOpt.toUpperCase() + " \n default: " + sampleA.getMinCoverage())
 			        .create(opt);
 	}
 
@@ -34,7 +36,8 @@ public class MinCoverageOption extends AbstractACOption {
 	    	if(minCoverage < 1) {
 	    		throw new IllegalArgumentException(longOpt.toUpperCase() + " must be > 0!");
 	    	}
-	    	parameters.setMinCoverage(minCoverage);
+	    	sampleA.setMinCoverage(minCoverage);
+	    	sampleB.setMinCoverage(minCoverage);
 	    }
 	}
 

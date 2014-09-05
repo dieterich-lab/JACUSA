@@ -11,6 +11,7 @@ import accusa2.pileup.builder.AbstractPileupBuilder;
 import accusa2.pileup.iterator.variant.Variant;
 import accusa2.util.AnnotatedCoordinate;
 
+// TODO implement
 public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
 
 	private BaseConfig baseConfig;
@@ -78,7 +79,6 @@ public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
 	}
 
 	public boolean hasNext() {
-
 		return false;
 	}
 
