@@ -99,7 +99,7 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 
 		case UNKNOWN:
 		default:
-			return pileup;
+			return null;
 		}
 
 		// copy base and qual info from cache

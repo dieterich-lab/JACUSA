@@ -31,6 +31,7 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 			case -1:
 				// adjust actualPosition; instead of iterating jump to specific
 				// position
+				
 				adjustCurrentGenomicPosition(locationB, pileupBuildersA);
 				locationA.genomicPosition = locationB.genomicPosition;
 				locationB.strand = STRAND.FORWARD;
@@ -67,6 +68,7 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 				locationB.genomicPosition = locationA.genomicPosition;
 				locationA.strand = STRAND.FORWARD; 
 				locationB.strand = locationA.strand;
+
 				break;
 			}
 		}
@@ -76,7 +78,7 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 
 	@Override
 	public ParallelPileup next() {
-		/* TODO
+		/* TODO check if needed
 		if (! hasNext()) {
 			return null;
 		}

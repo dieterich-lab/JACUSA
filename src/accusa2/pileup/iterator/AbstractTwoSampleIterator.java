@@ -3,7 +3,6 @@ package accusa2.pileup.iterator;
 import net.sf.samtools.SAMFileReader;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.SampleParameters;
-import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.builder.AbstractPileupBuilder;
 import accusa2.pileup.iterator.variant.Variant;
 import accusa2.pileup.DefaultParallelPileup;
@@ -35,7 +34,6 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 			AbstractParameters parameters) {
 		super(annotatedCoordinate, filter, parameters);
 
-		locationA = new Location(-1, STRAND.UNKNOWN);
 		this.sampleA = sampleA;
 		pileupBuildersA = createPileupBuilders(
 				sampleA.getPileupBuilderFactory(), 
@@ -43,9 +41,8 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 				readersA,
 				sampleA,
 				parameters);
-		initLocation(locationA, sampleA.getPileupBuilderFactory().isDirected(), pileupBuildersA);
+		locationA = initLocation(annotatedCoordinate, sampleA.getPileupBuilderFactory().isDirected(), pileupBuildersA);
 		
-		locationB = new Location(-1, STRAND.UNKNOWN);
 		this.sampleB = sampleB;
 		pileupBuildersB = createPileupBuilders(
 				sampleB.getPileupBuilderFactory(), 
@@ -53,7 +50,7 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 				readersB,
 				sampleB,
 				parameters);
-		initLocation(locationB, sampleB.getPileupBuilderFactory().isDirected(), pileupBuildersB);
+		locationB = initLocation(annotatedCoordinate, sampleB.getPileupBuilderFactory().isDirected(), pileupBuildersB);
 
 		parallelPileup = new DefaultParallelPileup(pileupBuildersA.length, pileupBuildersB.length);
 	}

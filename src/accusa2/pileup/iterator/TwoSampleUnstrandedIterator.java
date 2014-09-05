@@ -67,7 +67,7 @@ public class TwoSampleUnstrandedIterator extends AbstractTwoSampleIterator {
 		if (! hasNext()) {
 			return null;
 		}
-
+	
 		if (filterconfig.hasFiters()) {
 			parallelPileup.setFilterCountsA(getCounts(locationA, pileupBuildersA));
 			parallelPileup.setFilterCountsB(getCounts(locationB, pileupBuildersB));

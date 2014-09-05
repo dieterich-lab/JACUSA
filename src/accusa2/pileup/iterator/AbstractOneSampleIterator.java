@@ -3,7 +3,6 @@ package accusa2.pileup.iterator;
 import net.sf.samtools.SAMFileReader;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.SampleParameters;
-import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.builder.AbstractPileupBuilder;
 import accusa2.pileup.iterator.variant.Variant;
 import accusa2.pileup.DefaultParallelPileup;
@@ -28,7 +27,6 @@ public abstract class AbstractOneSampleIterator extends AbstractWindowIterator {
 			AbstractParameters parameters) {
 		super(annotatedCoordinate, filter, parameters);
 
-		location = new Location(-1, STRAND.UNKNOWN);
 		this.sample = sample;
 		pileupBuilders = createPileupBuilders(
 				sample.getPileupBuilderFactory(), 
@@ -36,7 +34,7 @@ public abstract class AbstractOneSampleIterator extends AbstractWindowIterator {
 				readers,
 				sample,
 				parameters);
-		initLocation(location, sample.getPileupBuilderFactory().isDirected(), pileupBuilders);
+		location = initLocation(annotatedCoordinate, sample.getPileupBuilderFactory().isDirected(), pileupBuilders);
 		
 		parallelPileup = new DefaultParallelPileup(pileupBuilders.length, 0);
 	}

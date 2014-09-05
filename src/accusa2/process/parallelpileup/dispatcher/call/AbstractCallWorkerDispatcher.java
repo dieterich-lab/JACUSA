@@ -37,8 +37,6 @@ public abstract class AbstractCallWorkerDispatcher<T extends AbstractCallWorker>
 
 	protected abstract String getHeader();
 
-	
-
 	@Override
 	protected void processTmpLine(final String line) throws IOException {
 		final double p = getFormat().extractValue(line);

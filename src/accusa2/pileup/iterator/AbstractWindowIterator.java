@@ -30,27 +30,35 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 		filterconfig 	= parameters.getFilterConfig();
 	}
 
-	protected void initLocation(Location location, final boolean isDirectional, final AbstractPileupBuilder[] pileupBuilders) {
+	protected Location initLocation(AnnotatedCoordinate coordinate, final boolean isDirectional, final AbstractPileupBuilder[] pileupBuilders) {
+		// not within coordinate
+		Location location = new Location(-1, STRAND.UNKNOWN);
+		if (isDirectional) {
+			location.strand = STRAND.FORWARD;
+		}
+		
 		final SAMRecord record = getNextValidRecord(coordinate.getStart(), pileupBuilders);
 		if (record == null) {
-			location.strand = STRAND.UNKNOWN;
-			location.genomicPosition = -1;
-			return;
+			return location;
 		}
 
-		final int genomicPosition = record.getAlignmentStart();
+		// find genomicPosition within coordinate.getStart() coordinate.getEnd();
+		int genomicPosition = Math.max(coordinate.getStart(), record.getAlignmentStart());
+		if (genomicPosition > coordinate.getEnd()) {
+			return location;
+		}
+
+		genomicPosition = Math.min(genomicPosition, coordinate.getEnd());
 		for (AbstractPileupBuilder pileupBuilder : pileupBuilders) {
 			pileupBuilder.adjustWindowStart(genomicPosition);
 		}
 
 		location.genomicPosition = genomicPosition;
 		if (isDirectional) {
-			if (record.getReadNegativeStrandFlag()) {
-				location.strand = STRAND.REVERSE;
-			} else {
-				location.strand = STRAND.FORWARD;
-			}
+			location.strand = STRAND.FORWARD;
 		}
+
+		return location;
 	}
 		
 	public abstract boolean hasNext();

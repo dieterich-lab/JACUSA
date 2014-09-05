@@ -104,8 +104,8 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 	@Override
 	protected void processFilterCache(SAMRecord record) {
 		// let the filter decide what data they need
-		for(AbstractCountFilterCache pileupBuilderFilter : filterCaches) {
-			if(pileupBuilderFilter != null) {
+		for (AbstractCountFilterCache pileupBuilderFilter : filterCaches) {
+			if (pileupBuilderFilter != null) {
 				pileupBuilderFilter.processRecord(genomicWindowStart, record);
 			}
 		}

@@ -58,8 +58,8 @@ public abstract class AbstractWorker extends Thread {
 	}
 
 	private synchronized void writeNextThreadID() {
-		while(getNextThreadId() == -1) {
-			if(getNextThreadId() >= 0) {
+		while (getNextThreadId() == -1) {
+			if (getNextThreadId() >= 0) {
 				try {
 					tmpOutputWriter.write(format.getCOMMENT() + String.valueOf(getNextThreadId()));
 				} catch (IOException e) {
@@ -75,7 +75,7 @@ public abstract class AbstractWorker extends Thread {
 			}
 		}
 
-		if(getNextThreadId() >= 0) {
+		if (getNextThreadId() >= 0) {
 			try {
 				tmpOutputWriter.write(format.getCOMMENT() + String.valueOf(getNextThreadId()));
 			} catch (IOException e) {
@@ -96,7 +96,7 @@ public abstract class AbstractWorker extends Thread {
 			AnnotatedCoordinate annotatedCoordinate = null;
 
 			synchronized (workerDispatcher) {
-				if(workerDispatcher.hasNext()) {
+				if (workerDispatcher.hasNext()) {
 					annotatedCoordinate = workerDispatcher.next(this);
 				} else {
 					isFinished = true;

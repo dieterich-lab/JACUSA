@@ -79,7 +79,7 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 	public final int run() {
 		synchronized (this) {
 
-			while (hasNext() || !workerContainer.isEmpty()) {
+			while (hasNext() || ! workerContainer.isEmpty()) {
 
 				// clean finished threads
 				for (int i = 0; i < runningWorkers.size(); ++i) {

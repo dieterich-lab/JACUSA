@@ -40,7 +40,7 @@ public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
 	}
 
 	protected boolean hasNext(Location location, final AbstractPileupBuilder[] pileupBuilders) {
-		return false; // TODO
+		return false; // TODO check what to do
 	}
 
 	@Override

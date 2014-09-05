@@ -2,7 +2,7 @@ package accusa2.io.format.result;
 
 import accusa2.pileup.ParallelPileup;
 
-// TODO
+// TODO implement
 public class VCF_ResultFormat extends AbstractResultFormat {
 
 	public VCF_ResultFormat() {

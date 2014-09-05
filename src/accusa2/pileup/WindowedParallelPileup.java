@@ -2,11 +2,11 @@ package accusa2.pileup;
 
 import accusa2.pileup.DefaultPileup.STRAND;
 
-// TODO
+// TODO implement complete
 public final class WindowedParallelPileup  {
 
 	private int windowSize;
-	
+	 
 	private Pileup pileup;
 	private Pileup pileupA;
 	private Pileup pileupB;

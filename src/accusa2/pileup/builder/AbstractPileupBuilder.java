@@ -22,6 +22,7 @@ public abstract class AbstractPileupBuilder {
 	// in genomic coordinates
 	protected String contig;
 	protected int genomicWindowStart;
+	
 	protected int windowSize;
 	protected int maxGenomicPosition;
 
@@ -46,7 +47,7 @@ public abstract class AbstractPileupBuilder {
 		genomicWindowStart 	= annotatedCoordinate.getStart();
 		this.windowSize 	= parameters.getWindowSize();
 		maxGenomicPosition 	= Math.min(annotatedCoordinate.getEnd(), SAMFileReader.getFileHeader().getSequence(contig).getSequenceLength());
-
+		
 		SAMRecordsBuffer	= new SAMRecord[30000];
 		this.reader			= SAMFileReader;
 
@@ -99,7 +100,7 @@ public abstract class AbstractPileupBuilder {
 		this.genomicWindowStart = genomicWindowStart;
 
 		// get iterator to fill the window
-		SAMRecordIterator iterator = reader.query(contig, this.genomicWindowStart, Math.min(getWindowEnd(), maxGenomicPosition), false);
+		SAMRecordIterator iterator = reader.query(contig, this.genomicWindowStart, getWindowEnd(), false);
 
 		// true if a valid read is found within genomicWindowStart and genomicWindowStart + windowSize
 		boolean windowHit = false;
@@ -227,7 +228,7 @@ public abstract class AbstractPileupBuilder {
 	 * @return
 	 */
 	public int getWindowEnd() {
-		return genomicWindowStart + windowSize - 1;
+		return Math.min(genomicWindowStart + windowSize - 1, maxGenomicPosition);
 	}
 
 	/**
@@ -267,8 +268,12 @@ public abstract class AbstractPileupBuilder {
 				// speedup: if windowPosition == -1 the remaining part of the read will be outside of the windowCache
 				// ignore the overhanging part of the read until it overlaps with the window cache
 				final int windowPosition = convertGenomicPosition2WindowPosition(genomicPosition + offset);
+
 				if (windowPosition == -1) {
 					return;
+				}
+				if (windowPosition == -2) {
+					// TODO speedup
 				}
 				if (windowPosition >= 0) {
 					add2Cache(windowPosition, base, qual, record);

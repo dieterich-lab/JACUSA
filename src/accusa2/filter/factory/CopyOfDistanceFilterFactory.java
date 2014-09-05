@@ -63,7 +63,7 @@ public class CopyOfDistanceFilterFactory extends AbstractFilterFactory {
 	
 	@Override
 	public AbstractCountFilterCache getFilterCountInstance() {
-		return null; // FIXME
+		return null; // FIXME implement
 	}
 
 	public enum DISTANCE_FILTER {ALL, RS, RE, SJ, ID, HP}

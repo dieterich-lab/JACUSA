@@ -17,7 +17,7 @@ public class BedCoordinateProvider implements CoordinateProvider {
 
 	private String filename;
 	private BufferedReader br;
-	
+
 	public BedCoordinateProvider(String filename) {
 		this.filename = filename;
 		File file = new File(filename);
@@ -77,5 +77,5 @@ public class BedCoordinateProvider implements CoordinateProvider {
 	public String getFilename() {
 		return filename;
 	}
-	
+
 }

@@ -134,8 +134,7 @@ public final class NumericalStatistic implements StatisticCalculator {
 			}
 		}
 		
-		// do numerical search
-		// TODO
+		// TODO do numerical search
 		
 		DirichletDist dirichlet = new DirichletDist(alpha);
 		for (final Pileup pileup : pileups) {
