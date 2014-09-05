@@ -155,5 +155,5 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 			break;
 		}
 	}
-	
+
 }

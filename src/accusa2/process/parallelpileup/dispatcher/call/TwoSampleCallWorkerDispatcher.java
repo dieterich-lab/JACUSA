@@ -28,8 +28,8 @@ public class TwoSampleCallWorkerDispatcher extends AbstractCallWorkerDispatcher<
 	}
 
 	@Override
-	protected void processFinishedWorker(TwoSampleCallWorker callWorker) {
-		// nothing to be done
+	protected void processFinishedWorker(TwoSampleCallWorker worker) {
+		addComparisons(worker.getComparisons());
 	}
 
 	@Override

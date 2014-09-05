@@ -28,8 +28,8 @@ public class OneSampleCallWorkerDispatcher extends AbstractCallWorkerDispatcher<
 	}
 
 	@Override
-	protected void processFinishedWorker(OneSampleCallWorker processParallelPileup) {
-		// TODO Auto-generated method stub
+	protected void processFinishedWorker(OneSampleCallWorker worker) {
+		addComparisons(worker.getComparisons());
 	}
 
 	@Override
