@@ -119,10 +119,20 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 	}
 
 	@Override
-	protected void add2Cache(int windowPosition, int baseI, byte qual, SAMRecord record) {
+	protected void add2Cache(int windowPosition, byte base, byte qual, SAMRecord record) {
 		if (record.getReadNegativeStrandFlag()) {
+			int baseI = baseConfig.getComplementBaseI(base);
+			// ignore bases that should not be considered - see processAlignmentBlock
+			if (baseI < 0) {
+				return;
+			}
 			reverseWindowCache.add(windowPosition, baseI, qual);
 		} else {
+			int baseI = baseConfig.getBaseI(base);
+			// ignore bases that should not be considered - see processAlignmentBlock
+			if (baseI < 0) {
+				return;
+			}
 			forwardWindowCache.add(windowPosition, baseI, qual);
 		}
 	}

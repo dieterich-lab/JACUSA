@@ -35,6 +35,7 @@ public class BaseConfig {
 	public BaseConfig(char[] bases) {
 		this.bases = bases;
 		byte2int = Byte2baseI(bases);
+		complementByte2int = complementByte2baseI(bases);
 	}
 
 	// rearrange depending on given bases
@@ -69,7 +70,7 @@ public class BaseConfig {
 	}
 
 	// complement
-	public int[] ComplementByte2baseI(final char[] bases) {
+	public int[] complementByte2baseI(final char[] bases) {
 			final int[] byte2int = new int[BYTE_BASE2INT_BASE.length];
 
 			for (int i = 0; i < byte2int.length; ++i) {

@@ -91,7 +91,13 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 	}
 	
 	@Override
-	protected void add2Cache(int windowPosition, int baseI, byte qual, SAMRecord record) {
+	protected void add2Cache(int windowPosition, byte base, byte qual, SAMRecord record) {
+		int baseI = baseConfig.getBaseI(base);
+		// ignore bases that should not be considered - see processAlignmentBlock
+		if (baseI < 0) {
+			return;
+		}
+		
 		windowCache.add(windowPosition, baseI, qual);
 	}
 	

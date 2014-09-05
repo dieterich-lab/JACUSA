@@ -260,10 +260,10 @@ public abstract class AbstractPileupBuilder {
 		int genomicPosition = alignmentBlock.getReferenceStart();
 
 		for (int offset = 0; offset < alignmentBlock.getLength(); ++offset) {
-			final int baseI = baseConfig.getBaseI(record.getReadBases()[readPosition + offset]);
+			final byte base = record.getReadBases()[readPosition + offset];
 			final byte qual = record.getBaseQualities()[readPosition + offset];
 
-			if (qual >= sample.getMinBASQ() && baseI != -1) {
+			if (qual >= sample.getMinBASQ()) {
 				// speedup: if windowPosition == -1 the remaining part of the read will be outside of the windowCache
 				// ignore the overhanging part of the read until it overlaps with the window cache
 				final int windowPosition = convertGenomicPosition2WindowPosition(genomicPosition + offset);
@@ -271,7 +271,7 @@ public abstract class AbstractPileupBuilder {
 					return;
 				}
 				if (windowPosition >= 0) {
-					add2Cache(windowPosition, baseI, qual, record);
+					add2Cache(windowPosition, base, qual, record);
 				}
 			}
 		}
@@ -300,7 +300,7 @@ public abstract class AbstractPileupBuilder {
 	public abstract Pileup getPileup(int windowPosition, STRAND strand);
 	public abstract Counts[] getFilteredCounts(int windowPosition, STRAND strand);
 	public abstract int getCoverage(int windowPosition, STRAND strand);
-	protected abstract void add2Cache(int windowPosition, int baseI, byte qual, SAMRecord record);
+	protected abstract void add2Cache(int windowPosition, byte base, byte qual, SAMRecord record);
 	protected abstract void processFilterCache(final SAMRecord record) throws Exception;
 
 }

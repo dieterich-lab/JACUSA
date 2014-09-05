@@ -16,6 +16,11 @@ public class RatioBasedFilter extends AbstractCountFilter {
 	public boolean filter(ParallelPileup parallelPileup) {
 		int[] variantBaseIs = getVariantBaseI(parallelPileup);
 		
+		// FIXME
+		if (variantBaseIs.length == 0) {
+			return false;
+		}
+		
 		int variantBaseI = variantBaseIs[0];
 		int count = parallelPileup.getPooledPileup().getBaseCount()[variantBaseI];
 		ParallelPileup filtered = applyFilter(variantBaseI, parallelPileup);

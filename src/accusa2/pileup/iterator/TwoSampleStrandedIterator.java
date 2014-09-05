@@ -33,6 +33,7 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 				// position
 				adjustCurrentGenomicPosition(locationB, pileupBuildersA);
 				locationA.genomicPosition = locationB.genomicPosition;
+				locationB.strand = STRAND.FORWARD;
 				locationA.strand = locationB.strand;
 				break;
 
@@ -49,22 +50,8 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 				parallelPileup.setContig(coordinate.getSequenceName());
 				parallelPileup.setPosition(locationA.genomicPosition);
 
-				// complement bases if one sample is unstranded and 
-				// the other is stranded and maps to the opposite strand
 				parallelPileup.setPileupsA(getPileups(locationA, pileupBuildersA));
-				if(locationA.strand == STRAND.UNKNOWN && locationB.strand == STRAND.REVERSE) {
-					parallelPileup.setPileupsA(complementPileups(parallelPileup.getPileupsA()));
-				}
 				parallelPileup.setPileupsB(getPileups(locationB, pileupBuildersB));
-				if(locationB.strand == STRAND.UNKNOWN && locationA.strand == STRAND.REVERSE) {
-					parallelPileup.setPileupsB(complementPileups(parallelPileup.getPileupsB()));
-				}
-
-				// 
-				if (locationA.strand == STRAND.REVERSE && locationB.strand == STRAND.REVERSE) {
-					parallelPileup.setPileupsA(complementPileups(parallelPileup.getPileupsA()));
-					parallelPileup.setPileupsB(complementPileups(parallelPileup.getPileupsB()));
-				}
 
 				if (filter.isValid(parallelPileup)) {
 					return true;
@@ -78,6 +65,7 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 				// position
 				adjustCurrentGenomicPosition(locationA, pileupBuildersB);
 				locationB.genomicPosition = locationA.genomicPosition;
+				locationA.strand = STRAND.FORWARD; 
 				locationB.strand = locationA.strand;
 				break;
 			}
