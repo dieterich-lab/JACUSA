@@ -17,7 +17,7 @@ public class StatisticCalculatorOption extends AbstractACOption {
 	public StatisticCalculatorOption(StatisticParameters parameters, Map<String,StatisticCalculator> pileup2Statistic) {
 		this.parameters = parameters;
 
-		opt = 'u';
+		opt = "u";
 		longOpt = "modus";
 
 		this.statistics = pileup2Statistic;

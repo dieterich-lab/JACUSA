@@ -84,8 +84,8 @@ public final class MixtureDirichletStatistic implements StatisticCalculator {
 	}
 	
 	public double getStatistic(final ParallelPileup parallelPileup) {
-		final int bases[] = {0, 1, 2, 3};
-		//final int bases[] = parallelPileup.getPooledPileup().getAlleles();
+		//final int bases[] = {0, 1, 2, 3};
+		final int bases[] = parallelPileup.getPooledPileup().getAlleles();
 
 		// first sample(s)
 		double density1 = getDensity(bases, parallelPileup.getPileupsA());

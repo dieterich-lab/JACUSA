@@ -11,7 +11,7 @@ public class VersionOption extends AbstractACOption {
 	private CLI cmd;
 
 	public VersionOption(CLI cmd) {
-		opt = 'v';
+		opt = "v";
 		longOpt = "version";
 
 		this.cmd = cmd;

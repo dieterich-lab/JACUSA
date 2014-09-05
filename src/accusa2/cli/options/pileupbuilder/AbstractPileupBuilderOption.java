@@ -12,7 +12,7 @@ public abstract class AbstractPileupBuilderOption extends AbstractACOption {
 	protected static final char SEP 				= ',';
 
 	public AbstractPileupBuilderOption() {
-		opt = 'P';
+		opt = "P";
 		longOpt = "build-pileup";
 	}
 

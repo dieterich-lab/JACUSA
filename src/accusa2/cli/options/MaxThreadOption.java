@@ -13,7 +13,7 @@ public class MaxThreadOption extends AbstractACOption {
 	public MaxThreadOption(AbstractParameters parameters) {
 		this.parameters = parameters;
 
-		opt = 'p';
+		opt = "p";
 		longOpt = "threads";
 	}
 	

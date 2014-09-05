@@ -50,7 +50,7 @@ public final class LR2Statistic implements StatisticCalculator {
 		final DirichletDist dirichlet2 = new DirichletDist(alpha2);
 		final double density22 = StatisticUtils.getDensity(dirichlet2, probs2);
 
-		final int coverageP = parallelPileup.getPooledPileup().getCoverage();
+		final int coverageP = defaultStatistic.getMeanCoverage(parallelPileup.getPileupsP());
 		final Pileup[] pileupsP = parallelPileup.getPileupsP();
 
 		final double[][] probsP = defaultStatistic.getPileup2Probs(bases, pileupsP);

@@ -19,11 +19,11 @@ public class PathnameOption extends AbstractACOption {
 	private char c;
 	private SampleParameters parameters;
 	
-	public PathnameOption(char c, SampleParameters paramteres) {
+	public PathnameOption(final char c, SampleParameters paramteres) {
 		this.c = c;
 		this.parameters = paramteres;
 
-		opt = c;
+		opt = Character.toString(c);
 		longOpt = "bam" + c;
 	}
 

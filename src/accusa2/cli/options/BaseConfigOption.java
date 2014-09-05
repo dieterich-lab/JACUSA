@@ -15,7 +15,7 @@ public class BaseConfigOption extends AbstractACOption {
 	public BaseConfigOption(AbstractParameters parameters) {
 		this.parameters = parameters;
 
-		opt = 'C';
+		opt = "C";
 		longOpt = "base-config";
 	}
 	

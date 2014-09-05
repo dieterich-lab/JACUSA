@@ -15,6 +15,8 @@ public class MinBASQSampleOption extends AbstractACOption {
 	public MinBASQSampleOption(final char sample, final SampleParameters parameters) {
 		this.sample = sample;
 		this.parameters = parameters;
+		
+		opt = "q" + sample;
 		longOpt = "min-basq" + sample;
 	}
 	
@@ -25,12 +27,12 @@ public class MinBASQSampleOption extends AbstractACOption {
 			.withArgName(longOpt.toUpperCase())
 			.hasArg(true)
 	        .withDescription("filter " + sample + " positions with base quality < " + longOpt.toUpperCase() + " \n default: " + parameters.getMinBASQ())
-	        .create(longOpt);
+	        .create(opt);
 	}
 
 	@Override
 	public void process(CommandLine line) throws Exception {
-		if(line.hasOption(longOpt)) {
+		if(line.hasOption(opt)) {
 	    	String value = line.getOptionValue(opt);
 	    	byte minBASQ = Byte.parseByte(value);
 	    	if(minBASQ < 0) {

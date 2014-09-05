@@ -13,7 +13,7 @@ public class RetainFlagOption extends AbstractACOption {
 	public RetainFlagOption(SampleParameters parameters) {
 		this.parameters = parameters;
 
-		opt = 'R';
+		opt = "R";
 		longOpt = "retain-flags";
 	}
 

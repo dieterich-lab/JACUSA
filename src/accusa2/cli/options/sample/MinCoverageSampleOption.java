@@ -15,7 +15,8 @@ public class MinCoverageSampleOption extends AbstractACOption {
 	public MinCoverageSampleOption(final char sample, final SampleParameters parameters) {
 		this.sample = sample;
 		this.parameters = parameters;
-
+		
+		opt = "c" + sample;
 		longOpt = "min-coverage" + sample;
 	}
 	
@@ -26,12 +27,12 @@ public class MinCoverageSampleOption extends AbstractACOption {
 					.withArgName(longOpt.toUpperCase())
 					.hasArg(true)
 			        .withDescription("filter " + sample + " positions with coverage < " + longOpt.toUpperCase() + " \n default: " + parameters.getMinCoverage())
-			        .create(longOpt);
+			        .create(opt);
 	}
 
 	@Override
 	public void process(CommandLine line) throws Exception {
-	    if(line.hasOption(longOpt)) {
+	    if(line.hasOption(opt)) {
 	    	int minCoverage = Integer.parseInt(line.getOptionValue(opt));
 	    	if(minCoverage < 1) {
 	    		throw new IllegalArgumentException(longOpt.toUpperCase() + " must be > 0!");

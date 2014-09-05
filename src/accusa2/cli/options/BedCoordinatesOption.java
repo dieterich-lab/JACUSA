@@ -16,7 +16,7 @@ public class BedCoordinatesOption extends AbstractACOption {
 	public BedCoordinatesOption(AbstractParameters parameters) {
 		this.parameters = parameters;
 
-		opt = 'b';
+		opt = "b";
 		longOpt = "bed";
 	}
 

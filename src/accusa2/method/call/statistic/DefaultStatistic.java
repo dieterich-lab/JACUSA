@@ -159,8 +159,9 @@ public class DefaultStatistic implements StatisticCalculator {
 		double[] probVector = phred2Prob.colMean(bases, pileup);
 		// INFO: coverage and pileup.getCoverage() may be different.
 		// e.g.: when replicates are available...
+		// (double)coverage * 
 		for(int baseI = 0; baseI < bases.length; ++baseI) {
-			alphas[baseI] = (double)coverage * probVector[baseI] / (double)pileup.getCoverage();
+			alphas[baseI] = probVector[baseI] * (double)coverage;
 		}
 
 		return alphas;

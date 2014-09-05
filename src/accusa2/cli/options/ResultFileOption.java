@@ -15,7 +15,7 @@ public class ResultFileOption extends AbstractACOption {
 	public ResultFileOption(AbstractParameters parameters) {
 		this.parameters = parameters;
 
-		opt = 'r';
+		opt = "r";
 		longOpt = "result-file";
 	}
 

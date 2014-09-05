@@ -13,7 +13,7 @@ public class DebugOption extends AbstractACOption {
 	public DebugOption(AbstractParameters parameters) {
 		this.parameters = parameters;
 
-		opt = 'D';
+		opt = "D";
 		longOpt = "debug";
 	}
 	

@@ -42,7 +42,7 @@ public class BedCoordinateProvider implements CoordinateProvider {
 
 	@Override
 	public AnnotatedCoordinate next() {
-		if(hasNext()) {
+		if (hasNext()) {
 			String line;
 			try {
 				line = br.readLine();

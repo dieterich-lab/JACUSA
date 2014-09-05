@@ -21,7 +21,7 @@ public class FilterConfigOption extends AbstractACOption {
 	public FilterConfigOption(AbstractParameters parameters, Map<Character, AbstractFilterFactory> pileupFilterFactories) {
 		this.parameters = parameters;
 		
-		opt = 'a';
+		opt = "a";
 		longOpt = "pileup-filter";
 
 		this.pileupFilterFactories = pileupFilterFactories;

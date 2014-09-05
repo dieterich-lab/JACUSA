@@ -11,7 +11,7 @@ public class HelpOption extends AbstractACOption {
 	private CLI cmd;
 	
 	public HelpOption(CLI cmd) {
-		opt = 'h';
+		opt = "h";
 		longOpt = "help";
 
 		this.cmd = cmd;

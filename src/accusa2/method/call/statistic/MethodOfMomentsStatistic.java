@@ -38,31 +38,32 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 
 	protected double getDensity(final int[] bases, final Pileup[] pileups) {
 		double density = 0.0;
-		
+
 		final int pileupN = pileups.length;
 		// prob. vector per pileup
 		final double[][] pileupProbVectors = new double[pileupN][bases.length];
 		// alpha
 		final double alpha[] = new double[bases.length];
 		Arrays.fill(alpha, 0.0);
-		
+
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			final Pileup pileup = pileups[pileupI];
 			
 			// calculate prob. vectors
-			double[] probVector = phred2Prob.colSum(bases, pileup);
+			double[] probVector = phred2Prob.colMean(bases, pileup);
 			pileupProbVectors[pileupI] = probVector;
 		}
 		double[] mean = MathUtil.mean(pileupProbVectors);
 		double[] variance = MathUtil.variance(mean, pileupProbVectors);
-
+		correctVariance(variance);
+		
 		// calculate alphas need to be divided by total coverage
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI = 0; baseI < bases.length; ++baseI) {
 				alpha[baseI] = Math.pow(mean[baseI], 2.0) * (1 - mean[baseI]) / variance[baseI];
 			}
 		}
-		
+
 		// calculate density
 		DirichletDist dirichlet = new DirichletDist(alpha);
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
@@ -73,9 +74,16 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 		return density;
 	}
 	
+	private void correctVariance(double[] variance) {
+		double min = 0.0001;
+		for (int i = 0; i < variance.length; ++i) {
+			variance[i] = Math.max(variance[i], min);
+		}
+	}
+	
 	public double getStatistic(final ParallelPileup parallelPileup) {
-		final int bases[] = {0, 1, 2, 3};
-		//final int bases[] = parallelPileup.getPooledPileup().getAlleles();
+		//final int bases[] = {0, 1, 2, 3};
+		final int bases[] = parallelPileup.getPooledPileup().getAlleles();
 
 		// first sample(s)
 		double density1 = getDensity(bases, parallelPileup.getPileupsA());

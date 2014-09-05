@@ -15,7 +15,7 @@ public class MinCoverageOption extends AbstractACOption {
 		this.sampleA = sampleA;
 		this.sampleB = sampleB;
 
-		opt = 'c';
+		opt = "c";
 		longOpt = "min-coverage";
 	}
 	

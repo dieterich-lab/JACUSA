@@ -13,7 +13,7 @@ public class PermutationsOption  extends AbstractACOption {
 	public PermutationsOption(StatisticParameters parameters) {
 		this.parameters = parameters;
 
-		opt = 'A';
+		opt = "A";
 		longOpt = "permutation";
 	}
 

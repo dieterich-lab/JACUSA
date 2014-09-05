@@ -17,7 +17,7 @@ public class FormatOption<T extends AbstractOutputFormat> extends AbstractACOpti
 	public FormatOption(AbstractParameters parameters, Map<Character, T> formats) {
 		this.parameters = parameters;
 
-		opt = 'f';
+		opt = "f";
 		longOpt = "output-format";
 
 		this.formats = formats;

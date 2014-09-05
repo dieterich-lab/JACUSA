@@ -16,6 +16,7 @@ public class MinMAPQSampleOption extends AbstractACOption {
 		this.sample = sample;
 		this.parameters = parameters;
 
+		opt = "m" + sample;
 		longOpt = "min-mapq" + sample;
 	}
 	
@@ -26,12 +27,12 @@ public class MinMAPQSampleOption extends AbstractACOption {
 				.withArgName(longOpt.toUpperCase())
 				.hasArg(true)
 		        .withDescription("filter " + sample + " positions with MAPQ < " + longOpt.toUpperCase() + "\n default: " + parameters.getMinMAPQ())
-		        .create(longOpt);
+		        .create(opt);
 	}
 
 	@Override
 	public void process(CommandLine line) throws Exception {
-		if (line.hasOption(longOpt)) {
+		if (line.hasOption(opt)) {
 	    	String value = line.getOptionValue(opt);
 	    	int minMapq = Integer.parseInt(value);
 	    	if(minMapq < 0) {

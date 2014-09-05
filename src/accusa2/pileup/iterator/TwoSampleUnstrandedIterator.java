@@ -43,6 +43,8 @@ public class TwoSampleUnstrandedIterator extends AbstractTwoSampleIterator {
 				parallelPileup.setPileupsA(getPileups(locationA, pileupBuildersA));
 				parallelPileup.setPileupsB(getPileups(locationB, pileupBuildersB));
 
+				parallelPileup.getPooledPileup();
+				
 				if (filter.isValid(parallelPileup)) {
 					return true;
 				} else {
@@ -64,10 +66,6 @@ public class TwoSampleUnstrandedIterator extends AbstractTwoSampleIterator {
 
 	@Override
 	public ParallelPileup next() {
-		if (! hasNext()) {
-			return null;
-		}
-	
 		if (filterconfig.hasFiters()) {
 			parallelPileup.setFilterCountsA(getCounts(locationA, pileupBuildersA));
 			parallelPileup.setFilterCountsB(getCounts(locationB, pileupBuildersB));

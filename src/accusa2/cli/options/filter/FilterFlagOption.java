@@ -14,7 +14,7 @@ public class FilterFlagOption extends AbstractACOption {
 	public FilterFlagOption(SampleParameters parameters) {
 		this.parameters = parameters;
 
-		opt = 'F';
+		opt = "F";
 		longOpt = "filter-flags";
 	}
 

@@ -14,7 +14,7 @@ public class FalseDiscoveryFilterOption  extends AbstractACOption {
 	public FalseDiscoveryFilterOption(StatisticParameters parameters) {
 		this.parameters = parameters;
 
-		opt = 'q';
+		opt = "q";
 		longOpt = "fdr";
 	}
 

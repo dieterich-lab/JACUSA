@@ -5,7 +5,7 @@ import org.apache.commons.cli.Option;
 
 public abstract class AbstractACOption {
 
-	protected char opt;
+	protected String opt;
 	protected String longOpt;
 
 	public AbstractACOption() {
@@ -15,7 +15,7 @@ public abstract class AbstractACOption {
 	public abstract void process(CommandLine line) throws Exception;
 	public abstract Option getOption();
 	
-	public char getOpt() {
+	public String getOpt() {
 		return opt;
 	}
 

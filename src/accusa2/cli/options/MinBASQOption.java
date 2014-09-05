@@ -15,7 +15,7 @@ public class MinBASQOption extends AbstractACOption {
 		this.sampleA = sampleA;
 		this.sampleB = sampleB;
 
-		opt = 'q';
+		opt = "q";
 		longOpt = "min-basq";
 	}
 	

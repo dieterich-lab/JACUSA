@@ -15,7 +15,7 @@ public class MaxDepthOption extends AbstractACOption {
 		this.sampleA = sampleA;
 		this.sampleB = sampleB;
 
-		opt = 'd';
+		opt = "d";
 		longOpt = "max-depth";
 	}
 	

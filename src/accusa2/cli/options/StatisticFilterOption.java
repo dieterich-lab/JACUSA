@@ -12,7 +12,7 @@ public class StatisticFilterOption  extends AbstractACOption {
 	
 	public StatisticFilterOption(StatisticParameters parameters) {
 		this.parameters = parameters;
-		opt = 'T';
+		opt = "T";
 		longOpt = "stat";
 	}
 

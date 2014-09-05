@@ -15,6 +15,8 @@ public class MaxDepthSampleOption extends AbstractACOption {
 	public MaxDepthSampleOption(final char sample, final SampleParameters parameters) {
 		this.sample = sample;
 		this.parameters = parameters;
+		
+		opt = "d" + sample;
 		longOpt = "max-depth" + sample;
 	}
 	
@@ -25,12 +27,12 @@ public class MaxDepthSampleOption extends AbstractACOption {
 			.withArgName(longOpt.toUpperCase())
 			.hasArg()
 			.withDescription("max per-sample " + sample + " depth\ndefault: " + parameters.getMaxDepth())
-			.create(longOpt);
+			.create(opt);
 	}
 
 	@Override
 	public void process(CommandLine line) throws Exception {
-		if(line.hasOption(longOpt)) {
+		if(line.hasOption(opt)) {
 	    	int maxDepth = Integer.parseInt(line.getOptionValue(opt));
 	    	if(maxDepth < 2 || maxDepth == 0) {
 	    		throw new IllegalArgumentException(longOpt.toUpperCase() + " must be > 0 or -1 (limited by memory)!");
