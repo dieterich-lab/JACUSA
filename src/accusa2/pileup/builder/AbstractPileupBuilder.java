@@ -67,10 +67,10 @@ public abstract class AbstractPileupBuilder {
 	 */
 	public SAMRecord getNextValidRecord(int targetPosition) {
 		SAMRecordIterator iterator = reader.query(contig, targetPosition, maxGenomicPosition, false);
-		while(iterator.hasNext() ) {
+		while (iterator.hasNext() ) {
 			SAMRecord record = iterator.next();
 
-			if(isValid(record)) {
+			if (isValid(record)) {
 				iterator.close();
 				iterator = null;
 				return record;
@@ -136,7 +136,7 @@ public abstract class AbstractPileupBuilder {
 			isCached = false;
 			return false;
 		} else { // process any left SAMrecords in the buffer
-			for(int i = 0; i < SAMReocordsInBuffer; ++i) {
+			for (int i = 0; i < SAMReocordsInBuffer; ++i) {
 				try {
 					processRecord(SAMRecordsBuffer[i]);
 				} catch (Exception e) {
@@ -176,16 +176,16 @@ public abstract class AbstractPileupBuilder {
 		int mapq = samRecord.getMappingQuality();
 		List<SAMValidationError> errors = samRecord.isValid();
 
-		if(!samRecord.getReadUnmappedFlag()
-				&& !samRecord.getNotPrimaryAlignmentFlag() // ignore non-primary alignments
+		if (! samRecord.getReadUnmappedFlag()
+				&& ! samRecord.getNotPrimaryAlignmentFlag() // ignore non-primary alignments
 				&& (mapq < 0 || mapq >= sample.getMinMAPQ()) // filter by mapping quality
 				&& (sample.getFilterFlags() == 0 || (sample.getFilterFlags() > 0 && ((samRecord.getFlags() & sample.getFilterFlags()) == 0)))
 				&& (sample.getRetainFlags() == 0 || (sample.getRetainFlags() > 0 && ((samRecord.getFlags() & sample.getRetainFlags()) > 0)))
 				&& errors == null // isValid is expensive
 				) { // only store valid records that contain mapped reads
 			// custom filter 
-			for(SamTagFilter samTagFilter : sample.getSamTagFilters()) {
-				if(samTagFilter.filter(samRecord)) {
+			for (SamTagFilter samTagFilter : sample.getSamTagFilters()) {
+				if (samTagFilter.filter(samRecord)) {
 					return false;
 				}
 			}
@@ -195,8 +195,8 @@ public abstract class AbstractPileupBuilder {
 		}
 
 		// print error messages
-		if(errors != null) {
-			for(SAMValidationError error : errors) {
+		if (errors != null) {
+			for (SAMValidationError error : errors) {
 				 System.err.println(error.toString());
 			}
 		}
@@ -256,22 +256,23 @@ public abstract class AbstractPileupBuilder {
 	}
 
 	protected void processAlignmentBlock(final SAMRecord record, final AlignmentBlock alignmentBlock) {
-		int readPosition = alignmentBlock.getReadStart() - 1;
+		int readPosition = alignmentBlock.getReadStart() - 1; // 1-based index
 		int genomicPosition = alignmentBlock.getReferenceStart();
 
 		for (int offset = 0; offset < alignmentBlock.getLength(); ++offset) {
 			final int baseI = baseConfig.getBaseI(record.getReadBases()[readPosition + offset]);
 			final byte qual = record.getBaseQualities()[readPosition + offset];
 
-			if(qual >= sample.getMinBASQ() && baseI != -1) {
+			if (qual >= sample.getMinBASQ() && baseI != -1) {
 				// speedup: if windowPosition == -1 the remaining part of the read will be outside of the windowCache
 				// ignore the overhanging part of the read until it overlaps with the window cache
 				final int windowPosition = convertGenomicPosition2WindowPosition(genomicPosition + offset);
-				if (windowPosition < 0) {
+				if (windowPosition == -1) {
 					return;
 				}
-
-				add2Cache(windowPosition, baseI, qual, record);
+				if (windowPosition >= 0) {
+					add2Cache(windowPosition, baseI, qual, record);
+				}
 			}
 		}
 	}

@@ -61,7 +61,7 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 				}
 
 				// 
-				if(locationA.strand == STRAND.REVERSE && locationB.strand == STRAND.REVERSE) {
+				if (locationA.strand == STRAND.REVERSE && locationB.strand == STRAND.REVERSE) {
 					parallelPileup.setPileupsA(complementPileups(parallelPileup.getPileupsA()));
 					parallelPileup.setPileupsB(complementPileups(parallelPileup.getPileupsB()));
 				}
@@ -88,7 +88,7 @@ public class TwoSampleStrandedIterator extends AbstractTwoSampleIterator {
 
 	@Override
 	public ParallelPileup next() {
-		/*
+		/* TODO
 		if (! hasNext()) {
 			return null;
 		}

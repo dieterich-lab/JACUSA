@@ -55,7 +55,7 @@ public abstract class AbstractCountFilter extends AbstractFeatureFilter {
 
 		// AG | AG
 		if (DefaultParallelPileup.isHeHe(parallelPileup)) {
-			parallelPileup.getPooledPileup().getAlleles();
+			return parallelPileup.getPooledPileup().getAlleles();
 		}
 
 		return new int[0];

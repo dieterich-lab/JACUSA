@@ -136,13 +136,11 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 	}
 
 	protected boolean adjustCurrentGenomicPosition(Location location, AbstractPileupBuilder[] pileupBuilders) {
-		boolean ret = false;
-
 		if (! pileupBuilders[0].isContainedInWindow(location.genomicPosition)) {
-			ret = adjustWindowStart(location, pileupBuilders);
+			return adjustWindowStart(location, pileupBuilders);
 		}
 
-		return ret;
+		return true;
 	}
 
 	protected boolean adjustWindowStart(Location location, AbstractPileupBuilder[] pileupBuilders) {
