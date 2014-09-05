@@ -14,7 +14,7 @@ public class TwoSampleCallParameters extends AbstractParameters implements hasSa
 
 		sampleB				= new SampleParameters();
 		statisticParameters = new StatisticParameters();
-		format		= new DefaultResultFormat(getFilterConfig());
+		format		= new DefaultResultFormat(getBaseConfig());
 	}
 
 	@Override

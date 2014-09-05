@@ -30,7 +30,8 @@ public class BaseConfig {
 	public static final char[] VALID_COMPLEMENTED = { 'T', 'G', 'C', 'A' };
 
 	private int[] VALIDbyte2int;
-	
+
+	private int[] basesI;
 	private char[] bases;
 	private int[] byte2int;
 	// complement
@@ -38,7 +39,6 @@ public class BaseConfig {
 
 	public BaseConfig(char[] bases) {
 		VALIDbyte2int = Byte2baseI(VALID);
-		
 		setBases(bases);
 	}
 
@@ -97,5 +97,15 @@ public class BaseConfig {
 		this.bases = bases;
 		byte2int = Byte2baseI(bases);
 		complementByte2int = complementByte2baseI(bases);
+
+		basesI = new int[bases.length];
+		for (int i = 0; i < bases.length; ++i) {
+			basesI[i] = i;
+		}
 	}
+
+	public int[] getBasesI() {
+		return basesI;
+	}
+
 }

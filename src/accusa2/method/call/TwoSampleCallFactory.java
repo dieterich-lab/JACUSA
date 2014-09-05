@@ -159,7 +159,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 	public Map<Character, AbstractResultFormat> getResultFormats() {
 		Map<Character, AbstractResultFormat> resultFormats = new HashMap<Character, AbstractResultFormat>();
 
-		AbstractResultFormat resultFormat = new DefaultResultFormat(parameters.getFilterConfig());
+		AbstractResultFormat resultFormat = new DefaultResultFormat(parameters.getBaseConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		resultFormat = new PileupResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
