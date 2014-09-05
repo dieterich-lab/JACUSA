@@ -144,6 +144,7 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		sb.append(SEP);
 		double[] meanP = getPileupsMean(baseConfig.getBasesI(), parallelPileup.getPileupsP());
 		sb.append(collapse(meanP));
+		sb.append(SEP);
 		// varAB		
 		double[] varianceP = getPileupsVariance(baseConfig.getBasesI(), meanB, parallelPileup.getPileupsP());
 		sb.append(collapse(varianceP));
