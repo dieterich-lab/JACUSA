@@ -44,7 +44,7 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 		final double[][] pileupProbVectors = new double[pileupN][bases.length];
 		// alpha
 		final double alpha[] = new double[bases.length];
-		Arrays.fill(alpha, 0.0);
+		Arrays.fill(alpha, 1.0/bases.length);
 
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			final Pileup pileup = pileups[pileupI];
@@ -56,11 +56,11 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 		double[] mean = MathUtil.mean(pileupProbVectors);
 		double[] variance = MathUtil.variance(mean, pileupProbVectors);
 		correctVariance(variance);
-		
+
 		// calculate alphas need to be divided by total coverage
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI = 0; baseI < bases.length; ++baseI) {
-				alpha[baseI] = Math.pow(mean[baseI], 2.0) * (1 - mean[baseI]) / variance[baseI];
+				alpha[baseI] += Math.pow(mean[baseI], 2.0) * (1 - mean[baseI]) / variance[baseI];
 			}
 		}
 
@@ -75,7 +75,7 @@ public final class MethodOfMomentsStatistic implements StatisticCalculator {
 	}
 	
 	private void correctVariance(double[] variance) {
-		double min = 0.0001;
+		double min = 0.1;
 		for (int i = 0; i < variance.length; ++i) {
 			variance[i] = Math.max(variance[i], min);
 		}

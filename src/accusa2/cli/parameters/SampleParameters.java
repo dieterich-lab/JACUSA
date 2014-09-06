@@ -34,7 +34,7 @@ public class SampleParameters {
 		maxDepth 		= -1;
 		minBASQ			= Byte.parseByte("20");
 		minMAPQ 		= 20;
-		minCoverage 	= 10;
+		minCoverage 	= 5;
 
 		filterFlags 	= 0;
 		retainFlags	 	= 0;

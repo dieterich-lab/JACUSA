@@ -48,7 +48,7 @@ public final class WeightedMethodOfMomentsStatistic implements StatisticCalculat
 		final double[][] pileupProbVectors = new double[pileupN][bases.length];
 		// alpha
 		final double alpha[] = new double[bases.length];
-		Arrays.fill(alpha, 0.0);
+		Arrays.fill(alpha, 1.0/bases.length);
 		
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			// calculate weights
@@ -58,23 +58,23 @@ public final class WeightedMethodOfMomentsStatistic implements StatisticCalculat
 			totalCoverage += coverage;
 			
 			// calculate prob. vectors
-			double[] probVector = phred2Prob.colSum(bases, pileup);
+			double[] probVector = phred2Prob.colMean(bases, pileup);
 			pileupProbVectors[pileupI] = probVector;
 		}
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			weights[pileupI] /= (double)totalCoverage;
 		}
-		
+
 		double[] weightedMean = MathUtil.weightedMean(weights, pileupProbVectors);
 		double[] weightedVariance = MathUtil.weightedVariance(weights, weightedMean, pileupProbVectors);
 
 		// calculate alphas need to be divided by total coverage
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI = 0; baseI < bases.length; ++baseI) {
-				alpha[baseI] = Math.pow(weightedMean[baseI], 2.0) * (1 - weightedMean[baseI]) / weightedVariance[baseI];
+				alpha[baseI] += Math.pow(weightedMean[baseI], 2.0) * (1 - weightedMean[baseI]) / weightedVariance[baseI];
 			}
 		}
-		
+
 		// calculate density
 		DirichletDist dirichlet = new DirichletDist(alpha);
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
