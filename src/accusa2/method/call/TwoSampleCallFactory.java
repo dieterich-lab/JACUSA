@@ -25,6 +25,7 @@ import accusa2.cli.options.FormatOption;
 import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
+import accusa2.cli.options.filter.FilterFlagOption;
 import accusa2.cli.options.pileupbuilder.TwoSamplePileupBuilderOption;
 import accusa2.cli.options.sample.MaxDepthSampleOption;
 import accusa2.cli.options.sample.MinBASQSampleOption;
@@ -90,6 +91,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new MinBASQOption(sampleA, sampleB));
 		acOptions.add(new MinCoverageOption(sampleA, sampleB));
 		acOptions.add(new MaxDepthOption(sampleA, sampleB));
+		acOptions.add(new FilterFlagOption(sampleA, sampleB));
+		
 		
 		acOptions.add(new TwoSamplePileupBuilderOption(sampleA, sampleB));
 		

@@ -9,10 +9,12 @@ import accusa2.cli.parameters.SampleParameters;
 
 public class FilterFlagOption extends AbstractACOption {
 
-	private SampleParameters parameters;
+	private SampleParameters sampleA;
+	private SampleParameters sampleB;
 	
-	public FilterFlagOption(SampleParameters parameters) {
-		this.parameters = parameters;
+	public FilterFlagOption(final SampleParameters sampleA, final SampleParameters sampleB) {
+		this.sampleA = sampleA;
+		this.sampleB = sampleB;
 
 		opt = "F";
 		longOpt = "filter-flags";
@@ -26,7 +28,8 @@ public class FilterFlagOption extends AbstractACOption {
 	    	if(filterFlags <= 0) {
 	    		throw new IllegalArgumentException(longOpt.toUpperCase() + " = " + filterFlags + " not valid.");
 	    	}
-	    	parameters.setFilterFlags(filterFlags);
+	    	sampleA.setFilterFlags(filterFlags);
+	    	sampleB.setFilterFlags(filterFlags);
 	    }
 	}
 
@@ -36,7 +39,7 @@ public class FilterFlagOption extends AbstractACOption {
 		return OptionBuilder.withLongOpt(longOpt)
 				.withArgName(longOpt.toUpperCase())
 				.hasArg(true)
-		        .withDescription("filter reads with flags " + longOpt.toUpperCase() + " \n default: " + parameters.getFilterFlags())
+		        .withDescription("filter reads with flags " + longOpt.toUpperCase() + " \n default: " + sampleA.getFilterFlags())
 		        .create(opt);
 	}
 

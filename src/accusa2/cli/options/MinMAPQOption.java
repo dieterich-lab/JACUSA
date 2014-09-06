@@ -13,7 +13,7 @@ public class MinMAPQOption extends AbstractACOption {
 	
 	public MinMAPQOption(SampleParameters sampleA, SampleParameters sampleB) {
 		this.sampleA = sampleA;
-		this.sampleA = sampleA;
+		this.sampleB = sampleB;
 
 		opt = "m";
 		longOpt = "min-mapq";
