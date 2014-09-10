@@ -42,7 +42,7 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 				sampleA,
 				parameters);
 		locationA = initLocation(annotatedCoordinate, sampleA.getPileupBuilderFactory().isDirected(), pileupBuildersA);
-		
+
 		this.sampleB = sampleB;
 		pileupBuildersB = createPileupBuilders(
 				sampleB.getPileupBuilderFactory(), 

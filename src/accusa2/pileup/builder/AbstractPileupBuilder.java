@@ -272,7 +272,7 @@ public abstract class AbstractPileupBuilder {
 					return;
 				}
 				if (windowPosition == -2) { // speedup jump to covered position
-					offset -= genomicPosition - genomicWindowStart; // this should be negative 
+					offset += genomicWindowStart - genomicPosition - 1; // this should be negative 
 				}
 				if (windowPosition >= 0) {
 					add2Cache(windowPosition, base, qual, record);
