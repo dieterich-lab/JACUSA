@@ -1,12 +1,11 @@
 package accusa2.io.format.result;
 
-import java.util.Arrays;
-
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
+import accusa2.util.StringCollapse;
 
 // CHANGED
 public class DefaultResultFormat extends AbstractResultFormat {
@@ -17,7 +16,7 @@ public class DefaultResultFormat extends AbstractResultFormat {
 	public static final char SEP2 	= ',';
 
 	private BaseConfig baseConfig;
-	private Phred2Prob phred2Prob;
+	public Phred2Prob phred2Prob;
 
 	public DefaultResultFormat(BaseConfig baseConfig) {
 		super('D', "ACCUSA2 default output");
@@ -124,29 +123,29 @@ public class DefaultResultFormat extends AbstractResultFormat {
 
 		// meanA
 		sb.append(SEP);
-		double[] meanA = getPileupsMean(baseConfig.getBasesI(), parallelPileup.getPileupsA());
-		sb.append(collapse(meanA));
+		double[] meanA = phred2Prob.getPileupsMean(baseConfig.getBasesI(), parallelPileup.getPileupsA());
+		sb.append(StringCollapse.collapse(meanA, ","));
 		// varA
 		sb.append(SEP);
-		double[] varianceA = getPileupsVariance(baseConfig.getBasesI(), meanA, parallelPileup.getPileupsA());
+		double[] varianceA = phred2Prob.getPileupsVariance(baseConfig.getBasesI(), meanA, parallelPileup.getPileupsA());
 		sb.append(collapse(varianceA));
 		
 		// meanB
 		sb.append(SEP);
-		double[] meanB = getPileupsMean(baseConfig.getBasesI(), parallelPileup.getPileupsB());
+		double[] meanB = phred2Prob.getPileupsMean(baseConfig.getBasesI(), parallelPileup.getPileupsB());
 		sb.append(collapse(meanB));
 		// varB
 		sb.append(SEP);
-		double[] varianceB = getPileupsVariance(baseConfig.getBasesI(), meanB, parallelPileup.getPileupsB());
+		double[] varianceB = phred2Prob.getPileupsVariance(baseConfig.getBasesI(), meanB, parallelPileup.getPileupsB());
 		sb.append(collapse(varianceB));
 		
 		// meanAB
 		sb.append(SEP);
-		double[] meanP = getPileupsMean(baseConfig.getBasesI(), parallelPileup.getPileupsP());
+		double[] meanP = phred2Prob.getPileupsMean(baseConfig.getBasesI(), parallelPileup.getPileupsP());
 		sb.append(collapse(meanP));
 		sb.append(SEP);
 		// varAB		
-		double[] varianceP = getPileupsVariance(baseConfig.getBasesI(), meanB, parallelPileup.getPileupsP());
+		double[] varianceP = phred2Prob.getPileupsVariance(baseConfig.getBasesI(), meanB, parallelPileup.getPileupsP());
 		sb.append(collapse(varianceP));
 		
 		// add unfiltered value
@@ -202,10 +201,7 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		return SEP2;
 	}
 
-	/*
-	 * TODO move it somewhere
-	 */
-
+	@Deprecated
 	private String collapse(double[] values) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(values[0]);
@@ -214,42 +210,6 @@ public class DefaultResultFormat extends AbstractResultFormat {
 			sb.append(values[i]);			
 		}
 		return sb.toString();
-	}
-	
-	private double[] getPileupsMean(int[] basesI, Pileup[] pileups) {
-		double[] totalMean = new double[basesI.length];
-		Arrays.fill(totalMean, 0.0);
-
-		for (Pileup pileup : pileups) {
-			double[] pileupMean = phred2Prob.colMean(basesI, pileup);
-			for (int baseI : basesI) {
-				totalMean[baseI] += pileupMean[baseI];
-			}
-		}
-		double n = pileups.length;
-		for (int baseI : basesI) {
-			totalMean[baseI] /= n;
-		}
-
-		return totalMean;
-	}
-
-	private double[] getPileupsVariance(int[] basesI, double[] totalMean, Pileup[] pileups) {
-		double[] totalVariance = new double[basesI.length];
-		Arrays.fill(totalVariance, 0.0);
-
-		for (Pileup pileup : pileups) {
-			double[] pileupMean = phred2Prob.colMean(basesI, pileup);
-			for (int baseI : basesI) {
-				totalVariance[baseI] +=  Math.pow(totalMean[baseI] - pileupMean[baseI], 2.0); 
-			}
-		}
-		double n = pileups.length;
-		for (int baseI : basesI) {
-			totalMean[baseI] /= n - 1;
-		}
-
-		return totalVariance;
 	}
 	
 }

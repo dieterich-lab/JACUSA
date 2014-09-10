@@ -1,5 +1,7 @@
 package accusa2.process.phred2prob;
 
+import java.util.Arrays;
+
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.Pileup;
 
@@ -87,6 +89,42 @@ public final class Phred2Prob {
 		return p;
 	}
 	
+	public double[] getPileupsMean(int[] basesI, Pileup[] pileups) {
+		double[] totalMean = new double[basesI.length];
+		Arrays.fill(totalMean, 0.0);
+	
+		for (Pileup pileup : pileups) {
+			double[] pileupMean = colMean(basesI, pileup);
+			for (int baseI : basesI) {
+				totalMean[baseI] += pileupMean[baseI];
+			}
+		}
+		double n = pileups.length;
+		for (int baseI : basesI) {
+			totalMean[baseI] /= n;
+		}
+	
+		return totalMean;
+	}
+
+	public double[] getPileupsVariance(int[] basesI, double[] totalMean, Pileup[] pileups) {
+		double[] totalVariance = new double[basesI.length];
+		Arrays.fill(totalVariance, 0.0);
+	
+		for (Pileup pileup : pileups) {
+			double[] pileupMean = colMean(basesI, pileup);
+			for (int baseI : basesI) {
+				totalVariance[baseI] +=  Math.pow(totalMean[baseI] - pileupMean[baseI], 2.0); 
+			}
+		}
+		double n = pileups.length;
+		for (int baseI : basesI) {
+			totalMean[baseI] /= n - 1;
+		}
+	
+		return totalVariance;
+	}
+
 	public static Phred2Prob getInstance(int n) {
 		if (singles[n] == null) {
 			singles[n] = new Phred2Prob(n);
