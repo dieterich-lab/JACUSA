@@ -92,8 +92,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new MinCoverageOption(sampleA, sampleB));
 		acOptions.add(new MaxDepthOption(sampleA, sampleB));
 		acOptions.add(new FilterFlagOption(sampleA, sampleB));
-		
-		
+
 		acOptions.add(new TwoSamplePileupBuilderOption(sampleA, sampleB));
 		
 		acOptions.add(new BedCoordinatesOption(parameters));

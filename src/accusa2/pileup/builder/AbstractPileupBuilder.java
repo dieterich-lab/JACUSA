@@ -172,7 +172,6 @@ public abstract class AbstractPileupBuilder {
 	 * @param samRecord
 	 * @return
 	 */
-	// TODO collect statistics
 	protected boolean isValid(SAMRecord samRecord) {
 		int mapq = samRecord.getMappingQuality();
 		List<SAMValidationError> errors = samRecord.isValid();
