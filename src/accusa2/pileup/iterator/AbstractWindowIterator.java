@@ -89,15 +89,6 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 	protected SAMRecord getNextValidRecord(final int targetGenomicPosition, final AbstractPileupBuilder[] pileupBuilders) {
 		return pileupBuilders[0].getNextValidRecord(targetGenomicPosition);
 	}
-	/*
-		for (AbstractPileupBuilder pileupBuilder : pileupBuilders) {
-			record = pileupBuilder.getNextValidRecord(targetGenomicPosition);
-			if (record != null) {
-				return record;
-			}
-		}
-	}
-	*/
 
 	// TODO make this more quantitative
 	protected boolean isCovered(Location location, AbstractPileupBuilder[] pileupBuilders) {

@@ -48,7 +48,7 @@ public class OneSampleStrandedIterator extends AbstractOneSampleIterator {
 		}
 
 		// TODO set B
-		
+
 		// advance to the next position
 		advance();
 

@@ -21,8 +21,8 @@ public final class LR2Statistic implements StatisticCalculator {
 
 	protected final DefaultStatistic defaultStatistic;
 
-	// TODO test what is the best??? 2*k - 2 : k = dimension of modeled prob. vector
-	protected ChiSquareDist dist = new ChiSquareDist(6);
+	// test what is the best??? 2*k - 2 : k = dimension of modeled prob. vector
+	//protected ChiSquareDist dist = new ChiSquareDist(6);
 	
 	public LR2Statistic(BaseConfig baseConfig, StatisticParameters parameters) {
 		defaultStatistic 	= new DefaultStatistic(baseConfig, parameters);
@@ -64,7 +64,7 @@ public final class LR2Statistic implements StatisticCalculator {
 		if(z < 0.0 ) {
 			return 1.0;
 		}
-		return 1 - dist.cdf(z);
+		return 1 - ChiSquareDist.cdf(2 * (bases.length - 1), 1, z);
 	}
 
 	@Override
