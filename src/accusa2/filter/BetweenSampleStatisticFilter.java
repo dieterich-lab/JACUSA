@@ -20,12 +20,9 @@ public class BetweenSampleStatisticFilter extends AbstractCountFilter {
 		statistic = parameters.getStatisticCalculator().newInstance();
 		this.minScore = minScore;
 	}
-
+	
 	@Override
-	public boolean filter(ParallelPileup parallelPileup) {
-		int[] variantBaseIs = getVariantBaseI(parallelPileup);
-
-		int variantBaseI = variantBaseIs[0];
+	public boolean filter(int variantBaseI, ParallelPileup parallelPileup) {
 		ParallelPileup filtered = applyFilter(variantBaseI, parallelPileup);
 		double value = statistic.getStatistic(filtered);
 

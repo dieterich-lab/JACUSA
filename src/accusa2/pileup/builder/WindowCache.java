@@ -22,8 +22,6 @@ public class WindowCache {
 		coverage 	= new int[windowSize];
 		baseCount 	= new int[windowSize][baseLength];
 		qualCount 	= new int[windowSize][baseLength][Phred2Prob.MAX_Q];
-
-		minQualI 	= 0; // FIXME Parameters.getInstance().getMinBASQ();
 	}
 
 	public void clear() {

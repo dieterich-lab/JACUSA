@@ -37,18 +37,13 @@ public final class NumericalStatistic implements StatisticCalculator {
 		return new NumericalStatistic(baseConfig, parameters);
 	}
 
-	// TODO check if this make sense!
 	protected double[][] getPileup2Probs(final int bases[], final Pileup[] pileups) {
 		final double[][] probs = new double[pileups.length][bases.length];
 
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			// sum the probabilities giving alpha 
-			double[] probVec = phred2Prob.colSum(bases, pileups[pileupI]);
-
-			//  divide alpha by coverage to get average probability
-			for (int baseI = 0; baseI < bases.length; ++baseI) {
-				probs[pileupI][baseI] = probVec[baseI] / (double)pileups[pileupI].getCoverage();
-			}
+			double[] probMean = phred2Prob.colMean(bases, pileups[pileupI]);
+			probs[pileupI] = probMean;
 		}
 
 		return probs;
@@ -95,8 +90,6 @@ public final class NumericalStatistic implements StatisticCalculator {
 	protected double[] estimateAlpha(final int bases[], final Pileup[] pileups) {
 		double[] alpha = initialEstimate(bases, pileups);
 		//double[] weights = getWeights(bases, pileups);
-
-		// TODO do the actual estimation
 
 		return alpha;
 	}

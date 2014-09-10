@@ -85,12 +85,11 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 		return pileupBuilders;
 	}
 
-	// TODO at least two need to be covered
 	protected SAMRecord getNextValidRecord(final int targetGenomicPosition, final AbstractPileupBuilder[] pileupBuilders) {
 		return pileupBuilders[0].getNextValidRecord(targetGenomicPosition);
 	}
 
-	// TODO make this more quantitative
+	// Change here for more quantitative evaluation
 	protected boolean isCovered(Location location, AbstractPileupBuilder[] pileupBuilders) {
 		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(location.genomicPosition);
 		if (windowPosition < 0) {
@@ -192,7 +191,7 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 
 		for (int i = 0; i < replicates; ++i) {
 			for (int j = 0; j < filterCount; ++j) {
-				complementedCounts[i][j] = counts[i][j]; // TODO check
+				complementedCounts[i][j] = counts[i][j];
 				complementedCounts[i][j].invertCounts();
 			}
 		}

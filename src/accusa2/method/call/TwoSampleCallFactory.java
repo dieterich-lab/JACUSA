@@ -170,11 +170,10 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 				new DistanceFilterFactory(parameters),
 				new HomozygousFilterFactory(),
 				new HomopolymerFilterFactory(parameters),
-				new RareEventFilterFactory(),
+				new RareEventFilterFactory(parameters),
 				new PolymorphismPileupFilterFactory()
 		};
 		for (AbstractFilterFactory filter : filters) {
-			// TODO filter.setFilterConfig(filterConfig);
 			abstractPileupFilters.put(filter.getC(), filter);
 		}
 

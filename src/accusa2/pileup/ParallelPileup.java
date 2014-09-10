@@ -41,6 +41,6 @@ public interface ParallelPileup {
 	abstract Counts[][] getFilterCountsA();
 	abstract Counts[][] getFilterCountsB();
 
-	abstract int[] getVariantBases();
+	abstract int[] getVariantBaseIs();
 
 }

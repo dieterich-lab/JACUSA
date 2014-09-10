@@ -13,22 +13,23 @@ public abstract class AbstractCountFilter extends AbstractFeatureFilter {
 	protected final BaseConfig baseConfig;
 	protected final FilterConfig filterConfig;
 	protected final int filterI;
-	
-	public AbstractCountFilter(char c, BaseConfig baseConfig, FilterConfig filterConfig) {
+
+	public AbstractCountFilter(final char c, final BaseConfig baseConfig, final FilterConfig filterConfig) {
 		super(c);
 		this.baseConfig 	= baseConfig;
 		this.filterConfig 	= filterConfig;
 		filterI				= filterConfig.c2i(c);
 	}
 
-	// todo ORDER RESULTS [0] SHOULD BE THE VARIANT TO TEST AGAINST
-	protected int[] getVariantBaseI(ParallelPileup parallelPileup) {
-		int[] variantBaseIs = parallelPileup.getVariantBases();
-
+	// ORDER RESULTS [0] SHOULD BE THE VARIANT TO TEST AGAINST
+	public int[] getVariantBaseIs(final ParallelPileup parallelPileup) {
+		final int[] variantBasesIs = parallelPileup.getVariantBaseIs();
+		final int[] allelesIs = parallelPileup.getPooledPileup().getAlleles();
+		final char refBase = parallelPileup.getPooledPileup().getRefBase();
+		
 		// A | G
 		// define all non-reference bases as potential variants
 		if (DefaultParallelPileup.isHoHo(parallelPileup)) {
-			final char refBase = parallelPileup.getPooledPileup().getRefBase();
 			if (refBase == 'N') {
 				return new int[0];
 			}
@@ -36,31 +37,27 @@ public abstract class AbstractCountFilter extends AbstractFeatureFilter {
 
 			// find non-reference base(s)
 			int i = 0;
-			final int[] tmp = new int[variantBaseIs.length];
-			for (final int baseI : variantBaseIs) {
+			final int[] tmp = new int[allelesIs.length];
+			for (final int baseI : allelesIs) {
 				if (baseI != refBaseI) {
 					tmp[i] = baseI;
 					++i;
 				}
 			}
-			final int[] variants = new int[i];
-			System.arraycopy(tmp, 0, variants, 0, i);
-			return variants;
+			final int[] ret = new int[i];
+			System.arraycopy(tmp, 0, ret, 0, i);
+			return ret;
 		}
 
 		// A | AG
-		if (variantBaseIs.length == 1) {
-			return variantBaseIs;
+		if (variantBasesIs.length >= 1) {
+			return variantBasesIs;
 		}
 
 		// AG | AG
-		if (DefaultParallelPileup.isHeHe(parallelPileup)) {
-			return parallelPileup.getPooledPileup().getAlleles();
-		}
-
-		return new int[0];
+		return allelesIs;
 	}
-
+	
 	/**
 	 * null if filter did not change anything
 	 * @param extendedPileups
@@ -70,9 +67,9 @@ public abstract class AbstractCountFilter extends AbstractFeatureFilter {
 		final Pileup[] filtered = new DefaultPileup[pileups.length];
 
 		boolean processed = false;
-		for(int i = 0; i < pileups.length; ++i) {
+		for (int i = 0; i < pileups.length; ++i) {
 			filtered[i] = new DefaultPileup(pileups[i]);
-			Counts count = counts[i];
+			final Counts count = counts[i];
 			if(count != null) { 
 				filtered[i].getCounts().substract(variantBaseI, count);
 				processed = true;
@@ -83,14 +80,14 @@ public abstract class AbstractCountFilter extends AbstractFeatureFilter {
 	}
 
 	final protected ParallelPileup applyFilter(final int variantBaseI, final ParallelPileup parallelPileup) {
-		Pileup[] pileupsA = applyFilter(variantBaseI, parallelPileup.getPileupsA(), parallelPileup.getFilterCountsA()[filterI]);
-		Pileup[] pileupsB = applyFilter(variantBaseI, parallelPileup.getPileupsB(), parallelPileup.getFilterCountsB()[filterI]);
+		final Pileup[] pileupsA = applyFilter(variantBaseI, parallelPileup.getPileupsA(), parallelPileup.getFilterCountsA()[filterI]);
+		final Pileup[] pileupsB = applyFilter(variantBaseI, parallelPileup.getPileupsB(), parallelPileup.getFilterCountsB()[filterI]);
 
 		if (pileupsA == null && pileupsB == null) {
 			return null;
 		}
 
-		ParallelPileup filtered = new DefaultParallelPileup(parallelPileup.getNA(), parallelPileup.getNB());
+		final ParallelPileup filtered = new DefaultParallelPileup(parallelPileup.getNA(), parallelPileup.getNB());
 		filtered.setContig(parallelPileup.getContig());
 		filtered.setPosition(parallelPileup.getPosition());
 		filtered.setStrand(parallelPileup.getStrand());
@@ -110,4 +107,19 @@ public abstract class AbstractCountFilter extends AbstractFeatureFilter {
 		return filtered;
 	}
 
+	public boolean filter(final ParallelPileup parallelPileup) {
+		final int[] variantBaseIs = getVariantBaseIs(parallelPileup);
+
+		for (int variantBaseI : variantBaseIs) {
+			if (filter(variantBaseI, parallelPileup)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+	
+	public abstract boolean filter(final int variantBaseI, final ParallelPileup parallelPileup);
+
+	
 }

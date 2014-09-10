@@ -7,11 +7,10 @@ import org.apache.commons.cli.OptionBuilder;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.pileup.BaseConfig;
 
-// TODO make this a sample specific parameter
 public class BaseConfigOption extends AbstractACOption {
 
 	private AbstractParameters parameters;
-	
+
 	public BaseConfigOption(AbstractParameters parameters) {
 		this.parameters = parameters;
 

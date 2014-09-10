@@ -11,11 +11,11 @@ import accusa2.pileup.builder.AbstractPileupBuilder;
 import accusa2.pileup.iterator.variant.Variant;
 import accusa2.util.AnnotatedCoordinate;
 
-// TODO implement
+// TODO implement finalize
 public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
 
 	private BaseConfig baseConfig;
-	
+
 	public TwoSampleWindowedIterator(
 			final AnnotatedCoordinate annotatedCoordinate, 
 			final Variant filter,
@@ -63,18 +63,8 @@ public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
 		return pileups;
 	}
 
-	// FIXME currently no filtering
 	@Override
 	protected Counts[][] getCounts(Location location, AbstractPileupBuilder[] pileupBuilders) {
-		/*
-		int n = pileupBuilders.length;
-		Counts[][] counts = new Counts[n][filterCount];
-
-		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(genomicPosition);
-		for(int i = 0; i < n; ++i) {
-			counts[i] = pileupBuilders[i].getFilteredCounts(windowPosition, strand);
-		}
-		 */
 		return null;
 	}
 
@@ -83,14 +73,6 @@ public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
 	}
 
 	public ParallelPileup next() {
-		if (! hasNext()) {
-			return null;
-		}
-
-		// FIXME currently no filtering
-		// parallelPileup.setFilterCountsA(getCounts(genomicPositionA, strandA, pileupBuildersA));
-		// parallelPileup.setFilterCountsB(getCounts(genomicPositionB, strandB, pileupBuildersB));
-
 		// advance to the next position
 		advance();
 

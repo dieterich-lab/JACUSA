@@ -63,10 +63,10 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 					// container for pileups
 
 					ParallelPileup filteredParallelPileups = new DefaultParallelPileup(parallelPileup);
-					AbstractFeatureFilter filter = filterFactory.getFilterInstance();
+					AbstractFeatureFilter featureFilter = filterFactory.getFilterInstance();
 
 					// apply filter
-					if (filter.filter(filteredParallelPileups)) {
+					if (featureFilter.filter(filteredParallelPileups)) {
 						filteredParallelPileups = new DefaultParallelPileup(parallelPileup.getNA(), parallelPileup.getNB());
 						filteredValue = -1;
 						break;

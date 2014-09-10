@@ -7,21 +7,16 @@ public class RatioBasedFilter extends AbstractCountFilter {
 
 	private double minRatio;
 	
-	public RatioBasedFilter(char c, double minRatio, BaseConfig baseConfig, FilterConfig filterConfig) {
+	public RatioBasedFilter(final char c, 
+			final double minRatio, 
+			final BaseConfig baseConfig, 
+			final FilterConfig filterConfig) {
 		super(c, baseConfig, filterConfig);
 		this.minRatio = minRatio;
 	}
 
 	@Override
-	public boolean filter(ParallelPileup parallelPileup) {
-		int[] variantBaseIs = getVariantBaseI(parallelPileup);
-
-		// FIXME what is a variant?
-		if (variantBaseIs.length == 0) {
-			return false;
-		}
-
-		int variantBaseI = variantBaseIs[0];
+	public boolean filter(int variantBaseI, ParallelPileup parallelPileup) {
 		int count = parallelPileup.getPooledPileup().getBaseCount()[variantBaseI];
 		ParallelPileup filtered = applyFilter(variantBaseI, parallelPileup);
 		int filteredCount = filtered.getPooledPileup().getBaseCount()[variantBaseI];
@@ -32,5 +27,5 @@ public class RatioBasedFilter extends AbstractCountFilter {
 	public double getMinRation() {
 		return minRatio;
 	}
-	
+
 }
