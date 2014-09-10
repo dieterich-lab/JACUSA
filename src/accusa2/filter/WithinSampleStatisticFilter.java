@@ -11,21 +11,18 @@ public class WithinSampleStatisticFilter extends AbstractCountFilter {
 	private StatisticCalculator statistic;
 	
 	public WithinSampleStatisticFilter(
-			char c, 
-			double minScore, 
-			BaseConfig baseConfig, 
-			FilterConfig filterConfig,
-			StatisticParameters parameters) {
+			final char c,
+			final double minScore, 
+			final BaseConfig baseConfig, 
+			final FilterConfig filterConfig,
+			final StatisticParameters parameters) {
 		super(c, baseConfig, filterConfig);
 		this.minScore = minScore;
 		statistic = parameters.getStatisticCalculator().newInstance();
 	}
 
 	@Override
-	public boolean filter(ParallelPileup parallelPileup) {
-		int[] variantBaseIs = getVariantBaseI(parallelPileup);
-
-		int variantBaseI = variantBaseIs[0];
+	public boolean filter(int variantBaseI, ParallelPileup parallelPileup) {
 		ParallelPileup filtered = applyFilter(variantBaseI, parallelPileup);
 		
 		double value = statistic.getStatistic(filtered);

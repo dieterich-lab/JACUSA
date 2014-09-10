@@ -7,16 +7,16 @@ public class CountBasedFilter extends AbstractCountFilter {
 
 	private double range;
 	
-	public CountBasedFilter(char c, double range, BaseConfig baseConfig, FilterConfig filterConfig) {
+	public CountBasedFilter(final char c, 
+			final double range, 
+			final BaseConfig baseConfig, 
+			final FilterConfig filterConfig) {
 		super(c, baseConfig, filterConfig);
 		this.range = range;
 	}
 
 	@Override
-	public boolean filter(ParallelPileup parallelPileup) {
-		int[] variantBaseIs = getVariantBaseI(parallelPileup);
-		
-		int variantBaseI = variantBaseIs[0];
+	public boolean filter(int variantBaseI, ParallelPileup parallelPileup) {
 		int count = parallelPileup.getPooledPileup().getBaseCount()[variantBaseI];
 		ParallelPileup filtered = applyFilter(variantBaseI, parallelPileup);
 		int filteredCount = filtered.getPooledPileup().getBaseCount()[variantBaseI];

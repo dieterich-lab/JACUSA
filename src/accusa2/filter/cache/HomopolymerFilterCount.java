@@ -33,8 +33,7 @@ public class HomopolymerFilterCount extends AbstractCountFilterCache {
 			if (base != record.getReadBases()[i]) {
 				// fill cache 
 				if (i - start >= length) {
-					// TODO add minDistance
-					fillCache(windowPosition, i - start, readPosition + i, record);
+					fillCache(windowPosition, i - start - minDistance, readPosition + i + 2 * minDistance, record);
 				}
 
 				// reset

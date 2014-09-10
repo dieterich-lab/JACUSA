@@ -9,13 +9,18 @@ import net.sf.samtools.SAMSequenceRecord;
 import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
 import accusa2.cli.options.HelpOption;
+import accusa2.cli.options.MaxDepthOption;
 import accusa2.cli.options.MaxThreadOption;
+import accusa2.cli.options.MinBASQOption;
+import accusa2.cli.options.MinCoverageOption;
+import accusa2.cli.options.MinMAPQOption;
 import accusa2.cli.options.PathnameOption;
 import accusa2.cli.options.ResultFileOption;
 import accusa2.cli.options.FormatOption;
 import accusa2.cli.options.BedCoordinatesOption;
 import accusa2.cli.options.VersionOption;
 import accusa2.cli.options.WindowSizeOption;
+import accusa2.cli.options.filter.FilterFlagOption;
 import accusa2.cli.options.pileupbuilder.TwoSamplePileupBuilderOption;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
@@ -45,6 +50,13 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 
 		SampleParameters sampleB = parameters.getSampleB();
 		acOptions.add(new PathnameOption('B', sampleB));
+
+		// global settings
+		acOptions.add(new MinMAPQOption(sampleA, sampleB));
+		acOptions.add(new MinBASQOption(sampleA, sampleB));
+		acOptions.add(new MinCoverageOption(sampleA, sampleB));
+		acOptions.add(new MaxDepthOption(sampleA, sampleB));
+		acOptions.add(new FilterFlagOption(sampleA, sampleB));
 
 		acOptions.add(new TwoSamplePileupBuilderOption(sampleA, sampleB));
 

@@ -65,9 +65,10 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 	public Counts[] getFilteredCounts(int windowPosition, STRAND strand) {
 		Counts[] counts = new Counts[filterCaches.length];
 		for (int i = 0; i < counts.length; ++i) {
-			counts[i] = pileup.new Counts(windowCache.baseCount[windowPosition], windowCache.qualCount[windowPosition]);
+			counts[i] = pileup.new Counts(
+					filterCaches[i].getCache().baseCount[windowPosition], 
+					filterCaches[i].getCache().qualCount[windowPosition]);
 		}
-
 		return counts;
 	}
 	

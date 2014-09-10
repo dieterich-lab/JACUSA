@@ -1,21 +1,25 @@
 package accusa2.filter.factory;
 
+import accusa2.cli.parameters.AbstractParameters;
 import accusa2.filter.cache.AbstractCountFilterCache;
 import accusa2.filter.feature.RareEventFilter;
 
 public class RareEventFilterFactory extends AbstractFilterFactory {
 
+	private AbstractParameters parameters;
 	private int reads 		= 2;
 	private double level 	= 0.1;
 
-	public RareEventFilterFactory() {
+	public RareEventFilterFactory(AbstractParameters paramters) {
 		super('R', "");
 		desc = "Rare event filter. Default: reads:level " + Integer.toString(reads) + ":" + Double.toString(level);
+		
+		this.parameters = paramters;
 	}
 
 	@Override
 	public RareEventFilter getFilterInstance() {
-		return new RareEventFilter(getC(), getReads(), getLevel());
+		return new RareEventFilter(getC(), getReads(), getLevel(), parameters.getBaseConfig(), parameters.getFilterConfig());
 	}
 
 	@Override

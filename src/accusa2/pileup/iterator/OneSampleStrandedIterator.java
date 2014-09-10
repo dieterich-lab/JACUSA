@@ -4,6 +4,7 @@ import net.sf.samtools.SAMFileReader;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.SampleParameters;
 import accusa2.pileup.ParallelPileup;
+import accusa2.pileup.Pileup;
 import accusa2.pileup.DefaultPileup.STRAND;
 import accusa2.pileup.iterator.variant.Variant;
 import accusa2.util.AnnotatedCoordinate;
@@ -44,12 +45,10 @@ public class OneSampleStrandedIterator extends AbstractOneSampleIterator {
 			return null;
 		}
 
-		if(filterconfig.hasFiters()) {
+		if (filterconfig.hasFiters()) {
 			parallelPileup.setFilterCountsA(getCounts(location, pileupBuilders));
 		}
 
-		// TODO set B
-		
 		// advance to the next position
 		advance();
 
@@ -62,11 +61,10 @@ public class OneSampleStrandedIterator extends AbstractOneSampleIterator {
 			parallelPileup.setContig(coordinate.getSequenceName());
 			parallelPileup.setPosition(location.genomicPosition);
 
-			// complement bases if one sample is unstranded and 
-			// the other is stranded and maps to the opposite strand
-			parallelPileup.setPileupsA(getPileups(location, pileupBuilders));
-
-			// TODO set B
+			parallelPileup.setPileupsA(parallelPileup.getPileupsA());
+			int baseI = getHomomorphBaseI(parallelPileup.getPooledPileupA());
+			Pileup[] homoMorph = removeBase(baseI, parallelPileup.getPileupsA());
+			parallelPileup.setPileupsB(homoMorph);
 
 			if (filter.isValid(parallelPileup)) {
 				return true;

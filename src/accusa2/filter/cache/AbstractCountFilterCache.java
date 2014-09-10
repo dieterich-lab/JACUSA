@@ -41,6 +41,7 @@ public abstract class AbstractCountFilterCache {
 		}
 		windowPosition += offset;
 		readPosition += offset;
+		length -= offset;
 
 		for (int i = 0; i < length && windowPosition < end && readPosition < record.getReadLength(); ++i) {
 			windowPosition += i;

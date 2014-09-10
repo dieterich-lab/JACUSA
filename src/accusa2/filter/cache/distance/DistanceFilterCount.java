@@ -39,11 +39,10 @@ public class DistanceFilterCount extends AbstractCountFilterCache {
 
 		// read end
 		alignmentBlock = alignmentBlocks.get(alignmentBlocks.size() - 1); // get last alignment
-		int offset = alignmentBlock.getReferenceStart() + alignmentBlock.getLength() - genomicWindowStart; // TODO check
+		int offset = alignmentBlock.getReferenceStart() + alignmentBlock.getLength() - genomicWindowStart;
 		if (offset > distance) {
 			return;
 		}
-
 		windowPosition = offset;
 		fillCache(windowPosition - distance, distance, alignmentBlock.getReadStart() + alignmentBlock.getLength() - distance, record);
 	}

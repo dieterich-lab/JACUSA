@@ -4,7 +4,7 @@ import accusa2.pileup.ParallelPileup;
 
 public class AlleleCountFilter extends AbstractFeatureFilter {
 
-	public AlleleCountFilter(char c) {
+	public AlleleCountFilter(final char c) {
 		super(c);
 	}
 

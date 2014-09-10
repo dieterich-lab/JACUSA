@@ -172,7 +172,6 @@ public abstract class AbstractPileupBuilder {
 	 * @param samRecord
 	 * @return
 	 */
-	// TODO collect statistics
 	protected boolean isValid(SAMRecord samRecord) {
 		int mapq = samRecord.getMappingQuality();
 		List<SAMValidationError> errors = samRecord.isValid();
@@ -272,8 +271,8 @@ public abstract class AbstractPileupBuilder {
 				if (windowPosition == -1) {
 					return;
 				}
-				if (windowPosition == -2) {
-					// TODO speedup
+				if (windowPosition == -2) { // speedup jump to covered position
+					offset -= genomicPosition - genomicWindowStart; // this should be negative 
 				}
 				if (windowPosition >= 0) {
 					add2Cache(windowPosition, base, qual, record);

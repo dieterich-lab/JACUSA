@@ -6,7 +6,9 @@ import accusa2.cli.parameters.SampleParameters;
 import accusa2.pileup.builder.AbstractPileupBuilder;
 import accusa2.pileup.iterator.variant.Variant;
 import accusa2.pileup.DefaultParallelPileup;
+import accusa2.pileup.DefaultPileup;
 import accusa2.pileup.ParallelPileup;
+import accusa2.pileup.Pileup;
 import accusa2.util.AnnotatedCoordinate;
 
 public abstract class AbstractOneSampleIterator extends AbstractWindowIterator {
@@ -42,5 +44,25 @@ public abstract class AbstractOneSampleIterator extends AbstractWindowIterator {
 	protected boolean hasNextA() {
 		return hasNext(location, pileupBuilders);
 	}
-	
+
+	protected Pileup[] removeBase(int baseI, Pileup[] pileups) {
+		int n = pileups.length;
+		Pileup[] ret = new Pileup[n];
+
+		for (int i = 0; i < n; ++i) {
+			Pileup pileup = new DefaultPileup(pileups[i]);
+
+			pileup.getCounts().substract(baseI, pileups[i].getCounts());
+			ret[i] = pileup;
+		}
+
+		return ret;
+	}
+
+	protected int getHomomorphBaseI(Pileup pooled) {
+		int baseI = -1;
+		
+		return baseI;
+	}
+
 }

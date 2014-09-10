@@ -142,7 +142,7 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 				new DistanceFilterFactory(parameters),
 				new HomozygousFilterFactory(),
 				new HomopolymerFilterFactory(parameters),
-				new RareEventFilterFactory(),
+				new RareEventFilterFactory(parameters),
 				new PolymorphismPileupFilterFactory()
 		};
 		for (AbstractFilterFactory filter : filters) {

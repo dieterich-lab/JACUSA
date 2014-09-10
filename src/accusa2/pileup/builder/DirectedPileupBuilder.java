@@ -66,21 +66,33 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 		}
 	}
 
-	// TODO add Objects
 	@Override
 	public Counts[] getFilteredCounts(int windowPosition, STRAND strand) {
+		Counts[] counts;
+		AbstractCountFilterCache tmpCache[];
+
 		switch (strand) {
 		case FORWARD:
-			
-			return null;
+			counts = new Counts[forwardFilterCaches.length];
+			tmpCache = forwardFilterCaches;
+			break;
 
 		case REVERSE:
-			return null;
+			counts = new Counts[reverseFilterCaches.length];
+			tmpCache = reverseFilterCaches;
 		
 		case UNKNOWN:
 		default:
 			return null;
 		}
+
+		for (int i = 0; i < counts.length; ++i) {
+			counts[i] = pileup.new Counts(
+					tmpCache[i].getCache().baseCount[windowPosition], 
+					tmpCache[i].getCache().qualCount[windowPosition]);
+		}
+
+		return counts;
 	}
 
 	@Override
