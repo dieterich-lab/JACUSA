@@ -18,7 +18,7 @@ public class MinCoverageOption extends AbstractACOption {
 		opt = "c";
 		longOpt = "min-coverage";
 	}
-	
+
 	@SuppressWarnings("static-access")
 	@Override
 	public Option getOption() {

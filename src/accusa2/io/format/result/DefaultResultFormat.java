@@ -211,11 +211,11 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		sb.append(values[0]);
 		for (int i = 1; i < values.length; ++i) {
 			sb.append(",");
-			sb.append(values[i]);			
+			sb.append(values[i]); // format output >=0.001 is fine.			
 		}
 		return sb.toString();
 	}
-	
+
 	private double[] getPileupsMean(int[] basesI, Pileup[] pileups) {
 		double[] totalMean = new double[basesI.length];
 		Arrays.fill(totalMean, 0.0);

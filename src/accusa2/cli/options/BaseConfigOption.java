@@ -18,7 +18,7 @@ public class BaseConfigOption extends AbstractACOption {
 		opt = "C";
 		longOpt = "base-config";
 	}
-	
+
 	@SuppressWarnings("static-access")
 	@Override
 	public Option getOption() {

@@ -184,6 +184,7 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 		return false;
 	}
 
+	@Deprecated
 	protected Pileup[] complementPileups(Pileup[] pileups) {
 		Pileup[] complementedPileups = new DefaultPileup[pileups.length];
 
@@ -193,7 +194,8 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 
 		return complementedPileups;
 	}
-	
+
+	@Deprecated
 	protected Counts[][] complementCounts(Counts[][] counts) {
 		int replicates = counts.length;
 		int filterCount = filterconfig.getFactories().size();
@@ -201,14 +203,14 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 
 		for (int i = 0; i < replicates; ++i) {
 			for (int j = 0; j < filterCount; ++j) {
-				complementedCounts[i][j] = counts[i][j]; // TODO check
+				complementedCounts[i][j] = counts[i][j];
 				complementedCounts[i][j].invertCounts();
 			}
 		}
 
 		return complementedCounts;
 	}
-	
+
 	public AnnotatedCoordinate getAnnotatedCoordinate() {
 		return coordinate;
 	}

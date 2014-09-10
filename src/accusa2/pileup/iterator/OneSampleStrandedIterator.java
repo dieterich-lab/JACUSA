@@ -29,6 +29,7 @@ public class OneSampleStrandedIterator extends AbstractOneSampleIterator {
 		case REVERSE:
 			location.strand = STRAND.FORWARD;
 			location.genomicPosition++;
+			break;
 		
 		case UNKNOWN:
 		default:
@@ -43,8 +44,8 @@ public class OneSampleStrandedIterator extends AbstractOneSampleIterator {
 			return null;
 		}
 
-		if(location.strand == STRAND.REVERSE) {
-			parallelPileup.setFilterCountsA(complementCounts(getCounts(location, pileupBuilders)));
+		if(filterconfig.hasFiters()) {
+			parallelPileup.setFilterCountsA(getCounts(location, pileupBuilders));
 		}
 
 		// TODO set B
@@ -64,9 +65,6 @@ public class OneSampleStrandedIterator extends AbstractOneSampleIterator {
 			// complement bases if one sample is unstranded and 
 			// the other is stranded and maps to the opposite strand
 			parallelPileup.setPileupsA(getPileups(location, pileupBuilders));
-			if(location.strand == STRAND.REVERSE) {
-				parallelPileup.setPileupsA(complementPileups(parallelPileup.getPileupsA()));
-			}
 
 			// TODO set B
 

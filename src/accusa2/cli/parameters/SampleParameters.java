@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import accusa2.filter.samtag.SamTagFilter;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.builder.PileupBuilderFactory;
 import accusa2.pileup.builder.UndirectedPileupBuilderFactory;
 
@@ -28,8 +29,9 @@ public class SampleParameters {
 	// path to BAM files
 	private String[] pathnames;
 	// properties for BAM files
+	private BaseConfig baseConfig;
 	private PileupBuilderFactory pileupBuilderFactory;
-
+	
 	public SampleParameters() {
 		maxDepth 		= -1;
 		minBASQ			= Byte.parseByte("20");
@@ -168,6 +170,14 @@ public class SampleParameters {
 	 */
 	public void setPileupBuilderFactory(PileupBuilderFactory pileupBuilderFactory) {
 		this.pileupBuilderFactory = pileupBuilderFactory;
+	}
+
+	public BaseConfig getBaseConfig() {
+		return baseConfig;
+	}
+
+	public void setBaseConfig(BaseConfig baseConfig) {
+		this.baseConfig = baseConfig;
 	}
 
 }
