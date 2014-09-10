@@ -23,9 +23,9 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 
 	protected AbstractCountFilterCache[] forwardFilterCaches;
 	protected AbstractCountFilterCache[] reverseFilterCaches;
-	
+
 	protected int windowPosition;
-	
+
 	public DirectedPileupBuilder(
 			final AnnotatedCoordinate annotatedCoordinate, 
 			final SAMFileReader reader, 
@@ -80,6 +80,7 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 		case REVERSE:
 			counts = new Counts[reverseFilterCaches.length];
 			tmpCache = reverseFilterCaches;
+			break;
 		
 		case UNKNOWN:
 		default:
