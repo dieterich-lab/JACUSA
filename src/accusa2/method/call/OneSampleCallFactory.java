@@ -2,6 +2,7 @@ package accusa2.method.call;
 
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 import net.sf.samtools.SAMSequenceRecord;
 import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
+import accusa2.cli.options.EstimateParametersOption;
 import accusa2.cli.options.PermutationsOption;
 import accusa2.cli.options.StatisticFilterOption;
 import accusa2.cli.options.HelpOption;
@@ -30,6 +32,9 @@ import accusa2.cli.parameters.AbstractParameters;
 import accusa2.cli.parameters.CLI;
 import accusa2.cli.parameters.OneSampleCallParameters;
 import accusa2.cli.parameters.SampleParameters;
+import accusa2.estimate.AbstractEstimateParameters;
+import accusa2.estimate.BayesEstimateParameters;
+import accusa2.estimate.coverage.CoverageEstimateParameters;
 //import accusa2.cli.options.filter.FilterNHsamTagOption;
 //import accusa2.cli.options.filter.FilterNMsamTagOption;
 import accusa2.filter.factory.AbstractFilterFactory;
@@ -50,6 +55,7 @@ import accusa2.method.call.statistic.NumericalStatistic;
 import accusa2.method.call.statistic.StatisticCalculator;
 import accusa2.method.call.statistic.WeightedMethodOfMomentsStatistic;
 import accusa2.process.parallelpileup.dispatcher.call.OneSampleCallWorkerDispatcher;
+import accusa2.process.phred2prob.Phred2Prob;
 import accusa2.util.CoordinateProvider;
 import accusa2.util.SAMCoordinateProvider;
 
@@ -97,6 +103,8 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new HelpOption(CLI.getSingleton()));
 		acOptions.add(new VersionOption(CLI.getSingleton()));
 		
+		acOptions.add(new EstimateParametersOption(parameters.getStatisticParameters(), getEstimators()));
+		
 		acOptions.add(new FilterNHsamTagOption(parameters.getSampleA()));
 		acOptions.add(new FilterNMsamTagOption(parameters.getSampleA()));
 	}
@@ -109,6 +117,25 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 		return instance;
 	}
 
+	public Map<String, AbstractEstimateParameters> getEstimators() {
+		Map<String, AbstractEstimateParameters> estimators = new TreeMap<String, AbstractEstimateParameters>();
+
+		int baseN = parameters.getBaseConfig().getBases().length;
+		Phred2Prob phred2Prob = Phred2Prob.getInstance(baseN);
+		double [] alpha = new double[baseN];
+		Arrays.fill(alpha, 0.0); // 1.0/baseN
+
+		AbstractEstimateParameters estimator = null;
+
+		estimator = new BayesEstimateParameters(alpha, phred2Prob);
+		estimators.put(estimator.getName(), estimator);
+
+		estimator = new CoverageEstimateParameters(alpha, phred2Prob);
+		estimators.put(estimator.getName(), estimator);
+
+		return estimators;
+	}
+	
 	public Map<String, StatisticCalculator> getStatistics() {
 		Map<String, StatisticCalculator> statistics = new TreeMap<String, StatisticCalculator>();
 

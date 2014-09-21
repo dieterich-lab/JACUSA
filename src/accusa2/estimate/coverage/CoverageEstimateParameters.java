@@ -1,9 +1,9 @@
-package accusa2.estimate;
+package accusa2.estimate.coverage;
 
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
 
-public class CoverageEstimateParameters extends AbstractEstimateParameters {
+public class CoverageEstimateParameters extends AbstractCoverageEstimateParameters {
 
 	private final double[] alpha;
 
