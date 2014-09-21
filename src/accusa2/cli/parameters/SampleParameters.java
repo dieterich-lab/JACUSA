@@ -3,6 +3,7 @@ package accusa2.cli.parameters;
 import java.util.ArrayList;
 import java.util.List;
 
+import accusa2.estimate.AbstractEstimateParameters;
 import accusa2.filter.samtag.SamTagFilter;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.builder.PileupBuilderFactory;
@@ -31,7 +32,10 @@ public class SampleParameters {
 	// properties for BAM files
 	private BaseConfig baseConfig;
 	private PileupBuilderFactory pileupBuilderFactory;
-	
+
+	// how to estimate parameters
+	private AbstractEstimateParameters estimateParameters;
+
 	public SampleParameters() {
 		maxDepth 		= -1;
 		minBASQ			= Byte.parseByte("20");
@@ -180,4 +184,12 @@ public class SampleParameters {
 		this.baseConfig = baseConfig;
 	}
 
+	public AbstractEstimateParameters getEstimateParameters() {
+		return estimateParameters;
+	}
+
+	public void setEstimateParameters(AbstractEstimateParameters estimateParameters) {
+		this.estimateParameters = estimateParameters;
+	}
+	
 }
