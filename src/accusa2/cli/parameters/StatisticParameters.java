@@ -1,12 +1,14 @@
 package accusa2.cli.parameters;
 
+import accusa2.estimate.AbstractEstimateParameters;
 import accusa2.method.call.statistic.StatisticCalculator;
 
 public class StatisticParameters {
 
 	// filter: statistic
-	private double stat;
 	private StatisticCalculator statisticCalculator;
+	private AbstractEstimateParameters estimateParameters;
+	private double stat;
 	private int permutations;
 	
 	public StatisticParameters() {
@@ -14,11 +16,12 @@ public class StatisticParameters {
 		permutations		= 100;
 	}
 
-	public StatisticParameters(StatisticCalculator statisticCalculator) {
+	public StatisticParameters(final StatisticCalculator statisticCalculator, final AbstractEstimateParameters estimateParameters) {
 		this();
 		this.statisticCalculator = statisticCalculator;
+		this.estimateParameters = estimateParameters;
 	}
-	
+
 	public int getPermutations() {
 		return permutations;
 	}
@@ -55,4 +58,12 @@ public class StatisticParameters {
 		this.statisticCalculator = statisticCalculator;
 	}
 	
+	public AbstractEstimateParameters getEstimateParameters() {
+		return estimateParameters;
+	}
+
+	public void setEstimateParameters(AbstractEstimateParameters estimateParameters) {
+		this.estimateParameters = estimateParameters;
+	}
+
 }

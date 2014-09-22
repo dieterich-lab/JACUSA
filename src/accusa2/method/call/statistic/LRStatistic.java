@@ -1,11 +1,15 @@
 package accusa2.method.call.statistic;
 
+import java.util.Arrays;
+
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 import accusa2.cli.parameters.StatisticParameters;
+import accusa2.estimate.coverage.CoverageEstimateParameters;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
+import accusa2.process.phred2prob.Phred2Prob;
 
 /**
  * 
@@ -21,61 +25,65 @@ import accusa2.pileup.Pileup;
 
 public final class LRStatistic implements StatisticCalculator {
 
-	protected final DefaultStatistic defaultStatistic;
+	protected final StatisticParameters parameters;
+	protected final CoverageEstimateParameters estimateParameters;
+	protected final BaseConfig baseConfig;
 
 	// test what is the best??? 2*k - 2 : k = dimension of modeled prob. vector
 	// protected final ChiSquareDist dist = new ChiSquareDist(6);
 	
 	public LRStatistic(BaseConfig baseConfig, StatisticParameters parameters) {
-		defaultStatistic = new DefaultStatistic(baseConfig, parameters);
+		this.parameters = parameters;
+		int basesN = baseConfig.getBases().length;
+		Phred2Prob phred2Prob = Phred2Prob.getInstance(basesN);
+		double[] alpha = new double[basesN];
+		Arrays.fill(alpha, 0.0);
+		estimateParameters = new CoverageEstimateParameters(alpha, phred2Prob);
+		this.baseConfig = baseConfig;
 	}
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new LRStatistic(defaultStatistic.getBaseConfig(), defaultStatistic.getParameters());
+		return new LRStatistic(baseConfig, parameters);
 	}
 
 	@Override
 	public double getStatistic(final ParallelPileup parallelPileup) {
-		final int bases[] = {0, 1, 2, 3};
-		//final int bases[] = parallelPileup.getPooledPileup().getAlleles();
+		final int baseIs[] = {0, 1, 2, 3};
+		//final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
 
-		final int coverage1 = defaultStatistic.getMeanCoverage(parallelPileup.getPileupsA());
-		final int coverage2 = defaultStatistic.getMeanCoverage(parallelPileup.getPileupsB());
-		final int minCoverage = Math.min(coverage1, coverage2);
+		final int coverageA = estimateParameters.getMeanCoverage(parallelPileup.getPileupsA());
+		final int coverageB = estimateParameters.getMeanCoverage(parallelPileup.getPileupsB());
+		final int minCoverage = Math.min(coverageA, coverageB);
+		
+		final double[][] probsA = estimateParameters.estimateProbs(baseIs, parallelPileup.getPileupsA());
+		final double[] alphaA = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsA(), minCoverage);
+		final DirichletDist dirichletA = new DirichletDist(alphaA);
+		final double densityAA = StatisticUtils.getDensity(dirichletA, probsA);
 
-		final double[][] probs1 = defaultStatistic.getPileup2Probs(bases, parallelPileup.getPileupsA());
-		final double[] alpha1 = defaultStatistic.estimateAlpha(bases, parallelPileup.getPooledPileupA(), minCoverage);
-		final DirichletDist dirichlet1 = new DirichletDist(alpha1);
-		final double density11 = getDensity(dirichlet1, probs1);
+		final double[][] probsB = estimateParameters.estimateProbs(baseIs, parallelPileup.getPileupsB());
+		final double[] alphaB = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsB(), minCoverage);
+		final DirichletDist dirichletB = new DirichletDist(alphaB);
+		final double densityBB = StatisticUtils.getDensity(dirichletB, probsB);
 
-		final double[][] probs2 = defaultStatistic.getPileup2Probs(bases, parallelPileup.getPileupsB());
-		final double[] alpha2 = defaultStatistic.estimateAlpha(bases, parallelPileup.getPooledPileupB(), minCoverage);
-		final DirichletDist dirichlet2 = new DirichletDist(alpha2);
-		final double density22 = getDensity(dirichlet2, probs2);
+		final Pileup[] pileupsP = parallelPileup.getPileupsP();
 
-		//final int coverageP = parallelPileup.getPooledPileup().getCoverage();
-		final Pileup[] pileupsP = new Pileup[parallelPileup.getNA() + parallelPileup.getNB()];
-		System.arraycopy(parallelPileup.getPileupsA(), 0, pileupsP, 0, parallelPileup.getPileupsA().length);
-		System.arraycopy(parallelPileup.getPileupsB(), 0, pileupsP, parallelPileup.getPileupsA().length, parallelPileup.getPileupsB().length);
-
-		final double[][] probsP = defaultStatistic.getPileup2Probs(bases, pileupsP);
-		final double[] alphaP = defaultStatistic.estimateAlpha(bases, parallelPileup.getPooledPileup(), minCoverage);
+		final double[][] probsP = estimateParameters.estimateProbs(baseIs, pileupsP);
+		final double[] alphaP = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsP(), minCoverage);
 		final DirichletDist dirichletP = new DirichletDist(alphaP);
-		final double densityP = getDensity(dirichletP, probsP);
+		final double densityP = StatisticUtils.getDensity(dirichletP, probsP);
 
-		// test 0 vs A model
-		final double z = -2 * (densityP) + 2 * (density11 + density22);
+		final double z = -2 * (densityP) + 2 * (densityAA + densityBB);
 
 		// only positive values are allowed
 		if(z < 0.0 ) {
 			return 1.0;
 		}
-		return 1 - ChiSquareDist.cdf(2 * (bases.length - 1), 1, z);
+		return 1 - ChiSquareDist.cdf(2 * (baseIs.length - 1), 1, z);
 	}
 
 	public boolean filter(double value) {
-		return defaultStatistic.getParameters().getStat() < value;
+		return parameters.getStat() < value;
 	}
 
 	// redefined to use natural logarithm
@@ -88,7 +96,7 @@ public final class LRStatistic implements StatisticCalculator {
 
 		return density;
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return "likelihood ratio test (min. coverage for alpha). Z = -2 ln( ( Dir(p,1) Dir(p,2) ) / ( Dir(1,1) Dir(2,2) ) )";
