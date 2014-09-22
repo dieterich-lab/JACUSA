@@ -80,7 +80,7 @@ public class ACCUSA2Statistic implements StatisticCalculator {
 		final double[] alpha = estimateParameters.estimateAlpha(baseIs, pileups);
 		return new DirichletDist(alpha);
 	}
-	
+
 	@Override
 	public boolean filter(double value) {
 		return parameters.getStat() > value;

@@ -1,11 +1,20 @@
 package accusa2.method.call.statistic;
 
+import accusa2.cli.parameters.StatisticParameters;
+import accusa2.estimate.AbstractEstimateParameters;
+import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 
 public class DirichletMultinomialStatistic implements StatisticCalculator {
 
-	public DirichletMultinomialStatistic() {
-		// TODO Auto-generated constructor stub
+	protected final StatisticParameters parameters;
+	protected final AbstractEstimateParameters estimateParameters;
+	protected final BaseConfig baseConfig;
+
+	public DirichletMultinomialStatistic(final BaseConfig baseConfig, final StatisticParameters parameters) {
+		this.parameters = parameters;
+		estimateParameters = parameters.getEstimateParameters();
+		this.baseConfig = baseConfig;
 	}
 
 	@Override
@@ -16,13 +25,12 @@ public class DirichletMultinomialStatistic implements StatisticCalculator {
 
 	@Override
 	public boolean filter(double value) {
-		// TODO Auto-generated method stub
-		return false;
+		return parameters.getStat() > value;
 	}
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new DirichletMultinomialStatistic();
+		return new DirichletMultinomialStatistic(baseConfig, parameters);
 	}
 
 	@Override
