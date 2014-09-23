@@ -28,7 +28,7 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 		Arrays.fill(alphaOld, 1.0/(double)baseIs.length);
 		double[] alphaNew = new double[baseIs.length];
 		Arrays.fill(alphaNew, 0.0);
-		
+
 		// container 
 		double[] gradient = new double[baseIs.length];
 		double[] Q = new double[baseIs.length];
@@ -43,7 +43,9 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 		double[] nI = new double[pileups.length];
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			nI[pileupI] = (double)pileups[pileupI].getCoverage();
-			nIK[pileupI] = phred2Prob.colSum(baseIs, pileups[pileupI]);
+			for (int baseI = 0; baseI < baseIs.length; ++baseI) {
+				nIK[pileupI][baseI] = (double)pileups[pileupI].getBaseCount()[baseI];
+			}
 		}
 
 		// maximize
@@ -72,12 +74,12 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 					Q[baseI] += trigamma(nIK[pileupI][baseI] + alphaOld[baseI]);
 					Q[baseI] -= trigamma(alphaOld[baseI]);
 				}
-				
+
 				// calculate b
 				b += gradient[baseI] / Q[baseI];
 				tmp += 1.0 / Q[baseI];
 			}
-			
+
 			// calculate z
 			z = 0.0;
 			for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {

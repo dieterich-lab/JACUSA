@@ -21,8 +21,8 @@ public class DirichletMultinomialStatistic implements StatisticCalculator {
 
 	@Override
 	public double getStatistic(ParallelPileup parallelPileup) {
-		final int baseIs[] = {0, 1, 2, 3};
-		//final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
+		//final int baseIs[] = {0, 1, 2, 3};
+		final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
 		//ChiSquareDist chiSquareDist = new ChiSquareDist();
 
 		double[] alphaA = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsA());
