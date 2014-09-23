@@ -1,5 +1,6 @@
 package accusa2.method.call;
 
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -52,6 +53,7 @@ import accusa2.io.format.output.PileupResultFormat;
 import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.io.format.result.DefaultResultFormat;
 import accusa2.method.AbstractMethodFactory;
+import accusa2.method.call.statistic.DirichletMultinomialStatistic;
 import accusa2.method.call.statistic.LR2Statistic;
 import accusa2.method.call.statistic.LRStatistic;
 import accusa2.method.call.statistic.MethodOfMomentsStatistic;
@@ -185,7 +187,10 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		
 		statistic = new NumericalStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
-		
+
+		statistic = new DirichletMultinomialStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistics.put(statistic.getName(), statistic);
+
 		return statistics;
 	}
 

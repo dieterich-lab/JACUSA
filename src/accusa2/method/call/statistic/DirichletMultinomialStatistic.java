@@ -1,26 +1,42 @@
 package accusa2.method.call.statistic;
 
 import accusa2.cli.parameters.StatisticParameters;
-import accusa2.estimate.AbstractEstimateParameters;
+import accusa2.estimate.DirichletMultinomialEstimation;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
+import accusa2.process.phred2prob.Phred2Prob;
 
 public class DirichletMultinomialStatistic implements StatisticCalculator {
 
 	protected final StatisticParameters parameters;
-	protected final AbstractEstimateParameters estimateParameters;
+	protected final DirichletMultinomialEstimation estimateParameters;
 	protected final BaseConfig baseConfig;
 
 	public DirichletMultinomialStatistic(final BaseConfig baseConfig, final StatisticParameters parameters) {
 		this.parameters = parameters;
-		estimateParameters = parameters.getEstimateParameters();
+		int n = baseConfig.getBases().length; 
+		estimateParameters = new DirichletMultinomialEstimation(Phred2Prob.getInstance(n));
 		this.baseConfig = baseConfig;
 	}
 
 	@Override
 	public double getStatistic(ParallelPileup parallelPileup) {
-		// TODO Auto-generated method stub
-		return 0;
+		final int baseIs[] = {0, 1, 2, 3};
+		//final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
+		//ChiSquareDist chiSquareDist = new ChiSquareDist();
+
+		double[] alphaA = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsA());
+		//double logLikelihoodA = estimateParameters.getLogLikelihood(alphaA, baseIs, parallelPileup.getPileupsA());
+
+		double[] alphaB = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsB());
+		//double logLikelihoodB = estimateParameters.getLogLikelihood(alphaB, baseIs, parallelPileup.getPileupsB());
+
+		double[] alphaP = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsP());
+		//double logLikelihoodP = estimateParameters.getLogLikelihood(alphaP, baseIs, parallelPileup.getPileupsP());
+
+		//double z = -2 * (logLikelihoodP - (logLikelihoodA + logLikelihoodB));
+		//return z;
+		return 0.0;
 	}
 
 	@Override
@@ -35,7 +51,7 @@ public class DirichletMultinomialStatistic implements StatisticCalculator {
 
 	@Override
 	public String getName() {
-		return "DM_MOM";
+		return "DirMult";
 	}
 
 	@Override
