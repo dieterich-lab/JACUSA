@@ -21,20 +21,20 @@ public class DirichletMultinomialStatistic implements StatisticCalculator {
 
 	@Override
 	public double getStatistic(ParallelPileup parallelPileup) {
-		//final int baseIs[] = {0, 1, 2, 3};
-		final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
+		final int baseIs[] = {0, 1, 2, 3};
+		//final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
 		//ChiSquareDist chiSquareDist = new ChiSquareDist();
 
 		double[] alphaA = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsA());
-		//double logLikelihoodA = estimateParameters.getLogLikelihood(alphaA, baseIs, parallelPileup.getPileupsA());
+		double logLikelihoodA = estimateParameters.getLogLikelihood(alphaA, baseIs, parallelPileup.getPileupsA());
 
 		double[] alphaB = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsB());
-		//double logLikelihoodB = estimateParameters.getLogLikelihood(alphaB, baseIs, parallelPileup.getPileupsB());
+		double logLikelihoodB = estimateParameters.getLogLikelihood(alphaB, baseIs, parallelPileup.getPileupsB());
 
 		double[] alphaP = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsP());
-		//double logLikelihoodP = estimateParameters.getLogLikelihood(alphaP, baseIs, parallelPileup.getPileupsP());
+		double logLikelihoodP = estimateParameters.getLogLikelihood(alphaP, baseIs, parallelPileup.getPileupsP());
 
-		//double z = -2 * (logLikelihoodP - (logLikelihoodA + logLikelihoodB));
+		double z = -2 * (logLikelihoodP - (logLikelihoodA + logLikelihoodB));
 		//return z;
 		return 0.0;
 	}

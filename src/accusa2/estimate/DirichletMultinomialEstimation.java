@@ -10,7 +10,7 @@ import accusa2.process.phred2prob.Phred2Prob;
 public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 
 	// private final double digamma = Math.log(0.5);
-	private final int maxIterations = 10000;
+	private final int maxIterations = 100;
 	private final double epsilon = 1.0/(double)(10^6); 
 
 	public DirichletMultinomialEstimation(Phred2Prob phred2Prob) {
@@ -25,7 +25,17 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 
 		// actual values
 		double[] alphaOld = new double[baseIs.length];
-		Arrays.fill(alphaOld, 1.0/(double)baseIs.length);
+		Arrays.fill(alphaOld, 0.0);
+		for (Pileup pileup : pileups) {
+			double[] sum = phred2Prob.colSum(baseIs, pileup);
+			for (int baseI = 0; baseI < baseIs.length; ++baseI) {
+				alphaOld[baseI] += sum[baseI];
+			}
+		}
+		for (int baseI = 0; baseI < baseIs.length; ++baseI) {
+			alphaOld[baseI] /= (double)pileups.length;
+		}
+
 		double[] alphaNew = new double[baseIs.length];
 		Arrays.fill(alphaNew, 0.0);
 
@@ -43,9 +53,7 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 		double[] nI = new double[pileups.length];
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			nI[pileupI] = (double)pileups[pileupI].getCoverage();
-			for (int baseI = 0; baseI < baseIs.length; ++baseI) {
-				nIK[pileupI][baseI] = (double)pileups[pileupI].getBaseCount()[baseI];
-			}
+			nIK[pileupI] = phred2Prob.colSum(baseIs, pileups[pileupI]);
 		}
 
 		// maximize
@@ -67,6 +75,7 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 					// calculate gradient
 					gradient[baseI] += digammaSummedAlphaOld;
 					gradient[baseI] -= digamma(nI[pileupI] + summedAlphaOld);
+					
 					gradient[baseI] += digamma(nIK[pileupI][baseI] + alphaOld[baseI]);
 					gradient[baseI] -= digamma(alphaOld[baseI]);
 
@@ -87,20 +96,22 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 				z -= trigamma(nI[pileupI] + summedAlphaOld);
 			}
 			// calculate b cont.
-			b /= (1.0 / z + tmp);
+			b = b / (1.0 / z + tmp);
 			
-			double delta = 0.0;
+			double loglikOld = getLogLikelihood(alphaOld, baseIs, pileups);
 			// update alphaNew
 			for (int baseI = 0; baseI < baseIs.length; ++baseI) {
 				alphaNew[baseI] = alphaOld[baseI] - (gradient[baseI] - b) / Q[baseI];
 				if (alphaNew[baseI] < 0) {
 					alphaNew[baseI] = 0.005;
 				}
-				delta += Math.abs(alphaNew[baseI] - alphaOld[baseI]);
-				alphaOld[baseI] = alphaNew[baseI]; 
 			}
+			double loglikNew = getLogLikelihood(alphaNew, baseIs, pileups);
+			alphaOld = alphaNew.clone();
+
 			// check if converged
-			if (delta <= epsilon) {
+			double delta = Math.abs(loglikNew - loglikOld);
+			if (delta  <= epsilon) {
 				converged = true;
 			}
 			iteration++;
@@ -123,13 +134,6 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 
 	protected double digamma(double x) {
 		return Gamma.digamma(x);
-		/*
-		if (x >= 0.6) {
-			return Math.log(x - 0.5);
-		}
-
-		return 1.0 / x - digamma;
-		*/
 	}
 
 	protected double trigamma(double x) {
@@ -153,15 +157,16 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 			double nI = (double)pileup.getCoverage() ;
 			double[] nIK = phred2Prob.colSum(baseIs, pileup);
 
-			logLikelihood += Math.log(Gamma.gamma(alphaSum));
-			logLikelihood -= Math.log(Gamma.gamma(nI + alphaSum));
-			for (int baseI = 0; baseI < alpha.length; ++baseI) {
-				logLikelihood += Math.log(Gamma.gamma(nIK[baseI] - alpha[baseI]));
-				logLikelihood -= Math.log(Gamma.gamma(alpha[baseI]));
+			logLikelihood += Gamma.logGamma(alphaSum);
+			logLikelihood -= Gamma.logGamma(nI + alphaSum);
+
+			for (int baseI = 0; baseI < baseIs.length; ++baseI) {
+				logLikelihood += Gamma.logGamma(nIK[baseI] + alpha[baseI]);
+				logLikelihood -= Gamma.logGamma(alpha[baseI]);
 			}
 		}
 
 		return logLikelihood;
 	}
-	
+
 }
