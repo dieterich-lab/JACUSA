@@ -1,5 +1,7 @@
 package accusa2.method.call.statistic;
 
+import umontreal.iro.lecuyer.probdist.ChiSquareDist;
+
 import accusa2.cli.parameters.StatisticParameters;
 import accusa2.estimate.DirichletMultinomialEstimation;
 import accusa2.pileup.BaseConfig;
@@ -23,7 +25,8 @@ public class DirichletMultinomialStatistic implements StatisticCalculator {
 	public double getStatistic(ParallelPileup parallelPileup) {
 		final int baseIs[] = {0, 1, 2, 3};
 		//final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
-		//ChiSquareDist chiSquareDist = new ChiSquareDist();
+
+		ChiSquareDist dist = new ChiSquareDist(parallelPileup.getNA() + parallelPileup.getNB() - 2);
 
 		double[] alphaA = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsA());
 		double logLikelihoodA = estimateParameters.getLogLikelihood(alphaA, baseIs, parallelPileup.getPileupsA());
@@ -35,13 +38,12 @@ public class DirichletMultinomialStatistic implements StatisticCalculator {
 		double logLikelihoodP = estimateParameters.getLogLikelihood(alphaP, baseIs, parallelPileup.getPileupsP());
 
 		double z = -2 * (logLikelihoodP - (logLikelihoodA + logLikelihoodB));
-		//return z;
-		return 0.0;
+		return 1 - dist.cdf(z);
 	}
 
 	@Override
 	public boolean filter(double value) {
-		return parameters.getStat() > value;
+		return parameters.getStat() < value;
 	}
 
 	@Override

@@ -23,6 +23,7 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 		int iteration = 0;
 		boolean converged = false;
 
+		// TODO make better estimation
 		// actual values
 		double[] alphaOld = new double[baseIs.length];
 		Arrays.fill(alphaOld, 0.0);
@@ -47,7 +48,7 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 		double summedAlphaOld;
 		double digammaSummedAlphaOld;
 		double trigammaSummedAlphaOld;
-		
+
 		// pileup related counts/containters/with prior knowledge
 		double[][] nIK = new double[pileups.length][baseIs.length];
 		double[] nI = new double[pileups.length];
@@ -62,10 +63,10 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 			summedAlphaOld = sum(alphaOld);
 			digammaSummedAlphaOld = digamma(summedAlphaOld);
 			trigammaSummedAlphaOld = trigamma(summedAlphaOld);
-			
+
 			// reset
 			b = 0.0;
-			double tmp = 0.0;
+			double b_DenominatorSum = 0.0;
 			for (int baseI = 0; baseI < baseIs.length; ++baseI) {
 				// reset
 				gradient[baseI] = 0.0;
@@ -75,7 +76,7 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 					// calculate gradient
 					gradient[baseI] += digammaSummedAlphaOld;
 					gradient[baseI] -= digamma(nI[pileupI] + summedAlphaOld);
-					
+
 					gradient[baseI] += digamma(nIK[pileupI][baseI] + alphaOld[baseI]);
 					gradient[baseI] -= digamma(alphaOld[baseI]);
 
@@ -86,7 +87,7 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 
 				// calculate b
 				b += gradient[baseI] / Q[baseI];
-				tmp += 1.0 / Q[baseI];
+				b_DenominatorSum += 1.0 / Q[baseI];
 			}
 
 			// calculate z
@@ -96,17 +97,19 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 				z -= trigamma(nI[pileupI] + summedAlphaOld);
 			}
 			// calculate b cont.
-			b = b / (1.0 / z + tmp);
+			b = b / (1.0 / z + b_DenominatorSum);
 			
 			double loglikOld = getLogLikelihood(alphaOld, baseIs, pileups);
 			// update alphaNew
 			for (int baseI = 0; baseI < baseIs.length; ++baseI) {
 				alphaNew[baseI] = alphaOld[baseI] - (gradient[baseI] - b) / Q[baseI];
+				// check that alpha is not < 0
 				if (alphaNew[baseI] < 0) {
-					alphaNew[baseI] = 0.005;
+					alphaNew[baseI] = 0.005; // hard set
 				}
 			}
 			double loglikNew = getLogLikelihood(alphaNew, baseIs, pileups);
+			// update value
 			alphaOld = alphaNew.clone();
 
 			// check if converged
@@ -165,7 +168,6 @@ public class DirichletMultinomialEstimation extends AbstractEstimateParameters {
 				logLikelihood -= Gamma.logGamma(alpha[baseI]);
 			}
 		}
-
 		return logLikelihood;
 	}
 
