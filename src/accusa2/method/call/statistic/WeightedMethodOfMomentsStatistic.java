@@ -15,7 +15,7 @@ import accusa2.util.MathUtil;
  * 
  * @author michael
  */
-
+@Deprecated
 public final class WeightedMethodOfMomentsStatistic implements StatisticCalculator {
 
 	protected final BaseConfig baseConfig;

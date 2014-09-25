@@ -11,7 +11,8 @@ import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
 
-public class DirichletMultinomialStatistic implements StatisticCalculator {
+// TODO
+public class DirichletMLEStatistic implements StatisticCalculator {
 
 	// options for paremeters estimation
 	protected final int maxIterations = 100;
@@ -21,7 +22,7 @@ public class DirichletMultinomialStatistic implements StatisticCalculator {
 	protected final BaseConfig baseConfig;
 	protected Phred2Prob phred2Prob;
 	
-	public DirichletMultinomialStatistic(final BaseConfig baseConfig, final StatisticParameters parameters) {
+	public DirichletMLEStatistic(final BaseConfig baseConfig, final StatisticParameters parameters) {
 		this.parameters = parameters;
 		int n = baseConfig.getBases().length; 
 		this.baseConfig = baseConfig;
@@ -58,17 +59,17 @@ public class DirichletMultinomialStatistic implements StatisticCalculator {
 
 	@Override
 	public StatisticCalculator newInstance() {
-		return new DirichletMultinomialStatistic(baseConfig, parameters);
+		return new DirichletMLEStatistic(baseConfig, parameters);
 	}
 
 	@Override
 	public String getName() {
-		return "DirMult";
+		return "Dir";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Dirichlet-Multinomial";
+		return "Dirichlet";
 	}
 
 	// TODO make better estimation -> converges faster

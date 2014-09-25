@@ -1,11 +1,14 @@
 package accusa2.method.call.statistic;
 
+import java.util.Arrays;
+
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 import accusa2.cli.parameters.StatisticParameters;
-import accusa2.estimate.AbstractEstimateParameters;
+import accusa2.estimate.BayesEstimateParameters;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
+import accusa2.process.phred2prob.Phred2Prob;
 
 /**
  * 
@@ -13,16 +16,23 @@ import accusa2.pileup.Pileup;
  * 
  * Uses the matching coverage to calculate the test-statistic.
  * Tested if distributions are equal.
+ * Same as in ACCUSA2 paper
  */
 public class ACCUSA2Statistic implements StatisticCalculator {
 
 	protected final StatisticParameters parameters;
-	protected final AbstractEstimateParameters estimateParameters;
+	protected final BayesEstimateParameters estimateParameters;
 	protected final BaseConfig baseConfig;
 
 	public ACCUSA2Statistic(final BaseConfig baseConfig, final StatisticParameters parameters) {
 		this.parameters = parameters;
-		estimateParameters = parameters.getEstimateParameters();
+
+		int k = baseConfig.getK();
+		double[] alpha = new double[k];
+		Arrays.fill(alpha, 0.0);
+		
+		Phred2Prob phred2Prob = Phred2Prob.getInstance(k);
+		estimateParameters = new BayesEstimateParameters(alpha, phred2Prob);
 		this.baseConfig = baseConfig;
 	}
 
@@ -85,32 +95,6 @@ public class ACCUSA2Statistic implements StatisticCalculator {
 	public boolean filter(double value) {
 		return parameters.getStat() > value;
 	}
-
-	/**
-	 * Calculate the probability matrix M based on P_i = alpha_i / cov_i:
-	 * M = BASES (A,C,G,T)
-	 * pileupI_1
-	 * ...
-	 * pileupI_i
-	 * ...
-	 * pileupI_n
-	 * 
-	 * @param bases
-	 * @param pileups
-	 * @return
-	 */
-	/*@Deprecated
-	protected double[][] getPileup2Probs(final int bases[], final Pileup[] pileups) {
-		final double[][] probs = new double[pileups.length][bases.length];
-
-		for(int pileupI = 0; pileupI < pileups.length; ++pileupI) {
-			// sum the probabilities giving alpha 
-			probs[pileupI] = phred2Prob.colMean(bases, pileups[pileupI]);
-		}
-
-		return probs;
-	}
-	*/
 
 	@Override
 	public String getDescription() {

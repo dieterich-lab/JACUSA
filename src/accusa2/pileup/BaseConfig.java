@@ -108,4 +108,8 @@ public class BaseConfig {
 		return basesI;
 	}
 
+	public int getK() {
+		return bases.length;
+	}
+	
 }

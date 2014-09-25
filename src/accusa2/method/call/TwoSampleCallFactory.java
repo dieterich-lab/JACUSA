@@ -53,14 +53,14 @@ import accusa2.io.format.output.PileupResultFormat;
 import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.io.format.result.DefaultResultFormat;
 import accusa2.method.AbstractMethodFactory;
-import accusa2.method.call.statistic.DirichletMultinomialStatistic;
+import accusa2.method.call.statistic.ACCUSA2Statistic;
+import accusa2.method.call.statistic.DirichletMLEStatistic;
+import accusa2.method.call.statistic.DirichletMultinomialMLEStatistic;
 import accusa2.method.call.statistic.LR2Statistic;
 import accusa2.method.call.statistic.LRStatistic;
-import accusa2.method.call.statistic.MethodOfMomentsStatistic;
-import accusa2.method.call.statistic.MixtureDirichletStatistic;
-import accusa2.method.call.statistic.NumericalStatistic;
+import accusa2.method.call.statistic.DirichletMOMsStatistic;
 import accusa2.method.call.statistic.StatisticCalculator;
-import accusa2.method.call.statistic.WeightedMethodOfMomentsStatistic;
+//import accusa2.method.call.statistic.WeightedMethodOfMomentsStatistic;
 import accusa2.process.parallelpileup.dispatcher.call.TwoSampleCallWorkerDispatcher;
 import accusa2.process.phred2prob.Phred2Prob;
 import accusa2.util.CoordinateProvider;
@@ -170,25 +170,25 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 
 		StatisticCalculator statistic = null;
 
+		statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistics.put(statistic.getName(), statistic);
+		
 		statistic = new LRStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 	
 		statistic = new LR2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
-		statistic = new MethodOfMomentsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistic = new DirichletMOMsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 		
-		statistic = new WeightedMethodOfMomentsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
+		//statistic = new WeightedMethodOfMomentsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		//statistics.put(statistic.getName(), statistic);
 		
-		statistic = new MixtureDirichletStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
-		
-		statistic = new NumericalStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistic = new DirichletMLEStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
-		statistic = new DirichletMultinomialStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistic = new DirichletMultinomialMLEStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
 		return statistics;

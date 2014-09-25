@@ -3,30 +3,28 @@ package accusa2.estimate;
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
 
-// posterior estimation
-// p(p|D) ~ D(n + alpha) 
-public class BayesEstimateParameters extends AbstractEstimateParameters {
+public class MethodOfMomentsEstimateParameters extends AbstractEstimateParameters {
 
-	private final double[] initialAlpha;
-	
-	public BayesEstimateParameters(final double[] alpha, final Phred2Prob phred2Prob) {
-		super("bayes", "Bayes estimate (n + alpha)", phred2Prob);
-		this.initialAlpha = alpha;
+	private final double[] alpha;
+
+	public MethodOfMomentsEstimateParameters(final double[] alpha, final Phred2Prob phred2Prob) {
+		super("mom", "Method of Moments", phred2Prob);
+		this.alpha = alpha;
 	}
 
 	@Override
 	public double[] estimateAlpha(int[] baseIs, Pileup[] pileups) {
 		// use initial alpha to init
-		final double[] alpha = initialAlpha.clone();
+		final double[] alphas = alpha.clone();
 
 		for (Pileup pileup : pileups) {
 			double[] v = phred2Prob.colSum(baseIs, pileup);
 			for(int baseI : baseIs) {
-				alpha[baseI] += v[baseI];
+				alphas[baseI] += v[baseI];
 			}
 		}
 
-		return alpha;
+		return alphas;
 	}
 
 	@Override
