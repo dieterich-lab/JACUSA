@@ -44,13 +44,13 @@ public abstract class AbstractCallWorkerDispatcher<T extends AbstractCallWorker>
 		
 		if (isDebug) {
 			if (! statisticCalculator.filter(p)) {
-				getOutput().write(line + "\t" + p);
+				getOutput().write(line);
 			}
 		} else {
 			if (p < 0.0) {
-				getFiltered().write(line + "\t" + p);
+				getFiltered().write(line);
 			} else if (! statisticCalculator.filter(p)) {
-				getOutput().write(line + "\t" + p);
+				getOutput().write(line);
 			}
 		}
 	}

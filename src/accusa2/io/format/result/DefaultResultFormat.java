@@ -153,13 +153,8 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		sb.append(StringCollapse.collapse(meanP, ","));
 		sb.append(SEP);
 		// varAB
-		boolean replicates = parallelPileup.getNA() > 1 && parallelPileup.getNB() > 1;
-		if (replicates) {
-			double[] varianceP = phred2Prob.getPileupsVariance(baseConfig.getBasesI(), meanB, parallelPileup.getPileupsP());
-			sb.append(StringCollapse.collapse(varianceP, ","));
-		} else {
-			sb.append(EMPTY);
-		}
+		double[] varianceP = phred2Prob.getPileupsVariance(baseConfig.getBasesI(), meanB, parallelPileup.getPileupsP());
+		sb.append(StringCollapse.collapse(varianceP, ","));
 		
 		// add unfiltered value
 		sb.append(SEP);

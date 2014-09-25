@@ -50,8 +50,6 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 			final StringBuilder sb = new StringBuilder();
 			sb.append(format.convert2String(parallelPileup, unfilteredValue));
 
-			final int pileupFilterCount = filterConfig.getFactories().size();
-			int pileupFilterIndex = 0;
 			if (! filterConfig.hasFiters()) { 
 				// no filters
 			} else { // calculate filters or quit
@@ -68,23 +66,12 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 					// apply filter
 					if (featureFilter.filter(filteredParallelPileups)) {
 						filteredParallelPileups = new DefaultParallelPileup(parallelPileup.getNA(), parallelPileup.getNB());
-						filteredValue = -1;
+						filteredValue = -1.0;
 						break;
-					} else {
-						// append dummy result
-						sb.append(format.getSEP());
-						sb.append("*");
 					}
-
-					pileupFilterIndex++;
 				}
 
 				// append empty result
-				for (;pileupFilterIndex < pileupFilterCount; ++pileupFilterIndex) {
-					sb.append(format.getSEP());
-					sb.append("-1");
-				}
-
 				// append filtered result
 				sb.append(format.getSEP());
 				sb.append(filteredValue);
