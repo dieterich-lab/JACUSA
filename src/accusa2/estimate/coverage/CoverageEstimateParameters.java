@@ -5,11 +5,11 @@ import accusa2.process.phred2prob.Phred2Prob;
 
 public class CoverageEstimateParameters extends AbstractCoverageEstimateParameters {
 
-	private final double[] alpha;
+	private final double initialAlphaNull;
 
-	public CoverageEstimateParameters(double[] alpha, Phred2Prob phred2Prob) {
+	public CoverageEstimateParameters(double initialAlphaNull, Phred2Prob phred2Prob) {
 		super("coverage", "Coverage bases", phred2Prob);
-		this.alpha = alpha;
+		this.initialAlphaNull = initialAlphaNull;
 	}
 	
 	@Override
@@ -23,7 +23,7 @@ public class CoverageEstimateParameters extends AbstractCoverageEstimateParamete
 
 	public double[] estimateAlpha(int[] baseIs, Pileup[] pileups, int coverage) {
 		final double[] alphas = new double[baseIs.length];
-		System.arraycopy(alpha, 0, alphas, 0, baseIs.length);
+		System.arraycopy(initialAlphaNull, 0, alphas, 0, baseIs.length);
 		
 		for (Pileup pileup : pileups) {
 			double[] probVector = phred2Prob.colMean(baseIs, pileup);

@@ -1,5 +1,7 @@
 package accusa2.estimate;
 
+import java.util.Arrays;
+
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
 
@@ -7,17 +9,22 @@ import accusa2.process.phred2prob.Phred2Prob;
 // p(p|D) ~ D(n + alpha) 
 public class BayesEstimateParameters extends AbstractEstimateParameters {
 
-	private final double[] initialAlpha;
+	private final double initialAlphaNull;
 	
-	public BayesEstimateParameters(final double[] alpha, final Phred2Prob phred2Prob) {
+	public BayesEstimateParameters(final double initialAlphaNull, final Phred2Prob phred2Prob) {
 		super("bayes", "Bayes estimate (n + alpha)", phred2Prob);
-		this.initialAlpha = alpha;
+		this.initialAlphaNull = initialAlphaNull;
 	}
 
 	@Override
 	public double[] estimateAlpha(int[] baseIs, Pileup[] pileups) {
 		// use initial alpha to init
-		final double[] alpha = initialAlpha.clone();
+		final double[] alpha = new double[baseIs.length];
+		if (initialAlphaNull > 0.0) {
+			Arrays.fill(alpha, initialAlphaNull / (double)baseIs.length);
+		} else {
+			Arrays.fill(alpha, 0.0);
+		}
 
 		for (Pileup pileup : pileups) {
 			double[] v = phred2Prob.colSum(baseIs, pileup);

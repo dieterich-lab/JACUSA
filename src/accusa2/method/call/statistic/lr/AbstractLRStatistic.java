@@ -1,7 +1,5 @@
 package accusa2.method.call.statistic.lr;
 
-import java.util.Arrays;
-
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 import accusa2.cli.parameters.StatisticParameters;
@@ -32,11 +30,9 @@ public abstract class AbstractLRStatistic implements StatisticCalculator {
 		this.parameters = parameters;
 
 		int k = baseConfig.getK();
-		double[] alpha = new double[k];
-		Arrays.fill(alpha, 0.0);
 
 		Phred2Prob phred2Prob = Phred2Prob.getInstance(k);
-		estimateParameters = new CoverageEstimateParameters(alpha, phred2Prob);
+		estimateParameters = new CoverageEstimateParameters(0.0, phred2Prob);
 		this.baseConfig = baseConfig;
 	}
 

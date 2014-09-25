@@ -8,35 +8,28 @@ import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
 
-/**
- * 
- * @author michael
- * 
- * Uses the matching coverage to calculate the test-statistic.
- * Tested if distributions are equal.
- * Same as in ACCUSA2 paper
- */
-public class ACCUSA2Statistic implements StatisticCalculator {
+public abstract class DirichletBayesStatistic implements StatisticCalculator {
 
 	protected final StatisticParameters parameters;
 	protected final BayesEstimateParameters estimateParameters;
 	protected final BaseConfig baseConfig;
 
-	public ACCUSA2Statistic(final BaseConfig baseConfig, final StatisticParameters parameters) {
+	// test what is the best??? 2*k - 2 : k = dimension of modeled prob. vector
+	// protected final ChiSquareDist dist = new ChiSquareDist(6);
+	
+	public DirichletBayesStatistic(BaseConfig baseConfig, StatisticParameters parameters) {
 		this.parameters = parameters;
 
 		int k = baseConfig.getK();
-
 		Phred2Prob phred2Prob = Phred2Prob.getInstance(k);
-		estimateParameters = new BayesEstimateParameters(0.0, phred2Prob);
+		estimateParameters = new BayesEstimateParameters(1.0, phred2Prob);
 		this.baseConfig = baseConfig;
 	}
 
-	@Override
-	public StatisticCalculator newInstance() {
-		return new ACCUSA2Statistic(baseConfig, parameters);
-	}
-
+	protected abstract int getCoverageA(final ParallelPileup parallelPileup);
+	protected abstract int getCoverageB(final ParallelPileup parallelPileup);
+	protected abstract int getCoverageP(final ParallelPileup parallelPileup);
+	
 	public double getStatistic(final ParallelPileup parallelPileup) {
 		// use all bases for calculation
 		final int baseIs[] = {0, 1, 2, 3};
@@ -88,18 +81,13 @@ public class ACCUSA2Statistic implements StatisticCalculator {
 	}
 
 	@Override
-	public boolean filter(double value) {
-		return parameters.getStat() > value;
-	}
-
-	@Override
 	public String getDescription() {
-		return "ACCUSA2 statistic: Z=log10( Dir(alpha_A; phi_A) * Dir(alpha_B; phi_B) ) - log10( Dir(alpha_A; phi_B) * Dir(alpha_B; phi_A) )";
+		return "Dirichlet Bayes";
 	}
 
 	@Override
 	public String getName() {
-		return "ACCUSA2";
+		return "DirBayes";
 	}
-	
+
 }

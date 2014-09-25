@@ -1,7 +1,6 @@
 package accusa2.method.call;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
@@ -144,20 +143,19 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		return instance;
 	}
 
+	@Deprecated
 	public Map<String, AbstractEstimateParameters> getEstimators() {
 		Map<String, AbstractEstimateParameters> estimators = new TreeMap<String, AbstractEstimateParameters>();
 
-		int baseN = parameters.getBaseConfig().getBases().length;
-		Phred2Prob phred2Prob = Phred2Prob.getInstance(baseN);
-		double [] alpha = new double[baseN];
-		Arrays.fill(alpha, 0.0); // 1.0/baseN
+		int k = parameters.getBaseConfig().getK();
+		Phred2Prob phred2Prob = Phred2Prob.getInstance(k);
 
 		AbstractEstimateParameters estimator = null;
 
-		estimator = new BayesEstimateParameters(alpha, phred2Prob);
+		estimator = new BayesEstimateParameters(0.0, phred2Prob);
 		estimators.put(estimator.getName(), estimator);
 
-		estimator = new CoverageEstimateParameters(alpha, phred2Prob);
+		estimator = new CoverageEstimateParameters(0.0, phred2Prob);
 		estimators.put(estimator.getName(), estimator);
 
 		return estimators;
