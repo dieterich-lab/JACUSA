@@ -26,6 +26,9 @@ public abstract class AbstractLRStatistic implements StatisticCalculator {
 	// protected final ChiSquareDist dist = new ChiSquareDist(6);
 	
 	public AbstractLRStatistic(String name, String desc, BaseConfig baseConfig, StatisticParameters parameters) {
+		this.name = name;
+		this.desc = desc;
+		
 		this.parameters = parameters;
 
 		int k = baseConfig.getK();
