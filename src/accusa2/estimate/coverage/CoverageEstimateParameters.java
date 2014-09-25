@@ -1,5 +1,7 @@
 package accusa2.estimate.coverage;
 
+import java.util.Arrays;
+
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
 
@@ -22,8 +24,12 @@ public class CoverageEstimateParameters extends AbstractCoverageEstimateParamete
 	}
 
 	public double[] estimateAlpha(int[] baseIs, Pileup[] pileups, int coverage) {
-		final double[] alphas = new double[baseIs.length];
-		System.arraycopy(initialAlphaNull, 0, alphas, 0, baseIs.length);
+		final double[] alpha = new double[baseIs.length];
+		if (initialAlphaNull > 0.0) {
+			Arrays.fill(alpha, initialAlphaNull / (double)baseIs.length);
+		} else {
+			Arrays.fill(alpha, 0.0);
+		}
 		
 		for (Pileup pileup : pileups) {
 			double[] probVector = phred2Prob.colMean(baseIs, pileup);
@@ -31,11 +37,11 @@ public class CoverageEstimateParameters extends AbstractCoverageEstimateParamete
 			// e.g.: when replicates are available...
 			// (double)coverage * 
 			for(int baseI = 0; baseI < baseIs.length; ++baseI) {
-				alphas[baseI] = probVector[baseI] * (double)coverage;
+				alpha[baseI] = probVector[baseI] * (double)coverage;
 			}
 		}
 
-		return alphas;
+		return alpha;
 	}
 
 	@Override
