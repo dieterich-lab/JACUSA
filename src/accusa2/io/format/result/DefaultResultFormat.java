@@ -120,15 +120,19 @@ public class DefaultResultFormat extends AbstractResultFormat {
 	@Override
 	public String convert2String(final ParallelPileup parallelPileup, final double value) {
 		final StringBuilder sb = convert2StringHelper(parallelPileup);
-
+	
 		// meanA
 		sb.append(SEP);
 		double[] meanA = phred2Prob.getPileupsMean(baseConfig.getBasesI(), parallelPileup.getPileupsA());
 		sb.append(StringCollapse.collapse(meanA, ","));
 		// varA
 		sb.append(SEP);
-		double[] varianceA = phred2Prob.getPileupsVariance(baseConfig.getBasesI(), meanA, parallelPileup.getPileupsA());
-		sb.append(StringCollapse.collapse(varianceA, ","));
+		if (parallelPileup.getNA() > 1) {
+			double[] varianceA = phred2Prob.getPileupsVariance(baseConfig.getBasesI(), meanA, parallelPileup.getPileupsA());
+			sb.append(StringCollapse.collapse(varianceA, ","));
+		} else {
+			sb.append(EMPTY);
+		}
 		
 		// meanB
 		sb.append(SEP);
@@ -136,17 +140,26 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		sb.append(StringCollapse.collapse(meanB, ","));
 		// varB
 		sb.append(SEP);
-		double[] varianceB = phred2Prob.getPileupsVariance(baseConfig.getBasesI(), meanB, parallelPileup.getPileupsB());
-		sb.append(StringCollapse.collapse(varianceB, ","));
+		if (parallelPileup.getNB() > 1) {
+			double[] varianceB = phred2Prob.getPileupsVariance(baseConfig.getBasesI(), meanB, parallelPileup.getPileupsB());
+			sb.append(StringCollapse.collapse(varianceB, ","));
+		} else {
+			sb.append(EMPTY);
+		}
 		
 		// meanAB
 		sb.append(SEP);
 		double[] meanP = phred2Prob.getPileupsMean(baseConfig.getBasesI(), parallelPileup.getPileupsP());
 		sb.append(StringCollapse.collapse(meanP, ","));
 		sb.append(SEP);
-		// varAB		
-		double[] varianceP = phred2Prob.getPileupsVariance(baseConfig.getBasesI(), meanB, parallelPileup.getPileupsP());
-		sb.append(StringCollapse.collapse(varianceP, ","));
+		// varAB
+		boolean replicates = parallelPileup.getNA() > 1 && parallelPileup.getNB() > 1;
+		if (replicates) {
+			double[] varianceP = phred2Prob.getPileupsVariance(baseConfig.getBasesI(), meanB, parallelPileup.getPileupsP());
+			sb.append(StringCollapse.collapse(varianceP, ","));
+		} else {
+			sb.append(EMPTY);
+		}
 		
 		// add unfiltered value
 		sb.append(SEP);
