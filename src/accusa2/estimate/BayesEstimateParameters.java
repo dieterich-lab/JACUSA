@@ -28,7 +28,7 @@ public class BayesEstimateParameters extends AbstractEstimateParameters {
 	}
 
 	@Override
-	public double[] estimateExpectedValue(int[] baseIs, Pileup[] pileups) {
+	public double[] estimateExpectedProb(int[] baseIs, Pileup[] pileups) {
 		double[] expectedValue = new double[baseIs.length];
 
 		int replicates = pileups.length;
