@@ -10,7 +10,7 @@ import java.util.Map;
 import net.sf.samtools.SAMSequenceRecord;
 import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
-import accusa2.cli.options.EstimateParametersOption;
+// import accusa2.cli.options.EstimateParametersOption;
 import accusa2.cli.options.MaxDepthOption;
 import accusa2.cli.options.MinBASQOption;
 import accusa2.cli.options.MinCoverageOption;
@@ -126,7 +126,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new StatisticFilterOption(parameters.getStatisticParameters()));
 		//acOptions.add(new PermutationsOption(parameters));
 
-		acOptions.add(new EstimateParametersOption(parameters.getStatisticParameters(), getEstimators()));
+		//acOptions.add(new EstimateParametersOption(parameters.getStatisticParameters(), getEstimators()));
 		
 		acOptions.add(new DebugOption(parameters));
 		acOptions.add(new HelpOption(CLI.getSingleton()));

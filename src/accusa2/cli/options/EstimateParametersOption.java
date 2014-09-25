@@ -10,6 +10,7 @@ import accusa2.cli.options.AbstractACOption;
 import accusa2.cli.parameters.StatisticParameters;
 import accusa2.estimate.AbstractEstimateParameters;
 
+@Deprecated
 public class EstimateParametersOption extends AbstractACOption {
 
 	private StatisticParameters parameters;

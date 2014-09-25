@@ -7,6 +7,7 @@ public class StatisticParameters {
 
 	// filter: statistic
 	private StatisticCalculator statisticCalculator;
+	@Deprecated
 	private AbstractEstimateParameters estimateParameters;
 	private double stat;
 	private int permutations;
@@ -16,6 +17,12 @@ public class StatisticParameters {
 		permutations		= 100;
 	}
 
+	public StatisticParameters(final StatisticCalculator statisticCalculator) {
+		this();
+		this.statisticCalculator = statisticCalculator;
+	}
+
+	@Deprecated
 	public StatisticParameters(final StatisticCalculator statisticCalculator, final AbstractEstimateParameters estimateParameters) {
 		this();
 		this.statisticCalculator = statisticCalculator;
@@ -58,10 +65,12 @@ public class StatisticParameters {
 		this.statisticCalculator = statisticCalculator;
 	}
 	
+	@Deprecated
 	public AbstractEstimateParameters getEstimateParameters() {
 		return estimateParameters;
 	}
 
+	@Deprecated
 	public void setEstimateParameters(AbstractEstimateParameters estimateParameters) {
 		this.estimateParameters = estimateParameters;
 	}

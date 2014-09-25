@@ -11,7 +11,7 @@ import java.util.Map;
 import net.sf.samtools.SAMSequenceRecord;
 import accusa2.cli.options.BaseConfigOption;
 import accusa2.cli.options.DebugOption;
-import accusa2.cli.options.EstimateParametersOption;
+//import accusa2.cli.options.EstimateParametersOption;
 import accusa2.cli.options.PermutationsOption;
 import accusa2.cli.options.StatisticFilterOption;
 import accusa2.cli.options.HelpOption;
@@ -101,7 +101,7 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new HelpOption(CLI.getSingleton()));
 		acOptions.add(new VersionOption(CLI.getSingleton()));
 		
-		acOptions.add(new EstimateParametersOption(parameters.getStatisticParameters(), getEstimators()));
+		//acOptions.add(new EstimateParametersOption(parameters.getStatisticParameters(), getEstimators()));
 		
 		acOptions.add(new FilterNHsamTagOption(parameters.getSampleA()));
 		acOptions.add(new FilterNMsamTagOption(parameters.getSampleA()));
