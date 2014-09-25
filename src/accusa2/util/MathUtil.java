@@ -178,4 +178,12 @@ public abstract class MathUtil {
 		return result;
 	}
 
+	public static double sum(double[] values) {
+		double sum = 0.0;
+		for (double value : values) {
+			sum += value;
+		}
+		return sum;
+	}
+	
 }

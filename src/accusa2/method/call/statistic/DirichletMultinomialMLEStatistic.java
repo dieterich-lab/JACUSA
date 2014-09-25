@@ -10,6 +10,7 @@ import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
+import accusa2.util.MathUtil;
 
 public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 
@@ -120,7 +121,7 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 		// maximize
 		while (iteration < maxIterations && ! converged) {
 			// pre-compute
-			summedAlphaOld = sum(alphaOld);
+			summedAlphaOld = MathUtil.sum(alphaOld);
 			digammaSummedAlphaOld = digamma(summedAlphaOld);
 			trigammaSummedAlphaOld = trigamma(summedAlphaOld);
 
@@ -186,7 +187,7 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 	// calculate likelihood
 	public double getLogLikelihood(double[] alpha, int[] baseIs, Pileup[] pileups) {
 		double logLikelihood = 0.0;
-		double alphaSum = sum(alpha);
+		double alphaSum = MathUtil.sum(alpha);
 
 		for (Pileup pileup : pileups) {
 			double nI = (double)pileup.getCoverage() ;
@@ -210,15 +211,6 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 
 	protected double trigamma(double x) {
 		return Gamma.trigamma(x);
-	}
-
-	// TODO Helper function move to Utils
-	protected  double sum(double[] values) {
-		double sum = 0.0;
-		for (double value : values) {
-			sum += value;
-		}
-		return sum;
 	}
 	
 }
