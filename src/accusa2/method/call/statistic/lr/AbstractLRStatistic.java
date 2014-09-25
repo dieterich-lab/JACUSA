@@ -1,4 +1,4 @@
-package accusa2.method.call.statistic;
+package accusa2.method.call.statistic.lr;
 
 import java.util.Arrays;
 
@@ -6,6 +6,8 @@ import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 import accusa2.cli.parameters.StatisticParameters;
 import accusa2.estimate.coverage.CoverageEstimateParameters;
+import accusa2.method.call.statistic.StatisticCalculator;
+import accusa2.method.call.statistic.StatisticUtils;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;

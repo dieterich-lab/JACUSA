@@ -1,6 +1,7 @@
-package accusa2.method.call.statistic;
+package accusa2.method.call.statistic.lr;
 
 import accusa2.cli.parameters.StatisticParameters;
+import accusa2.method.call.statistic.StatisticCalculator;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 
