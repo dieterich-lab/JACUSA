@@ -52,6 +52,7 @@ import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.io.format.result.DefaultResultFormat;
 import accusa2.method.AbstractMethodFactory;
 import accusa2.method.call.statistic.ACCUSA2Statistic;
+import accusa2.method.call.statistic.DirichletBayesStatistic;
 import accusa2.method.call.statistic.DirichletMultinomialMLEStatistic;
 import accusa2.method.call.statistic.DirichletMOMsStatistic;
 import accusa2.method.call.statistic.StatisticCalculator;
@@ -175,6 +176,9 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		statistic = new LR2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
+		statistic = new DirichletBayesStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistics.put(statistic.getName(), statistic);
+		
 		statistic = new DirichletMOMsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 		

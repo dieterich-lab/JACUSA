@@ -8,7 +8,7 @@ import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
 
-public abstract class DirichletBayesStatistic implements StatisticCalculator {
+public class DirichletBayesStatistic implements StatisticCalculator {
 
 	protected final StatisticParameters parameters;
 	protected final BayesEstimateParameters estimateParameters;
@@ -26,10 +26,6 @@ public abstract class DirichletBayesStatistic implements StatisticCalculator {
 		this.baseConfig = baseConfig;
 	}
 
-	protected abstract int getCoverageA(final ParallelPileup parallelPileup);
-	protected abstract int getCoverageB(final ParallelPileup parallelPileup);
-	protected abstract int getCoverageP(final ParallelPileup parallelPileup);
-	
 	public double getStatistic(final ParallelPileup parallelPileup) {
 		// use all bases for calculation
 		final int baseIs[] = {0, 1, 2, 3};
@@ -88,6 +84,16 @@ public abstract class DirichletBayesStatistic implements StatisticCalculator {
 	@Override
 	public String getName() {
 		return "DirBayes";
+	}
+
+	@Override
+	public boolean filter(double value) {
+		return parameters.getStat() < (value);
+	}
+
+	@Override
+	public StatisticCalculator newInstance() {
+		return new DirichletBayesStatistic(baseConfig, parameters);
 	}
 
 }
