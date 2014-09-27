@@ -40,7 +40,7 @@ public class DirichletBayesStatistic implements StatisticCalculator {
 
 		// second sample - see above
 		final double[][] probsB = estimateParameters.estimateProbs(baseIs, parallelPileup.getPileupsB());
-		final DirichletDist dirichletB = getDirichlet(baseIs, parallelPileup.getPileupsA());
+		final DirichletDist dirichletB = getDirichlet(baseIs, parallelPileup.getPileupsB());
 		final double densityBB = getDensity(baseIs, probsB, dirichletB);
 
 		// null model - distributions are the same

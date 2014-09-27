@@ -32,7 +32,7 @@ public final class LR2Statistic extends AbstractLRStatistic {
 	}
 	@Override
 	protected int getCoverageB(ParallelPileup parallelPileup) {
-		return estimateParameters.getMeanCoverage(parallelPileup.getPileupsP());
+		return estimateParameters.getMeanCoverage(parallelPileup.getPileupsB());
 	}
 	
 	@Override
