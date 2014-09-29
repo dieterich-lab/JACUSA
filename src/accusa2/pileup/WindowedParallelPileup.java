@@ -1,5 +1,6 @@
 package accusa2.pileup;
 
+import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.DefaultPileup.STRAND;
 
 // TODO implement finalize
@@ -196,6 +197,102 @@ public final class WindowedParallelPileup implements ParallelPileup {
 
 	public int getWindowSize() {
 		return windowSize;
+	}
+
+	@Override
+	public Pileup[] getPileupsP() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setPileupsA(Pileup[] pileupsA) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setPileupsB(Pileup[] pileupsB) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getNA() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getNB() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public STRAND getStrand() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setContig(String contig) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setPosition(int position) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setStrand(STRAND strand) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public STRAND getStrandA() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public STRAND getStrandB() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setFilterCountsA(Counts[][] counts) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setFilterCountsB(Counts[][] counts) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Counts[][] getFilterCountsA() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Counts[][] getFilterCountsB() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int[] getVariantBaseIs() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

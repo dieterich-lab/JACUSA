@@ -38,7 +38,7 @@ public class WindowedPileup implements Pileup {
 	@Override
 	public void addPileup(Pileup pileup) {
 		int windowPosition = getWindowPosition(pileup);
-		pileup.addPileup(pileup);
+		aggregatedPileup.addPileup(pileup);
 		if (pileupsWithinWindow.get(windowPosition) == null) {
 			pileupsWithinWindow.add(windowPosition, new DefaultPileup(pileup));
 		}
@@ -48,7 +48,7 @@ public class WindowedPileup implements Pileup {
 	@Override
 	public void substractPileup(Pileup pileup) {
 		int windowPosition = getWindowPosition(pileup);
-		pileup.addPileup(pileup);
+		aggregatedPileup.substractPileup(pileup);
 		if (pileupsWithinWindow.get(windowPosition) == null) {
 			pileupsWithinWindow.add(windowPosition, new DefaultPileup(pileup));
 		}
@@ -133,5 +133,5 @@ public class WindowedPileup implements Pileup {
 	public List<Pileup> getPileupsWithinWindow() {
 		return pileupsWithinWindow;
 	}
-	
+
 }

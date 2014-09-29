@@ -53,6 +53,7 @@ import accusa2.io.format.result.DefaultResultFormat;
 import accusa2.method.AbstractMethodFactory;
 import accusa2.method.call.statistic.ACCUSA2Statistic;
 import accusa2.method.call.statistic.DirichletBayesStatistic;
+import accusa2.method.call.statistic.DirichletMLEStatistic;
 import accusa2.method.call.statistic.DirichletMultinomialMLEStatistic;
 import accusa2.method.call.statistic.DirichletMOMsStatistic;
 import accusa2.method.call.statistic.StatisticCalculator;
@@ -84,14 +85,14 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new MinBASQSampleOption(sample1, sampleA));
 		acOptions.add(new MinCoverageSampleOption(sample1, sampleA));
 		acOptions.add(new MaxDepthSampleOption(sample1, sampleA));
-				
+
 		SampleParameters sampleB = parameters.getSampleB();
 		acOptions.add(new PathnameOption(sample2, sampleB));
 		acOptions.add(new MinMAPQSampleOption(sample2, sampleB));
 		acOptions.add(new MinBASQSampleOption(sample2, sampleB));
 		acOptions.add(new MinCoverageSampleOption(sample2, sampleB));
 		acOptions.add(new MaxDepthSampleOption(sample2, sampleB));
-		
+
 		// global settings
 		acOptions.add(new MinMAPQOption(sampleA, sampleB));
 		acOptions.add(new MinBASQOption(sampleA, sampleB));
@@ -100,10 +101,10 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new FilterFlagOption(sampleA, sampleB));
 
 		acOptions.add(new TwoSamplePileupBuilderOption(sampleA, sampleB));
-		
+
 		acOptions.add(new BedCoordinatesOption(parameters));
 		acOptions.add(new ResultFileOption(parameters));
-		if(getResultFormats().size() == 1 ) {
+		if (getResultFormats().size() == 1 ) {
 			Character[] a = getResultFormats().keySet().toArray(new Character[1]);
 			parameters.setFormat(getResultFormats().get(a[0]));
 		} else {
@@ -185,6 +186,9 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		//statistic = new WeightedMethodOfMomentsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
 
+		statistic = new DirichletMLEStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistics.put(statistic.getName(), statistic);
+		
 		statistic = new DirichletMultinomialMLEStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
