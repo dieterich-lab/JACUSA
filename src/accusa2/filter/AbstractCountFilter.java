@@ -26,7 +26,7 @@ public abstract class AbstractCountFilter extends AbstractFeatureFilter {
 		final int[] variantBasesIs = parallelPileup.getVariantBaseIs();
 		final int[] allelesIs = parallelPileup.getPooledPileup().getAlleles();
 		final char refBase = parallelPileup.getPooledPileup().getRefBase();
-		
+
 		// A | G
 		// define all non-reference bases as potential variants
 		if (DefaultParallelPileup.isHoHo(parallelPileup)) {
@@ -121,5 +121,4 @@ public abstract class AbstractCountFilter extends AbstractFeatureFilter {
 	
 	public abstract boolean filter(final int variantBaseI, final ParallelPileup parallelPileup);
 
-	
 }

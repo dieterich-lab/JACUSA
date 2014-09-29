@@ -28,9 +28,9 @@ public class OneSamplePileupBuilderOption extends AbstractPileupBuilderOption {
 
 	@Override
 	public void process(CommandLine line) throws Exception {
-		if(line.hasOption(opt)) {
+		if (line.hasOption(opt)) {
 	    	char[] value = line.getOptionValue(opt).toCharArray();
-	    	if(value.length != 1) {
+	    	if (value.length != 1) {
 	    		throw new IllegalArgumentException("Possible values for " + longOpt.toUpperCase() + ": S or U");
 	    	}
 	    	parameters.setPileupBuilderFactory(buildPileupBuilderFactory(parse(value[0])));

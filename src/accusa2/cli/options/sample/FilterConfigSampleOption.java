@@ -22,7 +22,7 @@ public class FilterConfigSampleOption extends AbstractACOption {
 
 	public FilterConfigSampleOption(final char sample, AbstractParameters parameters, Map<Character, AbstractFilterFactory> pileupFilterFactories) {
 		this.parameters = parameters;
-		
+
 		opt = "a" + sample;
 		longOpt = "pileup-filter" + sample;
 

@@ -31,7 +31,7 @@ public abstract class AbstractPileupBuilderOption extends AbstractACOption {
 
 		case STRAND_UNSPECIFIC:
 			return false;
-			
+
 		default:
 			throw new IllegalArgumentException("Unknown '" + c + "'! Possible values for " + longOpt.toUpperCase() + ": S,S or U,U or S,U or U,S");
 		}

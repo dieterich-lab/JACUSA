@@ -1,30 +1,37 @@
 package accusa2.estimate;
 
+import java.util.Arrays;
+
 import accusa2.pileup.Pileup;
 import accusa2.process.phred2prob.Phred2Prob;
 
 public class MethodOfMomentsEstimateParameters extends AbstractEstimateParameters {
 
-	private final double[] alpha;
+	private final double initialAlphaNull;
 
-	public MethodOfMomentsEstimateParameters(final double[] alpha, final Phred2Prob phred2Prob) {
+	public MethodOfMomentsEstimateParameters(final double initialAlphaNull, final Phred2Prob phred2Prob) {
 		super("mom", "Method of Moments", phred2Prob);
-		this.alpha = alpha;
+		this.initialAlphaNull = initialAlphaNull;
 	}
 
 	@Override
 	public double[] estimateAlpha(int[] baseIs, Pileup[] pileups) {
 		// use initial alpha to init
-		final double[] alphas = alpha.clone();
-
+		final double[] alpha = new double[baseIs.length];
+		if (initialAlphaNull > 0.0) {
+			Arrays.fill(alpha, initialAlphaNull / (double)baseIs.length);
+		} else {
+			Arrays.fill(alpha, 0.0);
+		}
+		
 		for (Pileup pileup : pileups) {
 			double[] v = phred2Prob.colSum(baseIs, pileup);
 			for(int baseI : baseIs) {
-				alphas[baseI] += v[baseI];
+				alpha[baseI] += v[baseI];
 			}
 		}
 
-		return alphas;
+		return alpha;
 	}
 
 	@Override

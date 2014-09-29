@@ -7,7 +7,7 @@ public class TwoSamplePileupParameters extends AbstractParameters implements has
 	public TwoSamplePileupParameters() {
 		super();
 
-		sampleB				= new SampleParameters();
+		sampleB	= new SampleParameters();
 	}
 
 	@Override
