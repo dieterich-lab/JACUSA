@@ -20,10 +20,10 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 	protected SampleParameters sampleB;
 	protected Location locationB;
 	protected final AbstractPileupBuilder[] pileupBuildersB;
-	
+
 	// output
 	protected ParallelPileup parallelPileup;
-	
+
 	public AbstractTwoSampleIterator(
 			final AnnotatedCoordinate annotatedCoordinate,
 			final Variant filter,
@@ -58,9 +58,9 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 	protected boolean hasNextA() {
 		return hasNext(locationA, pileupBuildersA);
 	}
-	
+
 	protected boolean hasNextB() {
 		return hasNext(locationB, pileupBuildersB);
 	}
-	
+
 }

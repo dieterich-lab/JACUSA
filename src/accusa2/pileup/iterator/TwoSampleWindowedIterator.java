@@ -6,15 +6,18 @@ import accusa2.cli.parameters.SampleParameters;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.DefaultPileup.Counts;
 import accusa2.pileup.ParallelPileup;
+import accusa2.pileup.WindowedParallelPileup;
 import accusa2.pileup.WindowedPileup;
 import accusa2.pileup.builder.AbstractPileupBuilder;
 import accusa2.pileup.iterator.variant.Variant;
 import accusa2.util.AnnotatedCoordinate;
 
 // TODO implement finalize
-public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
+public class TwoSampleWindowedIterator extends AbstractWindowIterator {
 
 	private BaseConfig baseConfig;
+	private TwoSampleUnstrandedIterator unstrandedIterator;
+	private WindowedParallelPileup windowedParallelPileup;
 
 	public TwoSampleWindowedIterator(
 			final AnnotatedCoordinate annotatedCoordinate, 
@@ -24,20 +27,12 @@ public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
 			final SampleParameters sampleA,
 			final SampleParameters sampleB,
 			final AbstractParameters parameters) {
-		super(annotatedCoordinate, filter, readersA, readersB, sampleA, sampleB, parameters);
+		super(annotatedCoordinate, filter, parameters);
+
 		this.baseConfig = parameters.getBaseConfig();
-	}
+		unstrandedIterator = new TwoSampleUnstrandedIterator(annotatedCoordinate, filter, readersA, readersB, sampleA, sampleB, parameters);
 
-	protected boolean hasNextA() {
-		return true;
-	}
-
-	protected boolean hasNextB() {
-		return true;
-	}
-
-	protected void advance(Location location) {
-		location.genomicPosition++;
+		windowedParallelPileup = new WindowedParallelPileup(null, null); // TODO
 	}
 
 	protected boolean hasNext(Location location, final AbstractPileupBuilder[] pileupBuilders) {
@@ -76,12 +71,16 @@ public class TwoSampleWindowedIterator extends AbstractTwoSampleIterator {
 		// advance to the next position
 		advance();
 
-		return parallelPileup;
+		return windowedParallelPileup;
 	}
 
 	protected void advance() {
-		locationA.genomicPosition++;
-		locationB.genomicPosition++;
+		// not needed
+	}
+
+	@Override
+	protected void advance(Location location) {
+		// not needed
 	}
 
 }

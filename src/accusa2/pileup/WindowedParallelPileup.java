@@ -3,10 +3,10 @@ package accusa2.pileup;
 import accusa2.pileup.DefaultPileup.STRAND;
 
 // TODO implement finalize
-public final class WindowedParallelPileup  {
+public final class WindowedParallelPileup implements ParallelPileup {
 
 	private int windowSize;
-	 
+
 	private Pileup pileup;
 	private Pileup pileupA;
 	private Pileup pileupB;
