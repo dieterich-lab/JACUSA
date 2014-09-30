@@ -30,14 +30,14 @@ public class CoverageEstimateParameters extends AbstractCoverageEstimateParamete
 		} else {
 			Arrays.fill(alpha, 0.0);
 		}
-		
+
 		for (Pileup pileup : pileups) {
 			double[] probVector = phred2Prob.colMean(baseIs, pileup);
 			// INFO: coverage and pileup.getCoverage() may be different.
 			// e.g.: when replicates are available...
 			// (double)coverage * 
 			for(int baseI = 0; baseI < baseIs.length; ++baseI) {
-				alpha[baseI] = probVector[baseI] * (double)coverage;
+				alpha[baseI] += probVector[baseI] * (double)coverage;
 			}
 		}
 

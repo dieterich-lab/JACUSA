@@ -5,7 +5,6 @@ import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 import accusa2.cli.parameters.StatisticParameters;
 import accusa2.estimate.coverage.CoverageEstimateParameters;
 import accusa2.method.call.statistic.StatisticCalculator;
-import accusa2.method.call.statistic.StatisticUtils;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
@@ -21,7 +20,7 @@ public abstract class AbstractLRStatistic implements StatisticCalculator {
 	protected final BaseConfig baseConfig;
 
 	// test what is the best??? 2*k - 2 : k = dimension of modeled prob. vector
-	// protected final ChiSquareDist dist = new ChiSquareDist(6);
+	protected final ChiSquareDist dist = new ChiSquareDist(6);
 	
 	public AbstractLRStatistic(String name, String desc, BaseConfig baseConfig, StatisticParameters parameters) {
 		this.name = name;
@@ -52,18 +51,18 @@ public abstract class AbstractLRStatistic implements StatisticCalculator {
 		final double[][] probsA = estimateParameters.estimateProbs(baseIs, parallelPileup.getPileupsA());
 		final double[] alphaA = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsA(), coverageA);
 		final DirichletDist dirichletA = new DirichletDist(alphaA);
-		final double densityAA = StatisticUtils.getDensity(dirichletA, probsA);
+		final double densityAA = getDensity(dirichletA, probsA);
 
 		final double[][] probsB = estimateParameters.estimateProbs(baseIs, parallelPileup.getPileupsB());
 		final double[] alphaB = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsB(), coverageB);
 		final DirichletDist dirichletB = new DirichletDist(alphaB);
-		final double densityBB = StatisticUtils.getDensity(dirichletB, probsB);
+		final double densityBB = getDensity(dirichletB, probsB);
 
 		final Pileup[] pileupsP = parallelPileup.getPileupsP();
 		final double[][] probsP = estimateParameters.estimateProbs(baseIs, pileupsP);
 		final double[] alphaP = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsP(), coverageP);
 		final DirichletDist dirichletP = new DirichletDist(alphaP);
-		final double densityP = StatisticUtils.getDensity(dirichletP, probsP);
+		final double densityP = getDensity(dirichletP, probsP);
 
 		final double z = -2 * (densityP) + 2 * (densityAA + densityBB);
 
@@ -72,22 +71,21 @@ public abstract class AbstractLRStatistic implements StatisticCalculator {
 			return 1.0;
 		}
 		// todo
-		return 1 - ChiSquareDist.cdf(2 * (baseIs.length - 1), 1, z);
+		return 1 - dist.cdf(z);
 	}
 
-	public boolean filter(double value) {
-		return parameters.getStat() < value;
-	}
-
-	// redefined to use natural logarithm
-	protected double getDensity(final DirichletDist dirichlet, final double[][] probs) {
+	public static double getDensity(final DirichletDist dirichlet, final double[][] probs) {
 		double density = 0.0;
 
 		for(int i = 0; i < probs.length; ++i) {
-			density += Math.log(Math.max(Double.MIN_VALUE, dirichlet.density(probs[i])));
+			density += Math.log10(Math.max(Double.MIN_VALUE, dirichlet.density(probs[i])));
 		}
 
 		return density;
+	}
+	
+	public boolean filter(double value) {
+		return parameters.getStat() < value;
 	}
 
 	@Override
