@@ -28,7 +28,7 @@ public class BayesEstimateParameters extends AbstractEstimateParameters {
 
 		for (Pileup pileup : pileups) {
 			double[] v = phred2Prob.colSum(baseIs, pileup);
-			for(int baseI : baseIs) {
+			for (int baseI : baseIs) {
 				alpha[baseI] += v[baseI];
 			}
 		}
@@ -60,7 +60,7 @@ public class BayesEstimateParameters extends AbstractEstimateParameters {
 	public double[][] estimateProbs(int[] baseIs, Pileup[] pileups) {
 		final double[][] probs = new double[pileups.length][baseIs.length];
 
-		for(int pileupI = 0; pileupI < pileups.length; ++pileupI) {
+		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			// sum the probabilities giving alpha 
 			probs[pileupI] = phred2Prob.colMean(baseIs, pileups[pileupI]);
 		}

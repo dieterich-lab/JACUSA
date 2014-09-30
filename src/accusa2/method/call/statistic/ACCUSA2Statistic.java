@@ -41,7 +41,6 @@ public class ACCUSA2Statistic implements StatisticCalculator {
 		// use all bases for calculation
 		final int baseIs[] = {0, 1, 2, 3};
 		// use only observed bases per parallelPileup
-		//final int bases[] = parallelPileup.getPooledPileup().getAlleles();
 
 		// first sample
 		// probability matrix for all pileups in sampleA (bases in column, pileups in rows)
