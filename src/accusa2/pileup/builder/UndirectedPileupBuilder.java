@@ -73,11 +73,16 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 	}
 	
 	public Pileup getPileup(int windowPosition, STRAND strand) {
-		final Pileup pileup = new DefaultPileup(contig, getGenomicPosition(windowPosition), strand, baseConfig.getBases().length);
+		Pileup pileup = new DefaultPileup(contig, getGenomicPosition(windowPosition), strand, baseConfig.getBases().length);
 
 		// copy base and qual info from cache
 		pileup.getCounts().setBaseCount(windowCache.baseCount[windowPosition]);
 		pileup.getCounts().setQualCount(windowCache.qualCount[windowPosition]);
+
+		if (STRAND.REVERSE == strand) {
+			// TODO invert filtered counts
+			pileup = pileup.complement();
+		}
 
 		return pileup;
 	}
