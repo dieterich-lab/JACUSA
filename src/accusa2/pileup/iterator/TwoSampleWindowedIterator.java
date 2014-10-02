@@ -16,7 +16,7 @@ import accusa2.util.AnnotatedCoordinate;
 public class TwoSampleWindowedIterator extends AbstractWindowIterator {
 
 	private BaseConfig baseConfig;
-	private TwoSampleUnstrandedIterator unstrandedIterator;
+	//private TwoSampleUnstrandedIterator unstrandedIterator;
 	private WindowedParallelPileup windowedParallelPileup;
 
 	public TwoSampleWindowedIterator(
@@ -30,7 +30,7 @@ public class TwoSampleWindowedIterator extends AbstractWindowIterator {
 		super(annotatedCoordinate, filter, parameters);
 
 		this.baseConfig = parameters.getBaseConfig();
-		unstrandedIterator = new TwoSampleUnstrandedIterator(annotatedCoordinate, filter, readersA, readersB, sampleA, sampleB, parameters);
+		//unstrandedIterator = new TwoSampleUnstrandedIterator(annotatedCoordinate, filter, readersA, readersB, sampleA, sampleB, parameters);
 
 		windowedParallelPileup = new WindowedParallelPileup(null, null); // TODO
 	}
