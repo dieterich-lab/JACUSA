@@ -35,15 +35,18 @@ public class DistanceFilterCount extends AbstractCountFilterCache {
 		// read start
 		alignmentBlock = alignmentBlocks.get(0);
 		windowPosition = alignmentBlock.getReferenceStart() - genomicWindowStart;
-		fillCache(windowPosition - distance, distance, alignmentBlock.getReadStart() - distance, record);
+		fillCache(windowPosition, distance, alignmentBlock.getReadStart(), record);
 
 		// read end
 		alignmentBlock = alignmentBlocks.get(alignmentBlocks.size() - 1); // get last alignment
+
+		/* TODO what does it do?
 		int offset = alignmentBlock.getReferenceStart() + alignmentBlock.getLength() - genomicWindowStart;
 		if (offset > distance) {
 			return;
-		}
-		windowPosition = offset;
+		}*/
+		// windowPosition = offset;
+
 		fillCache(windowPosition - distance, distance, alignmentBlock.getReadStart() + alignmentBlock.getLength() - distance, record);
 	}
 
@@ -51,19 +54,19 @@ public class DistanceFilterCount extends AbstractCountFilterCache {
 	@Override
 	protected void processInsertion(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
 		fillCache(windowPosition - distance, distance, readPosition - distance, record);
-		fillCache(windowPosition - cigarElement.getLength(), distance, readPosition + cigarElement.getLength(), record);
+		fillCache(windowPosition + cigarElement.getLength(), distance, readPosition + cigarElement.getLength(), record);
 	}
 	@Override
 	protected void processDeletion(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
 		fillCache(windowPosition - distance, distance, readPosition - distance, record);
-		fillCache(windowPosition - cigarElement.getLength(), distance, readPosition + cigarElement.getLength(), record);
+		fillCache(windowPosition, distance, readPosition, record);
 	}
 
 	// process SpliceSites
 	@Override
 	protected void processSkipped(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
 		fillCache(windowPosition - distance, distance, readPosition - distance, record);
-		fillCache(windowPosition - cigarElement.getLength(), distance, readPosition + cigarElement.getLength(), record);
+		fillCache(windowPosition + cigarElement.getLength(), distance, readPosition, record);
 	}
 
 	/**

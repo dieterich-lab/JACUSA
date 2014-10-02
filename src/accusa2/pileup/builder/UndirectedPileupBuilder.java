@@ -68,7 +68,12 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 			counts[i] = pileup.new Counts(
 					filterCaches[i].getCache().baseCount[windowPosition], 
 					filterCaches[i].getCache().qualCount[windowPosition]);
+			
+			if (STRAND.REVERSE == strand) {
+				counts[i].invertCounts();
+			}
 		}
+
 		return counts;
 	}
 	
@@ -80,7 +85,6 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		pileup.getCounts().setQualCount(windowCache.qualCount[windowPosition]);
 
 		if (STRAND.REVERSE == strand) {
-			// TODO invert filtered counts
 			pileup = pileup.complement();
 		}
 

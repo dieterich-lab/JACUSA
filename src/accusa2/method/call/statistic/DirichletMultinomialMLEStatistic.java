@@ -32,7 +32,7 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 	@Override
 	public double getStatistic(ParallelPileup parallelPileup) {
 		final int baseIs[] = {0, 1, 2, 3};
-		//final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
+//		final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
 
 		// TODO how many FGs
 		ChiSquareDist dist = new ChiSquareDist(2 * (baseIs.length - 1));
@@ -44,7 +44,13 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 		// LRT
 		double z = -2 * (logLikelihoodP - (logLikelihoodA + logLikelihoodB));
 		// z ~ chisquare
-		return 1 - dist.cdf(z);
+		double p = 1 - dist.cdf(z);
+		if (p < 0.05) {
+			int j = 0;
+			++j;
+		}
+		
+		return p;
 	}
 
 	@Override

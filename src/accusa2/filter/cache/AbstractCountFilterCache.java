@@ -29,28 +29,39 @@ public abstract class AbstractCountFilterCache {
 	}
 
 	protected void fillCache(int windowPosition, int length, int readPosition, SAMRecord record) {
-		int end = Math.min(cache.getWindowSize(), windowPosition + length);
-		end = Math.min(end, record.getReadLength());
-
 		int offset = 0;
+
 		if (readPosition < 0) {
 			offset += Math.abs(readPosition);
+			
+			windowPosition += offset;
+			readPosition += offset;
+			length -= offset;
 		}
+
 		if (windowPosition < 0) {
 			offset += Math.abs(windowPosition);
+			
+			windowPosition += offset;
+			readPosition += offset;
+			length -= offset;
 		}
-		windowPosition += offset;
-		readPosition += offset;
-		length -= offset;
 
-		for (int i = 0; i < length && windowPosition < end && readPosition < record.getReadLength(); ++i) {
+		for (int i = 0; i < length && windowPosition + i < cache.getWindowSize() && readPosition + i < record.getReadLength(); ++i) {
 			windowPosition += i;
 			readPosition += i;
 
 			if (! visited[windowPosition]) {
-				int baseI = baseConfig.getBaseI(record.getReadBases()[readPosition]);
+				int baseI = baseConfig.getBaseI(record.getReadBases()[readPosition]);	
+
+				// corresponds to N
+				if (baseI < 0) {
+					continue;
+				}
+
 				byte qual = record.getBaseQualities()[readPosition];
 				cache.add(windowPosition, baseI, qual);
+				visited[windowPosition] = true;
 			}
 		}
 	}
