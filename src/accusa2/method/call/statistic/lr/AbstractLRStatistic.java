@@ -78,7 +78,7 @@ public abstract class AbstractLRStatistic implements StatisticCalculator {
 		double density = 0.0;
 
 		for(int i = 0; i < probs.length; ++i) {
-			density += Math.log10(Math.max(Double.MIN_VALUE, dirichlet.density(probs[i])));
+			density += Math.log(Math.max(Double.MIN_VALUE, dirichlet.density(probs[i])));
 		}
 
 		return density;
