@@ -18,14 +18,14 @@ public class DistanceFilterFactory extends AbstractFilterFactory {
 
 	@Override
 	public void processCLI(String line) throws IllegalArgumentException {
-		if(line.length() == 1) {
+		if (line.length() == 1) {
 			return;
 		}
 
 		final String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
 		
 		final int distance = Integer.valueOf(s[1]);
-		if(distance < 0) {
+		if (distance < 0) {
 			throw new IllegalArgumentException("Invalid distance " + line);
 		}
 		this.distance = distance;

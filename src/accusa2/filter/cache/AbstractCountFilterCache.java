@@ -14,7 +14,7 @@ public abstract class AbstractCountFilterCache {
 	protected WindowCache cache;
 	protected boolean[] visited;
 	protected BaseConfig baseConfig;
-	
+
 	public AbstractCountFilterCache(char c, AbstractParameters parameters) {
 		this.c = c;
 
@@ -22,9 +22,11 @@ public abstract class AbstractCountFilterCache {
 		int baseLength = parameters.getBaseConfig().getBases().length;
 
 		cache = new WindowCache(windowSize, baseLength);
+		
+		// count indel, read start/end, splice site as only 1!!!
 		visited = new boolean[windowSize];
 		Arrays.fill(visited, false);
-		
+
 		baseConfig = parameters.getBaseConfig();
 	}
 
@@ -47,21 +49,18 @@ public abstract class AbstractCountFilterCache {
 			length -= offset;
 		}
 
-		for (int i = 0; i < length && windowPosition + i < cache.getWindowSize() && readPosition + i < record.getReadLength(); ++i) {
-			windowPosition += i;
-			readPosition += i;
+		for (int i = 0; i < length && windowPosition + i < cache.getWindowSize() && readPosition + i< record.getReadLength(); ++i) {
+			if (! visited[windowPosition + i]) {
+				int baseI = baseConfig.getBaseI(record.getReadBases()[readPosition + i]);	
 
-			if (! visited[windowPosition]) {
-				int baseI = baseConfig.getBaseI(record.getReadBases()[readPosition]);	
-
-				// corresponds to N
+				// corresponds to N -> ignore
 				if (baseI < 0) {
 					continue;
 				}
 
-				byte qual = record.getBaseQualities()[readPosition];
-				cache.add(windowPosition, baseI, qual);
-				visited[windowPosition] = true;
+				byte qual = record.getBaseQualities()[readPosition + i];
+				cache.add(windowPosition + i, baseI, qual);
+				visited[windowPosition + i] = true;
 			}
 		}
 	}

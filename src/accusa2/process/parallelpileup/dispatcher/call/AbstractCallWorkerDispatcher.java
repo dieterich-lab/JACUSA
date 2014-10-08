@@ -41,7 +41,7 @@ public abstract class AbstractCallWorkerDispatcher<T extends AbstractCallWorker>
 	protected void processTmpLine(final String line) throws IOException {
 		final double p = getFormat().extractValue(line);
 		StatisticCalculator statisticCalculator = statisticParameters.getStatisticCalculator();  
-		
+
 		if (isDebug) {
 			if (! statisticCalculator.filter(p)) {
 				getOutput().write(line);
@@ -54,7 +54,7 @@ public abstract class AbstractCallWorkerDispatcher<T extends AbstractCallWorker>
 			}
 		}
 	}
-	
+
 	protected Output getOutput() {
 		return output;
 	}

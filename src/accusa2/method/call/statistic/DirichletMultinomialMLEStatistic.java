@@ -16,7 +16,7 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 
 	// options for paremeters estimation
 	protected final int maxIterations = 100;
-	protected final double epsilon = 1.0/(double)(10^6);
+	protected final double epsilon = 0.0001;
 
 	protected final StatisticParameters parameters;
 	protected final BaseConfig baseConfig;
@@ -32,24 +32,32 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 	@Override
 	public double getStatistic(ParallelPileup parallelPileup) {
 		final int baseIs[] = {0, 1, 2, 3};
-//		final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
+		// final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
 
 		// TODO how many FGs
-		ChiSquareDist dist = new ChiSquareDist(2 * (baseIs.length - 1));
+		ChiSquareDist dist = new ChiSquareDist(4); // 2 * (baseIs.length - 1
 
-		double logLikelihoodA = maximizeLogLikelihood(baseIs, parallelPileup.getPileupsA());
-		double logLikelihoodB = maximizeLogLikelihood(baseIs, parallelPileup.getPileupsB());
-		double logLikelihoodP = maximizeLogLikelihood(baseIs, parallelPileup.getPileupsP());
+		double[] alphaA = new double[baseIs.length];
+		Arrays.fill(alphaA, 0.0);
+		double[] alphaB = new double[baseIs.length];
+		Arrays.fill(alphaA, 0.0);
+		double[] alphaP = new double[baseIs.length];
+		Arrays.fill(alphaA, 0.0);
+
+		double logLikelihoodA = maximizeLogLikelihood(baseIs, alphaA, parallelPileup.getPileupsA());
+		double logLikelihoodB = maximizeLogLikelihood(baseIs, alphaB, parallelPileup.getPileupsB());
+		double logLikelihoodP = maximizeLogLikelihood(baseIs, alphaP, parallelPileup.getPileupsP());
 
 		// LRT
 		double z = -2 * (logLikelihoodP - (logLikelihoodA + logLikelihoodB));
 		// z ~ chisquare
 		double p = 1 - dist.cdf(z);
-		if (p < 0.05) {
-			int j = 0;
+		// TODO remove
+		if (p <= 0.0001) {
+			int j = 2;
 			++j;
 		}
-		
+
 		return p;
 	}
 
@@ -75,7 +83,7 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 
 
 	// estimate alpha and returns loglik
-	protected double maximizeLogLikelihood(int[] baseIs, Pileup[] pileups) {
+	protected double maximizeLogLikelihood(int[] baseIs, double[] alphaOld, Pileup[] pileups) {
 		// parameters
 		int iteration = 0;
 		boolean converged = false;
@@ -98,16 +106,26 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 		// pileup related counts/containters/with prior knowledge
 		double[][] nIK = new double[pileups.length][baseIs.length];
 		double[] nI = new double[pileups.length];
-		// initial estimate for alpha. estimated by MOM
-		double[] alphaOld = new double[baseIs.length];
-		Arrays.fill(alphaOld, 0.0);
+		// alphaOld. estimate by MOM
+
+		
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
+			// double s = 0.01 * (double)pileups[pileupI].getCoverage();
+			double c = (double)pileups[pileupI].getCoverage();
+
 			nI[pileupI] = (double)pileups[pileupI].getCoverage();
-			nIK[pileupI] = phred2Prob.colSum(baseIs, pileups[pileupI]);
+			nIK[pileupI] = phred2Prob.colSumCount(baseIs, pileups[pileupI]);
+
+			double[] errors = phred2Prob.colErrorSum(baseIs, pileups[pileupI]);
+			for (int baseI = 0; baseI < baseIs.length; ++baseI) {
+				double error = c * errors[baseI];
+				nIK[pileupI][baseI] += error;
+				nI[pileupI] += error;
+			}
+
 			for (int baseI = 0; baseI < baseIs.length; ++baseI) {
 				alphaOld[baseI] += nIK[pileupI][baseI];
 			}
-
 		}
 		for (int baseI = 0; baseI < baseIs.length; ++baseI) {
 			alphaOld[baseI] /= (double)pileups.length;
@@ -159,14 +177,10 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 			// update alphaNew
 			for (int baseI = 0; baseI < baseIs.length; ++baseI) {
 				alphaNew[baseI] = alphaOld[baseI] - (gradient[baseI] - b) / Q[baseI];
-				// check that alpha is not < 0
-				if (alphaNew[baseI] < 0) {
-					alphaNew[baseI] = 0.005; // hard set
-				}
 			}
 			loglikNew = getLogLikelihood(alphaNew, baseIs, nI, nIK);
 			// update value
-			alphaOld = alphaNew.clone();
+			System.arraycopy(alphaNew, 0, alphaOld, 0, alphaNew.length);
 
 			// check if converged
 			double delta = Math.abs(loglikNew - loglikOld);
@@ -180,7 +194,7 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 	}
 
 	// calculate likelihood
-	public double getLogLikelihood(double[] alpha, int[] baseIs, double coverages[], double[][] matrixSummed) {
+	public double getLogLikelihood(final double[] alpha, final int[] baseIs, final double coverages[], final double[][] matrixSummed) {
 		double logLikelihood = 0.0;
 		double alphaSum = MathUtil.sum(alpha);
 

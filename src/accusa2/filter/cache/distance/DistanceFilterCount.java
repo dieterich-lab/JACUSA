@@ -9,7 +9,6 @@ import accusa2.cli.parameters.AbstractParameters;
 import accusa2.filter.cache.AbstractCountFilterCache;
 
 public class DistanceFilterCount extends AbstractCountFilterCache {
-
 	private int distance;
 
 	/**
@@ -32,22 +31,23 @@ public class DistanceFilterCount extends AbstractCountFilterCache {
 		// process read start and end
 		List<AlignmentBlock> alignmentBlocks = record.getAlignmentBlocks();
 
+		/* TODO remove test code
+		boolean s = record.getReadNegativeStrandFlag();
+		if (s == true) {
+			int t = 0;
+			++t;
+		}
+		*/
+		
 		// read start
 		alignmentBlock = alignmentBlocks.get(0);
 		windowPosition = alignmentBlock.getReferenceStart() - genomicWindowStart;
-		fillCache(windowPosition, distance, alignmentBlock.getReadStart(), record);
+		fillCache(windowPosition, distance, alignmentBlock.getReadStart() - 1, record);
 
 		// read end
 		alignmentBlock = alignmentBlocks.get(alignmentBlocks.size() - 1); // get last alignment
-
-		/* TODO what does it do?
-		int offset = alignmentBlock.getReferenceStart() + alignmentBlock.getLength() - genomicWindowStart;
-		if (offset > distance) {
-			return;
-		}*/
-		// windowPosition = offset;
-
-		fillCache(windowPosition - distance, distance, alignmentBlock.getReadStart() + alignmentBlock.getLength() - distance, record);
+		windowPosition = alignmentBlock.getReferenceStart() + alignmentBlock.getLength() - genomicWindowStart;
+		fillCache(windowPosition - distance, distance, alignmentBlock.getReadStart() - 1 + alignmentBlock.getLength() - distance, record);
 	}
 
 	// process INDELs

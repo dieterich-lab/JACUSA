@@ -118,11 +118,11 @@ public abstract class AbstractWindowIterator implements Iterator<ParallelPileup>
 	}
 
 	protected Counts[][] getCounts(Location location, AbstractPileupBuilder[] pileupBuilders) {
-		int n = pileupBuilders.length;
-		Counts[][] counts = new Counts[n][filterconfig.getFactories().size()];
+		int replicates = pileupBuilders.length;
+		Counts[][] counts = new Counts[replicates][filterconfig.getFactories().size()];
 
 		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(location.genomicPosition);
-		for(int i = 0; i < n; ++i) {
+		for(int i = 0; i < replicates; ++i) {
 			counts[i] = pileupBuilders[i].getFilteredCounts(windowPosition, location.strand);
 		}
 

@@ -6,7 +6,7 @@ import accusa2.ACCUSA;
 import accusa2.cli.parameters.AbstractParameters;
 import accusa2.filter.FilterConfig;
 import accusa2.filter.factory.AbstractFilterFactory;
-import accusa2.filter.feature.AbstractFeatureFilter;
+import accusa2.filter.feature.AbstractFilter;
 import accusa2.io.format.result.AbstractResultFormat;
 import accusa2.method.call.statistic.StatisticCalculator;
 import accusa2.pileup.DefaultParallelPileup;
@@ -61,7 +61,7 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 					// container for pileups
 
 					ParallelPileup filteredParallelPileups = new DefaultParallelPileup(parallelPileup);
-					AbstractFeatureFilter featureFilter = filterFactory.getFilterInstance();
+					AbstractFilter featureFilter = filterFactory.getFilterInstance();
 
 					// apply filter
 					if (featureFilter.filter(filteredParallelPileups)) {

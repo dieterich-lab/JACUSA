@@ -20,7 +20,7 @@ public class RatioBasedFilter extends AbstractCountFilter {
 		int count = parallelPileup.getPooledPileup().getBaseCount()[variantBaseI];
 		ParallelPileup filtered = applyFilter(variantBaseI, parallelPileup);
 		int filteredCount = filtered.getPooledPileup().getBaseCount()[variantBaseI];
-		
+
 		return (double)filteredCount / (double)count <= minRatio;
 	}
 

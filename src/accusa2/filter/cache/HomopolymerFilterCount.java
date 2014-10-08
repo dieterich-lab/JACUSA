@@ -24,7 +24,7 @@ public class HomopolymerFilterCount extends AbstractCountFilterCache {
 	public void processRecord(int genomicWindowStart, SAMRecord record) {
 		processCigar(genomicWindowStart, record);
 	}
-	
+
 	@Override
 	protected void processAlignmetMatch(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
 		byte base = record.getReadBases()[0];

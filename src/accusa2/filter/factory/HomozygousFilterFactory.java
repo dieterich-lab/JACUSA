@@ -5,11 +5,11 @@ import accusa2.filter.feature.HomozygousFilter;
 
 public class HomozygousFilterFactory extends AbstractFilterFactory {
 
-	private int sample;
+	private char sample;
 
 	public HomozygousFilterFactory() {
-		super('H', "Filter non-homozygous pileup/BAM (1 or 2). Default: none");
-		sample = 0;
+		super('H', "Filter non-homozygous pileup/BAM (A or B). Default: none");
+		sample = 'N';
 	}
 
 	@Override
@@ -29,15 +29,15 @@ public class HomozygousFilterFactory extends AbstractFilterFactory {
 		}
 
 		String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
-		int sample = Integer.valueOf(s[1]);
-		if(sample == 1 || sample == 2) {
+		char sample = s[1].charAt(0);
+		if (sample == 'A' || sample == 'B') {
 			setSample(sample);
 			return;
 		}
 		throw new IllegalArgumentException("Invalid argument " + sample);
 	}
 
-	public final void setSample(int sample) {
+	public final void setSample(char sample) {
 		this.sample = sample;
 	}
 

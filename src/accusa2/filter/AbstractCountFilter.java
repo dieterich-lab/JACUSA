@@ -1,6 +1,6 @@
 package accusa2.filter;
 
-import accusa2.filter.feature.AbstractFeatureFilter;
+import accusa2.filter.feature.AbstractFilter;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.DefaultParallelPileup;
 import accusa2.pileup.DefaultPileup;
@@ -8,7 +8,7 @@ import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 import accusa2.pileup.DefaultPileup.Counts;
 
-public abstract class AbstractCountFilter extends AbstractFeatureFilter {
+public abstract class AbstractCountFilter extends AbstractFilter {
 
 	protected final BaseConfig baseConfig;
 	protected final FilterConfig filterConfig;
@@ -63,13 +63,13 @@ public abstract class AbstractCountFilter extends AbstractFeatureFilter {
 	 * @param extendedPileups
 	 * @return
 	 */
-	final protected Pileup[] applyFilter(final int variantBaseI, final Pileup[] pileups, final Counts[] counts) {
+	final protected Pileup[] applyFilter(final int variantBaseI, final Pileup[] pileups, final Counts[][] counts) {
 		final Pileup[] filtered = new DefaultPileup[pileups.length];
 
 		boolean processed = false;
 		for (int i = 0; i < pileups.length; ++i) {
 			filtered[i] = new DefaultPileup(pileups[i]);
-			final Counts count = counts[i];
+			final Counts count = counts[i][filterI];
 			if(count != null) { 
 				filtered[i].getCounts().substract(variantBaseI, count);
 				processed = true;
@@ -80,31 +80,31 @@ public abstract class AbstractCountFilter extends AbstractFeatureFilter {
 	}
 
 	final protected ParallelPileup applyFilter(final int variantBaseI, final ParallelPileup parallelPileup) {
-		final Pileup[] pileupsA = applyFilter(variantBaseI, parallelPileup.getPileupsA(), parallelPileup.getFilterCountsA()[filterI]);
-		final Pileup[] pileupsB = applyFilter(variantBaseI, parallelPileup.getPileupsB(), parallelPileup.getFilterCountsB()[filterI]);
+		final Pileup[] filteredPileupsA = applyFilter(variantBaseI, parallelPileup.getPileupsA(), parallelPileup.getFilterCountsA());
+		final Pileup[] filteredPileupsB = applyFilter(variantBaseI, parallelPileup.getPileupsB(), parallelPileup.getFilterCountsB());
 
-		if (pileupsA == null && pileupsB == null) {
+		if (filteredPileupsA == null && filteredPileupsB == null) {
 			return null;
 		}
 
-		final ParallelPileup filtered = new DefaultParallelPileup(parallelPileup.getNA(), parallelPileup.getNB());
-		filtered.setContig(parallelPileup.getContig());
-		filtered.setPosition(parallelPileup.getPosition());
-		filtered.setStrand(parallelPileup.getStrand());
+		final ParallelPileup filteredParallelPileup = new DefaultParallelPileup(parallelPileup.getNA(), parallelPileup.getNB());
+		filteredParallelPileup.setContig(parallelPileup.getContig());
+		filteredParallelPileup.setPosition(parallelPileup.getPosition());
+		filteredParallelPileup.setStrand(parallelPileup.getStrand());
 
-		if (pileupsA == null) {
-			filtered.setPileupsA(parallelPileup.getPileupsA());
+		if (filteredPileupsA == null) {
+			filteredParallelPileup.setPileupsA(parallelPileup.getPileupsA());
 		} else {
-			filtered.setPileupsA(pileupsA);
+			filteredParallelPileup.setPileupsA(filteredPileupsA);
 		}
 
-		if (pileupsB == null) {
-			filtered.setPileupsB(parallelPileup.getPileupsB());
+		if (filteredPileupsB == null) {
+			filteredParallelPileup.setPileupsB(parallelPileup.getPileupsB());
 		} else {
-			filtered.setPileupsB(pileupsB);
+			filteredParallelPileup.setPileupsB(filteredPileupsB);
 		}
 	
-		return filtered;
+		return filteredParallelPileup;
 	}
 
 	public boolean filter(final ParallelPileup parallelPileup) {

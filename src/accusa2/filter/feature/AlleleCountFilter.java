@@ -2,7 +2,7 @@ package accusa2.filter.feature;
 
 import accusa2.pileup.ParallelPileup;
 
-public class AlleleCountFilter extends AbstractFeatureFilter {
+public class AlleleCountFilter extends AbstractFilter {
 
 	public AlleleCountFilter(final char c) {
 		super(c);

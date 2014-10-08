@@ -1,7 +1,7 @@
 package accusa2.filter.factory;
 
 import accusa2.filter.cache.AbstractCountFilterCache;
-import accusa2.filter.feature.AbstractFeatureFilter;
+import accusa2.filter.feature.AbstractFilter;
 
 public abstract class AbstractFilterFactory {
 
@@ -15,7 +15,7 @@ public abstract class AbstractFilterFactory {
 		this.desc = desc;
 	}
 
-	public abstract AbstractFeatureFilter getFilterInstance();
+	public abstract AbstractFilter getFilterInstance();
 	public abstract AbstractCountFilterCache getFilterCountInstance();
 
 	public final char getC() {

@@ -3,11 +3,11 @@ package accusa2.filter;
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.ParallelPileup;
 
-public class CountBasedFilter extends AbstractCountFilter {
+public class RangeBasedFilter extends AbstractCountFilter {
 
 	private double range;
 	
-	public CountBasedFilter(final char c, 
+	public RangeBasedFilter(final char c, 
 			final double range, 
 			final BaseConfig baseConfig, 
 			final FilterConfig filterConfig) {
@@ -24,7 +24,7 @@ public class CountBasedFilter extends AbstractCountFilter {
 		return count - filteredCount >= range;
 	}
 
-	public double getMinRation() {
+	public double getRange() {
 		return range;
 	}
 	

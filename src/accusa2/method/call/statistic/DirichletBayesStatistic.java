@@ -50,6 +50,13 @@ public class DirichletBayesStatistic implements StatisticCalculator {
 		// calculate statistic z = log 0_Model - log A_Model 
 		final double z = (densityAA + densityBB) - (densityAB + densityBA);
 
+		/* TODO remove 
+		if (z > 30) {
+			int j = 0;
+			++j;
+		}
+		*/
+		
 		// use only positive numbers
 		return Math.max(0, z);
 	}

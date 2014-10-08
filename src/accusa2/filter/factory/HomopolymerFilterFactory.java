@@ -1,10 +1,10 @@
 package accusa2.filter.factory;
 
 import accusa2.cli.parameters.AbstractParameters;
-import accusa2.filter.CountBasedFilter;
+import accusa2.filter.RangeBasedFilter;
 import accusa2.filter.cache.AbstractCountFilterCache;
 import accusa2.filter.cache.HomopolymerFilterCount;
-import accusa2.filter.feature.AbstractFeatureFilter;
+import accusa2.filter.feature.AbstractFilter;
 
 public class HomopolymerFilterFactory extends AbstractFilterFactory {
 
@@ -18,8 +18,8 @@ public class HomopolymerFilterFactory extends AbstractFilterFactory {
 	}
 
 	@Override
-	public AbstractFeatureFilter getFilterInstance() {
-		return new CountBasedFilter(getC(), 1, parameters.getBaseConfig(), parameters.getFilterConfig());
+	public AbstractFilter getFilterInstance() {
+		return new RangeBasedFilter(getC(), 1, parameters.getBaseConfig(), parameters.getFilterConfig());
 	}
 
 	@Override

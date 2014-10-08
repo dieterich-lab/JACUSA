@@ -37,7 +37,7 @@ public class TwoSampleCallWorkerDispatcher extends AbstractCallWorkerDispatcher<
 		int replicatesA = parameters.getSampleA().getPathnames().length;
 		int replicatesB = parameters.getSampleB().getPathnames().length;
 
-		return 	getFormat().getHeader(new DefaultParallelPileup(replicatesA, replicatesB));
+		return getFormat().getHeader(new DefaultParallelPileup(replicatesA, replicatesB));
 	}
 
 }

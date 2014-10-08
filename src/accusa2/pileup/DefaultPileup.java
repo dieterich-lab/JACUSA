@@ -215,8 +215,13 @@ public class DefaultPileup implements Pileup {
 		}
 		
 		public Counts(final int[] baseCount, final int[][] qualCount) {
-			this.baseCount = baseCount;
-			this.qualCount = qualCount;
+			this.baseCount = new int[baseCount.length];
+			System.arraycopy(baseCount, 0, this.baseCount, 0, baseCount.length);
+
+			this.qualCount = new int[baseCount.length][qualCount[0].length];
+			for(int baseI = minQualI; baseI < baseCount.length; ++baseI) {
+				System.arraycopy(qualCount[baseI], 0, this.qualCount[baseI], 0, qualCount[baseI].length);
+			}
 		}
 
 		public void addBase(final int base, final byte qual) {

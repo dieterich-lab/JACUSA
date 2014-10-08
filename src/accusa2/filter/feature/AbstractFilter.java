@@ -2,11 +2,11 @@ package accusa2.filter.feature;
 
 import accusa2.pileup.ParallelPileup;
 
-public abstract class AbstractFeatureFilter {
+public abstract class AbstractFilter {
 
 	protected final char c;
 	
-	public AbstractFeatureFilter(final char c) {
+	public AbstractFilter(final char c) {
 		this.c = c;
 	}
 

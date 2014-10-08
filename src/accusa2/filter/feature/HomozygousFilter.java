@@ -3,11 +3,12 @@ package accusa2.filter.feature;
 import accusa2.pileup.ParallelPileup;
 import accusa2.pileup.Pileup;
 
-public class HomozygousFilter extends AbstractFeatureFilter {
+public class HomozygousFilter extends AbstractFilter {
 
-	private int sample;
+	// TODO make this dependent on Options for files
+	private char sample;
 
-	public HomozygousFilter(char c, int sample) {
+	public HomozygousFilter(char c, char sample) {
 		super(c);
 		this.sample = sample;
 	}
@@ -18,11 +19,11 @@ public class HomozygousFilter extends AbstractFeatureFilter {
 
 		switch(sample) {
 
-		case 1:
+		case 'A':
 			pileup = parallelPileup.getPooledPileupA();
 			break;
 
-		case 2:
+		case 'B':
 			pileup = parallelPileup.getPooledPileupB();
 			break;
 
@@ -30,7 +31,7 @@ public class HomozygousFilter extends AbstractFeatureFilter {
 			throw new IllegalArgumentException("Unsupported sample!");
 		}
 
-		if(pileup.getAlleles().length > 1) { // make this more lax...
+		if(pileup.getAlleles().length > 1) { // TODO make this more lax...
 			return true;
 		}
 

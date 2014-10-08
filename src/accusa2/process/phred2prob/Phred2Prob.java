@@ -49,6 +49,17 @@ public final class Phred2Prob {
 		return phred2errerP[qual];
 	}
 
+	public double[] colSumCount(final int[] bases, final Pileup pileup) {
+		// container for accumulated probabilities 
+		final double[] c = new double[bases.length];
+
+		for(int baseI = 0; baseI < bases.length; ++baseI) {
+			final int count = pileup.getCounts().getBaseCount(baseI);
+			c[baseI] = count;
+		}
+		return c;		
+	}
+	
 	/**
 	 * Calculate a probability vector P for the pileup. |P| = |bases| 
 	 */
@@ -78,12 +89,47 @@ public final class Phred2Prob {
 		return p;
 	}
 
+	public double[] colErrorSum(final int[] bases, final Pileup pileup) {
+		// container for accumulated probabilities 
+		final double[] p = new double[bases.length];
+
+		for (int baseI = 0; baseI < bases.length; ++baseI) {
+			for (byte qual = 0 ; qual < Phred2Prob.MAX_Q; ++qual) {
+				// number of bases with specific quality 
+				final int count = pileup.getCounts().getQualCount(bases[baseI], qual);
+
+				if (count > 0) {
+					final double errorP = convert2errorP(qual) / (double)(bases.length - 1);
+
+					// distribute error probability
+					for (int i = 0; i < baseI; ++i) {
+						p[i] += count * errorP;
+					}
+					for (int i = baseI + 1; i < bases.length; ++i) {
+						p[i] += count * errorP;
+					}
+				}
+			}
+		}
+		return p;		
+	}
+	public double[] colErrorMean(final int[] bases, final Pileup pileup) {
+		// container for accumulated probabilities 
+		final double[] p = colErrorSum(bases, pileup);
+		
+		for (int baseI = 0; baseI < bases.length; ++baseI) {
+			p[baseI] /= (double)pileup.getCoverage();
+		}
+		
+		return p;
+	}
+
 	public double[] colMean(final int[] bases, final Pileup pileup) {
 		// container for accumulated probabilities 
 		final double[] p = colSum(bases, pileup);
 		
 		for(int baseI = 0; baseI < bases.length; ++baseI) {
-			p[baseI] /= pileup.getCoverage();
+			p[baseI] /= (double)pileup.getCoverage();
 		}
 		
 		return p;
@@ -101,7 +147,7 @@ public final class Phred2Prob {
 		}
 		double n = pileups.length;
 		for (int baseI : basesI) {
-			totalMean[baseI] /= n;
+			totalMean[baseI] /= (double)n;
 		}
 	
 		return totalMean;
@@ -119,7 +165,7 @@ public final class Phred2Prob {
 		}
 		double n = pileups.length;
 		for (int baseI : basesI) {
-			totalMean[baseI] /= n - 1;
+			totalMean[baseI] /= (double)(n - 1);
 		}
 	
 		return totalVariance;

@@ -2,7 +2,7 @@ package accusa2.filter.feature;
 
 import accusa2.pileup.ParallelPileup;
 
-public class PolymorphismFilter extends AbstractFeatureFilter {
+public class PolymorphismFilter extends AbstractFilter {
 
 	public PolymorphismFilter(char c) {
 		super(c);
