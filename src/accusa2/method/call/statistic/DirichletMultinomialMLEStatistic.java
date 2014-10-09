@@ -58,7 +58,7 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 			p = 1 - dist.cdf(z);
 			// TODO remove
 			if (p <= 0.0001) {
-				int j = 1;
+				int j = 6;
 				++j;
 			}
 		} catch (StackOverflowError e) {
@@ -132,8 +132,8 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 		// alphaOld. estimate by MOM
 
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
-			nI[pileupI] = (double)pileups[pileupI].getCoverage() + (double)baseIs.length;
 			nIK[pileupI] = phred2Prob.colSum(baseIs, pileups[pileupI]);
+			nI[pileupI] = MathUtil.sum(nIK[pileupI]);
 
 			for (int baseI : baseIs) {
 				alphaOld[baseI] += nIK[pileupI][baseI]; // make better

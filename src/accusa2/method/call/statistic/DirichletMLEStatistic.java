@@ -16,7 +16,7 @@ public class DirichletMLEStatistic implements StatisticCalculator {
 
 	// options for paremeters estimation
 	protected final int maxIterations = 100;
-	protected final double epsilon = 0.0001;
+	protected final double epsilon = 0.001;
 
 	protected final StatisticParameters parameters;
 	protected final BaseConfig baseConfig;
@@ -31,11 +31,11 @@ public class DirichletMLEStatistic implements StatisticCalculator {
 
 	@Override
 	public double getStatistic(ParallelPileup parallelPileup) {
-		final int baseIs[] = {0, 1, 2, 3};
-		//final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
+		// final int baseIs[] = {0, 1, 2, 3};
+		final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
 
 		// TODO how many FGs
-		ChiSquareDist dist = new ChiSquareDist(2 * (baseIs.length - 1));
+		ChiSquareDist dist = new ChiSquareDist(4);
 
 		double logLikelihoodA = maximizeLogLikelihood(baseIs, parallelPileup.getPileupsA());
 		double logLikelihoodB = maximizeLogLikelihood(baseIs, parallelPileup.getPileupsB());
@@ -79,12 +79,12 @@ public class DirichletMLEStatistic implements StatisticCalculator {
 		int iteration = 0;
 		boolean converged = false;
 
-		double[] alphaNew = new double[baseIs.length];
+		double[] alphaNew = new double[baseConfig.getBases().length];
 		Arrays.fill(alphaNew, 0.0);
 
 		// container 
-		double[] gradient = new double[baseIs.length];
-		double[] Q = new double[baseIs.length];
+		double[] gradient = new double[baseConfig.getBases().length];
+		double[] Q = new double[baseConfig.getBases().length];
 		double b;
 		double z;
 		double summedAlphaOld;
@@ -95,28 +95,23 @@ public class DirichletMLEStatistic implements StatisticCalculator {
 
 		// TODO make better estimation -> converges faster
 		// pileup related counts/containters/with prior knowledge
-		double[] logProbMean = new double[baseIs.length];
-		double[] probMean = new double[baseIs.length];
+		double[] logProbMean = new double[baseConfig.getBases().length];
+		double[] probMean = new double[baseConfig.getBases().length];
 		// initial estimate for alpha. estimated by MOM
-		double[] alphaOld = new double[baseIs.length];
+		double[] alphaOld = new double[baseConfig.getBases().length];
 		Arrays.fill(alphaOld, 0.0);
 		int N = pileups.length;
 
 		for (int pileupI = 0; pileupI < N; ++pileupI) {
-			double[] sum = phred2Prob.colSum(baseIs, pileups[pileupI]);
-
-			for (int baseI = 0; baseI < baseIs.length; ++baseI) {
-				sum[baseI] += 1.0 / (double)baseIs.length;
-			}
-
-			double s = MathUtil.sum(sum);
-			for (int baseI = 0; baseI < baseIs.length; ++baseI) {
-				alphaOld[baseI] += sum[baseI];
-				logProbMean[baseI] += Math.log(sum[baseI] / s);
-				probMean[baseI] += sum[baseI] / s;
+			double[] pileupMean = phred2Prob.colMean(baseIs, pileups[pileupI]);
+			double[] pileupSum = phred2Prob.colSum(baseIs, pileups[pileupI]);
+			for (int baseI : baseIs) {
+				alphaOld[baseI] += pileupSum[baseI];
+				logProbMean[baseI] += Math.log(pileupMean[baseI]);
+				probMean[baseI] += pileupMean[baseI];
 			}
 		}
-		for (int baseI = 0; baseI < baseIs.length; ++baseI) {
+		for (int baseI : baseIs) {
 			alphaOld[baseI] /= (double)N;
 			logProbMean[baseI] /= (double)N;
 			probMean[baseI] /= (double)N;
@@ -132,7 +127,7 @@ public class DirichletMLEStatistic implements StatisticCalculator {
 			// reset
 			b = 0.0;
 			double b_DenominatorSum = 0.0;
-			for (int baseI = 0; baseI < baseIs.length; ++baseI) {
+			for (int baseI : baseIs) {
 				// calculate gradient
 				// reset
 				gradient[baseI] = (double)N * digammaSummedAlphaOld;
@@ -155,7 +150,7 @@ public class DirichletMLEStatistic implements StatisticCalculator {
 
 			loglikOld = getLogLikelihood(alphaOld, baseIs, N, logProbMean);
 			// update alphaNew
-			for (int baseI = 0; baseI < baseIs.length; ++baseI) {
+			for (int baseI : baseIs) {
 				alphaNew[baseI] = alphaOld[baseI] - (gradient[baseI] - b) / Q[baseI];
 				// check that alpha is not < 0
 				if (alphaNew[baseI] < 0) {
@@ -163,15 +158,16 @@ public class DirichletMLEStatistic implements StatisticCalculator {
 				}
 			}
 			loglikNew = getLogLikelihood(alphaNew, baseIs, N, logProbMean);
-			// update value
-			alphaOld = alphaNew.clone();
+			
 
 			// check if converged
 			double delta = Math.abs(loglikNew - loglikOld);
-System.out.println(loglikNew);			
 			if (delta  <= epsilon) {
 				converged = true;
 			}
+			// update value
+			System.arraycopy(alphaNew, 0, alphaOld, 0, baseConfig.getBases().length);
+
 			iteration++;
 		}
 
@@ -185,7 +181,7 @@ System.out.println(loglikNew);
 		double logLikelihood = (double)N * Gamma.logGamma(alphaSum);
 		double tmp = 0.0;
 		double tmp2 = 0.0;
-		for (int baseI = 0; baseI < baseIs.length; ++baseI) {
+		for (int baseI : baseIs) {
 			tmp += Gamma.logGamma(alpha[baseI]);
 			tmp2 += (alpha[baseI] - 1.0) * logProbMean[baseI];
 		}

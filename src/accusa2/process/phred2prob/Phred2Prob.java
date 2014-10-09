@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import accusa2.pileup.BaseConfig;
 import accusa2.pileup.Pileup;
+import accusa2.util.MathUtil;
 
 public final class Phred2Prob {
 
@@ -67,7 +68,7 @@ public final class Phred2Prob {
 		// container for accumulated probabilities 
 		final double[] p = new double[BaseConfig.VALID.length];
 		for (int baseI : baseIs) {
-			p[baseI] = 1.0;
+			p[baseI] = 1.0 / (double)baseIs.length;
 		}
 		
 		for (int baseI : baseIs) {
@@ -129,9 +130,10 @@ public final class Phred2Prob {
 	public double[] colMean(final int[] baseIs, final Pileup pileup) {
 		// container for accumulated probabilities 
 		final double[] p = colSum(baseIs, pileup);
-		
+		double sum = MathUtil.sum(p);
+
 		for(int baseI : baseIs) {
-			p[baseI] /= (double)pileup.getCoverage();
+			p[baseI] /= sum;
 		}
 		
 		return p;
