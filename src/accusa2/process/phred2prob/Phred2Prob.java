@@ -49,11 +49,11 @@ public final class Phred2Prob {
 		return phred2errerP[qual];
 	}
 
-	public double[] colSumCount(final int[] bases, final Pileup pileup) {
+	public double[] colSumCount(final int[] baseIs, final Pileup pileup) {
 		// container for accumulated probabilities 
-		final double[] c = new double[bases.length];
+		final double[] c = new double[BaseConfig.VALID.length];
 
-		for(int baseI = 0; baseI < bases.length; ++baseI) {
+		for (int baseI : baseIs) {
 			final int count = pileup.getCounts().getBaseCount(baseI);
 			c[baseI] = count;
 		}
@@ -63,25 +63,27 @@ public final class Phred2Prob {
 	/**
 	 * Calculate a probability vector P for the pileup. |P| = |bases| 
 	 */
-	public double[] colSum(final int[] bases, final Pileup pileup) {
+	public double[] colSum(final int[] baseIs, final Pileup pileup) {
 		// container for accumulated probabilities 
-		final double[] p = new double[bases.length];
-
-		for(int baseI = 0; baseI < bases.length; ++baseI) {
-			for(byte qual = 0 ; qual < Phred2Prob.MAX_Q; ++qual) {
+		final double[] p = new double[BaseConfig.VALID.length];
+		for (int baseI : baseIs) {
+			p[baseI] = 1.0;
+		}
+		
+		for (int baseI : baseIs) {
+			for (byte qual = 0 ; qual < Phred2Prob.MAX_Q; ++qual) {
 				// number of bases with specific quality 
-				final int count = pileup.getCounts().getQualCount(bases[baseI], qual);
-				if(count > 0) {
+				final int count = pileup.getCounts().getQualCount(baseI, qual);
+				if (count > 0) {
 					final double baseP = convert2P(qual);
 					p[baseI] += count * baseP;
 
-					final double errorP = convert2errorP(qual) / (bases.length - 1);
+					final double errorP = convert2errorP(qual) / (baseIs.length - 1);
 					// distribute error probability
-					for(int i = 0; i < baseI; ++i) {
-						p[i] += count * errorP;
-					}
-					for(int i = baseI + 1; i < bases.length; ++i) {
-						p[i] += count * errorP;
+					for (int i : baseIs) {
+						if (i != baseI) {
+							p[i] += count * errorP;
+						}
 					}
 				}
 			}
@@ -89,82 +91,82 @@ public final class Phred2Prob {
 		return p;
 	}
 
-	public double[] colErrorSum(final int[] bases, final Pileup pileup) {
+	public double[] colErrorSum(final int[] baseIs, final Pileup pileup) {
 		// container for accumulated probabilities 
-		final double[] p = new double[bases.length];
+		final double[] p = new double[BaseConfig.VALID.length];
+		Arrays.fill(p, 0.0);
 
-		for (int baseI = 0; baseI < bases.length; ++baseI) {
+		for (int baseI : baseIs) {
 			for (byte qual = 0 ; qual < Phred2Prob.MAX_Q; ++qual) {
 				// number of bases with specific quality 
-				final int count = pileup.getCounts().getQualCount(bases[baseI], qual);
+				final int count = pileup.getCounts().getQualCount(baseI, qual);
 
 				if (count > 0) {
-					final double errorP = convert2errorP(qual) / (double)(bases.length - 1);
+					final double errorP = convert2errorP(qual) / (double)(baseIs.length - 1);
 
 					// distribute error probability
-					for (int i = 0; i < baseI; ++i) {
-						p[i] += count * errorP;
-					}
-					for (int i = baseI + 1; i < bases.length; ++i) {
-						p[i] += count * errorP;
+					for (int i : baseIs) {
+						if (i != baseI) {
+							p[i] += count * errorP;
+						}
 					}
 				}
 			}
 		}
 		return p;		
 	}
-	public double[] colErrorMean(final int[] bases, final Pileup pileup) {
+	public double[] colErrorMean(final int[] baseIs, final Pileup pileup) {
 		// container for accumulated probabilities 
-		final double[] p = colErrorSum(bases, pileup);
+		final double[] p = colErrorSum(baseIs, pileup);
 		
-		for (int baseI = 0; baseI < bases.length; ++baseI) {
+		for (int baseI : baseIs) {
 			p[baseI] /= (double)pileup.getCoverage();
 		}
 		
 		return p;
 	}
 
-	public double[] colMean(final int[] bases, final Pileup pileup) {
+	public double[] colMean(final int[] baseIs, final Pileup pileup) {
 		// container for accumulated probabilities 
-		final double[] p = colSum(bases, pileup);
+		final double[] p = colSum(baseIs, pileup);
 		
-		for(int baseI = 0; baseI < bases.length; ++baseI) {
+		for(int baseI : baseIs) {
 			p[baseI] /= (double)pileup.getCoverage();
 		}
 		
 		return p;
 	}
 	
-	public double[] getPileupsMean(int[] basesI, Pileup[] pileups) {
-		double[] totalMean = new double[basesI.length];
+	public double[] getPileupsMean(int[] baseIs, Pileup[] pileups) {
+		double[] totalMean = new double[BaseConfig.VALID.length];
 		Arrays.fill(totalMean, 0.0);
 	
 		for (Pileup pileup : pileups) {
-			double[] pileupMean = colMean(basesI, pileup);
-			for (int baseI : basesI) {
+			double[] pileupMean = colMean(baseIs, pileup);
+			for (int baseI : baseIs) {
 				totalMean[baseI] += pileupMean[baseI];
 			}
 		}
 		double n = pileups.length;
-		for (int baseI : basesI) {
+		for (int baseI : baseIs) {
 			totalMean[baseI] /= (double)n;
 		}
 	
 		return totalMean;
 	}
 
-	public double[] getPileupsVariance(int[] basesI, double[] totalMean, Pileup[] pileups) {
-		double[] totalVariance = new double[basesI.length];
+	public double[] getPileupsVariance(int[] baseIs, double[] totalMean, Pileup[] pileups) {
+		double[] totalVariance = new double[BaseConfig.VALID.length];
 		Arrays.fill(totalVariance, 0.0);
 	
 		for (Pileup pileup : pileups) {
-			double[] pileupMean = colMean(basesI, pileup);
-			for (int baseI : basesI) {
+			double[] pileupMean = colMean(baseIs, pileup);
+			for (int baseI : baseIs) {
 				totalVariance[baseI] +=  Math.pow(totalMean[baseI] - pileupMean[baseI], 2.0); 
 			}
 		}
 		double n = pileups.length;
-		for (int baseI : basesI) {
+		for (int baseI : baseIs) {
 			totalMean[baseI] /= (double)(n - 1);
 		}
 	
