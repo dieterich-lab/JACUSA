@@ -209,7 +209,7 @@ public class DefaultPileup implements Pileup {
 			this(count.baseCount.length, count.minQualI);
 			System.arraycopy(count.baseCount, 0, this.baseCount, 0, count.baseCount.length);
 
-			for(int baseI = minQualI; baseI < count.baseCount.length; ++baseI) {
+			for (int baseI = 0; baseI < count.baseCount.length; ++baseI) {
 				System.arraycopy(count.qualCount[baseI], 0, qualCount[baseI], 0, count.qualCount[baseI].length);
 			}
 		}
@@ -219,14 +219,14 @@ public class DefaultPileup implements Pileup {
 			System.arraycopy(baseCount, 0, this.baseCount, 0, baseCount.length);
 
 			this.qualCount = new int[baseCount.length][qualCount[0].length];
-			for(int baseI = minQualI; baseI < baseCount.length; ++baseI) {
+			for(int baseI = 0; baseI < baseCount.length; ++baseI) {
 				System.arraycopy(qualCount[baseI], 0, this.qualCount[baseI], 0, qualCount[baseI].length);
 			}
 		}
 
-		public void addBase(final int base, final byte qual) {
-			++baseCount[base];
-			++qualCount[base][qual];
+		public void addBase(final int baseI, final byte qualI) {
+			++baseCount[baseI];
+			++qualCount[baseI][qualI];
 		}
 
 		public void removeBase(final int base, final byte qual) {
@@ -243,11 +243,9 @@ public class DefaultPileup implements Pileup {
 		}
 
 		public void addCounts(final Counts counts) {
-			for(int baseI = 0; baseI < counts.baseCount.length; ++baseI) {
+			for (int baseI = 0; baseI < counts.baseCount.length; ++baseI) {
 				baseCount[baseI] += counts.baseCount[baseI];
-			}
-			
-			for(int baseI = 0; baseI < counts.baseCount.length; ++baseI) {
+				
 				for (int qualI = minQualI; qualI < counts.qualCount[baseI].length; ++qualI) {
 					qualCount[baseI][qualI] += counts.qualCount[baseI][qualI];
 				}
@@ -257,18 +255,16 @@ public class DefaultPileup implements Pileup {
 		public void substract(final int baseI, final Counts counts) {
 			baseCount[baseI] -= counts.baseCount[baseI];
 
-			for(int qualI = minQualI; qualI < counts.qualCount[baseI].length; ++qualI) {
+			for (int qualI = minQualI; qualI < counts.qualCount[baseI].length; ++qualI) {
 				qualCount[baseI][qualI] -= counts.qualCount[baseI][qualI];
 			}
 		}
 
 		public void substract(final Counts counts) {
-			for(int baseI = 0; baseI < counts.baseCount.length; ++baseI) {
+			for (int baseI = 0; baseI < counts.baseCount.length; ++baseI) {
 				baseCount[baseI] -= counts.baseCount[baseI];
-			}
-			
-			for(int baseI = 0; baseI < counts.baseCount.length; ++baseI) {
-				for(int qualI = minQualI; qualI < counts.qualCount[baseI].length; ++qualI) {
+				
+				for (int qualI = minQualI; qualI < counts.qualCount[baseI].length; ++qualI) {
 					qualCount[baseI][qualI] -= counts.qualCount[baseI][qualI];
 				}
 			}
@@ -294,7 +290,7 @@ public class DefaultPileup implements Pileup {
 			int[] tmpBaseCount = new int[baseCount.length];
 			int[][] tmpQualCount = new int[baseCount.length][Phred2Prob.MAX_Q];
 
-			for(int baseI = 0; baseI < baseCount.length; ++baseI) {
+			for (int baseI = 0; baseI < baseCount.length; ++baseI) {
 				// int complementaryBase = Bases.COMPLEMENT[base];
 				int complementaryBaseI = baseCount.length - baseI - 1;  
 

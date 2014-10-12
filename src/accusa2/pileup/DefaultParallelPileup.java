@@ -299,4 +299,33 @@ public final class DefaultParallelPileup implements ParallelPileup {
 						parallelPileup.getPooledPileupA().getAlleles().length == 2 && parallelPileup.getPooledPileupB().getAlleles().length == 1 );
 	}
 	
+	public String prettyPrint() {
+		StringBuilder sb = new StringBuilder();
+
+		addPileup(sb, "A", pileupA);
+		for (int pileupI = 0; pileupI < getPileupsA().length; ++pileupI) {
+			addPileup(sb, "A" + pileupI, getPileupsA()[pileupI]);
+		}
+
+		addPileup(sb, "B", pileupB);
+		for (int pileupI = 0; pileupI < getPileupsB().length; ++pileupI) {
+			addPileup(sb, "B" + pileupI, getPileupsB()[pileupI]);
+		}
+
+		addPileup(sb, "P", pileupP);
+		for (int pileupI = 0; pileupI < getPileupsP().length; ++pileupI) {
+			addPileup(sb, "P" + pileupI, getPileupsP()[pileupI]);
+		}
+
+		return sb.toString();
+	}
+	
+	protected void addPileup(StringBuilder sb, String sample, Pileup pileup) {
+		sb.append(sample);
+		for (int count : pileup.getCounts().getBaseCount()) {
+			sb.append('\t');
+			sb.append(count);
+		}
+		sb.append('\n');
+	}
 }

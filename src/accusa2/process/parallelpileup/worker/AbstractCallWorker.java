@@ -48,10 +48,10 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 			final double unfilteredValue = statisticCalculator.getStatistic(parallelPileup);
 
 			final StringBuilder sb = new StringBuilder();
-			sb.append(format.convert2String(parallelPileup, unfilteredValue));
 
-			if (! filterConfig.hasFiters()) { 
+			if (! filterConfig.hasFiters()) {
 				// no filters
+				sb.append(format.convert2String(parallelPileup, unfilteredValue));
 			} else { // calculate filters or quit
 				// container for value(s)
 				double filteredValue = unfilteredValue;
@@ -74,7 +74,11 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 				// append empty result
 				// append filtered result
 				sb.append(format.getSEP());
-				sb.append(filteredValue);
+				if (filteredValue >= 0.0) {
+					sb.append(format.convert2String(parallelPileup, unfilteredValue));
+				} else {
+					sb.append(format.convert2String(parallelPileup, filteredValue));
+				}
 			}
 
 			// considered comparisons

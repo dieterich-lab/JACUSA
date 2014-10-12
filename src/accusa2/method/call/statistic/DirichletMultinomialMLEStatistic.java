@@ -31,19 +31,18 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 
 	@Override
 	public double getStatistic(ParallelPileup parallelPileup) {
-		// final int baseIs[] = {0, 1, 2, 3};
-		final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
+		final int baseIs[] = {0, 1, 2, 3};
+		// final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
 
-		// TODO how many FGs
-		ChiSquareDist dist = new ChiSquareDist(4); // 2 * (baseIs.length - 1
+		ChiSquareDist dist = new ChiSquareDist(baseIs.length);
 
-		int n = BaseConfig.VALID.length;
+		int baseN = BaseConfig.VALID.length;
 
-		double[] alphaA = new double[n];
+		double[] alphaA = new double[baseN];
 		Arrays.fill(alphaA, 0.0);
-		double[] alphaB = new double[n];
+		double[] alphaB = new double[baseN];
 		Arrays.fill(alphaA, 0.0);
-		double[] alphaP = new double[n];
+		double[] alphaP = new double[baseN];
 		Arrays.fill(alphaA, 0.0);
 
 		double p = 0.0;
@@ -57,11 +56,14 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 			// z ~ chisquare
 			p = 1 - dist.cdf(z);
 			// TODO remove
-			if (p <= 0.0001) {
-				int j = 6;
+			// System.out.println(parallelPileup.prettyPrint());
+			/*if (p <= 0.0001) {
+				int j = 1;
 				++j;
 			}
+			*/
 		} catch (StackOverflowError e) {
+			System.out.println(parallelPileup.prettyPrint());
 			System.out.println(parallelPileup.getContig());
 			System.out.println(parallelPileup.getPosition());
 		}
@@ -89,62 +91,59 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 		return "Dirichlet-Multinomial";
 	}
 
-	protected double[] pooledError(final int[] baseIs, final Pileup[] pileups) {
-		double[] totalError = new double[baseConfig.getBases().length];
-		Arrays.fill(totalError, 0.0);
 
-		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
-			double[] pileupError = phred2Prob.colErrorSum(baseIs, pileups[pileupI]);
-
-			for (int baseI : baseIs) {
-				totalError[baseI] += pileupError[baseI];
-			}
-		}
-		return totalError;
-	}
 
 	// estimate alpha and returns loglik
 	protected double maximizeLogLikelihood(int[] baseIs, double[] alphaOld, Pileup[] pileups) {
-		// parameters
+		// optim "bounds"
 		int iteration = 0;
 		boolean converged = false;
+		
+		int baseN = baseConfig.getBases().length;
 
-		int n = baseConfig.getBases().length;
-
-		double[] alphaNew = new double[n];
+		// init alpha new
+		double[] alphaNew = new double[baseN];
 		Arrays.fill(alphaNew, 0.0);
 
-		// container 
-		double[] gradient = new double[n];
-		double[] Q = new double[n];
+		// container see Minka
+		double[] gradient = new double[baseN];
+		double[] Q = new double[baseN];
 		double b;
 		double z;
+		// holds precomputed value
 		double summedAlphaOld;
 		double digammaSummedAlphaOld;
 		double trigammaSummedAlphaOld;
+		// loglikelihood
 		double loglikOld = Double.NEGATIVE_INFINITY;;
 		double loglikNew = Double.NEGATIVE_INFINITY;
 
 		// TODO make better estimation -> converges faster
 		// pileup related counts/containters/with prior knowledge
-		double[][] nIK = new double[pileups.length][n];
+		double[][] nIK = new double[pileups.length][baseN];
 		double[] nI = new double[pileups.length];
 		// alphaOld. estimate by MOM
-
+		
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
-			nIK[pileupI] = phred2Prob.colSum(baseIs, pileups[pileupI]);
-			nI[pileupI] = MathUtil.sum(nIK[pileupI]);
+			nIK[pileupI] = phred2Prob.colSumCount(baseIs, pileups[pileupI]);
+			// double[] pileupError = phred2Prob.colErrorSum(baseIs, pileups[pileupI]);
 
 			for (int baseI : baseIs) {
+				// TODO
+				//if (pileupError[baseI] > 0.0) {
+					nIK[pileupI][baseI] += 0.01 * (double)pileups[pileupI].getCoverage();
+				//} else {
+				//	nIK[pileupI][baseI] -= 3.0 * 0.01 * (double)pileups[pileupI].getCoverage();
+				//}
 				alphaOld[baseI] += nIK[pileupI][baseI]; // make better
 			}
+
+			nI[pileupI] = MathUtil.sum(nIK[pileupI]);
 		}
 		for (int baseI : baseIs) {
-			alphaOld[baseI] /= (double)pileups.length;
+			alphaOld[baseI] = alphaOld[baseI] / (double)pileups.length;
 		}
 
-		double[] pooledError = pooledError(baseIs, pileups);
-		
 		// maximize
 		while (iteration < maxIterations && ! converged) {
 			// pre-compute
@@ -192,7 +191,8 @@ public class DirichletMultinomialMLEStatistic implements StatisticCalculator {
 			for (int baseI : baseIs) {
 				alphaNew[baseI] = alphaOld[baseI] - (gradient[baseI] - b) / Q[baseI];
 				if (alphaNew[baseI] < 0.0) {
-					alphaNew[baseI] = pooledError[baseI];
+					// TODO
+					alphaNew[baseI] = 0.001;
 				}
 			}
 			loglikNew = getLogLikelihood(alphaNew, baseIs, nI, nIK);

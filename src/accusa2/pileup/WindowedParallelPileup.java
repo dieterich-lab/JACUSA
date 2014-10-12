@@ -295,4 +295,9 @@ public final class WindowedParallelPileup implements ParallelPileup {
 		return null;
 	}
 
+	@Override
+	public String prettyPrint() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -43,4 +43,5 @@ public interface ParallelPileup {
 
 	abstract int[] getVariantBaseIs();
 
+	String prettyPrint();
 }
