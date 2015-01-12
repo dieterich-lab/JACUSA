@@ -1,0 +1,61 @@
+Questions:
+1. how to represent used bases?
+2. use char, int or byte to represent bases?
+
+
+1.
+Design:
+bases: a c g t (n)
+compl: t g c a (n)
+
+Example:
+Goal: A G stranded
+translates to:
+bases: 0 , 3
+Goal: A G unstranded
+translates to: 0 1 2 3
+
+implement
+bases as array
+use array of ints to reference to bases
+temp: 0,1 use -> A and C
+
+2.
+Samtools uses byte to represent bases
+decode byte when writing to file
+TODO
+howto map from byte to int?
+
+Filter
+======
+
+1. choose filters before program starts
+2. save filter factories in parameters
+	fix order, provided!
+3. ParallelBuilderFilterCache -> process gices caches that is saved
+
+some filters don't have CacheFilters - ignore
+
+PileupBuilder
+Stranded and Unstranded
+Restricted bases
+windowed
+
+Filtering
+	I	II	Ref	Variant
+	A	AG	A	G
+	A	AG	G	A
+	A	G	A	?
+	A	G	G	?
+	AG	AG	A	G
+	AG	AG	G	A
+
+Ref: Save base - rest potential artefacts
+
+Stratify
+I VS I_filtered				one significant ?
+I VS II_filtered			one significant	?
+
+I_filtered VS II_filtered	Still significant
+
+Alignment position
