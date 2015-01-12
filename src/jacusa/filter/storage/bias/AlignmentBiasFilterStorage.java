@@ -3,24 +3,30 @@ package jacusa.filter.storage.bias;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.filter.storage.AbstractFilterStorage;
 import jacusa.pileup.BaseConfig;
-import net.sf.samtools.CigarElement;
+import jacusa.util.WindowCoordinates;
 import net.sf.samtools.SAMRecord;
 
-public class AlignmentBiasFilterStorage extends AbstractFilterStorage<BiasContainer> {
+public class AlignmentBiasFilterStorage extends AbstractFilterStorage<BaseCount> {
 
 	private BaseConfig baseConfig;
-	private int targetDistance;
+	private int maxDistance; // max distance between position alignment start and aligned position
 	private int windowSize;
 
-	public AlignmentBiasFilterStorage(final char c, final int targetReadLength, final AbstractParameters parameters) {
-		super(c, parameters.getWindowSize());
+	private int[][][] data;
+	
+	public AlignmentBiasFilterStorage(final char c, 
+			final int targetReadLength, 
+			final WindowCoordinates windowCoordinates,
+			final AbstractParameters parameters) {
+		super(c);
 		baseConfig = parameters.getBaseConfig();		
-		this.targetDistance = targetReadLength;
+		this.maxDistance = targetReadLength;
 
 		windowSize = parameters.getWindowSize();
-		int baseLength = baseConfig.getBases().length;
+		final int baseLength = baseConfig.getBaseLength();
 
-		setData(new BiasContainer(windowSize, baseLength, targetReadLength));
+		setContainer(new BaseCount(windowSize, baseLength, targetReadLength));
+		data = getContainer().getData();
 	}
 
 	public void clearContainer() {
@@ -28,33 +34,16 @@ public class AlignmentBiasFilterStorage extends AbstractFilterStorage<BiasContai
 	}
 
 	@Override
-	public void processRecord(int genomicWindowStart, SAMRecord record) {
-		processCigar(genomicWindowStart, record);
-	}
-
-	protected void processAlignmetMatch(int windowPosition, int readPosition, int genomicPosition, final CigarElement cigarElement, final SAMRecord record) {
-		BiasContainer container = getContainer();
-		int[][][] data = container.getData();
-
-		int i = 0;
-		if (windowPosition < 0) {
-			i = Math.abs(windowPosition);
-		}
-
-		int alignmentPosition = record.getAlignmentStart();
-		for (; i < cigarElement.getLength() && windowPosition + i < windowSize; ++i) {
-			int baseI = baseConfig.getBaseI(record.getReadBases()[readPosition + i]);	
-
-			// corresponds to N -> ignore
-			if (baseI < 0) {
-				continue;
-			}
-
-			// TODO
-			int distance = genomicPosition - alignmentPosition; 
-			distance = Math.min(targetDistance, distance);
-			data[windowPosition + i][baseI][distance] += 1;
-		}
+	public void processAlignmentMatch(
+			int windowPosition, 
+			int readPosition, 
+			int genomicPosition, 
+			final SAMRecord record,
+			final int baseI,
+			final int qual) {
+		int distance = genomicPosition - record.getAlignmentStart(); 
+		distance = Math.min(maxDistance, distance);
+		data[windowPosition][baseI][distance] += 1;
 	}
 
 }

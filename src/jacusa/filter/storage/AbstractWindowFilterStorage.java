@@ -1,28 +1,55 @@
 package jacusa.filter.storage;
 
-import jacusa.cli.parameters.AbstractParameters;
+import java.util.Arrays;
 
+import jacusa.cli.parameters.AbstractParameters;
+import jacusa.cli.parameters.SampleParameters;
+
+import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.builder.WindowCache;
-import jacusa.process.phred2prob.Phred2Prob;
+import jacusa.util.WindowCoordinates;
 
 import net.sf.samtools.SAMRecord;
 
 public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<WindowCache> {
 
-	protected BaseConfig baseConfig;
+	// count indel, read start/end, splice site as only 1!!!
+	// this ensure that a base-call will only be counted once...
+	private boolean[] visited;
+	private BaseConfig baseConfig;
 
-	public AbstractWindowFilterStorage(char c, AbstractParameters parameters) {
-		super(c, parameters.getWindowSize());
+	private int windowSize;
+	private WindowCache windowCache;
 
-		int windowSize = parameters.getWindowSize();
-		int baseLength = parameters.getBaseConfig().getBaseLength();
-		setData(new WindowCache(windowSize, baseLength));
+	private SampleParameters sampleParameters;
+	
+	// container for current SAMrecord
+	private SAMRecord record;
 
+	public AbstractWindowFilterStorage(final char c, 
+			final WindowCoordinates windowCoordinates, 
+			final SampleParameters sampleParameters, 
+			final AbstractParameters parameters) {
+		super(c);
+
+		windowSize = parameters.getWindowSize();
+		visited = new boolean[windowSize];
+		
+		final int baseLength = parameters.getBaseConfig().getBaseLength();
+		setContainer(new WindowCache(windowCoordinates, baseLength));
+		windowCache = getContainer();
+		
+		this.sampleParameters = sampleParameters;
 		baseConfig = parameters.getBaseConfig();
 	}
 
 	protected void parseRecord(int windowPosition, int length, int readPosition, SAMRecord record) {
+		if (this.record != record) {
+			this.record = record;
+			Arrays.fill(visited, false);
+		}
+
 		int offset = 0;
 
 		if (readPosition < 0) {
@@ -41,8 +68,8 @@ public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<
 			length -= offset;
 		}
 
-		for (int i = 0; i < length && windowPosition + i < getContainer().getWindowSize() && readPosition + i < record.getReadLength(); ++i) {
-			if (! getVisited()[windowPosition + i]) {
+		for (int i = 0; i < length && windowPosition + i < windowSize && readPosition + i < record.getReadLength(); ++i) {
+			if (! visited[windowPosition + i]) {
 				int baseI = baseConfig.getBaseI(record.getReadBases()[readPosition + i]);	
 
 				// corresponds to N -> ignore
@@ -53,9 +80,11 @@ public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<
 				byte qual = record.getBaseQualities()[readPosition + i];
 				// quick fix
 				qual = (byte)Math.min(qual, Phred2Prob.MAX_Q - 1);
-				
-				getContainer().add(windowPosition + i, baseI, qual);
-				getVisited()[windowPosition + i] = true;
+
+				if (qual >= sampleParameters.getMinBASQ()) {
+					windowCache.add(windowPosition + i, baseI, qual);
+					visited[windowPosition + i] = true;
+				}
 			}
 		}
 	}

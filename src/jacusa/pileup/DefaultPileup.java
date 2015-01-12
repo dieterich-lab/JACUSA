@@ -154,16 +154,37 @@ public class DefaultPileup implements Pileup {
 	
 	public enum STRAND {
 		FORWARD(BaseConfig.STRAND_FORWARD_CHAR),REVERSE(BaseConfig.STRAND_REVERSE_CHAR),UNKNOWN(BaseConfig.STRAND_UNKNOWN_CHAR);
+		
 		final char c;
-
+		final int i;
+		
 		private STRAND(char c) {
 			this.c = c;
+			
+			switch(c) {
+
+			case BaseConfig.STRAND_FORWARD_CHAR:
+				i = 2;
+				break;
+
+			case BaseConfig.STRAND_REVERSE_CHAR:
+				i = 1;
+				break;
+
+			default:
+				i = 0;
+				break;
+			}
 		}
 
-		public char character() {
+		public final char character() {
 	        return c;
 	    }
 
+		public final int integer() {
+			return i;
+		}
+		
 		public static STRAND getEnum(String s) {
 			switch(s.charAt(0)) {
 

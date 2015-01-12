@@ -1,19 +1,18 @@
 package jacusa.pileup.builder;
 
+import jacusa.cli.options.sample.filter.samtag.SamTagFilter;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.FilterContainer;
-import jacusa.filter.samtag.SamTagFilter;
 import jacusa.pileup.BaseConfig;
-import jacusa.pileup.DefaultPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.DefaultPileup.STRAND;
-import jacusa.process.phred2prob.Phred2Prob;
 import jacusa.util.Coordinate;
+import jacusa.util.WindowCoordinates;
 
 import java.util.List;
 
-import net.sf.samtools.AlignmentBlock;
+import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
@@ -22,11 +21,7 @@ import net.sf.samtools.SAMValidationError;
 public abstract class AbstractPileupBuilder {
 
 	// in genomic coordinates
-	protected String contig;
-	protected int genomicWindowStart;
-	
-	protected int windowSize;
-	protected int maxGenomicPosition;
+	protected WindowCoordinates windowCoordinates;
 
 	protected SAMRecord[] SAMRecordsBuffer;
 	protected SAMFileReader reader;
@@ -34,33 +29,30 @@ public abstract class AbstractPileupBuilder {
 	protected int filteredSAMRecords;
 
 	protected BaseConfig baseConfig;
-	protected SampleParameters sample;
+	protected SampleParameters sampleParameters;
 	
 	protected boolean isCached;
-
-	protected DefaultPileup pileup;
-
+	
 	public AbstractPileupBuilder(
 			final Coordinate coordinate, 
 			final SAMFileReader SAMFileReader, 
-			final SampleParameters sample,
+			final SampleParameters sampleParameters,
 			final AbstractParameters parameters) {
-		contig				= coordinate.getSequenceName();
-		genomicWindowStart 	= coordinate.getStart();
-		this.windowSize 	= parameters.getWindowSize();
-		maxGenomicPosition 	= Math.min(coordinate.getEnd(), SAMFileReader.getFileHeader().getSequence(contig).getSequenceLength());
-		
-		SAMRecordsBuffer	= new SAMRecord[30000];
-		this.reader			= SAMFileReader;
+		windowCoordinates		= new WindowCoordinates(
+				coordinate.getSequenceName(), 
+				coordinate.getStart(), 
+				parameters.getWindowSize(), 
+				Math.min(coordinate.getEnd(), SAMFileReader.getFileHeader().getSequence(coordinate.getSequenceName()).getSequenceLength()));
 
-		filteredSAMRecords	= 0;
+		SAMRecordsBuffer		= new SAMRecord[30000];
+		reader					= SAMFileReader;
 
-		baseConfig			= parameters.getBaseConfig();
-		this.sample			= sample;
+		filteredSAMRecords		= 0;
 
-		isCached			= false;
+		baseConfig				= parameters.getBaseConfig();
+		this.sampleParameters	= sampleParameters;
 
-		pileup 				= new DefaultPileup(baseConfig.getBases().length);
+		isCached				= false;
 	}
 
 	/**
@@ -69,7 +61,12 @@ public abstract class AbstractPileupBuilder {
 	 * @return
 	 */
 	public SAMRecord getNextValidRecord(int targetPosition) {
-		SAMRecordIterator iterator = reader.query(contig, targetPosition, maxGenomicPosition, false);
+		SAMRecordIterator iterator = reader.query(
+				windowCoordinates.getContig(), 
+				targetPosition, 
+				windowCoordinates.getMaxGenomicPosition(), 
+				false);
+		
 		while (iterator.hasNext() ) {
 			SAMRecord record = iterator.next();
 
@@ -98,11 +95,15 @@ public abstract class AbstractPileupBuilder {
 	 */
 	public boolean adjustWindowStart(int genomicWindowStart) {
 		isCached = false;
-		this.genomicWindowStart = genomicWindowStart;
+		windowCoordinates.setGenomicWindowStart(genomicWindowStart);
 		clearCache();
 
 		// get iterator to fill the window
-		SAMRecordIterator iterator = reader.query(contig, this.genomicWindowStart, getWindowEnd(), false);
+		SAMRecordIterator iterator = reader.query(
+				windowCoordinates.getContig(), 
+				windowCoordinates.getGenomicWindowStart(), 
+				windowCoordinates.getWindowEnd(), 
+				false);
 
 		// true if a valid read is found within genomicWindowStart and genomicWindowStart + windowSize
 		boolean windowHit = false;
@@ -152,24 +153,6 @@ public abstract class AbstractPileupBuilder {
 	}
 
 	/**
-	 * 
-	 * @param genomicPosition
-	 * @return
-	 */
-	public boolean isContainedInGenome(int genomicPosition) {
-		return genomicPosition <= maxGenomicPosition && genomicPosition > 0;
-	}
-
-	/**
-	 * 
-	 * @param genomicPosition
-	 * @return
-	 */
-	public boolean isContainedInWindow(int genomicPosition) {
-		return genomicPosition >= genomicWindowStart && genomicPosition <= getWindowEnd();
-	}
-
-	/**
 	 * Checks if a record fulfills user defined criteria
 	 * @param samRecord
 	 * @return
@@ -179,14 +162,14 @@ public abstract class AbstractPileupBuilder {
 		List<SAMValidationError> errors = samRecord.isValid();
 
 		if (! samRecord.getReadUnmappedFlag()
-				&& ! samRecord.getNotPrimaryAlignmentFlag() // ignore non-primary alignments
-				&& (mapq < 0 || mapq >= sample.getMinMAPQ()) // filter by mapping quality
-				&& (sample.getFilterFlags() == 0 || (sample.getFilterFlags() > 0 && ((samRecord.getFlags() & sample.getFilterFlags()) == 0)))
-				&& (sample.getRetainFlags() == 0 || (sample.getRetainFlags() > 0 && ((samRecord.getFlags() & sample.getRetainFlags()) > 0)))
+				&& ! samRecord.getNotPrimaryAlignmentFlag() // ignore non-primary alignments CHECK
+				&& (mapq < 0 || mapq >= sampleParameters.getMinMAPQ()) // filter by mapping quality
+				&& (sampleParameters.getFilterFlags() == 0 || (sampleParameters.getFilterFlags() > 0 && ((samRecord.getFlags() & sampleParameters.getFilterFlags()) == 0)))
+				&& (sampleParameters.getRetainFlags() == 0 || (sampleParameters.getRetainFlags() > 0 && ((samRecord.getFlags() & sampleParameters.getRetainFlags()) > 0)))
 				&& errors == null // isValid is expensive
 				) { // only store valid records that contain mapped reads
 			// custom filter 
-			for (SamTagFilter samTagFilter : sample.getSamTagFilters()) {
+			for (SamTagFilter samTagFilter : sampleParameters.getSamTagFilters()) {
 				if (samTagFilter.filter(samRecord)) {
 					return false;
 				}
@@ -206,31 +189,6 @@ public abstract class AbstractPileupBuilder {
 		// something went wrong
 		return false;
 	}
-	
-	/**
-	 * Calculates genomicPosition or -1 or -2 if genomicPosition is outside the window
-	 * -1 if downstream of windowEnd
-	 * -2 if upstream of windowStart
-	 * @param genomicPosition
-	 * @return
-	 */
-	public int convertGenomicPosition2WindowPosition(int genomicPosition) {
-		if(genomicPosition < genomicWindowStart) {
-			return -2;
-		} else if(genomicPosition > getWindowEnd()){
-			return -1;
-		}
-
-		return genomicPosition - genomicWindowStart;
-	}
-
-	/**
-	 * End of window (inclusive)
-	 * @return
-	 */
-	public int getWindowEnd() {
-		return Math.min(genomicWindowStart + windowSize - 1, maxGenomicPosition);
-	}
 
 	/**
 	 * 
@@ -240,79 +198,85 @@ public abstract class AbstractPileupBuilder {
 		return filteredSAMRecords;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
-	public int getGenomicWindowStart() {
-		return genomicWindowStart;
-	}
-
-	/**
-	 * 
-	 * @param windowPosition
-	 * @return
-	 */
-	public int getGenomicPosition(int windowPosition) {
-		return genomicWindowStart + windowPosition;
-	}
-
-	protected void processAlignmentBlock(final SAMRecord record, final AlignmentBlock alignmentBlock) {
-		int readPosition = alignmentBlock.getReadStart() - 1; // 1-based index
-		int genomicPosition = alignmentBlock.getReferenceStart();
-
-		for (int offset = 0; offset < alignmentBlock.getLength(); ++offset) {
-			final byte base = record.getReadBases()[readPosition + offset];
-			byte qual = record.getBaseQualities()[readPosition + offset];
-
-			// all probs are reset
-			qual = (byte)Math.min(Phred2Prob.MAX_Q - 1, qual);
-
-			if (qual >= sample.getMinBASQ()) {
-				// speedup: if windowPosition == -1 the remaining part of the read will be outside of the windowCache
-				// ignore the overhanging part of the read until it overlaps with the window cache
-				final int windowPosition = convertGenomicPosition2WindowPosition(genomicPosition + offset);
-
-				if (windowPosition == -1) {
-					return;
-				}
-				if (windowPosition == -2) { // speedup jump to covered position
-					offset += genomicWindowStart - genomicPosition - 1; // this should be negative 
-				}
-				if (windowPosition >= 0) {
-					add2WindowCache(windowPosition, base, qual, record);
-				}
-			}
-		}
+	public WindowCoordinates getWindowCoordinates() {
+		return windowCoordinates;
 	}
 	
-	/**
-	 * 
-	 * @param record
-	 * @throws Exception
-	 */
-	protected void processRecord(final SAMRecord record) throws Exception {
-		// process alignment block
-		for (AlignmentBlock alignmentBlock : record.getAlignmentBlocks()) {
-			processAlignmentBlock(record, alignmentBlock);
-		}
-
-		// collect filter information
-		processFilters(record);
-	}
+	protected abstract void processRecord(SAMRecord record);
 
 	// abstract methods
 
 	// Reset all caches in windows
 	public abstract void clearCache();
-	protected abstract void add2WindowCache(int windowPosition, byte base, byte qual, SAMRecord record);
-	
+	protected abstract void add2WindowCache(int windowPosition, int base, int qual, STRAND strand);
+
+	// strand dependet methods
 	public abstract boolean isCovered(int windowPosition, STRAND strand);
 	public abstract int getCoverage(int windowPosition, STRAND strand);
-
 	public abstract Pileup getPileup(int windowPosition, STRAND strand);
+	public abstract FilterContainer getFilterContainer(int windowPosition, STRAND strand);
 
-	abstract public FilterContainer getFilterContainer(int windowPosition, STRAND strand);
-	protected abstract void processFilters(final SAMRecord record) throws Exception;
+	protected void processInsertion(
+			int windowPosition, 
+			int readPosition, 
+			int genomicPosition, 
+			final CigarElement cigarElement, 
+			final SAMRecord record) {
+		// override if needed
+	}
+
+	protected void processAlignmetMatch(
+			int windowPosition, 
+			int readPosition, 
+			int genomicPosition, 
+			final CigarElement cigarElement, 
+			final SAMRecord record) {
+		// override if needed
+	}
+
+	protected void processHardClipping(
+			int windowPosition, 
+			int readPosition, 
+			int genomicPosition, 
+			final CigarElement cigarElement, 
+			final SAMRecord record) {
+		System.err.println("Hard Clipping not handled yet!");
+	}
+
+	protected void processDeletion(
+			int windowPosition, 
+			int readPosition, 
+			int genomicPosition, 
+			final CigarElement cigarElement, 
+			final SAMRecord record) {
+		// override if needed
+	}
+	
+	protected void processSkipped(
+			int windowPosition, 
+			int readPosition, 
+			int genomicPosition, 
+			final CigarElement cigarElement, 
+			final SAMRecord record) {
+		// override if needed
+	}
+	
+	protected void processSoftClipping(
+			int windowPosition, 
+			int readPosition, 
+			int genomicPosition, 
+			final CigarElement cigarElement, 
+			final SAMRecord record) {
+		// override if needed
+	}
+
+	protected void processPadding(
+			int windowPosition, 
+			int readPosition, 
+			int genomicPosition, 
+			final CigarElement cigarElement, 
+			final SAMRecord record) {
+		System.err.println("Padding not handled yet!");
+	}
 
 }

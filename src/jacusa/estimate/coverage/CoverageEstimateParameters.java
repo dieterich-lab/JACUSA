@@ -1,7 +1,7 @@
 package jacusa.estimate.coverage;
 
+import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.Pileup;
-import jacusa.process.phred2prob.Phred2Prob;
 
 import java.util.Arrays;
 

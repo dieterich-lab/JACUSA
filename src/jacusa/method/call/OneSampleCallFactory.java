@@ -33,9 +33,9 @@ import jacusa.io.format.result.PileupResultFormat;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.statistic.DirichletMOMsStatistic;
 import jacusa.method.call.statistic.StatisticCalculator;
-import jacusa.method.call.statistic.lr.LR2Statistic;
-import jacusa.method.call.statistic.lr.LRStatistic;
-import jacusa.process.parallelpileup.dispatcher.call.OneSampleCallWorkerDispatcher;
+import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
+import jacusa.method.call.statistic.lr.LR_SPEC_Statistic;
+import jacusa.pileup.dispatcher.call.OneSampleCallWorkerDispatcher;
 import jacusa.util.coordinateprovider.CoordinateProvider;
 import jacusa.util.coordinateprovider.SAMCoordinateProvider;
 
@@ -112,10 +112,10 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 
 		StatisticCalculator statistic = null;
 
-		statistic = new LRStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistic = new LR_SPEC_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
-		statistic = new LR2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistic = new LR_SENS_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
 		statistic = new DirichletMOMsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());

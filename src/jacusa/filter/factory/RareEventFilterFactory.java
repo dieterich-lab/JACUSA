@@ -1,51 +1,75 @@
 package jacusa.filter.factory;
 
 import jacusa.cli.parameters.AbstractParameters;
+import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.AbstractStorageFilter;
 import jacusa.filter.storage.AbstractFilterStorage;
 import jacusa.filter.storage.DummyFilterFillCache;
+import jacusa.pileup.Counts;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.iterator.AbstractWindowIterator;
 import jacusa.util.Location;
+import jacusa.util.WindowCoordinates;
 
 public class RareEventFilterFactory extends AbstractFilterFactory<Void> {
 
-	private int reads 		= 2;
-	private double level 	= 0.1;
-	// TODO private boolean pool	= false;
+	private static final int POOL			= 1;
+	private int pool;
+	
+	private static final int MIN_READS 		= 2;
+	private int min_reads;
+
+	private static final double MIN_LEVEL 	= 0.1;
+	private double min_level;
+
+	
 
 	public RareEventFilterFactory(AbstractParameters paramters) {
-		super('R', "");
-		desc = "Rare event filter. Default: reads:level " + Integer.toString(reads) + ":" + Double.toString(level);
+		super('R', "Rare event filter. Default: " + 
+				Integer.toString(POOL) + ":" + Integer.toString(MIN_READS) + ":" + Double.toString(MIN_LEVEL) + " (R:pool:reads:level)");
+		pool 		= POOL;
+		min_reads 	= MIN_READS;
+		min_level 	= MIN_LEVEL;
 	}
 
 	@Override
 	public AbstractStorageFilter<Void> createStorageFilter() {
-		return new RareFilter(c, reads, level);
+		switch (pool) {
+		case 0:
+			return new RareFilter(getC());
+
+		default:
+			return new PoolRareFilter(getC());
+		}
 	}
 
 	@Override
-	public AbstractFilterStorage<Void> createFilterStorage() {
-		return new DummyFilterFillCache(c);
+	public AbstractFilterStorage<Void> createFilterStorage(final WindowCoordinates windowCoordinates, final SampleParameters sampleParameters) {
+		return new DummyFilterFillCache(getC());
 	}
 
 	@Override
-	public void processCLI(String line) throws IllegalArgumentException {
-		if(line.length() == 1) {
+	public void processCLI(final String line) throws IllegalArgumentException {
+		if (line.length() == 1) {
 			throw new IllegalArgumentException("Invalid argument " + line);
 		}
 
-		String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
-		// format R:reads:level 
+		final String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
+		// format R:pool:reads:level 
 		for (int i = 1; i < s.length; ++i) {
 
 			switch(i) {
+
 			case 1:
+				setPool(Integer.valueOf(s[i]));
+				break;
+			
+			case 2:
 				setReads(Integer.valueOf(s[i]));
 				break;
 
-			case 2:
+			case 3:
 				setLevel(Double.valueOf(s[i]));
 				break;
 
@@ -55,57 +79,88 @@ public class RareEventFilterFactory extends AbstractFilterFactory<Void> {
 		}
 	}
 
-	public final void setReads(int reads) {
-		this.reads = reads;
+	public void setPool(final int pool) {
+		this.pool = pool;
+	}
+
+	public final void setReads(final int reads) {
+		this.min_reads = reads;
 	}
 
 	public final int getReads() {
-		return reads;
+		return min_reads;
 	}
 
-	public final void setLevel(double level) {
-		this.level = level;
+	public final void setLevel(final double level) {
+		this.min_level = level;
 	}
 
 	public final double getLevel() {
-		return level;
+		return min_level;
 	}
 
-	private class RareFilter extends AbstractStorageFilter<Void> {
+	private boolean isValid(final int baseI, final int coverage, final Counts counts) {
+		int reads = counts.getBaseCount(baseI);
+		double level = (double)reads / (double)coverage;
 
-		private int reads;
-		private double level;
+		if (level >= this.min_level && reads >= this.min_reads) {
+			return true;
+		}
 
-		public RareFilter(final char c, final int reads, final double level) {
+		return false;
+	}
+	
+	private class PoolRareFilter extends AbstractStorageFilter<Void> {
+
+		public PoolRareFilter(final char c) {
 			super(c);
-
-			this.reads = reads;
-			this.level = level;
 		}
 
 		@Override
-		public boolean filter(ParallelPileup parallelPileup, Location location, AbstractWindowIterator windowIterator) {
-			// homo-hetero-morph scenario
-			int[] variants = parallelPileup.getVariantBaseIs();
-			if (variants.length > 0) {
-				int variant = variants[0];
-
-				Pileup pileup = parallelPileup.getPooledPileup1();
-				if (parallelPileup.getPooledPileup2().getAlleles().length > 1) {
-					pileup = parallelPileup.getPooledPileup2(); 
+		public boolean filter(final ParallelPileup parallelPileup, final Location location, final AbstractWindowIterator windowIterator) {
+			for (int baseI : parallelPileup.getPooledPileup1().getAlleles()) {
+				if (! isValid(baseI, parallelPileup.getPooledPileup1().getCoverage(), parallelPileup.getPooledPileup1().getCounts())) {
+					return true;
 				}
-
-				int reads = pileup.getCounts().getBaseCount()[variant];
-				double level = (double)reads / (double)pileup.getCoverage();
-
-				if (reads < this.reads || level < this.level) {
+			}
+			for (int baseI : parallelPileup.getPooledPileup2().getAlleles()) {
+				if (! isValid(baseI, parallelPileup.getPooledPileup2().getCoverage(), parallelPileup.getPooledPileup2().getCounts())) {
 					return true;
 				}
 			}
 
 			return false;
 		}
-		
+
 	}
+
+	private class RareFilter extends AbstractStorageFilter<Void> {
+		
+		public RareFilter(final char c) {
+			super(c);
+		}
+
+		@Override
+		public boolean filter(final ParallelPileup parallelPileup, final Location location, final AbstractWindowIterator windowIterator) {
+			if (filter(parallelPileup.getPooledPileup1().getAlleles(), parallelPileup.getPileups1()) || 
+					filter(parallelPileup.getPooledPileup2().getAlleles(), parallelPileup.getPileups2())) {
+				return true;
+			}
+
+			return false;
+		}
+
+		public boolean filter(int[] bases, Pileup[] pileups) {
+			for (Pileup pileup : pileups) {
+				for (int baseI : bases) {
+					if(! isValid(baseI, pileup.getCoverage(), pileup.getCounts())) {
+						return false;
+					}
+				}
+			}
+	
+			return true;
+		}
+	}	
 
 }

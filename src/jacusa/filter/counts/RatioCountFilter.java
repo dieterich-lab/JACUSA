@@ -22,7 +22,7 @@ public class RatioCountFilter extends AbstractCountFilter {
 		return (double)filteredCount / (double)count <= minRatio;
 	}
 
-	public double getMinRation() {
+	public double getMinRatio() {
 		return minRatio;
 	}
 

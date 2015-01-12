@@ -8,9 +8,8 @@ import jacusa.util.Location;
 public abstract class AbstractStorageFilter<T> {
 
 	private final char c;
-	
 	private String filterInfo;
-	
+
 	public AbstractStorageFilter(final char c) {
 		this.c = c;
 		filterInfo = new String();
@@ -18,7 +17,7 @@ public abstract class AbstractStorageFilter<T> {
 	
 	public abstract boolean filter(final ParallelPileup parallelPileup, final Location location, AbstractWindowIterator windowIterator);
 	
-	public char getC() {
+	public final char getC() {
 		return c;
 	}
 	
@@ -31,15 +30,16 @@ public abstract class AbstractStorageFilter<T> {
 		return data;
 	}
 	
-	public String getFilterInfo() {
+	public final String getFilterInfo() {
 		return filterInfo;
 	}
 	
-	public void setFilterInfo(String filterInfo) {
+	public final void setFilterInfo(String filterInfo) {
 		this.filterInfo = filterInfo;
 	}
 
-	public void resetFilterInfo() {
+	public final void resetFilterInfo() {
 		setFilterInfo(Character.toString(BEDResultFormat.EMPTY));
 	}
+
 }

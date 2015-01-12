@@ -1,8 +1,8 @@
 package jacusa.estimate.coverage;
 
 import jacusa.estimate.AbstractEstimateParameters;
+import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.Pileup;
-import jacusa.process.phred2prob.Phred2Prob;
 
 public abstract class AbstractCoverageEstimateParameters extends AbstractEstimateParameters {
 

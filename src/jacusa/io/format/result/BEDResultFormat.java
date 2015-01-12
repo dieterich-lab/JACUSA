@@ -1,10 +1,10 @@
 package jacusa.io.format.result;
 
 import jacusa.filter.FilterConfig;
+import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
-import jacusa.process.phred2prob.Phred2Prob;
 
 public class BEDResultFormat extends AbstractResultFormat {
 

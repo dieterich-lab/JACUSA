@@ -1,11 +1,10 @@
 package jacusa.pileup.sample;
 
-
+import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.DefaultParallelPileup;
 import jacusa.pileup.DefaultPileup;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
-import jacusa.process.phred2prob.Phred2Prob;
 
 import java.util.Random;
 

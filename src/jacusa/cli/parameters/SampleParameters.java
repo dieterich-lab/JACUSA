@@ -1,7 +1,7 @@
 package jacusa.cli.parameters;
 
+import jacusa.cli.options.sample.filter.samtag.SamTagFilter;
 import jacusa.estimate.AbstractEstimateParameters;
-import jacusa.filter.samtag.SamTagFilter;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.builder.PileupBuilderFactory;
 import jacusa.pileup.builder.UndirectedPileupBuilderFactory;

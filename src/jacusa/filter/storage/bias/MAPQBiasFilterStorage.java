@@ -3,51 +3,42 @@ package jacusa.filter.storage.bias;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.filter.storage.AbstractFilterStorage;
 import jacusa.pileup.BaseConfig;
-import net.sf.samtools.CigarElement;
+import jacusa.util.WindowCoordinates;
 import net.sf.samtools.SAMRecord;
 
-public class MAPQBiasFilterStorage extends AbstractFilterStorage<BiasContainer> {
+public class MAPQBiasFilterStorage extends AbstractFilterStorage<BaseCount> {
 
 	private BaseConfig baseConfig;
 	private int windowSize;
 	private int maxMAPQ;
 	
-	public MAPQBiasFilterStorage(final char c, final int maxMAPQ, final AbstractParameters parameters) {
-		super(c, parameters.getWindowSize());
+	private int[][][] data;
+	
+	public MAPQBiasFilterStorage(
+			final char c, 
+			final int maxMAPQ, 
+			final WindowCoordinates windowCoordinates,
+			final AbstractParameters parameters) {
+		super(c);
 		baseConfig = parameters.getBaseConfig();		
 
 		windowSize = parameters.getWindowSize();
-		int baseLength = baseConfig.getBaseLength();
+		final int baseLength = baseConfig.getBaseLength();
 		this.maxMAPQ = maxMAPQ;
 
-		setData(new BiasContainer(windowSize, baseLength, maxMAPQ));
+		setContainer(new BaseCount(windowSize, baseLength, maxMAPQ));
+		data = getContainer().getData();
 	}
 
-	@Override
-	public void processRecord(int genomicWindowStart, SAMRecord record) {
-		processCigar(genomicWindowStart, record);
+	public void processAlignmentMatch(
+			int windowPosition, 
+			int readPosition, 
+			int genomicPosition, 
+			final SAMRecord record,
+			final int baseI,
+			final int qual) {
+		int mapqI = Math.min(record.getMappingQuality(), maxMAPQ);
+		data[windowPosition][baseI][mapqI] += 1;
 	}
 
-	protected void processAlignmetMatch(int windowPosition, int readPosition, int genomicPosition, final CigarElement cigarElement, final SAMRecord record) {
-		BiasContainer container = getContainer();
-		int[][][] data = container.getData();
-		
-		int i = 0;
-		if (windowPosition < 0) {
-			i = Math.abs(windowPosition);
-		}
-
-		int mapqI = record.getMappingQuality();
-		mapqI = Math.max(mapqI, maxMAPQ - 1);
-		for (; i < cigarElement.getLength() && windowPosition + i < windowSize; ++i) {
-			int baseI = baseConfig.getBaseI(record.getReadBases()[readPosition + i]);	
-
-			// corresponds to N -> ignore
-			if (baseI < 0) {
-				continue;
-			}
-			data[windowPosition + i][baseI][mapqI] += 1;
-		}
-	}
-	
 }

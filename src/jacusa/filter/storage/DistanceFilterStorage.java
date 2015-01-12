@@ -1,7 +1,8 @@
 package jacusa.filter.storage;
 
-
 import jacusa.cli.parameters.AbstractParameters;
+import jacusa.cli.parameters.SampleParameters;
+import jacusa.util.WindowCoordinates;
 
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
@@ -15,12 +16,16 @@ public class DistanceFilterStorage extends AbstractWindowFilterStorage {
 	 * @param c
 	 * @param distance
 	 */
-	public DistanceFilterStorage(char c, int distance, AbstractParameters parameters) {
-		super(c, parameters);
+	public DistanceFilterStorage(final char c, 
+			final int distance, 
+			final WindowCoordinates windowCoordinates,
+			final SampleParameters sampleParameters,
+			final AbstractParameters parameters) {
+		super(c, windowCoordinates, sampleParameters, parameters);
 		this.distance = distance;
 	}
-	
-	@Override
+
+	/* This is no implicitly done by KW
 	public void processRecord(int genomicWindowStart, SAMRecord record) {
 		processCigar(genomicWindowStart, record);
 
@@ -41,27 +46,31 @@ public class DistanceFilterStorage extends AbstractWindowFilterStorage {
 		windowPosition = alignmentBlock.getReferenceStart() + alignmentBlock.getLength() - genomicWindowStart;
 		parseRecord(windowPosition - distance, distance, alignmentBlock.getReadStart() - 1 + alignmentBlock.getLength() - distance, record);
 		*/
-	}
+	//}
 
-	// process INDELs
+	// TODO check
+	// parseRecord(windowPosition - distance, cigarElement.getLength() + 2 * distance, readPosition - distance, record)
+	
+	// process IN
 	@Override
-	protected void processInsertion(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
+	public void processInsertion(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
 		parseRecord(windowPosition - distance, distance, readPosition - distance, record);
 		parseRecord(windowPosition + cigarElement.getLength(), distance, readPosition + cigarElement.getLength(), record);
 	}
 
-	// process INDELs
+	// process DELs
 	@Override
-	protected void processDeletion(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
+	public void processDeletion(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
 		parseRecord(windowPosition - distance, distance, readPosition - distance, record);
 		parseRecord(windowPosition, distance, readPosition, record);
 	}
 
 	// process SpliceSites
 	@Override
-	protected void processSkipped(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
-		parseRecord(windowPosition - distance, distance, readPosition - distance, record);
-		parseRecord(windowPosition + cigarElement.getLength(), distance, readPosition, record);
+	public void processSkipped(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
+		// TODO test
+		parseRecord(windowPosition - distance, 2 * distance, readPosition - distance, record);
+		parseRecord(windowPosition + cigarElement.getLength() - distance, 2 * distance, readPosition + cigarElement.getLength(), record);
 	}
 
 	/**

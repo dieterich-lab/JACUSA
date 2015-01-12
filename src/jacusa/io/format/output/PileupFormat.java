@@ -1,10 +1,10 @@
 package jacusa.io.format.output;
 
+import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.DefaultPileup.STRAND;
-import jacusa.process.phred2prob.Phred2Prob;
 import net.sf.samtools.SAMUtils;
 
 public class PileupFormat extends AbstractOutputFormat {

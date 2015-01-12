@@ -32,7 +32,7 @@ public class BedCoordinatesOption extends AbstractACOption {
 
 	@Override
 	public void process(CommandLine line) throws Exception {
-		if(line.hasOption(opt)) {
+		if (line.hasOption(opt)) {
 	    	String pathname = line.getOptionValue(opt);
 	    	File file = new File(pathname);
 	    	if(!file.exists()) {

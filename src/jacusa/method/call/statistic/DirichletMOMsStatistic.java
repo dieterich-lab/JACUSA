@@ -1,13 +1,14 @@
 package jacusa.method.call.statistic;
 
 import jacusa.cli.parameters.StatisticParameters;
+import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
-import jacusa.process.phred2prob.Phred2Prob;
 import jacusa.util.MathUtil;
 
 import java.util.Arrays;
+
 
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
@@ -148,6 +149,11 @@ public final class DirichletMOMsStatistic implements StatisticCalculator {
 	@Override
 	public String getName() {
 		return "DirMom";
+	}
+
+	@Override
+	public void processCLI(String line) {
+		// nothong to be done here
 	}
 
 }

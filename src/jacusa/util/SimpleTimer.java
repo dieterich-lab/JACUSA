@@ -1,6 +1,6 @@
 package jacusa.util;
 
-import java.text.NumberFormat;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Implements a simple timer for benchmarking purposes.
@@ -12,11 +12,9 @@ public class SimpleTimer {
 
 	private long time;
 	private long totalTime;
-	private NumberFormat format;
 	
 	public SimpleTimer(){
 		this.startTimer();
-		this.format = NumberFormat.getInstance();
 	}
 	
 	public void startTimer(){
@@ -34,35 +32,26 @@ public class SimpleTimer {
 		return currentTime;
 	}
 	
-	public String getTimeString(){
-		long currentTime = this.getTime();
-		return format.format(currentTime) + "ms";
-	}
-	
 	public long getTotalTime(){
 		return (System.currentTimeMillis() - totalTime);
-	}
-
-	public String getTotalMinTimestring(){
-		return format.format(getTotalTime() / (1000 * 60)) + "min";
 	}
 
 	public String getTotalTimestring(){
 		long totalTime = getTotalTime();
 		
-		int sec = 1000;
-		int min = sec * 60;
-		int hour = min * 60;
+		final long d = TimeUnit.MILLISECONDS.toDays(totalTime);
+		final long hr = TimeUnit.MILLISECONDS.toHours(
+				totalTime - TimeUnit.DAYS.toMillis(d));
+        final long min = TimeUnit.MILLISECONDS.toMinutes(
+        		totalTime - TimeUnit.DAYS.toMillis(d) - TimeUnit.HOURS.toMillis(hr));
+        final long sec = TimeUnit.MILLISECONDS.toSeconds(
+        		totalTime - TimeUnit.DAYS.toMillis(d) - TimeUnit.HOURS.toMillis(hr) - TimeUnit.MINUTES.toMillis(min));
 
-		if(2 * sec - totalTime > 0) {
-			return format.format(getTotalTime()) + "msec";
-		} else if(min - totalTime > 0) {
-			return format.format(getTotalTime() / sec) + "sec";
-		} else if(hour - totalTime > 0) {
-			return format.format(getTotalTime() / min) + "min";			
-		} else {
-			return format.format(getTotalTime() / hour) + "h";
-		}
+        if (d > 0) {
+        	return String.format("(%02d) %02d:%02d:%02d", d, hr, min, sec);
+        } else {
+        	return String.format("%02d:%02d:%02d", hr, min, sec);
+        }
 	}
-	
+
 }

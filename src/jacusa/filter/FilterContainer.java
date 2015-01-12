@@ -1,18 +1,40 @@
 package jacusa.filter;
 
-import net.sf.samtools.SAMRecord;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import net.sf.samtools.CigarOperator;
+
 import jacusa.filter.storage.AbstractFilterStorage;
+import jacusa.util.WindowCoordinates;
 
 public class FilterContainer {
 
-	private int genomicWindowStart;
 	private FilterConfig filterConfig;
 	private AbstractFilterStorage<?>[] filters; 
-
-	public FilterContainer(final FilterConfig filterConfig, final AbstractFilterStorage<?>[] filters) {
-		genomicWindowStart = -1;
+	private WindowCoordinates windowCoordinates;
+	
+	private Map<CigarOperator, Set<AbstractFilterStorage<?>>> cigar2filter;
+	
+	public FilterContainer(final FilterConfig filterConfig, final AbstractFilterStorage<?>[] filters, WindowCoordinates windowCoordinates) {
 		this.filterConfig = filterConfig;
 		this.filters = filters;
+		this.windowCoordinates = windowCoordinates;
+		
+		cigar2filter = new HashMap<CigarOperator, Set<AbstractFilterStorage<?>>>();
+		for (AbstractFilterStorage<?> filter : filters) {
+			final char c = filter.getC();
+			final int i = filterConfig.c2i(c);
+
+			for (CigarOperator cigarOperator : filterConfig.getFactories().get(i).getCigarOperators()) {
+				if (! cigar2filter.containsKey(cigarOperator)) {
+					cigar2filter.put(cigarOperator, new HashSet<AbstractFilterStorage<?>>());
+				}
+				cigar2filter.get(cigarOperator).add(filter);
+			}
+		}
 	}
 
 	public void clear() {
@@ -21,26 +43,24 @@ public class FilterContainer {
 		}
 	}
 
-	public void setGenomicWindowStart(final int genomicWindowStart) {
-		this.genomicWindowStart = genomicWindowStart;
-	}
-
-	public int getGenomicWindowStart() {
-		return genomicWindowStart;
-	}
-
-	public void processRecord(final SAMRecord record) {
-		for (AbstractFilterStorage<?> filter : filters) {
-			filter.processRecord(genomicWindowStart, record);
-		}
-	}
-
-	public AbstractFilterStorage<?> get(int i) {
-		return filters[i];
+	public AbstractFilterStorage<?> get(int filterI) {
+		return filters[filterI];
 	}
 	
 	public FilterConfig getFilterConfig() {
 		return filterConfig;
+	}
+
+	public WindowCoordinates getWindowCoordinates() {
+		return windowCoordinates;
+	}
+
+	public Set<AbstractFilterStorage<?>> get(CigarOperator cigarOperator) {
+		if (cigar2filter.containsKey(cigarOperator)) {
+			return cigar2filter.get(cigarOperator);
+		} else {
+			return new HashSet<AbstractFilterStorage<?>>();
+		}
 	}
 
 }

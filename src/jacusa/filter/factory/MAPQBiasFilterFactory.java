@@ -1,29 +1,39 @@
 package jacusa.filter.factory;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import net.sf.samtools.CigarOperator;
 import jacusa.cli.parameters.AbstractParameters;
-import jacusa.filter.BiasStorageFilter;
-import jacusa.filter.storage.bias.BiasContainer;
+import jacusa.cli.parameters.SampleParameters;
+import jacusa.filter.BiasBaseCountFilter;
+import jacusa.filter.storage.bias.BaseCount;
 import jacusa.filter.storage.bias.MAPQBiasFilterStorage;
+import jacusa.util.WindowCoordinates;
 
-public class MAPQBiasFilterFactory extends AbstractFilterFactory<BiasContainer> {
+public class MAPQBiasFilterFactory extends AbstractFilterFactory<BaseCount> {
 
-	private int maxMAPQ = 60;
+	private static int MAX_MAPQ = 60;
 	private AbstractParameters parameters;
+
+	private static Set<CigarOperator> cigarOperator = new HashSet<CigarOperator>();
+	static {
+		cigarOperator.add(CigarOperator.M);
+	}
 	
 	public MAPQBiasFilterFactory(AbstractParameters parameters) {
-		super('M', "");
-		desc = "MAPQ bias filter. Default: " + maxMAPQ;
+		super('M', "MAPQ bias filter. Max MAPQ Default: " + MAX_MAPQ, cigarOperator);
 		this.parameters = parameters;
 	}
 
 	@Override
-	public BiasStorageFilter createStorageFilter() {
-		return new BiasStorageFilter(c, maxMAPQ);
+	public BiasBaseCountFilter createStorageFilter() {
+		return new BiasBaseCountFilter(getC(), MAX_MAPQ);
 	}
 
 	@Override
-	public MAPQBiasFilterStorage createFilterStorage() {
-		return new MAPQBiasFilterStorage(getC(), maxMAPQ, parameters);
+	public MAPQBiasFilterStorage createFilterStorage(final WindowCoordinates windowCoordinates, final SampleParameters sampleParameters) {
+		return new MAPQBiasFilterStorage(getC(), MAX_MAPQ, windowCoordinates, parameters);
 	}
 
 }

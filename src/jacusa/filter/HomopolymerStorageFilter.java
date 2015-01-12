@@ -1,7 +1,7 @@
 package jacusa.filter;
 
 import jacusa.filter.counts.AbstractCountFilter;
-import jacusa.filter.counts.RangeCountFilter;
+import jacusa.filter.counts.MinCountFilter;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.Counts;
 import jacusa.pileup.ParallelPileup;
@@ -15,7 +15,7 @@ public class HomopolymerStorageFilter extends AbstractWindowStorageFilter {
 	public HomopolymerStorageFilter(final char c, BaseConfig baseConfig, FilterConfig filterConfig) {
 		super(c);
 
-		countFilter = new RangeCountFilter(c, 1, baseConfig, filterConfig);
+		countFilter = new MinCountFilter(c, 1, baseConfig, filterConfig);
 	}
 
 	@Override

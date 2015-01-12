@@ -2,7 +2,7 @@ package jacusa.cli.parameters;
 
 import jacusa.io.format.result.AbstractResultFormat;
 import jacusa.io.format.result.DefaultResultFormat;
-import jacusa.method.call.statistic.lr.LR2Statistic;
+import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
 
 public class TwoSampleCallParameters extends AbstractParameters implements hasSampleB, hasStatisticCalculator, hasResultFormat {
 
@@ -14,7 +14,7 @@ public class TwoSampleCallParameters extends AbstractParameters implements hasSa
 
 		sampleB				= new SampleParameters();
 		statisticParameters = new StatisticParameters();
-		statisticParameters.setStatisticCalculator(new LR2Statistic(getBaseConfig(), statisticParameters));
+		statisticParameters.setStatisticCalculator(new LR_SENS_Statistic(getBaseConfig(), statisticParameters));
 
 		super.setFormat(new DefaultResultFormat(getBaseConfig(), getFilterConfig()));
 	}

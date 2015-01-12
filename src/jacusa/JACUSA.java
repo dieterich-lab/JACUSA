@@ -3,11 +3,10 @@ package jacusa;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.method.AbstractMethodFactory;
-import jacusa.method.call.OneSampleCallFactory;
 import jacusa.method.call.TwoSampleCallFactory;
 import jacusa.method.pileup.TwoSamplePileupFactory;
-import jacusa.process.parallelpileup.dispatcher.AbstractWorkerDispatcher;
-import jacusa.process.parallelpileup.worker.AbstractWorker;
+import jacusa.pileup.dispatcher.AbstractWorkerDispatcher;
+import jacusa.pileup.worker.AbstractWorker;
 import jacusa.util.Coordinate;
 import jacusa.util.SimpleTimer;
 import jacusa.util.coordinateprovider.BedCoordinateProvider;
@@ -32,7 +31,7 @@ public class JACUSA {
 	// timer used for all time measurements
 	private static SimpleTimer timer;
 	public static final String NAME = "jacusa";
-	public static final String VERSION = "0.99";
+	public static final String VERSION = "0.995";
 
 	// command line interface
 	private CLI cli;
@@ -47,7 +46,7 @@ public class JACUSA {
 		Map<String, AbstractMethodFactory> methodFactories = new TreeMap<String, AbstractMethodFactory>();
 
 		AbstractMethodFactory[] factories = new AbstractMethodFactory[] {
-			new OneSampleCallFactory(), 
+			// new OneSampleCallFactory(), 
 			new TwoSampleCallFactory(), 
 			new TwoSamplePileupFactory()
 		};
@@ -154,7 +153,7 @@ public class JACUSA {
 	 * @param line
 	 */
 	public static void printLog(String line) {
-		String time = "[ INFO ] " + getSimpleTimer().getTotalTimestring() + ": ";
+		String time = "[ INFO ] " + getSimpleTimer().getTotalTimestring() + "\t:\t";
 		System.err.println(time + " " + line);
 	}
 

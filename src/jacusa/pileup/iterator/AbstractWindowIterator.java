@@ -101,7 +101,9 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 
 	// Change here for more quantitative evaluation
 	protected boolean isCovered(Location location, AbstractPileupBuilder[] pileupBuilders) {
-		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(location.genomicPosition);
+		int windowPosition = pileupBuilders[0]
+				.getWindowCoordinates()
+				.convertGenomicPosition2WindowPosition(location.genomicPosition);
 		if (windowPosition < 0) {
 			return false;
 		}
@@ -119,7 +121,7 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 		int n = pileupBuilders.length;
 		Pileup[] pileups = new DefaultPileup[n];
 
-		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(location.genomicPosition);
+		int windowPosition = pileupBuilders[0].getWindowCoordinates().convertGenomicPosition2WindowPosition(location.genomicPosition);
 		for(int i = 0; i < n; ++i) {
 			pileups[i] = pileupBuilders[i].getPileup(windowPosition, location.strand);
 		}
@@ -131,7 +133,7 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 		int replicates = pileupBuilders.length;
 		FilterContainer[] filterContainers = new FilterContainer[replicates];
 
-		int windowPosition = pileupBuilders[0].convertGenomicPosition2WindowPosition(location.genomicPosition);
+		int windowPosition = pileupBuilders[0].getWindowCoordinates().convertGenomicPosition2WindowPosition(location.genomicPosition);
 		for (int i = 0; i < replicates; ++i) {
 			filterContainers[i] = pileupBuilders[i].getFilterContainer(windowPosition, location.strand);
 		}
@@ -140,7 +142,7 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 	}
 
 	protected boolean adjustCurrentGenomicPosition(Location location, AbstractPileupBuilder[] pileupBuilders) {
-		if (! pileupBuilders[0].isContainedInWindow(location.genomicPosition)) {
+		if (! pileupBuilders[0].getWindowCoordinates().isContainedInWindow(location.genomicPosition)) {
 			return adjustWindowStart(location, pileupBuilders);
 		}
 
@@ -149,14 +151,16 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 
 	protected boolean adjustWindowStart(Location location, AbstractPileupBuilder[] pileupBuilders) {
 		if (! pileupBuilders[0].adjustWindowStart(location.genomicPosition)) {
-			SAMRecord record = getNextValidRecord(pileupBuilders[0].getWindowEnd(), pileupBuilders);
+			SAMRecord record = getNextValidRecord(pileupBuilders[0].getWindowCoordinates().getWindowEnd(), pileupBuilders);
 			if (record == null) {
 				return false;
 			}
 			location.genomicPosition = record.getAlignmentStart();
 			return adjustWindowStart(location, pileupBuilders);
 		}
-		location.genomicPosition = pileupBuilders[0].getGenomicWindowStart();
+		location.genomicPosition = pileupBuilders[0]
+				.getWindowCoordinates()
+				.getGenomicWindowStart();
 		for (int i = 1; i < pileupBuilders.length; ++i) {
 			pileupBuilders[i].adjustWindowStart(location.genomicPosition);
 		}
@@ -167,7 +171,9 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 	protected boolean hasNext(Location location, final AbstractPileupBuilder[] pileupBuilders) {
 		// within
 		while (location.genomicPosition <= coordinate.getEnd()) {
-			if (pileupBuilders[0].isContainedInWindow(location.genomicPosition)) {
+			if (pileupBuilders[0]
+					.getWindowCoordinates()
+					.isContainedInWindow(location.genomicPosition)) {
 				if (isCovered(location, pileupBuilders)) {
 					return true;
 				} else {
@@ -196,5 +202,5 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 	public void remove() {
 		// not needed
 	}
-
+	
 }

@@ -1,6 +1,7 @@
 package jacusa.filter.factory;
 
 import jacusa.cli.parameters.AbstractParameters;
+import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.AbstractStorageFilter;
 import jacusa.filter.storage.AbstractFilterStorage;
 import jacusa.filter.storage.DummyFilterFillCache;
@@ -8,24 +9,25 @@ import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.iterator.AbstractWindowIterator;
 import jacusa.util.Location;
+import jacusa.util.WindowCoordinates;
 
 public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 
 	private int sample;
 
-	public HomozygousFilterFactory(AbstractParameters parameters) {
+	public HomozygousFilterFactory(final AbstractParameters parameters) {
 		super('H', "Filter non-homozygous pileup/BAM (1 or 2). Default: none");
 		sample = 0;
 	}
-	
+
 	@Override
-	public void processCLI(String line) throws IllegalArgumentException {
+	public void processCLI(final String line) throws IllegalArgumentException {
 		if (line.length() == 1) {
 			throw new IllegalArgumentException("Invalid argument " + line);
 		}
 
-		String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
-		int sample = Integer.parseInt(s[1]);
+		final String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
+		final int sample = Integer.parseInt(s[1]);
 		if (sample == 1 || sample == 2) {
 			setSample(sample);
 			return;
@@ -34,11 +36,12 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 	}
 
 	@Override
-	public AbstractFilterStorage<Void> createFilterStorage() {
-		return new DummyFilterFillCache(c);
+	public AbstractFilterStorage<Void> createFilterStorage(final WindowCoordinates windowCoordinates, final SampleParameters sampleParameters) {
+		// storage is not needed
+		return new DummyFilterFillCache(getC());
 	}
 	
-	public final void setSample(int sample) {
+	public final void setSample(final int sample) {
 		this.sample = sample;
 	}
 
@@ -48,7 +51,7 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 
 	@Override
 	public AbstractStorageFilter<Void> createStorageFilter() {
-		return new HomozygousFilter(c);
+		return new HomozygousFilter(getC());
 	}
 
 	private class HomozygousFilter extends AbstractStorageFilter<Void> {
@@ -59,7 +62,7 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 		}
 		
 		@Override
-		public boolean filter(ParallelPileup parallelPileup, Location location,	AbstractWindowIterator windowIterator) {
+		public boolean filter(final ParallelPileup parallelPileup, final Location location,	final AbstractWindowIterator windowIterator) {
 			Pileup pileup = null;
 	
 			switch (sample) {

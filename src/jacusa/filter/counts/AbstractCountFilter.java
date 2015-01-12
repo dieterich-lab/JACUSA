@@ -18,7 +18,7 @@ public abstract class AbstractCountFilter {
 		this.filterConfig 	= filterConfig;
 	}
 
-	// ORDER RESULTS [0] SHOULD BE THE VARIANT TO TEST AGAINST
+	// ORDER RESULTS [0] SHOULD BE THE VARIANTs TO TEST
 	public int[] getVariantBaseIs(final ParallelPileup parallelPileup) {
 		final int[] variantBasesIs = parallelPileup.getVariantBaseIs();
 		final int[] allelesIs = parallelPileup.getPooledPileup().getAlleles();
@@ -52,6 +52,7 @@ public abstract class AbstractCountFilter {
 		}
 
 		// AG | AG
+		// TODO sort variant by occurrence
 		return allelesIs;
 	}
 	
@@ -65,6 +66,7 @@ public abstract class AbstractCountFilter {
 
 		// indicates if something has been filtered
 		boolean processed = false;
+		
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			filtered[pileupI] = new DefaultPileup(pileups[pileupI]);
 			final Counts count = counts[pileupI];
@@ -78,10 +80,10 @@ public abstract class AbstractCountFilter {
 	}
 
 	final protected ParallelPileup applyFilter(final int variantBaseI, final ParallelPileup parallelPileup, Counts[] counts1, Counts[] counts2) {
-		final Pileup[] filteredPileupsA = applyFilter(variantBaseI, parallelPileup.getPileups1(), counts1);
-		final Pileup[] filteredPileupsB = applyFilter(variantBaseI, parallelPileup.getPileups2(), counts2);
+		final Pileup[] filteredPileups1 = applyFilter(variantBaseI, parallelPileup.getPileups1(), counts1);
+		final Pileup[] filteredPileups2 = applyFilter(variantBaseI, parallelPileup.getPileups2(), counts2);
 
-		if (filteredPileupsA == null && filteredPileupsB == null) {
+		if (filteredPileups1 == null && filteredPileups2 == null) {
 			// nothing has been filtered
 			return null;
 		}
@@ -91,16 +93,16 @@ public abstract class AbstractCountFilter {
 		filteredParallelPileup.setPosition(parallelPileup.getPosition());
 		filteredParallelPileup.setStrand(parallelPileup.getStrand());
 
-		if (filteredPileupsA == null) {
+		if (filteredPileups1 == null) {
 			filteredParallelPileup.setPileups1(parallelPileup.getPileups1());
 		} else {
-			filteredParallelPileup.setPileups1(filteredPileupsA);
+			filteredParallelPileup.setPileups1(filteredPileups1);
 		}
 
-		if (filteredPileupsB == null) {
+		if (filteredPileups2 == null) {
 			filteredParallelPileup.setPileups2(parallelPileup.getPileups2());
 		} else {
-			filteredParallelPileup.setPileups2(filteredPileupsB);
+			filteredParallelPileup.setPileups2(filteredPileups2);
 		}
 
 		return filteredParallelPileup;

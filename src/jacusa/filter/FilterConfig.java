@@ -1,7 +1,9 @@
 package jacusa.filter;
 
+import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.filter.storage.AbstractFilterStorage;
+import jacusa.util.WindowCoordinates;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,12 +47,13 @@ public class FilterConfig implements Cloneable {
 	 * 
 	 * @return
 	 */
-	public FilterContainer createFilterContainer() {
+	public FilterContainer createFilterContainer(final WindowCoordinates windowCoordinates, final SampleParameters sampleParameters) {
 		AbstractFilterStorage<?>[] filters = new AbstractFilterStorage[i2Factory.size()];
 		for (int filterI = 0; filterI < i2Factory.size(); ++filterI) {
-			filters[filterI] = i2Factory.get(filterI).createFilterStorage();
+			filters[filterI] = i2Factory.get(filterI).createFilterStorage(windowCoordinates, sampleParameters);
+			
 		}
-		FilterContainer filterContainer = new FilterContainer(this, filters);
+		FilterContainer filterContainer = new FilterContainer(this, filters, windowCoordinates);
 
 		return filterContainer;
 	}

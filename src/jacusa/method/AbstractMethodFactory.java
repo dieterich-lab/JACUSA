@@ -4,8 +4,8 @@ package jacusa.method;
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
 import jacusa.cli.parameters.AbstractParameters;
-import jacusa.process.parallelpileup.dispatcher.AbstractWorkerDispatcher;
-import jacusa.process.parallelpileup.worker.AbstractWorker;
+import jacusa.pileup.dispatcher.AbstractWorkerDispatcher;
+import jacusa.pileup.worker.AbstractWorker;
 import jacusa.util.Coordinate;
 import jacusa.util.coordinateprovider.CoordinateProvider;
 

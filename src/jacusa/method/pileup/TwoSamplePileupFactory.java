@@ -17,8 +17,8 @@ import jacusa.cli.options.PathnameArg;
 import jacusa.cli.options.ResultFileOption;
 import jacusa.cli.options.VersionOption;
 import jacusa.cli.options.WindowSizeOption;
-import jacusa.cli.options.filter.FilterFlagOption;
 import jacusa.cli.options.pileupbuilder.TwoSamplePileupBuilderOption;
+import jacusa.cli.options.sample.filter.FilterFlagOption;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.cli.parameters.SampleParameters;
@@ -26,7 +26,7 @@ import jacusa.cli.parameters.TwoSamplePileupParameters;
 import jacusa.io.format.output.AbstractOutputFormat;
 import jacusa.io.format.output.PileupFormat;
 import jacusa.method.AbstractMethodFactory;
-import jacusa.process.parallelpileup.dispatcher.pileup.MpileupWorkerDispatcher;
+import jacusa.pileup.dispatcher.pileup.MpileupWorkerDispatcher;
 import jacusa.util.coordinateprovider.CoordinateProvider;
 import jacusa.util.coordinateprovider.SAMCoordinateProvider;
 

@@ -29,11 +29,11 @@ public class PermutateParallelPileupWithoutReplacement implements PermutateParal
 	private DefaultPileup[] permuatePileup(Pileup pooled, Pileup[] pileups) {
 		DefaultPileup[] permutated = new DefaultPileup[pileups.length];
 
-		for(int j = 0; j < pileups.length; ++j) {
+		for (int j = 0; j < pileups.length; ++j) {
 			Pileup pileup = pileups[j];
 			permutated[j] = new DefaultPileup(pileup.getCounts().getBaseCount().length); 
 
-			for(int i = 0; i < pileup.getCoverage(); ++i) {
+			for (int i = 0; i < pileup.getCoverage(); ++i) {
 				int base = sampleBase(pooled);
 				byte qual = sampleQual(base, pooled);
 
@@ -48,7 +48,7 @@ public class PermutateParallelPileupWithoutReplacement implements PermutateParal
 	private int sampleBase(final Pileup pileup) {
 		final int r = random.nextInt(pileup.getCoverage());
 		int count = 0;
-		for(int base : pileup.getAlleles()) {
+		for (int base : pileup.getAlleles()) {
 			if(r >= count && r < count + pileup.getCounts().getBaseCount()[base]) {
 				return base;
 			}

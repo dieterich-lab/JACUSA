@@ -1,32 +1,39 @@
 package jacusa.pileup.builder;
 
-import jacusa.process.phred2prob.Phred2Prob;
+import jacusa.phred2prob.Phred2Prob;
+import jacusa.util.WindowCoordinates;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
+// TODO similar to base count -> try to merge or reuse code
 public class WindowCache {
 
-	protected int windowSize;
-	protected int baseLength;
-	
-	protected int[] coverage;
-	protected int[][] baseCount;
-	protected int[][][] qualCount;
-	
-	protected int minQualI;
-	
-	public WindowCache(int windowSize, int baseLength) {
-		this.windowSize = windowSize;
-		this.baseLength = baseLength;
+	private WindowCoordinates windowCoordinates;
+	private int baseLength;
 
-		coverage 	= new int[windowSize];
-		baseCount 	= new int[windowSize][baseLength];
-		qualCount 	= new int[windowSize][baseLength][Phred2Prob.MAX_Q];
+	private int[] coverage;
+	private int[][] baseCount;
+	private int[][][] qualCount;
+
+	Set<Integer> bases;
+	
+	public WindowCache(final WindowCoordinates windowCoordinates, final int baseLength) {
+		this.windowCoordinates 	= windowCoordinates;
+		this.baseLength 		= baseLength;
+
+		final int windowSize	= windowCoordinates.getWindowSize();
+		coverage 				= new int[windowSize];
+		baseCount 				= new int[windowSize][baseLength];
+		qualCount 				= new int[windowSize][baseLength][Phred2Prob.MAX_Q];
+
+		bases					= new HashSet<Integer>(baseLength);
 	}
 
 	public void clear() {
 		Arrays.fill(coverage, 0);
-		for (int windowI = 0; windowI < windowSize; windowI++) {
+		for (int windowI = 0; windowI < windowCoordinates.getWindowSize(); windowI++) {
 			Arrays.fill(baseCount[windowI], 0);
 
 			for (int baseI = 0; baseI < baseLength; ++baseI) {
@@ -41,20 +48,28 @@ public class WindowCache {
 		qualCount[windowPosition][baseI][qual]++;
 	}
 	
-	public int getCoverage(int windowPosition) {
+	public int getCoverage(final int windowPosition) {
 		return coverage[windowPosition];
 	}
 	
-	public int[] getBaseI(int windowPosition) {
+	public int[] getBaseCount(final int windowPosition) {
 		return baseCount[windowPosition];
 	}
-
-	public int[][] getQual(int windowPosition) {
+	
+	public int[][] getQualCount(final int windowPosition) {
 		return qualCount[windowPosition];
 	}
 
-	public int getWindowSize() {
-		return windowSize;
+	public int[] getBaseI(final int windowPosition) {
+		return baseCount[windowPosition];
+	}
+
+	public int[][] getQual(final int windowPosition) {
+		return qualCount[windowPosition];
+	}
+
+	public WindowCoordinates getWindowCoordinates() {
+		return windowCoordinates;
 	}
 
 }

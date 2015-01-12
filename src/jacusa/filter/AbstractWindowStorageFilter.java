@@ -10,13 +10,13 @@ public abstract class AbstractWindowStorageFilter extends AbstractStorageFilter<
 	}
 
 	protected Counts[] getCounts(int genomicPosition, FilterContainer[] replicateFilterContainer) {
-		int n = replicateFilterContainer.length;
+		final int n = replicateFilterContainer.length;
 		Counts[] counts = new Counts[n];
 
 		for (int i = 0; i < n; ++i) {
-			FilterContainer filterContainer = replicateFilterContainer[i];
-			WindowCache windowCache = getData(filterContainer);
-			int windowPosition = genomicPosition - filterContainer.getGenomicWindowStart();
+			final FilterContainer filterContainer = replicateFilterContainer[i];
+			final WindowCache windowCache = getData(filterContainer);
+			final int windowPosition = genomicPosition - filterContainer.getWindowCoordinates().getGenomicWindowStart();
 			counts[i] = new Counts(windowCache.getBaseI(windowPosition), windowCache.getQual(windowPosition));
 		}
 

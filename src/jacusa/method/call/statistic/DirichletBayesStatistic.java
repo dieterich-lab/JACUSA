@@ -1,11 +1,12 @@
 package jacusa.method.call.statistic;
 
+
 import jacusa.cli.parameters.StatisticParameters;
 import jacusa.estimate.BayesEstimateParameters;
+import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
-import jacusa.process.phred2prob.Phred2Prob;
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 
 public class DirichletBayesStatistic implements StatisticCalculator {
@@ -13,9 +14,6 @@ public class DirichletBayesStatistic implements StatisticCalculator {
 	protected final StatisticParameters parameters;
 	protected final BayesEstimateParameters estimateParameters;
 	protected final BaseConfig baseConfig;
-
-	// test what is the best??? 2*k - 2 : k = dimension of modeled prob. vector
-	// protected final ChiSquareDist dist = new ChiSquareDist(6);
 	
 	public DirichletBayesStatistic(BaseConfig baseConfig, StatisticParameters parameters) {
 		this.parameters = parameters;
@@ -34,21 +32,21 @@ public class DirichletBayesStatistic implements StatisticCalculator {
 
 		// first sample
 		// probability matrix for all pileups in sampleA (bases in column, pileups in rows)
-		final double[][] probsA = estimateParameters.estimateProbs(baseIs, parallelPileup.getPileups1());
-		final DirichletDist dirichletA = getDirichlet(baseIs, parallelPileup.getPileups1());
-		final double densityAA = getDensity(baseIs, probsA, dirichletA);
+		final double[][] probs1 = estimateParameters.estimateProbs(baseIs, parallelPileup.getPileups1());
+		final DirichletDist dirichlet1 = getDirichlet(baseIs, parallelPileup.getPileups1());
+		final double density11 = getDensity(baseIs, probs1, dirichlet1);
 
 		// second sample - see above
-		final double[][] probsB = estimateParameters.estimateProbs(baseIs, parallelPileup.getPileups2());
-		final DirichletDist dirichletB = getDirichlet(baseIs, parallelPileup.getPileups2());
-		final double densityBB = getDensity(baseIs, probsB, dirichletB);
+		final double[][] probs2 = estimateParameters.estimateProbs(baseIs, parallelPileup.getPileups2());
+		final DirichletDist dirichlet2 = getDirichlet(baseIs, parallelPileup.getPileups2());
+		final double density22 = getDensity(baseIs, probs2, dirichlet2);
 
 		// null model - distributions are the same
-		final double densityAB = getDensity(baseIs, probsB, dirichletA);
-		final double densityBA = getDensity(baseIs, probsA, dirichletB);
+		final double density12 = getDensity(baseIs, probs2, dirichlet1);
+		final double density21 = getDensity(baseIs, probs1, dirichlet2);
 
 		// calculate statistic z = log 0_Model - log A_Model 
-		final double z = (densityAA + densityBB) - (densityAB + densityBA);
+		final double z = (density11 + density22) - (density12 + density21);
 		
 		// use only positive numbers
 		return Math.max(0, z);
@@ -78,7 +76,7 @@ public class DirichletBayesStatistic implements StatisticCalculator {
 
 	@Override
 	public String getDescription() {
-		return "Dirichlet Bayes";
+		return "Dirichlet - Bayes";
 	}
 
 	@Override
@@ -96,4 +94,9 @@ public class DirichletBayesStatistic implements StatisticCalculator {
 		return new DirichletBayesStatistic(baseConfig, parameters);
 	}
 
+	@Override
+	public void processCLI(String line) {
+		// nothing to be done
+	}
+	
 }

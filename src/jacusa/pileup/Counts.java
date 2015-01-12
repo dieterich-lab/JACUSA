@@ -1,6 +1,6 @@
 package jacusa.pileup;
 
-import jacusa.process.phred2prob.Phred2Prob;
+import jacusa.phred2prob.Phred2Prob;
 
 public class Counts implements Cloneable {
 

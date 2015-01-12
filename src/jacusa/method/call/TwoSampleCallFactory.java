@@ -19,46 +19,45 @@ import jacusa.cli.options.StatisticCalculatorOption;
 import jacusa.cli.options.StatisticFilterOption;
 import jacusa.cli.options.VersionOption;
 import jacusa.cli.options.WindowSizeOption;
-import jacusa.cli.options.filter.FilterFlagOption;
-import jacusa.cli.options.filter.FilterNHsamTagOption;
-import jacusa.cli.options.filter.FilterNMsamTagOption;
 import jacusa.cli.options.pileupbuilder.TwoSamplePileupBuilderOption;
 import jacusa.cli.options.sample.MaxDepthSampleOption;
 import jacusa.cli.options.sample.MinBASQSampleOption;
 import jacusa.cli.options.sample.MinCoverageSampleOption;
 import jacusa.cli.options.sample.MinMAPQSampleOption;
+//import jacusa.cli.options.sample.filter.FilterFlagOption;
+//import jacusa.cli.options.sample.filter.FilterNHsamTagOption;
+//import jacusa.cli.options.sample.filter.FilterNMsamTagOption;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.cli.parameters.TwoSampleCallParameters;
 import jacusa.filter.factory.AbstractFilterFactory;
-import jacusa.filter.factory.BASQBiasFilterFactory;
+//import jacusa.filter.factory.BASQBiasFilterFactory;
 import jacusa.filter.factory.DistanceFilterFactory;
 import jacusa.filter.factory.HomopolymerFilterFactory;
 import jacusa.filter.factory.HomozygousFilterFactory;
-import jacusa.filter.factory.MAPQBiasFilterFactory;
-import jacusa.filter.factory.PositionalBiasFilterFactory;
+//import jacusa.filter.factory.MAPQBiasFilterFactory;
+import jacusa.filter.factory.ReadPositionalBiasFilterFactory;
 import jacusa.filter.factory.RareEventFilterFactory;
 import jacusa.io.format.result.AbstractResultFormat;
 import jacusa.io.format.result.BEDResultFormat;
-import jacusa.io.format.result.DebugResultFormat;
+//import jacusa.io.format.result.DebugResultFormat;
 import jacusa.io.format.result.DefaultResultFormat;
 import jacusa.io.format.result.PileupResultFormat;
-import jacusa.io.format.result.VCF_ResultFormat;
+//import jacusa.io.format.result.VCF_ResultFormat;
 import jacusa.method.AbstractMethodFactory;
 //import jacusa.method.call.statistic.ACCUSA2Statistic;
-//import jacusa.method.call.statistic.DirichletBayesLRStatistic;
 //import jacusa.method.call.statistic.DirichletBayesStatistic;
-//import jacusa.method.call.statistic.DirichletMLEStatistic;
+//import jacusa.method.call.statistic.DirichletStatistic;
 //import jacusa.method.call.statistic.DirichletMOMsStatistic;
 import jacusa.method.call.statistic.StatisticCalculator;
-//import jacusa.method.call.statistic.dirmult.DirichletMultinomialMLE;
-//import jacusa.method.call.statistic.dirmult.DirichletMultinomialMLE2;
-import jacusa.method.call.statistic.dirmult.DirichletMultinomialMLE3;
-//import jacusa.method.call.statistic.dirmult.DirichletMultinomialMLE4;
-import jacusa.method.call.statistic.lr.LR2Statistic;
-import jacusa.method.call.statistic.lr.LRStatistic;
-import jacusa.process.parallelpileup.dispatcher.call.TwoSampleCallWorkerDispatcher;
+import jacusa.method.call.statistic.dirmult.DirichletMultinomial;
+import jacusa.method.call.statistic.dirmult.DirichletMultinomialPooledError;
+import jacusa.method.call.statistic.dirmult.DirichletMultinomialCompoundError;
+import jacusa.method.call.statistic.dirmult.DirichletMultinomialEstimatedError;
+//import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
+//import jacusa.method.call.statistic.lr.LR_SPEC_Statistic;
+import jacusa.pileup.dispatcher.call.TwoSampleCallWorkerDispatcher;
 import jacusa.util.coordinateprovider.CoordinateProvider;
 import jacusa.util.coordinateprovider.SAMCoordinateProvider;
 
@@ -91,8 +90,10 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new MinBASQSampleOption(sample, sampleParameters));
 		acOptions.add(new MinCoverageSampleOption(sample, sampleParameters));
 		acOptions.add(new MaxDepthSampleOption(sample, sampleParameters));
+		/* TODO removed for inhouse release 
 		acOptions.add(new FilterNHsamTagOption(sample, sampleParameters));
 		acOptions.add(new FilterNMsamTagOption(sample, sampleParameters));
+		*/
 	}
 	
 	public void initACOptions() {
@@ -113,7 +114,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new MinBASQOption(samples));
 		acOptions.add(new MinCoverageOption(samples));
 		acOptions.add(new MaxDepthOption(samples));
-		acOptions.add(new FilterFlagOption(samples));
+		// TODO removed for inhouse release
+		// acOptions.add(new FilterFlagOption(samples));
 		
 		acOptions.add(new TwoSamplePileupBuilderOption(sample1, sample2));
 
@@ -161,50 +163,50 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 
 		StatisticCalculator statistic = null;
 
-		/*
-		statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
-		*/
+		// TODO removed for inhouse release
+		//statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		//statistics.put(statistic.getName(), statistic);
 		
-		statistic = new LRStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
+		// TODO removed for inhouse release
+		//statistic = new LR_SPEC_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		//statistics.put(statistic.getName(), statistic);
 	
-		statistic = new LR2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
+		// TODO removed for inhouse release
+		//statistic = new LR_SENS_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		//statistics.put(statistic.getName(), statistic);
 
-		/*
-		statistic = new DirichletBayesStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
+		// TODO removed for inhouse release
+		//statistic = new DirichletBayesStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		//statistics.put(statistic.getName(), statistic);
 		
-		statistic = new DirichletMOMsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
-		*/
-		
-		//statistic = new WeightedMethodOfMomentsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		// TODO removed for inhouse release
+		//statistic = new DirichletMOMsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
 
 		/*
-		statistic = new DirichletMLEStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
-
-		statistic = new DirichletBayesLRStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
-
-		statistic = new DirichletMultinomialMLE(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
-
-		statistic = new DirichletMultinomialMLE2(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistic = new WeightedMethodOfMomentsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 		*/
 
-		statistic = new DirichletMultinomialMLE3(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		// TODO removed for inhouse release
+		//statistic = new DirichletStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		//statistics.put(statistic.getName(), statistic);
+
+		//statistic = new DirichletBayesLRStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		//statistics.put(statistic.getName(), statistic);
+
+		statistic = new DirichletMultinomial(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
-		/*
-		statistic = new DirichletMultinomialMLE4(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistic = new DirichletMultinomialPooledError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
-		*/
 
+		statistic = new DirichletMultinomialCompoundError(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistics.put(statistic.getName(), statistic);
+
+		statistic = new DirichletMultinomialEstimatedError(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistics.put(statistic.getName(), statistic);
+		
 		return statistics;
 	}
 
@@ -212,13 +214,14 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		Map<Character, AbstractFilterFactory<?>> abstractPileupFilters = new HashMap<Character, AbstractFilterFactory<?>>();
 
 		AbstractFilterFactory<?>[] filterFactories = new AbstractFilterFactory[] {
-				new PositionalBiasFilterFactory(parameters),
-				new BASQBiasFilterFactory(parameters),
-				new MAPQBiasFilterFactory(parameters),
+				new ReadPositionalBiasFilterFactory(parameters),
+//				new BASQBiasFilterFactory(parameters),
+//				new MAPQBiasFilterFactory(parameters),
 				new DistanceFilterFactory(parameters),
 				new HomozygousFilterFactory(parameters),
 				new HomopolymerFilterFactory(parameters),
 				new RareEventFilterFactory(parameters),
+//				new FDRFilterFactory(parameters.getStatisticParameters()),
 		};
 		for (AbstractFilterFactory<?> filterFactory : filterFactories) {
 			abstractPileupFilters.put(filterFactory.getC(), filterFactory);
@@ -239,11 +242,13 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		resultFormat = new BEDResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
-		resultFormat = new DebugResultFormat(parameters.getBaseConfig());
-		resultFormats.put(resultFormat.getC(), resultFormat);
+		// TODO removed for inhouse release
+		//resultFormat = new DebugResultFormat(parameters.getBaseConfig());
+		//resultFormats.put(resultFormat.getC(), resultFormat);
 
-		resultFormat = new VCF_ResultFormat();
-		resultFormats.put(resultFormat.getC(), resultFormat);
+		// TODO removed for inhouse release
+		//resultFormat = new VCF_ResultFormat();
+		//resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;
 	}

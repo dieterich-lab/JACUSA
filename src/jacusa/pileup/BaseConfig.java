@@ -40,6 +40,14 @@ public class BaseConfig {
 		setBases(bases);
 	}
 
+	public int[] getByte2Int() {
+		return byte2int;
+	}
+
+	public int[] getComplementByte2Int() {
+		return complementByte2int;
+	}
+
 	// rearrange depending on given bases
 	public int[] Byte2baseI(final char[] bases) {
 		final int[] byte2int = new int[BYTE_BASE2INT_BASE.length];
