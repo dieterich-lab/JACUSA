@@ -24,6 +24,7 @@ import jacusa.cli.options.sample.MaxDepthSampleOption;
 import jacusa.cli.options.sample.MinBASQSampleOption;
 import jacusa.cli.options.sample.MinCoverageSampleOption;
 import jacusa.cli.options.sample.MinMAPQSampleOption;
+import jacusa.cli.options.sample.filter.FilterFlagOption;
 //import jacusa.cli.options.sample.filter.FilterFlagOption;
 //import jacusa.cli.options.sample.filter.FilterNHsamTagOption;
 //import jacusa.cli.options.sample.filter.FilterNMsamTagOption;
@@ -114,8 +115,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new MinBASQOption(samples));
 		acOptions.add(new MinCoverageOption(samples));
 		acOptions.add(new MaxDepthOption(samples));
-		// TODO removed for inhouse release
-		// acOptions.add(new FilterFlagOption(samples));
+		acOptions.add(new FilterFlagOption(samples));
 		
 		acOptions.add(new TwoSamplePileupBuilderOption(sample1, sample2));
 
