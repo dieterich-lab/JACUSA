@@ -12,8 +12,8 @@ import net.sf.samtools.SAMFileReader;
 
 public class TwoSampleCallWorker extends AbstractCallWorker {
 
-	private SAMFileReader[] readersA;
-	private SAMFileReader[] readersB;
+	private SAMFileReader[] readers1;
+	private SAMFileReader[] readers2;
 	private TwoSampleCallParameters parameters;
 	
 	private final Variant variant;
@@ -22,8 +22,8 @@ public class TwoSampleCallWorker extends AbstractCallWorker {
 		super(threadDispatcher, parameters.getStatisticParameters().getStatisticCalculator(), parameters.getFormat(), parameters);
 
 		this.parameters = parameters;
-		readersA = initReaders(parameters.getSample1().getPathnames());
-		readersB = initReaders(parameters.getSample2().getPathnames());
+		readers1 = initReaders(parameters.getSample1().getPathnames());
+		readers2 = initReaders(parameters.getSample2().getPathnames());
 
 		variant = new VariantParallelPileup();
 		synchronized (workerDispatcher) {
@@ -36,18 +36,20 @@ public class TwoSampleCallWorker extends AbstractCallWorker {
 		SampleParameters sample1 = parameters.getSample1();
 		SampleParameters sample2 = parameters.getSample2();
 
+		/*
 		if (sample1.getPileupBuilderFactory().isDirected() || 
 				sample2.getPileupBuilderFactory().isDirected()) {
-			return new TwoSampleIterator(coordinate, variant, readersA, readersB, sample1, sample2, parameters);
+			return new TwoSampleIterator(coordinate, variant, readers1, readers2, sample1, sample2, parameters);
 		}
+		*/
 		
-		return new TwoSampleIterator(coordinate, variant, readersA, readersB, sample1, sample2, parameters);
+		return new TwoSampleIterator(coordinate, variant, readers1, readers2, sample1, sample2, parameters);
 	}
 
 	@Override
 	protected void close() {
-		close(readersA);
-		close(readersB);
+		close(readers1);
+		close(readers2);
 	}
 
 }

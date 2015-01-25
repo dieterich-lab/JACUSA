@@ -169,6 +169,10 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 
 	@Override
 	protected void processAlignmetMatch(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
+		for (AbstractFilterStorage<?> filter : filterContainer.get(CigarOperator.M)) {
+			filter.processAlignmentBlock(windowPosition, readPosition, genomicPosition, cigarElement, record);
+		}
+
 		for (int offset = 0; offset < cigarElement.getLength(); ++offset) {
 			final int baseI = byte2int[record.getReadBases()[readPosition + offset]];
 

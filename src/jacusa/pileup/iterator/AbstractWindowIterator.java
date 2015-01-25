@@ -151,7 +151,7 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 
 	protected boolean adjustWindowStart(Location location, AbstractPileupBuilder[] pileupBuilders) {
 		if (! pileupBuilders[0].adjustWindowStart(location.genomicPosition)) {
-			SAMRecord record = getNextValidRecord(pileupBuilders[0].getWindowCoordinates().getWindowEnd(), pileupBuilders);
+			SAMRecord record = getNextValidRecord(pileupBuilders[0].getWindowCoordinates().getGenomicWindowEnd(), pileupBuilders);
 			if (record == null) {
 				return false;
 			}

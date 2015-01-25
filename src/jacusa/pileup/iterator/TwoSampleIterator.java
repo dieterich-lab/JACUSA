@@ -14,12 +14,12 @@ public class TwoSampleIterator extends AbstractTwoSampleIterator {
 	public TwoSampleIterator(
 			final Coordinate annotatedCoordinate,
 			final Variant filter,
-			final SAMFileReader[] readersA,
-			final SAMFileReader[] readersB,
-			final SampleParameters sampleA,
-			final SampleParameters sampleB,
+			final SAMFileReader[] readers1,
+			final SAMFileReader[] readers2,
+			final SampleParameters sample1,
+			final SampleParameters sample2,
 			AbstractParameters parameters) {
-		super(annotatedCoordinate, filter, readersA, readersB, sampleA, sampleB, parameters);
+		super(annotatedCoordinate, filter, readers1, readers2, sample1, sample2, parameters);
 	}
 
 	@Override
@@ -58,7 +58,12 @@ public class TwoSampleIterator extends AbstractTwoSampleIterator {
 				parallelPileup.setPileups2(getPileups(location2, pileupBuilders2));
 
 				if (filter.isValid(parallelPileup)) {
-					parallelPileup.setStrand(location1.strand); // check
+					// TODO check and enhance see Location next() - duplicate...
+					if (location1.strand.integer() > 0) {
+						parallelPileup.setStrand(location1.strand);
+					} else if (location2.strand.integer() > 0) {
+						parallelPileup.setStrand(location2.strand);
+					}
 					return true;
 				} else {
 					parallelPileup.setPileups1(new Pileup[0]);
@@ -87,7 +92,11 @@ public class TwoSampleIterator extends AbstractTwoSampleIterator {
 
 	@Override
 	public Location next() {
-		Location current = new Location(location1);
+		// TODO
+		Location current = new Location(location1);;
+		if (location2.strand.integer() > 0) {
+			current = new Location(location2);
+		}
 		
 		// advance to the next position
 		advance();

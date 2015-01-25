@@ -3,6 +3,7 @@ package jacusa.filter.storage;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.util.WindowCoordinates;
+import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
 
 public class HomopolymerFilterStorage extends AbstractWindowFilterStorage {
@@ -10,8 +11,6 @@ public class HomopolymerFilterStorage extends AbstractWindowFilterStorage {
 	
 	private int minLength;
 
-	// store
-	private SAMRecord record;
 	private int baseI;
 	private int readPositionStart;
 	private int windowPositionStart;
@@ -32,53 +31,27 @@ public class HomopolymerFilterStorage extends AbstractWindowFilterStorage {
 		this.minLength = length;
 	}
 
-	// TODO check
 	@Override
-	public void processAlignmentMatch(
-			int windowPosition, 
-			int readPosition, 
-			int genomicPosition, 
-			final SAMRecord record,
-			final int baseI,
-			final int qual) {
+	public void processAlignmentBlock(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
+		// init
+		readPositionStart = readPosition;
+		windowPositionStart = windowPosition;
+		baseI = record.getReadBases()[readPositionStart];
 
-		if (this.record == null) {
-			this.record = record;
-			readPositionStart = readPosition;
-			windowPositionStart = windowPosition;
-			this.baseI = baseI;
-		} else if (this.record != record) {
+		for (int i = 0; i < cigarElement.getLength(); ++i) {
 
-			// fill cache
-			int coveredReadLength = record.getReadLength() - readPositionStart; 
-			if (coveredReadLength >= minLength) {
-				parseRecord(windowPositionStart, coveredReadLength, readPositionStart, record);
-			}
-
-			// reset
-			this.record = record;
-			readPositionStart = readPosition;
-			windowPositionStart = windowPosition;
-			this.baseI = baseI;
-		} else if (this.baseI != baseI) {
-			// fill cache
-			int coveredReadLength = readPosition - readPositionStart; 
-			if (coveredReadLength >= minLength) {
-				parseRecord(windowPositionStart, coveredReadLength, readPositionStart, record);
-
-				/* DEBUG
-				System.err.println(record.getReadName());
-				for (int i = 0; i < coveredRead; ++i) {
-					System.err.print(genomicPosition + i + " -> " + record.getReadBases()[readPositionStart + i]);
-					System.err.print("\n");
+			if (baseI != record.getReadBases()[readPosition + i]) {
+				// fill cache
+				final int coveredReadLength = readPosition + i - readPositionStart; 
+				if (coveredReadLength >= minLength) {
+					parseRecord(windowPositionStart, coveredReadLength, readPositionStart, record);
 				}
-				*/
-			}
 
-			// reset
-			readPositionStart = readPosition;
-			windowPositionStart = windowPosition;
-			this.baseI = baseI;
+				// reset
+				readPositionStart = readPosition + i;
+				windowPositionStart = windowPosition + i;
+				baseI = record.getReadBases()[readPositionStart];
+			}
 		}
 	}
 

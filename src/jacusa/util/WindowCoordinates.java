@@ -51,7 +51,7 @@ public class WindowCoordinates {
 	 * End of window (inclusive)
 	 * @return
 	 */
-	public int getWindowEnd() {
+	public int getGenomicWindowEnd() {
 		return Math.min(genomicWindowStart + windowSize - 1, maxGenomicPosition);
 	}
 
@@ -70,7 +70,7 @@ public class WindowCoordinates {
 	 * @return
 	 */
 	public boolean isContainedInWindow(int genomicPosition) {
-		return genomicPosition >= genomicWindowStart && genomicPosition <= getWindowEnd();
+		return genomicPosition >= genomicWindowStart && genomicPosition <= getGenomicWindowEnd();
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class WindowCoordinates {
 	public int convertGenomicPosition2WindowPosition(int genomicPosition) {
 		if(genomicPosition < genomicWindowStart) {
 			return -2;
-		} else if(genomicPosition > getWindowEnd()){
+		} else if(genomicPosition > getGenomicWindowEnd()){
 			return -1;
 		}
 

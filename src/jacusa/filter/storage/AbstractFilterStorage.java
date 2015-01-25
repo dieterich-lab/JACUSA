@@ -44,6 +44,15 @@ public abstract class AbstractFilterStorage<T> {
 		// override if needed
 	}
 
+	public void processAlignmentBlock(
+			final int windowPosition, 
+			final int readPosition, 
+			final int genomicPosition, 
+			final CigarElement cigarElement, 
+			final SAMRecord record) {
+		// override if needed
+	}
+
 	public void processHardClipping(
 			int windowPosition, 
 			int readPosition, 

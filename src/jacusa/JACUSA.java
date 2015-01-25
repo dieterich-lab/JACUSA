@@ -31,7 +31,7 @@ public class JACUSA {
 	// timer used for all time measurements
 	private static SimpleTimer timer;
 	public static final String NAME = "jacusa";
-	public static final String VERSION = "0.995";
+	public static final String VERSION = "0.998";
 
 	// command line interface
 	private CLI cli;
@@ -157,6 +157,11 @@ public class JACUSA {
 		System.err.println(time + " " + line);
 	}
 
+	public static void printWarning(String line) {
+		String time = "[ WARNING ] " + getSimpleTimer().getTotalTimestring() + "\t:\t";
+		System.err.println(time + " " + line);
+	}
+	
 	/**
 	 * 
 	 * @param comparisons

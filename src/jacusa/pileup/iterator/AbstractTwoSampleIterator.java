@@ -23,32 +23,32 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 	protected final AbstractPileupBuilder[] pileupBuilders2;
 
 	public AbstractTwoSampleIterator(
-			final Coordinate annotatedCoordinate,
+			final Coordinate coordinate,
 			final Variant filter,
-			final SAMFileReader[] readersA,
-			final SAMFileReader[] readersB,
+			final SAMFileReader[] readers1,
+			final SAMFileReader[] readers2,
 			final SampleParameters sample1,
 			final SampleParameters sample2,
 			AbstractParameters parameters) {
-		super(annotatedCoordinate, filter, parameters);
+		super(coordinate, filter, parameters);
 
 		this.sample1 = sample1;
 		pileupBuilders1 = createPileupBuilders(
 				sample1.getPileupBuilderFactory(), 
-				annotatedCoordinate, 
-				readersA,
+				coordinate, 
+				readers1,
 				sample1,
 				parameters);
-		location1 = initLocation(annotatedCoordinate, sample1.getPileupBuilderFactory().isDirected(), pileupBuilders1);
+		location1 = initLocation(coordinate, sample1.getPileupBuilderFactory().isDirected(), pileupBuilders1);
 
 		this.sample2 = sample2;
 		pileupBuilders2 = createPileupBuilders(
 				sample2.getPileupBuilderFactory(), 
-				annotatedCoordinate, 
-				readersB,
+				coordinate, 
+				readers2,
 				sample2,
 				parameters);
-		location2 = initLocation(annotatedCoordinate, sample2.getPileupBuilderFactory().isDirected(), pileupBuilders2);
+		location2 = initLocation(coordinate, sample2.getPileupBuilderFactory().isDirected(), pileupBuilders2);
 
 		parallelPileup = new DefaultParallelPileup(pileupBuilders1.length, pileupBuilders2.length);
 	}

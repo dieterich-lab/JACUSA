@@ -1,5 +1,6 @@
 package jacusa.pileup.builder;
 
+import jacusa.JACUSA;
 import jacusa.cli.options.sample.filter.samtag.SamTagFilter;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
@@ -33,16 +34,24 @@ public abstract class AbstractPileupBuilder {
 	
 	protected boolean isCached;
 	
-	public AbstractPileupBuilder(
+	public AbstractPileupBuilder (
 			final Coordinate coordinate, 
 			final SAMFileReader SAMFileReader, 
 			final SampleParameters sampleParameters,
 			final AbstractParameters parameters) {
+
+		// DIRTY hack
+		final int sequenceLength = SAMFileReader.getFileHeader().getSequence(coordinate.getSequenceName()).getSequenceLength();
+		if (coordinate.getEnd() > sequenceLength) {
+			Coordinate samHeader = new Coordinate(coordinate.getSequenceName(), 1, sequenceLength);
+			JACUSA.printWarning("Coordinates in BED file (" +  coordinate.toString() + ") do not fit to SAM sequence header (" + samHeader.toString()+ ").");
+		}
+
 		windowCoordinates		= new WindowCoordinates(
 				coordinate.getSequenceName(), 
 				coordinate.getStart(), 
 				parameters.getWindowSize(), 
-				Math.min(coordinate.getEnd(), SAMFileReader.getFileHeader().getSequence(coordinate.getSequenceName()).getSequenceLength()));
+				coordinate.getEnd());
 
 		SAMRecordsBuffer		= new SAMRecord[30000];
 		reader					= SAMFileReader;
@@ -95,14 +104,14 @@ public abstract class AbstractPileupBuilder {
 	 */
 	public boolean adjustWindowStart(int genomicWindowStart) {
 		isCached = false;
-		windowCoordinates.setGenomicWindowStart(genomicWindowStart);
 		clearCache();
-
+		windowCoordinates.setGenomicWindowStart(genomicWindowStart);
+		
 		// get iterator to fill the window
 		SAMRecordIterator iterator = reader.query(
 				windowCoordinates.getContig(), 
 				windowCoordinates.getGenomicWindowStart(), 
-				windowCoordinates.getWindowEnd(), 
+				windowCoordinates.getGenomicWindowEnd(), 
 				false);
 
 		// true if a valid read is found within genomicWindowStart and genomicWindowStart + windowSize
