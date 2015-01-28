@@ -10,13 +10,13 @@ import jacusa.util.Location;
 
 public class DistanceStorageFilter extends AbstractWindowStorageFilter {
 
-	private double ratio = 0.5;
 	private AbstractCountFilter countFilter;
 	
-	public DistanceStorageFilter(final char c, BaseConfig baseConfig, FilterConfig filterConfig) {
+	public DistanceStorageFilter(final char c, final double minRatio, final int minCount, final BaseConfig baseConfig, final FilterConfig filterConfig) {
 		super(c);
 
-		countFilter = new RatioCountFilter(ratio, baseConfig, filterConfig);
+		countFilter = new RatioCountFilter(minRatio, baseConfig, filterConfig);
+		// TODO use minCount
 	}
 
 	@Override

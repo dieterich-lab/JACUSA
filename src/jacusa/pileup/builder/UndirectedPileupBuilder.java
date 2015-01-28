@@ -99,6 +99,10 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		int genomicPosition = record.getAlignmentStart();
 		int windowPosition  = windowCoordinates.convertGenomicPosition2WindowPosition(genomicPosition);
 		
+		for (AbstractFilterStorage<?> filter : filterContainer.getPR()) {
+			filter.processRecord(windowCoordinates.getGenomicWindowStart(), record);
+		}
+		
 		// process CIGAR -> SP, INDELs
 		for (final CigarElement cigarElement : record.getCigar().getCigarElements()) {
 			

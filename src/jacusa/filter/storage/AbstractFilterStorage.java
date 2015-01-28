@@ -25,10 +25,26 @@ public abstract class AbstractFilterStorage<T> {
 		return c;
 	}
 
-	public void processInsertion(
+	public void processRecord(
+			int genomicWindowStart, 
+			SAMRecord record) {
+		// override if needed	
+	}
+	
+
+	public void processAlignmentBlock(
 			int windowPosition, 
 			int readPosition, 
 			int genomicPosition, 
+			CigarElement cigarElement, 
+			SAMRecord record) {
+		// override if needed
+	}
+
+	public void processInsertion(
+			int windowPosition, 
+			int readPosition, 
+			int genomicPosition,
 			final CigarElement cigarElement, 
 			final SAMRecord record) {
 		// override if needed
@@ -41,15 +57,6 @@ public abstract class AbstractFilterStorage<T> {
 			final SAMRecord record,
 			final int baseI,
 			final int qual) {
-		// override if needed
-	}
-
-	public void processAlignmentBlock(
-			final int windowPosition, 
-			final int readPosition, 
-			final int genomicPosition, 
-			final CigarElement cigarElement, 
-			final SAMRecord record) {
 		// override if needed
 	}
 

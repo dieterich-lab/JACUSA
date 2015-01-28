@@ -25,6 +25,8 @@ import jacusa.cli.options.sample.MinBASQSampleOption;
 import jacusa.cli.options.sample.MinCoverageSampleOption;
 import jacusa.cli.options.sample.MinMAPQSampleOption;
 import jacusa.cli.options.sample.filter.FilterFlagOption;
+import jacusa.cli.options.sample.filter.FilterNHsamTagOption;
+import jacusa.cli.options.sample.filter.FilterNMsamTagOption;
 //import jacusa.cli.options.sample.filter.FilterFlagOption;
 //import jacusa.cli.options.sample.filter.FilterNHsamTagOption;
 //import jacusa.cli.options.sample.filter.FilterNMsamTagOption;
@@ -37,6 +39,9 @@ import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.filter.factory.DistanceFilterFactory;
 import jacusa.filter.factory.HomopolymerFilterFactory;
 import jacusa.filter.factory.HomozygousFilterFactory;
+import jacusa.filter.factory.INDEL_DistanceFilterFactory;
+import jacusa.filter.factory.ReadPositionDistanceFilterFactory;
+import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
 //import jacusa.filter.factory.MAPQBiasFilterFactory;
 import jacusa.filter.factory.ReadPositionalBiasFilterFactory;
 import jacusa.filter.factory.RareEventFilterFactory;
@@ -91,10 +96,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new MinBASQSampleOption(sample, sampleParameters));
 		acOptions.add(new MinCoverageSampleOption(sample, sampleParameters));
 		acOptions.add(new MaxDepthSampleOption(sample, sampleParameters));
-		/* TODO removed for inhouse release 
 		acOptions.add(new FilterNHsamTagOption(sample, sampleParameters));
 		acOptions.add(new FilterNMsamTagOption(sample, sampleParameters));
-		*/
 	}
 	
 	public void initACOptions() {
@@ -218,6 +221,9 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 //				new BASQBiasFilterFactory(parameters),
 //				new MAPQBiasFilterFactory(parameters),
 				new DistanceFilterFactory(parameters),
+				new INDEL_DistanceFilterFactory(parameters),
+				new ReadPositionDistanceFilterFactory(parameters),
+				new SpliceSiteDistanceFilterFactory(parameters),
 				new HomozygousFilterFactory(parameters),
 				new HomopolymerFilterFactory(parameters),
 				new RareEventFilterFactory(parameters),

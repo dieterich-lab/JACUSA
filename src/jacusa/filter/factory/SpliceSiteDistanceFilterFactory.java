@@ -11,7 +11,7 @@ import jacusa.filter.storage.DistanceFilterStorage;
 import jacusa.pileup.builder.WindowCache;
 import jacusa.util.WindowCoordinates;
 
-public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
+public class SpliceSiteDistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 
 	private static int DISTANCE = 6;
 	private static double MIN_RATIO = 0.5;
@@ -25,18 +25,11 @@ public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 	
 	private static Set<CigarOperator> cigarOperator = new HashSet<CigarOperator>();
 	static {
-		cigarOperator.add(CigarOperator.I);
-		cigarOperator.add(CigarOperator.D);
 		cigarOperator.add(CigarOperator.N);
-		cigarOperator.add(CigarOperator.M);
 	}
 	
-	public DistanceFilterFactory(AbstractParameters parameters) {
-		super(
-				'D', 
-				"Filter distance to Intron and INDEL position. Default: " + DISTANCE + ":" + MIN_RATIO + ":" + MIN_COUNT +" (D:distance:min_ratio:min_count)", 
-				true,
-				cigarOperator);
+	public SpliceSiteDistanceFilterFactory(AbstractParameters parameters) {
+		super('S', "Filter distance to Splice Site. Default: " + DISTANCE + ":" + MIN_RATIO + ":" + MIN_COUNT +" (S:distance:min_ratio:min_count)", cigarOperator);
 		this.parameters = parameters;
 		distance = DISTANCE;
 		minRatio = MIN_RATIO;

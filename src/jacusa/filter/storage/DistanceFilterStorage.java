@@ -1,23 +1,25 @@
 package jacusa.filter.storage;
 
+import java.util.List;
+
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.util.WindowCoordinates;
 
+import net.sf.samtools.AlignmentBlock;
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
 
 public class DistanceFilterStorage extends AbstractWindowFilterStorage {
 
 	private int distance;
-
 	/**
 	 * 
 	 * @param c
 	 * @param distance
 	 */
 	public DistanceFilterStorage(final char c, 
-			final int distance, 
+			final int distance,
 			final WindowCoordinates windowCoordinates,
 			final SampleParameters sampleParameters,
 			final AbstractParameters parameters) {
@@ -25,11 +27,8 @@ public class DistanceFilterStorage extends AbstractWindowFilterStorage {
 		this.distance = distance;
 	}
 
-	/* This is no implicitly done by KW
+	@Override
 	public void processRecord(int genomicWindowStart, SAMRecord record) {
-		processCigar(genomicWindowStart, record);
-
-		/* INFO read start and read end not considered
 		AlignmentBlock alignmentBlock;
 		int windowPosition;
 
@@ -43,14 +42,10 @@ public class DistanceFilterStorage extends AbstractWindowFilterStorage {
 
 		// read end
 		alignmentBlock = alignmentBlocks.get(alignmentBlocks.size() - 1); // get last alignment
-		windowPosition = alignmentBlock.getReferenceStart() + alignmentBlock.getLength() - genomicWindowStart;
+		windowPosition = alignmentBlock.getReferenceStart() + alignmentBlock.getLength() - 1 - genomicWindowStart;
 		parseRecord(windowPosition - distance, distance, alignmentBlock.getReadStart() - 1 + alignmentBlock.getLength() - distance, record);
-		*/
-	//}
+	}
 
-	// TODO check
-	// parseRecord(windowPosition - distance, cigarElement.getLength() + 2 * distance, readPosition - distance, record)
-	
 	// process IN
 	@Override
 	public void processInsertion(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {

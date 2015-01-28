@@ -11,7 +11,7 @@ import jacusa.filter.storage.DistanceFilterStorage;
 import jacusa.pileup.builder.WindowCache;
 import jacusa.util.WindowCoordinates;
 
-public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
+public class ReadPositionDistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 
 	private static int DISTANCE = 6;
 	private static double MIN_RATIO = 0.5;
@@ -20,21 +20,18 @@ public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 	private int distance;
 	private double minRatio;
 	private int minCount;
-	
+
 	private AbstractParameters parameters;
-	
+
 	private static Set<CigarOperator> cigarOperator = new HashSet<CigarOperator>();
 	static {
-		cigarOperator.add(CigarOperator.I);
-		cigarOperator.add(CigarOperator.D);
-		cigarOperator.add(CigarOperator.N);
 		cigarOperator.add(CigarOperator.M);
 	}
-	
-	public DistanceFilterFactory(AbstractParameters parameters) {
+
+	public ReadPositionDistanceFilterFactory(AbstractParameters parameters) {
 		super(
-				'D', 
-				"Filter distance to Intron and INDEL position. Default: " + DISTANCE + ":" + MIN_RATIO + ":" + MIN_COUNT +" (D:distance:min_ratio:min_count)", 
+				'F', 
+				"Filter distance to Read Start/End. Default: " + DISTANCE + ":" + MIN_RATIO + ":" + MIN_COUNT +" (F:distance:min_ratio:min_count)", 
 				true,
 				cigarOperator);
 		this.parameters = parameters;
@@ -51,7 +48,7 @@ public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 
 		final String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
 
-		// format D:distance:minRatio:minCount
+		// format F:distance:minRatio:minCount
 		for (int i = 1; i < s.length; ++i) {
 			switch(i) {
 			case 1:
