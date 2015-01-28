@@ -38,8 +38,7 @@ public class HomopolymerFilterStorage extends AbstractWindowFilterStorage {
 		windowPositionStart = windowPosition;
 		baseI = record.getReadBases()[readPositionStart];
 
-		for (int i = 0; i < cigarElement.getLength(); ++i) {
-
+		for (int i = 1; i < cigarElement.getLength(); ++i) {
 			if (baseI != record.getReadBases()[readPosition + i]) {
 				// fill cache
 				final int coveredReadLength = readPosition + i - readPositionStart; 

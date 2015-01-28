@@ -45,6 +45,8 @@ public abstract class AbstractFilterStorage<T> {
 			int windowPosition, 
 			int readPosition, 
 			int genomicPosition,
+			int upstreamMatch,
+			int downstreamMatch,
 			final CigarElement cigarElement, 
 			final SAMRecord record) {
 		// override if needed
@@ -72,7 +74,9 @@ public abstract class AbstractFilterStorage<T> {
 	public void processDeletion(
 			int windowPosition, 
 			int readPosition, 
-			int genomicPosition, 
+			int genomicPosition,
+			int upstreamMatch,
+			int downstreamMatch,
 			final CigarElement cigarElement, 
 			final SAMRecord record) {
 		// override if needed
@@ -81,7 +85,9 @@ public abstract class AbstractFilterStorage<T> {
 	public void processSkipped(
 			int windowPosition, 
 			int readPosition, 
-			int genomicPosition, 
+			int genomicPosition,
+			int upstreamMatch,
+			int downstreamMatch,
 			final CigarElement cigarElement, 
 			final SAMRecord record) {
 		// override if needed
@@ -99,7 +105,9 @@ public abstract class AbstractFilterStorage<T> {
 	public void processPadding(
 			int windowPosition, 
 			int readPosition, 
-			int genomicPosition, 
+			int genomicPosition,
+			int upstreamMatch,
+			int downstreamMatch,
 			final CigarElement cigarElement, 
 			final SAMRecord record) {
 		System.err.println("Padding not handled yet!");

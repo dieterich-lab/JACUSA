@@ -51,9 +51,10 @@ public abstract class AbstractCountFilter {
 			return variantBasesIs;
 		}
 
-		// AG | AG
+		// AG | AG, AGC |AGC
 		// TODO sort variant by occurrence
-		return allelesIs;
+		// return allelesIs;
+		return new int[0];
 	}
 	
 	/**
@@ -111,8 +112,8 @@ public abstract class AbstractCountFilter {
 	/**
 	 * Apply filter on each variant base
 	 */
-	public boolean filter(ParallelPileup parallelPileup, Counts[] counts1, Counts[] counts2) {
-		final int[] variantBaseIs = getVariantBaseIs(parallelPileup);
+	public boolean filter(final int[] variantBaseIs, ParallelPileup parallelPileup, Counts[] counts1, Counts[] counts2) {
+		// final int[] variantBaseIs = getVariantBaseIs(parallelPileup);
 
 		for (int variantBaseI : variantBaseIs) {
 			if (filter(variantBaseI, parallelPileup, counts1, counts2)) {

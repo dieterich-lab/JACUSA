@@ -48,24 +48,33 @@ public class DistanceFilterStorage extends AbstractWindowFilterStorage {
 
 	// process IN
 	@Override
-	public void processInsertion(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
-		parseRecord(windowPosition - distance, distance, readPosition - distance, record);
-		parseRecord(windowPosition + cigarElement.getLength(), distance, readPosition + cigarElement.getLength(), record);
+	public void processInsertion(int windowPosition, int readPosition, int genomicPosition, int upstreamMatch, int downstreamMatch, CigarElement cigarElement, SAMRecord record) {
+		int upstreamD = Math.min(distance, upstreamMatch);
+		parseRecord(windowPosition - upstreamD, upstreamD, readPosition - upstreamD, record);
+		
+		int downStreamD = Math.min(distance, downstreamMatch);
+		parseRecord(windowPosition + cigarElement.getLength(), downStreamD, readPosition + cigarElement.getLength(), record);
 	}
 
 	// process DELs
 	@Override
-	public void processDeletion(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
-		parseRecord(windowPosition - distance, distance, readPosition - distance, record);
-		parseRecord(windowPosition, distance, readPosition, record);
+	public void processDeletion(int windowPosition, int readPosition, int genomicPosition, int upstreamMatch, int downstreamMatch, CigarElement cigarElement, SAMRecord record) {
+		int upstreamD = Math.min(distance, upstreamMatch);
+		parseRecord(windowPosition - upstreamD, upstreamD, readPosition - upstreamD, record);
+		
+		int downStreamD = Math.min(distance, downstreamMatch);
+		parseRecord(windowPosition, downStreamD, readPosition, record);
 	}
 
 	// process SpliceSites
 	@Override
-	public void processSkipped(int windowPosition, int readPosition, int genomicPosition, CigarElement cigarElement, SAMRecord record) {
+	public void processSkipped(int windowPosition, int readPosition, int genomicPosition, int upstreamMatch, int downstreamMatch, CigarElement cigarElement, SAMRecord record) {
 		// TODO test
-		parseRecord(windowPosition - distance, 2 * distance, readPosition - distance, record);
-		parseRecord(windowPosition + cigarElement.getLength() - distance, 2 * distance, readPosition + cigarElement.getLength(), record);
+		int upstreamD = Math.min(distance, upstreamMatch);
+		parseRecord(windowPosition - upstreamD, upstreamD, readPosition - upstreamD, record);
+		
+		int downStreamD = Math.min(distance, downstreamMatch);
+		parseRecord(windowPosition + cigarElement.getLength(), downStreamD, readPosition + cigarElement.getLength(), record);
 	}
 
 	/**

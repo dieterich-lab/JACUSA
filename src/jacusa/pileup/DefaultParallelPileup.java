@@ -219,10 +219,10 @@ public final class DefaultParallelPileup implements ParallelPileup {
 		int n = 0;
 		int[] alleles = getPooledPileup().getAlleles();
 		for (int baseI : alleles) {
-			int countA = getPooledPileup1().getCounts().getBaseCount(baseI);
-			int countB = getPooledPileup2().getCounts().getBaseCount(baseI);
+			int count1 = getPooledPileup1().getCounts().getBaseCount(baseI);
+			int count2 = getPooledPileup2().getCounts().getBaseCount(baseI);
 
-			if (countA == 0 && countB > 0 || countB == 0 && countA > 0) {
+			if (count1 == 0 && count2 > 0 || count2 == 0 && count1 > 0) {
 				++n;
 			}
 		}
@@ -230,10 +230,10 @@ public final class DefaultParallelPileup implements ParallelPileup {
 		int[] variantBaseIs = new int[n];
 		int j = 0;
 		for (int baseI : alleles) {
-			int countA = getPooledPileup1().getCounts().getBaseCount(baseI);
-			int countB = getPooledPileup2().getCounts().getBaseCount(baseI);
+			int count1 = getPooledPileup1().getCounts().getBaseCount(baseI);
+			int count2 = getPooledPileup2().getCounts().getBaseCount(baseI);
 
-			if (countA == 0 && countB > 0 || countB == 0 && countA > 0) {
+			if (count1 == 0 && count2 > 0 || count2 == 0 && count1 > 0) {
 				variantBaseIs[j] = baseI;
 				++j;
 			}

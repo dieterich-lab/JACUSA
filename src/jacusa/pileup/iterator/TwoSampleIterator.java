@@ -54,16 +54,23 @@ public class TwoSampleIterator extends AbstractTwoSampleIterator {
 				parallelPileup.setContig(coordinate.getSequenceName());
 				parallelPileup.setPosition(location1.genomicPosition);
 
-				parallelPileup.setPileups1(getPileups(location1, pileupBuilders1));
-				parallelPileup.setPileups2(getPileups(location2, pileupBuilders2));
+				
+				// TODO check and enhance see Location next() - duplicate...
+				if (location1.strand.integer() > 0) {
+					parallelPileup.setStrand(location1.strand);
+					parallelPileup.setPileups1(getPileups(location1, pileupBuilders1));
+					parallelPileup.setPileups2(getPileups(location1, pileupBuilders2));
+				} else if (location2.strand.integer() > 0) {
+					parallelPileup.setStrand(location2.strand);
+					parallelPileup.setPileups1(getPileups(location2, pileupBuilders1));
+					parallelPileup.setPileups2(getPileups(location2, pileupBuilders2));
+				} else {
+					parallelPileup.setPileups1(getPileups(location1, pileupBuilders1));
+					parallelPileup.setPileups2(getPileups(location2, pileupBuilders2));
+				}
 
 				if (filter.isValid(parallelPileup)) {
-					// TODO check and enhance see Location next() - duplicate...
-					if (location1.strand.integer() > 0) {
-						parallelPileup.setStrand(location1.strand);
-					} else if (location2.strand.integer() > 0) {
-						parallelPileup.setStrand(location2.strand);
-					}
+					
 					return true;
 				} else {
 					parallelPileup.setPileups1(new Pileup[0]);
