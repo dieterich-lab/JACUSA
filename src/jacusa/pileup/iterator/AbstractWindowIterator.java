@@ -11,6 +11,7 @@ import jacusa.pileup.Pileup;
 import jacusa.pileup.DefaultPileup.STRAND;
 import jacusa.pileup.builder.AbstractPileupBuilder;
 import jacusa.pileup.builder.PileupBuilderFactory;
+import jacusa.pileup.iterator.location.AbstractLocationAdvancer;
 import jacusa.pileup.iterator.variant.Variant;
 import jacusa.util.Coordinate;
 import jacusa.util.Location;
@@ -27,6 +28,8 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 	protected Variant filter;
 	
 	protected ParallelPileup parallelPileup;
+	
+	protected AbstractLocationAdvancer locationAdvance;
 	
 	public AbstractWindowIterator(final Coordinate coordinate, final Variant filter, final AbstractParameters parameters) {
 		this.coordinate = coordinate;
@@ -69,8 +72,6 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 	public abstract Location next();
 	public abstract FilterContainer[] getFilterContainers4Replicates1(Location location);
 	public abstract FilterContainer[] getFilterContainers4Replicates2(Location location);
-	protected abstract void advance();
-	protected abstract void advance(Location location);
 	
 	/**
 	 * 
@@ -178,7 +179,7 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 					return true;
 				} else {
 					// move along the window
-					advance(location);
+					locationAdvance.advanceLocation(location);
 				}
 			} else {
 				if (! adjustWindowStart(location, pileupBuilders)) {

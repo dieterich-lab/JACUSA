@@ -30,7 +30,10 @@ public abstract class AbstractFilterStorage<T> {
 			SAMRecord record) {
 		// override if needed	
 	}
-	
+
+	public int getDistance() {
+		return 0;
+	}
 
 	public void processAlignmentBlock(
 			int windowPosition, 
@@ -55,7 +58,8 @@ public abstract class AbstractFilterStorage<T> {
 	public void processAlignmentMatch(
 			int windowPosition, 
 			int readPosition, 
-			int genomicPosition, 
+			int genomicPosition,
+			final CigarElement cigarElement,
 			final SAMRecord record,
 			final int baseI,
 			final int qual) {

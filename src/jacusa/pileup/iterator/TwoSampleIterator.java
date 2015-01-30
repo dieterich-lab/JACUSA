@@ -2,8 +2,8 @@ package jacusa.pileup.iterator;
 
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
-import jacusa.pileup.Pileup;
 import jacusa.pileup.DefaultPileup.STRAND;
+import jacusa.pileup.Pileup;
 import jacusa.pileup.iterator.variant.Variant;
 import jacusa.util.Coordinate;
 import jacusa.util.Location;
@@ -24,72 +24,54 @@ public class TwoSampleIterator extends AbstractTwoSampleIterator {
 
 	@Override
 	public boolean hasNext() {
+		final Location location1 = locationAdvance.getLocation1();
+		final Location location2 = locationAdvance.getLocation2();
+
 		while (hasNext1() && hasNext2()) {
 			final int compare = new Integer(location1.genomicPosition).compareTo(location2.genomicPosition);
 
 			switch (compare) {
 
 			case -1:
-				// adjust actualPosition; instead of iterating jump to specific
-				// position
-				
-				if (location1.strand != STRAND.UNKNOWN || location2.strand != STRAND.UNKNOWN) {
-					location2.strand = STRAND.FORWARD;
-				}
+				// adjust actualPosition; instead of iterating jump to specific position
+				locationAdvance.setLocation1(location2);
 				adjustCurrentGenomicPosition(location2, pileupBuilders1);
-				location1.genomicPosition = location2.genomicPosition;
-				location1.strand = location2.strand;
+				
 				break;
 
 			case 0:
-				if (location1.strand != STRAND.UNKNOWN && location2.strand != STRAND.UNKNOWN && location1.strand != location2.strand) {
+				if (! locationAdvance.isValidStrand()) {
 					location1.strand = STRAND.REVERSE;
 					location2.strand = STRAND.REVERSE;
 					if (! isCovered(location1, pileupBuilders1) || ! isCovered(location2, pileupBuilders2)) {
-						advance();
+						locationAdvance.advance();
 						break;
 					}
 				}
-
-				parallelPileup.setContig(coordinate.getSequenceName());
-				parallelPileup.setPosition(location1.genomicPosition);
-
+				final Location location = locationAdvance.getLocation();
 				
-				// TODO check and enhance see Location next() - duplicate...
-				if (location1.strand.integer() > 0) {
-					parallelPileup.setStrand(location1.strand);
-					parallelPileup.setPileups1(getPileups(location1, pileupBuilders1));
-					parallelPileup.setPileups2(getPileups(location1, pileupBuilders2));
-				} else if (location2.strand.integer() > 0) {
-					parallelPileup.setStrand(location2.strand);
-					parallelPileup.setPileups1(getPileups(location2, pileupBuilders1));
-					parallelPileup.setPileups2(getPileups(location2, pileupBuilders2));
-				} else {
-					parallelPileup.setPileups1(getPileups(location1, pileupBuilders1));
-					parallelPileup.setPileups2(getPileups(location2, pileupBuilders2));
-				}
+				parallelPileup.setContig(coordinate.getSequenceName());
+				parallelPileup.setPosition(location.genomicPosition);
+
+				parallelPileup.setStrand(location.strand);
+				parallelPileup.setPileups1(getPileups(location, pileupBuilders1));
+				parallelPileup.setPileups2(getPileups(location, pileupBuilders2));
 
 				if (filter.isValid(parallelPileup)) {
-					
 					return true;
 				} else {
 					parallelPileup.setPileups1(new Pileup[0]);
 					parallelPileup.setPileups2(new Pileup[0]);
 
-					advance();
+					locationAdvance.advance();
 				}
 				break;
 
 			case 1:
-				// adjust actualPosition; instead of iterating jump to specific
-				// position
-				if (location1.strand != STRAND.UNKNOWN || location2.strand != STRAND.UNKNOWN) {
-					location1.strand = STRAND.FORWARD;
-				}
+				// adjust actualPosition; instead of iterating jump to specific position
+				locationAdvance.setLocation2(location1);
 				adjustCurrentGenomicPosition(location1, pileupBuilders2);
-				location2.genomicPosition = location1.genomicPosition;
-				location2.strand = location1.strand;
-
+				
 				break;
 			}
 		}
@@ -99,73 +81,12 @@ public class TwoSampleIterator extends AbstractTwoSampleIterator {
 
 	@Override
 	public Location next() {
-		// TODO
-		Location current = new Location(location1);;
-		if (location2.strand.integer() > 0) {
-			current = new Location(location2);
-		}
-		
+		Location current = new Location(locationAdvance.getLocation());;
+
 		// advance to the next position
-		advance();
+		locationAdvance.advance();
 
 		return current;
-	}
-
-	@Override
-	protected void advance() {
-		if (location1.strand == STRAND.UNKNOWN) {
-			if (location2.strand == STRAND.UNKNOWN || location2.strand == STRAND.REVERSE) {
-				++location1.genomicPosition;
-				++location2.genomicPosition;
-				return;
-			} else if (location2.strand == STRAND.FORWARD){
-				location2.strand = STRAND.REVERSE;
-				return;
-			}
-		}
-
-		if (location2.strand == STRAND.UNKNOWN) {
-			if (location1.strand == STRAND.REVERSE) {
-				++location1.genomicPosition;
-				++location2.genomicPosition;
-				return;
-			} else if (location1.strand == STRAND.FORWARD){
-				location1.strand = STRAND.REVERSE;
-				return;
-			}
-		}
-			
-		if (location1.strand == STRAND.FORWARD && location2.strand == STRAND.FORWARD) {
-			location1.strand = STRAND.REVERSE;
-			location2.strand = STRAND.REVERSE;
-			return;
-		} else {
-			++location1.genomicPosition;
-			++location2.genomicPosition;
-
-			location1.strand = STRAND.FORWARD;
-			location2.strand = STRAND.FORWARD;
-			return;	
-		}
-	}
-
-	@Override
-	protected void advance(Location location) {
-		switch (location.strand) {
-		case FORWARD:
-			location.strand = STRAND.REVERSE;
-			break;
-
-		case REVERSE:
-			++location.genomicPosition;
-			location.strand = STRAND.FORWARD;
-			break;
-
-		case UNKNOWN:
-		default:
-			++location.genomicPosition;
-			break;
-		}
 	}
 
 }

@@ -19,13 +19,13 @@ public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<
 	private boolean[] visited;
 	private BaseConfig baseConfig;
 
-	private int windowSize;
-	private WindowCache windowCache;
+	protected int windowSize;
+	protected WindowCache windowCache;
 
 	private SampleParameters sampleParameters;
 	
 	// container for current SAMrecord
-	private SAMRecord record;
+	protected SAMRecord record;
 
 	public AbstractWindowFilterStorage(final char c, 
 			final WindowCoordinates windowCoordinates, 

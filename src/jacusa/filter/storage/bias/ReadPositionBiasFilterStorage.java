@@ -4,6 +4,7 @@ import jacusa.cli.parameters.AbstractParameters;
 import jacusa.filter.storage.AbstractFilterStorage;
 import jacusa.pileup.BaseConfig;
 import jacusa.util.WindowCoordinates;
+import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
 
 public class ReadPositionBiasFilterStorage extends AbstractFilterStorage<BaseCount> {
@@ -38,6 +39,7 @@ public class ReadPositionBiasFilterStorage extends AbstractFilterStorage<BaseCou
 			int windowPosition, 
 			int readPosition, 
 			int genomicPosition, 
+			final CigarElement cigarElement,
 			final SAMRecord record,
 			final int baseI,
 			final int qual) {

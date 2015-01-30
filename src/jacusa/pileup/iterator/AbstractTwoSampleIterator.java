@@ -5,6 +5,10 @@ import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.FilterContainer;
 import jacusa.pileup.DefaultParallelPileup;
 import jacusa.pileup.builder.AbstractPileupBuilder;
+import jacusa.pileup.iterator.location.DDLocationAdvance;
+import jacusa.pileup.iterator.location.DULocationAdvance;
+import jacusa.pileup.iterator.location.UDLocationAdvance;
+import jacusa.pileup.iterator.location.UULocationAdvance;
 import jacusa.pileup.iterator.variant.Variant;
 import jacusa.util.Coordinate;
 import jacusa.util.Location;
@@ -14,12 +18,10 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 
 	// sample 1
 	protected SampleParameters sample1;
-	protected Location location1;
 	protected final AbstractPileupBuilder[] pileupBuilders1;	
 
 	// sample 2
 	protected SampleParameters sample2;
-	protected Location location2;
 	protected final AbstractPileupBuilder[] pileupBuilders2;
 
 	public AbstractTwoSampleIterator(
@@ -39,7 +41,7 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 				readers1,
 				sample1,
 				parameters);
-		location1 = initLocation(coordinate, sample1.getPileupBuilderFactory().isDirected(), pileupBuilders1);
+		final Location loc1 = initLocation(coordinate, sample1.getPileupBuilderFactory().isDirected(), pileupBuilders1);
 
 		this.sample2 = sample2;
 		pileupBuilders2 = createPileupBuilders(
@@ -48,17 +50,28 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 				readers2,
 				sample2,
 				parameters);
-		location2 = initLocation(coordinate, sample2.getPileupBuilderFactory().isDirected(), pileupBuilders2);
+		final Location loc2 = initLocation(coordinate, sample2.getPileupBuilderFactory().isDirected(), pileupBuilders2);
+		
+		// create the correct LocationAdvancer
+		if (sample1.getPileupBuilderFactory().isDirected() && sample2.getPileupBuilderFactory().isDirected()) {
+			locationAdvance = new DDLocationAdvance(loc1, loc2);
+		} else if (! sample1.getPileupBuilderFactory().isDirected() && ! sample2.getPileupBuilderFactory().isDirected()) {
+			locationAdvance = new UULocationAdvance(loc1, loc2);
+		} else if (sample1.getPileupBuilderFactory().isDirected() && ! sample2.getPileupBuilderFactory().isDirected()) {
+			locationAdvance = new DULocationAdvance(loc1, loc2);
+		} else if (! sample1.getPileupBuilderFactory().isDirected() && sample2.getPileupBuilderFactory().isDirected()) {
+			locationAdvance = new UDLocationAdvance(loc1, loc2);
+		}
 
 		parallelPileup = new DefaultParallelPileup(pileupBuilders1.length, pileupBuilders2.length);
 	}
 
 	protected boolean hasNext1() {
-		return hasNext(location1, pileupBuilders1);
+		return hasNext(locationAdvance.getLocation1(), pileupBuilders1);
 	}
 
 	protected boolean hasNext2() {
-		return hasNext(location2, pileupBuilders2);
+		return hasNext(locationAdvance.getLocation2(), pileupBuilders2);
 	}
 	
 	public FilterContainer[] getFilterContainers4Replicates1(Location location) {
@@ -68,5 +81,5 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 	public FilterContainer[] getFilterContainers4Replicates2(Location location) {
 		return getFilterCaches4Replicates(location, pileupBuilders2);
 	}
-
+	
 }

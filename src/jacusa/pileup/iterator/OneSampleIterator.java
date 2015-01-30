@@ -9,6 +9,7 @@ import jacusa.util.Coordinate;
 import jacusa.util.Location;
 import net.sf.samtools.SAMFileReader;
 
+// FIXME use AbstractLocationAdvancer
 public class OneSampleIterator extends AbstractOneSampleIterator {
 
 	public OneSampleIterator(
@@ -18,25 +19,6 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 			final SampleParameters sample,
 			final AbstractParameters parameters) {
 		super(annotatedCoordinate, filter, readers, sample, parameters);
-	}
-
-	@Override
-	protected void advance(Location location) {
-		switch (location.strand) {
-		case FORWARD:
-			location.strand = STRAND.REVERSE;
-			break;
-		
-		case REVERSE:
-			location.strand = STRAND.FORWARD;
-			location.genomicPosition++;
-			break;
-		
-		case UNKNOWN:
-		default:
-			location.genomicPosition++;
-			break;
-		}
 	}
 
 	@Override
