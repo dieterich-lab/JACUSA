@@ -24,8 +24,8 @@ public class TwoSampleIterator extends AbstractTwoSampleIterator {
 
 	@Override
 	public boolean hasNext() {
-		final Location location1 = locationAdvance.getLocation1();
-		final Location location2 = locationAdvance.getLocation2();
+		final Location location1 = locationAdvancer.getLocation1();
+		final Location location2 = locationAdvancer.getLocation2();
 
 		while (hasNext1() && hasNext2()) {
 			final int compare = new Integer(location1.genomicPosition).compareTo(location2.genomicPosition);
@@ -34,21 +34,21 @@ public class TwoSampleIterator extends AbstractTwoSampleIterator {
 
 			case -1:
 				// adjust actualPosition; instead of iterating jump to specific position
-				locationAdvance.setLocation1(location2);
+				locationAdvancer.setLocation1(location2);
 				adjustCurrentGenomicPosition(location2, pileupBuilders1);
 				
 				break;
 
 			case 0:
-				if (! locationAdvance.isValidStrand()) {
+				if (! locationAdvancer.isValidStrand()) {
 					location1.strand = STRAND.REVERSE;
 					location2.strand = STRAND.REVERSE;
 					if (! isCovered(location1, pileupBuilders1) || ! isCovered(location2, pileupBuilders2)) {
-						locationAdvance.advance();
+						locationAdvancer.advance();
 						break;
 					}
 				}
-				final Location location = locationAdvance.getLocation();
+				final Location location = locationAdvancer.getLocation();
 				
 				parallelPileup.setContig(coordinate.getSequenceName());
 				parallelPileup.setPosition(location.genomicPosition);
@@ -60,16 +60,17 @@ public class TwoSampleIterator extends AbstractTwoSampleIterator {
 				if (filter.isValid(parallelPileup)) {
 					return true;
 				} else {
+					// reset
 					parallelPileup.setPileups1(new Pileup[0]);
 					parallelPileup.setPileups2(new Pileup[0]);
 
-					locationAdvance.advance();
+					locationAdvancer.advance();
 				}
 				break;
 
 			case 1:
 				// adjust actualPosition; instead of iterating jump to specific position
-				locationAdvance.setLocation2(location1);
+				locationAdvancer.setLocation2(location1);
 				adjustCurrentGenomicPosition(location1, pileupBuilders2);
 				
 				break;
@@ -81,10 +82,10 @@ public class TwoSampleIterator extends AbstractTwoSampleIterator {
 
 	@Override
 	public Location next() {
-		Location current = new Location(locationAdvance.getLocation());;
+		Location current = new Location(locationAdvancer.getLocation());;
 
 		// advance to the next position
-		locationAdvance.advance();
+		locationAdvancer.advance();
 
 		return current;
 	}

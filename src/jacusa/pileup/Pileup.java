@@ -23,6 +23,6 @@ public interface Pileup {
 	 Counts getCounts();
 
 	 void invertStrand();
-	 Pileup complement();
+	 Pileup invertBaseCount();
 
 }

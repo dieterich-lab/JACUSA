@@ -5,7 +5,6 @@ import java.util.Arrays;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 
-import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.builder.WindowCache;
 import jacusa.util.WindowCoordinates;
@@ -44,7 +43,20 @@ public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<
 		baseConfig = parameters.getBaseConfig();
 	}
 
-	protected void parseRecord(int windowPosition, int length, int readPosition, SAMRecord record) {
+	// assume baseI and qual are correct
+	protected void addBaseUnique(int windowPosition, int baseI, int qual, SAMRecord record) {
+		if (this.record != record) {
+			this.record = record;
+			Arrays.fill(visited, false);
+		}
+
+		if (windowPosition >= 0 && windowPosition < windowSize && ! visited[windowPosition]) {
+			windowCache.add(windowPosition, baseI, qual);
+			visited[windowPosition] = true;
+		}
+	}
+	
+	protected void addRegion(int windowPosition, int length, int readPosition, SAMRecord record) {
 		if (this.record != record) {
 			this.record = record;
 			Arrays.fill(visited, false);
@@ -70,7 +82,12 @@ public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<
 
 		for (int i = 0; i < length && windowPosition + i < windowSize && readPosition + i < record.getReadLength(); ++i) {
 			if (! visited[windowPosition + i]) {
-				int baseI = baseConfig.getBaseI(record.getReadBases()[readPosition + i]);	
+				int baseI = -1; 	
+				if (sampleParameters.getPileupBuilderFactory().isDirected() && record.getReadNegativeStrandFlag()) {
+					baseI = baseConfig.getComplementBaseI(record.getReadBases()[readPosition + i]);
+				} else {
+					baseI = baseConfig.getBaseI(record.getReadBases()[readPosition + i]);
+				}
 
 				// corresponds to N -> ignore
 				if (baseI < 0) {
@@ -78,9 +95,7 @@ public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<
 				}
 
 				byte qual = record.getBaseQualities()[readPosition + i];
-				// quick fix
-				qual = (byte)Math.min(qual, Phred2Prob.MAX_Q - 1);
-
+				// int genomicPosition = windowCache.getWindowCoordinates().getGenomicPosition(windowPosition + i);
 				if (qual >= sampleParameters.getMinBASQ()) {
 					windowCache.add(windowPosition + i, baseI, qual);
 					visited[windowPosition + i] = true;

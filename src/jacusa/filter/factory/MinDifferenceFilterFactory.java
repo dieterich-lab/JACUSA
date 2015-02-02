@@ -5,40 +5,39 @@ import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.AbstractStorageFilter;
 import jacusa.filter.storage.AbstractFilterStorage;
 import jacusa.filter.storage.DummyFilterFillCache;
-import jacusa.pileup.Counts;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.iterator.AbstractWindowIterator;
 import jacusa.util.Location;
 import jacusa.util.WindowCoordinates;
 
-public class RareEventFilterFactory extends AbstractFilterFactory<Void> {
+public class MinDifferenceFilterFactory extends AbstractFilterFactory<Void> {
 
-	private static final int POOL			= 1;
-	private int pool;
+	private static final int PROCESS_REPLICATES	= 0; // 1 = pool, 0 = avg.
+	private int processReplicates;
 	
-	private static final int MIN_READS 		= 2;
+	private static final int MIN_READS 		= 0;
 	private int min_reads;
 
 	private static final double MIN_LEVEL 	= 0.1;
 	private double min_level;
 
-	public RareEventFilterFactory(AbstractParameters paramters) {
-		super('R', "Rare event filter. Default: " + 
-				Integer.toString(POOL) + ":" + Integer.toString(MIN_READS) + ":" + Double.toString(MIN_LEVEL) + " (R:pool:reads:level)");
-		pool 		= POOL;
+	public MinDifferenceFilterFactory(AbstractParameters paramters) {
+		super('L', "Min difference filter. Default: " + 
+				Integer.toString(PROCESS_REPLICATES) + ":" + Integer.toString(MIN_READS) + ":" + Double.toString(MIN_LEVEL) + " (R:pool:reads:level)");
+		processReplicates 		= PROCESS_REPLICATES;
 		min_reads 	= MIN_READS;
 		min_level 	= MIN_LEVEL;
 	}
 
 	@Override
 	public AbstractStorageFilter<Void> createStorageFilter() {
-		switch (pool) {
+		switch (processReplicates) {
 		case 0:
-			return new RareFilter(getC());
+			return new MinDiffAvgFilter(getC());
 
 		default:
-			return new PoolRareFilter(getC());
+			return new MinDiffPooledFilter(getC());
 		}
 	}
 
@@ -78,7 +77,7 @@ public class RareEventFilterFactory extends AbstractFilterFactory<Void> {
 	}
 
 	public void setPool(final int pool) {
-		this.pool = pool;
+		this.processReplicates = pool;
 	}
 
 	public final void setReads(final int reads) {
@@ -97,68 +96,62 @@ public class RareEventFilterFactory extends AbstractFilterFactory<Void> {
 		return min_level;
 	}
 
-	private boolean isValid(final int baseI, final int coverage, final Counts counts) {
-		int reads = counts.getBaseCount(baseI);
-		double level = (double)reads / (double)coverage;
+	private class MinDiffPooledFilter extends AbstractStorageFilter<Void> {
 
-		if (level >= this.min_level && reads >= this.min_reads) {
-			return true;
-		}
-
-		return false;
-	}
-	
-	private class PoolRareFilter extends AbstractStorageFilter<Void> {
-
-		public PoolRareFilter(final char c) {
+		public MinDiffPooledFilter(final char c) {
 			super(c);
 		}
 
 		@Override
 		public boolean filter(final ParallelPileup parallelPileup, final Location location, final AbstractWindowIterator windowIterator) {
-			for (int baseI : parallelPileup.getPooledPileup1().getAlleles()) {
-				if (! isValid(baseI, parallelPileup.getPooledPileup1().getCoverage(), parallelPileup.getPooledPileup1().getCounts())) {
-					return true;
-				}
-			}
-			for (int baseI : parallelPileup.getPooledPileup2().getAlleles()) {
-				if (! isValid(baseI, parallelPileup.getPooledPileup2().getCoverage(), parallelPileup.getPooledPileup2().getCounts())) {
-					return true;
+			for (int baseI : parallelPileup.getPooledPileup().getAlleles()) {
+				int diffCount = Math.abs(parallelPileup.getPooledPileup1().getCounts().getBaseCount(baseI) - parallelPileup.getPooledPileup2().getCounts().getBaseCount(baseI));
+				int total = parallelPileup.getPooledPileup1().getCounts().getBaseCount(baseI) + parallelPileup.getPooledPileup2().getCounts().getBaseCount(baseI);
+				
+				double diffLevel = (double) diffCount / (double)total;  
+				if (diffCount >= min_reads && diffLevel >= min_level) {
+					return false;
 				}
 			}
 
-			return false;
+			return true;
 		}
 
 	}
 
-	private class RareFilter extends AbstractStorageFilter<Void> {
+	private class MinDiffAvgFilter extends AbstractStorageFilter<Void> {
 		
-		public RareFilter(final char c) {
+		public MinDiffAvgFilter(final char c) {
 			super(c);
 		}
 
 		@Override
 		public boolean filter(final ParallelPileup parallelPileup, final Location location, final AbstractWindowIterator windowIterator) {
-			if (filter(parallelPileup.getPooledPileup1().getAlleles(), parallelPileup.getPileups1()) || 
-					filter(parallelPileup.getPooledPileup2().getAlleles(), parallelPileup.getPileups2())) {
-				return true;
-			}
+			for (int baseI : parallelPileup.getPooledPileup().getAlleles()) {
+				int count1 = 0;
+				for (Pileup pileup : parallelPileup.getPileups1()) {
+					count1 += pileup.getCounts().getBaseCount(baseI);
+				}
+				double avgCount1 = (double)count1 / parallelPileup.getPileups1().length;
+				int count2 = 0;
+				for (Pileup pileup : parallelPileup.getPileups2()) {
+					count2 += pileup.getCounts().getBaseCount(baseI);
+				}
+				double avgCount2 = (double)count2 / parallelPileup.getPileups2().length;
 
-			return false;
-		}
-
-		public boolean filter(int[] bases, Pileup[] pileups) {
-			for (Pileup pileup : pileups) {
-				for (int baseI : bases) {
-					if(! isValid(baseI, pileup.getCoverage(), pileup.getCounts())) {
-						return false;
-					}
+				double totalAvgCount = avgCount1 + avgCount2;
+				double avgDiffCount = Math.abs(avgCount1 -  avgCount2);
+				double avgDiffLevel = avgDiffCount / (double)totalAvgCount;
+				if (avgDiffCount >= (double)min_reads && avgDiffLevel >= min_level) {
+					return false;
 				}
 			}
-	
+
 			return true;
 		}
+		
+		
+		
 	}	
 
 }

@@ -27,16 +27,24 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 			final SAMFileReader reader, 
 			final SampleParameters sample,
 			final AbstractParameters parameters) {
-		super(annotatedCoordinate, STRAND.UNKNOWN, reader, sample, parameters);
+		super(annotatedCoordinate, STRAND.FORWARD, reader, sample, parameters);
 
+		/* Ar[0, 1]
+		 * 0 -> reversed
+		 * 1 -> forward
+		 * 
+		 * Depending on the observer strand we switch 
+		 * between 0, 1
+		 */
+		
 		windowCaches	= new WindowCache[2];
 		windowCaches[0] = new WindowCache(windowCoordinates, baseConfig.getBaseLength());
 		windowCaches[1] = windowCache;
 
 		filterContainers = new FilterContainer[2];
-		filterContainers[0] = parameters.getFilterConfig().createFilterContainer(windowCoordinates, sampleParameters);
+		filterContainers[0] = parameters.getFilterConfig().createFilterContainer(windowCoordinates, STRAND.REVERSE, sampleParameters);
 		filterContainers[1] = filterContainer;
-		
+
 		final BaseConfig baseConfig = parameters.getBaseConfig();
 		byte2intAr = new int[2][baseConfig.getByte2Int().length];
 		byte2intAr[0] = baseConfig.getComplementByte2Int();
@@ -64,7 +72,7 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 		int i = strand.integer() - 1;
 		return filterContainers[i];
 	}
-	
+
 	@Override
 	public Pileup getPileup(int windowPosition, STRAND strand) {
 		final Pileup pileup = new DefaultPileup(
@@ -80,6 +88,7 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 		pileup.getCounts().setBaseCount(windowCache.getBaseCount(windowPosition));
 		pileup.getCounts().setQualCount(windowCache.getQualCount(windowPosition));
 
+		// for DirectedPileupBuilder the basesCounts in the pileup are already inverted (when on the reverse strand) 
 		return pileup;
 	}
 
@@ -101,10 +110,11 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 			strand = STRAND.FORWARD;
 		}
 		int i = strand.integer() - 1;
-		byte2int = byte2intAr[i];
+		// makes sure that for reads on the reverse strand the complement is stored in pileup and filters
+		byte2int = byte2intAr[i]; 
 		filterContainer = filterContainers[i];
 		windowCache = windowCaches[i];
-		
+
 		super.processRecord(record);
 	}
 

@@ -24,7 +24,6 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 			final SampleParameters sample,
 			final AbstractParameters parameters) {
 		super(annotatedCoordinate, STRAND.UNKNOWN, reader, sample, parameters);
-
 	}
 
 	public FilterContainer getFilterContainer(int windowPosition, STRAND strand) {
@@ -37,12 +36,13 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 				windowCoordinates.getGenomicPosition(windowPosition), 
 				strand, baseConfig.getBaseLength());
 
-		// copy base and qual info from cache
+		// set base and qual info from cache
 		pileup.getCounts().setBaseCount(windowCache.getBaseCount(windowPosition));
 		pileup.getCounts().setQualCount(windowCache.getQualCount(windowPosition));
 
-		if (STRAND.REVERSE == strand) {
-			pileup = pileup.complement();
+		// and complement if needed
+		if (strand == STRAND.REVERSE) {
+			pileup = pileup.invertBaseCount();
 		}
 
 		return pileup;
@@ -53,7 +53,7 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		windowCache.clear();
 		filterContainer.clear();
 	}
-	
+
 	@Override
 	protected void add2WindowCache(int windowPosition, int baseI, int qual, STRAND strand) {
 		windowCache.add(windowPosition, baseI, qual);
@@ -66,11 +66,13 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 	 */
 	@Override
 	public boolean isCovered(int windowPosition, STRAND strand) {
+		// for undirectedPileup we ignore strand
 		return getCoverage(windowPosition, STRAND.UNKNOWN) >= sampleParameters.getMinCoverage();
 	}
 
 	@Override
 	public int getCoverage(int windowPosition, STRAND strand) {
+		// for undirectedPileup we ignore strand
 		return windowCache.getCoverage(windowPosition);
 	}
 

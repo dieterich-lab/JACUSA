@@ -4,7 +4,7 @@ import jacusa.util.Location;
 
 public class UULocationAdvance extends AbstractLocationAdvancer {
 
-	public UULocationAdvance(final Location loc1, final Location loc2) {
+	protected UULocationAdvance(final Location loc1, final Location loc2) {
 		super(loc1, loc2);
 	}
 

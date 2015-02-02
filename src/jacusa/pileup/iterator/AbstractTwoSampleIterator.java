@@ -1,14 +1,12 @@
 package jacusa.pileup.iterator;
 
+
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.FilterContainer;
 import jacusa.pileup.DefaultParallelPileup;
 import jacusa.pileup.builder.AbstractPileupBuilder;
-import jacusa.pileup.iterator.location.DDLocationAdvance;
-import jacusa.pileup.iterator.location.DULocationAdvance;
-import jacusa.pileup.iterator.location.UDLocationAdvance;
-import jacusa.pileup.iterator.location.UULocationAdvance;
+import jacusa.pileup.iterator.location.AbstractLocationAdvancer;
 import jacusa.pileup.iterator.variant.Variant;
 import jacusa.util.Coordinate;
 import jacusa.util.Location;
@@ -53,25 +51,19 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 		final Location loc2 = initLocation(coordinate, sample2.getPileupBuilderFactory().isDirected(), pileupBuilders2);
 		
 		// create the correct LocationAdvancer
-		if (sample1.getPileupBuilderFactory().isDirected() && sample2.getPileupBuilderFactory().isDirected()) {
-			locationAdvance = new DDLocationAdvance(loc1, loc2);
-		} else if (! sample1.getPileupBuilderFactory().isDirected() && ! sample2.getPileupBuilderFactory().isDirected()) {
-			locationAdvance = new UULocationAdvance(loc1, loc2);
-		} else if (sample1.getPileupBuilderFactory().isDirected() && ! sample2.getPileupBuilderFactory().isDirected()) {
-			locationAdvance = new DULocationAdvance(loc1, loc2);
-		} else if (! sample1.getPileupBuilderFactory().isDirected() && sample2.getPileupBuilderFactory().isDirected()) {
-			locationAdvance = new UDLocationAdvance(loc1, loc2);
-		}
+		locationAdvancer = AbstractLocationAdvancer.getInstance(
+				sample1.getPileupBuilderFactory().isDirected(), loc1, 
+				sample2.getPileupBuilderFactory().isDirected(), loc2);
 
 		parallelPileup = new DefaultParallelPileup(pileupBuilders1.length, pileupBuilders2.length);
 	}
 
 	protected boolean hasNext1() {
-		return hasNext(locationAdvance.getLocation1(), pileupBuilders1);
+		return hasNext(locationAdvancer.getLocation1(), pileupBuilders1);
 	}
 
 	protected boolean hasNext2() {
-		return hasNext(locationAdvance.getLocation2(), pileupBuilders2);
+		return hasNext(locationAdvancer.getLocation2(), pileupBuilders2);
 	}
 	
 	public FilterContainer[] getFilterContainers4Replicates1(Location location) {

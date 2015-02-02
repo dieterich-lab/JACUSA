@@ -29,7 +29,7 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 	
 	protected ParallelPileup parallelPileup;
 	
-	protected AbstractLocationAdvancer locationAdvance;
+	protected AbstractLocationAdvancer locationAdvancer;
 	
 	public AbstractWindowIterator(final Coordinate coordinate, final Variant filter, final AbstractParameters parameters) {
 		this.coordinate = coordinate;
@@ -42,7 +42,7 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 	protected Location initLocation(Coordinate coordinate, final boolean isDirectional, final AbstractPileupBuilder[] pileupBuilders) {
 		parallelPileup.setContig(coordinate.getSequenceName());
 
-		// not within coordinate
+		// Default value for: not within coordinate
 		Location location = new Location(coordinate.getSequenceName(), Integer.MAX_VALUE, STRAND.UNKNOWN);
 		if (isDirectional) {
 			location.strand = STRAND.FORWARD;
@@ -104,7 +104,7 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 	protected boolean isCovered(Location location, AbstractPileupBuilder[] pileupBuilders) {
 		int windowPosition = pileupBuilders[0]
 				.getWindowCoordinates()
-				.convertGenomicPosition2WindowPosition(location.genomicPosition);
+				.convert2WindowPosition(location.genomicPosition);
 		if (windowPosition < 0) {
 			return false;
 		}
@@ -122,7 +122,7 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 		int n = pileupBuilders.length;
 		Pileup[] pileups = new DefaultPileup[n];
 
-		int windowPosition = pileupBuilders[0].getWindowCoordinates().convertGenomicPosition2WindowPosition(location.genomicPosition);
+		int windowPosition = pileupBuilders[0].getWindowCoordinates().convert2WindowPosition(location.genomicPosition);
 		for(int i = 0; i < n; ++i) {
 			pileups[i] = pileupBuilders[i].getPileup(windowPosition, location.strand);
 		}
@@ -134,7 +134,7 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 		int replicates = pileupBuilders.length;
 		FilterContainer[] filterContainers = new FilterContainer[replicates];
 
-		int windowPosition = pileupBuilders[0].getWindowCoordinates().convertGenomicPosition2WindowPosition(location.genomicPosition);
+		int windowPosition = pileupBuilders[0].getWindowCoordinates().convert2WindowPosition(location.genomicPosition);
 		for (int i = 0; i < replicates; ++i) {
 			filterContainers[i] = pileupBuilders[i].getFilterContainer(windowPosition, location.strand);
 		}
@@ -179,7 +179,7 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 					return true;
 				} else {
 					// move along the window
-					locationAdvance.advanceLocation(location);
+					locationAdvancer.advanceLocation(location);
 				}
 			} else {
 				if (! adjustWindowStart(location, pileupBuilders)) {

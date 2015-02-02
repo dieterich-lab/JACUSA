@@ -11,23 +11,30 @@ import net.sf.samtools.CigarOperator;
 
 import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.filter.storage.AbstractFilterStorage;
+import jacusa.pileup.DefaultPileup.STRAND;
 import jacusa.util.WindowCoordinates;
 
 public class FilterContainer {
 
 	private FilterConfig filterConfig;
-	private AbstractFilterStorage<?>[] filters;
+	private AbstractFilterStorage<?>[] filterStorage;
 	private List<AbstractFilterStorage<?>> cigarFilters;
 	private List<AbstractFilterStorage<?>> processRecordFilters;
-	
+
 	private WindowCoordinates windowCoordinates;
+	private STRAND strand;
 	
 	private Map<CigarOperator, Set<AbstractFilterStorage<?>>> cigar2cFilter;
 	
-	public FilterContainer(final FilterConfig filterConfig, final AbstractFilterStorage<?>[] filters, WindowCoordinates windowCoordinates) {
+	public FilterContainer(
+			final FilterConfig filterConfig, 
+			final AbstractFilterStorage<?>[] filters, 
+			final WindowCoordinates windowCoordinates,
+			final STRAND strand) {
 		this.filterConfig = filterConfig;
 		this.windowCoordinates = windowCoordinates;
-		this.filters = filters;
+		this.filterStorage = filters;
+		this.strand = strand;
 		
 		cigarFilters = new ArrayList<AbstractFilterStorage<?>>(filters.length);
 		processRecordFilters = new ArrayList<AbstractFilterStorage<?>>(filters.length);
@@ -44,6 +51,7 @@ public class FilterContainer {
 			}
 			
 			if (filterFactory.hasFilterByCigar()) {
+				cigarFilters.add(filter);
 				for (CigarOperator cigarOperator : filterFactory.getCigarOperators()) {
 					if (! cigar2cFilter.containsKey(cigarOperator)) {
 						cigar2cFilter.put(cigarOperator, new HashSet<AbstractFilterStorage<?>>());
@@ -54,6 +62,10 @@ public class FilterContainer {
 		}
 	}
 
+	public STRAND getStrand() {
+		return strand;
+	}
+
 	public void clear() {
 		for (AbstractFilterStorage<?> filter : cigarFilters) {
 			filter.clearContainer();
@@ -61,7 +73,7 @@ public class FilterContainer {
 	}
 
 	public AbstractFilterStorage<?> get(int filterI) {
-		return filters[filterI];
+		return filterStorage[filterI];
 	}
 	
 	public FilterConfig getFilterConfig() {

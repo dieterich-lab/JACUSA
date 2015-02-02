@@ -4,8 +4,6 @@ import jacusa.phred2prob.Phred2Prob;
 import jacusa.util.WindowCoordinates;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 // TODO similar to base count -> try to merge or reuse code
 public class WindowCache {
@@ -17,8 +15,6 @@ public class WindowCache {
 	private int[][] baseCount;
 	private int[][][] qualCount;
 
-	Set<Integer> bases;
-	
 	public WindowCache(final WindowCoordinates windowCoordinates, final int baseLength) {
 		this.windowCoordinates 	= windowCoordinates;
 		this.baseLength 		= baseLength;
@@ -27,8 +23,6 @@ public class WindowCache {
 		coverage 				= new int[windowSize];
 		baseCount 				= new int[windowSize][baseLength];
 		qualCount 				= new int[windowSize][baseLength][Phred2Prob.MAX_Q];
-
-		bases					= new HashSet<Integer>(baseLength);
 	}
 
 	public void clear() {
@@ -42,16 +36,18 @@ public class WindowCache {
 		}
 	}
 
-	public void add(final int windowPosition, final int baseI, final int qual) {
+	public void add(final int windowPosition, final int baseI, int qual) {
 		coverage[windowPosition]++;
 		baseCount[windowPosition][baseI]++;
+		// make sure we don't exceed...
+		Math.min(Phred2Prob.MAX_Q - 1, qual);
 		qualCount[windowPosition][baseI][qual]++;
 	}
-	
+
 	public int getCoverage(final int windowPosition) {
 		return coverage[windowPosition];
 	}
-	
+
 	public int[] getBaseCount(final int windowPosition) {
 		return baseCount[windowPosition];
 	}

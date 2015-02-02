@@ -28,7 +28,7 @@ public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 		cigarOperator.add(CigarOperator.I);
 		cigarOperator.add(CigarOperator.D);
 		cigarOperator.add(CigarOperator.N);
-		cigarOperator.add(CigarOperator.M);
+		// cigarOperator.add(CigarOperator.M);
 	}
 	
 	public DistanceFilterFactory(AbstractParameters parameters) {

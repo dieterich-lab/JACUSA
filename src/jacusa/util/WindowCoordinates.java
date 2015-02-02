@@ -52,7 +52,7 @@ public class WindowCoordinates {
 	 * @return
 	 */
 	public int getGenomicWindowEnd() {
-		return Math.min(genomicWindowStart + windowSize - 1, maxGenomicPosition);
+		return Math.min(genomicWindowStart + windowSize -1, maxGenomicPosition);
 	}
 
 	/**
@@ -80,14 +80,36 @@ public class WindowCoordinates {
 	 * @param genomicPosition
 	 * @return
 	 */
-	public int convertGenomicPosition2WindowPosition(int genomicPosition) {
+	public int convert2WindowPosition(final int genomicPosition) {
+		/*
 		if(genomicPosition < genomicWindowStart) {
 			return -2;
 		} else if(genomicPosition > getGenomicWindowEnd()){
 			return -1;
 		}
+		*/
 
 		return genomicPosition - genomicWindowStart;
+	}
+
+	public int getOrientation(final int genomicPosition) {
+		if(genomicPosition < genomicWindowStart) {
+			return -1;
+		}
+		
+		if(genomicPosition > getGenomicWindowEnd()){
+			return 1;
+		}
+		
+		return 0;
+	}
+	
+	public boolean isUpstream(final int genomicPosition) {
+		return genomicPosition < genomicWindowStart;
+	}
+	
+	public boolean isDownstream(final int genomicPosition) {
+		return genomicPosition > getGenomicWindowEnd();
 	}
 
 	/**

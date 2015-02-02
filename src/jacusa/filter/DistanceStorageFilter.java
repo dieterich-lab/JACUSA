@@ -21,8 +21,8 @@ public class DistanceStorageFilter extends AbstractWindowStorageFilter {
 
 	@Override
 	public boolean filter(ParallelPileup parallelPileup, Location location, AbstractWindowIterator windowIterator) {
-		Counts[] counts1 = getCounts(parallelPileup.getPosition(), windowIterator.getFilterContainers4Replicates1(location));
-		Counts[] counts2 = getCounts(parallelPileup.getPosition(), windowIterator.getFilterContainers4Replicates2(location));
+		Counts[] counts1 = getCounts(location, windowIterator.getFilterContainers4Replicates1(location));
+		Counts[] counts2 = getCounts(location, windowIterator.getFilterContainers4Replicates2(location));
 
 		final int[] variantBaseIs = countFilter.getVariantBaseIs(parallelPileup);
 		if (variantBaseIs.length == 0 || variantBaseIs.length > 1) {

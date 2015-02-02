@@ -13,6 +13,21 @@ public abstract class AbstractLocationAdvancer {
 		this.loc2 = loc2;
 	}
 	
+	public static AbstractLocationAdvancer getInstance(boolean isDirected1, Location loc1, boolean isDirected2, Location loc2) { 
+		// create the correct LocationAdvancer
+		if (isDirected1 && isDirected2) {
+			return new DDLocationAdvance(loc1, loc2);
+		} else if (! isDirected1 && ! isDirected2) {
+			return new UULocationAdvance(loc1, loc2);
+		} else if (isDirected1 && ! isDirected2) {
+			return new DULocationAdvance(loc1, loc2);
+		} else if (! isDirected1 && isDirected2) {
+			return new UDLocationAdvance(loc1, loc2);
+		} else {
+			return null; // FIXME
+		}
+	}
+	
 	public Location getLocation1() {
 		return loc1;
 	}

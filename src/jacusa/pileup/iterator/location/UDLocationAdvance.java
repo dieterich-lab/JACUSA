@@ -5,7 +5,7 @@ import jacusa.util.Location;
 
 public class UDLocationAdvance extends AbstractLocationAdvancer {
 
-	public UDLocationAdvance(final Location loc1, final Location loc2) {
+	protected UDLocationAdvance(final Location loc1, final Location loc2) {
 		super(loc1, loc2);
 	}
 
@@ -24,7 +24,7 @@ public class UDLocationAdvance extends AbstractLocationAdvancer {
 
 	@Override
 	void advanceLocation1() {
-		loc1.genomicPosition++;
+		++loc1.genomicPosition;
 	}
 
 	@Override

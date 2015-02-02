@@ -144,7 +144,7 @@ public class DefaultPileup implements Pileup {
 	}
 
 	@Override
-	public Pileup complement() {
+	public Pileup invertBaseCount() {
 		final Pileup complement = new DefaultPileup(this);
 
 		// invert base and qual count

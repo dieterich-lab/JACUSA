@@ -35,13 +35,6 @@ public class TwoSampleCallWorker extends AbstractCallWorker {
 	protected AbstractWindowIterator buildIterator(final Coordinate coordinate) {
 		SampleParameters sample1 = parameters.getSample1();
 		SampleParameters sample2 = parameters.getSample2();
-
-		/*
-		if (sample1.getPileupBuilderFactory().isDirected() || 
-				sample2.getPileupBuilderFactory().isDirected()) {
-			return new TwoSampleIterator(coordinate, variant, readers1, readers2, sample1, sample2, parameters);
-		}
-		*/
 		
 		return new TwoSampleIterator(coordinate, variant, readers1, readers2, sample1, sample2, parameters);
 	}

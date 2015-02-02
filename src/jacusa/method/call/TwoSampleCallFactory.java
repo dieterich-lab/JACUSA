@@ -40,6 +40,7 @@ import jacusa.filter.factory.DistanceFilterFactory;
 import jacusa.filter.factory.HomopolymerFilterFactory;
 import jacusa.filter.factory.HomozygousFilterFactory;
 import jacusa.filter.factory.INDEL_DistanceFilterFactory;
+import jacusa.filter.factory.MinDifferenceFilterFactory;
 import jacusa.filter.factory.ReadPositionDistanceFilterFactory;
 import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
 //import jacusa.filter.factory.MAPQBiasFilterFactory;
@@ -227,6 +228,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 				new HomozygousFilterFactory(parameters),
 				new HomopolymerFilterFactory(parameters),
 				new RareEventFilterFactory(parameters),
+				new MinDifferenceFilterFactory(parameters)
 //				new FDRFilterFactory(parameters.getStatisticParameters()),
 		};
 		for (AbstractFilterFactory<?> filterFactory : filterFactories) {

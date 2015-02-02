@@ -14,7 +14,7 @@ import jacusa.util.WindowCoordinates;
 
 public class HomopolymerFilterFactory extends AbstractFilterFactory<WindowCache> {
 
-	private static int LENGTH = 5;
+	private static int LENGTH = 6;
 	private int length;
 	private AbstractParameters parameters;
 	

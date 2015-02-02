@@ -50,10 +50,10 @@ public class DebugResultFormat extends AbstractResultFormat {
 		sb.append(getSEP());
 		
 		// (1) first sample  infos
-		addSampleHeader(sb, 'A', parallelPileup.getN1());
+		addSampleHeader(sb, '1', parallelPileup.getN1());
 		sb.append(getSEP());
 		// (2) second sample  infos
-		addSampleHeader(sb, 'B', parallelPileup.getN2());
+		addSampleHeader(sb, '2', parallelPileup.getN2());
 		
 		return sb.toString();
 	}

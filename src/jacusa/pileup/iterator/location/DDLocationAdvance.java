@@ -5,7 +5,7 @@ import jacusa.util.Location;
 
 public class DDLocationAdvance extends AbstractLocationAdvancer {
 
-	public DDLocationAdvance(final Location loc1, final Location loc2) {
+	protected DDLocationAdvance(final Location loc1, final Location loc2) {
 		super(loc1, loc2);
 	}
 
