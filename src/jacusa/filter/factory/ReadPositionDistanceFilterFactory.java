@@ -24,9 +24,6 @@ public class ReadPositionDistanceFilterFactory extends AbstractFilterFactory<Win
 	private AbstractParameters parameters;
 
 	private static Set<CigarOperator> cigarOperator = new HashSet<CigarOperator>();
-	static {
-		// cigarOperator.add(CigarOperator.M);
-	}
 
 	public ReadPositionDistanceFilterFactory(AbstractParameters parameters) {
 		super(

@@ -46,7 +46,7 @@ public class DistanceFilterStorage extends AbstractWindowFilterStorage {
 		// read end
 		alignmentBlock = alignmentBlocks.get(alignmentBlocks.size() - 1); // get last alignment
 		windowPosition = windowCache.getWindowCoordinates().convert2WindowPosition(alignmentBlock.getReferenceStart() + alignmentBlock.getLength() - 1);
-		// note alignmentBlock.getReadStart() is 1-indexed
+		// note: alignmentBlock.getReadStart() is 1-indexed
 		addRegion(windowPosition - distance, distance, alignmentBlock.getReadStart() - 1 + alignmentBlock.getLength() - 1 - distance, record);
 	}
 	

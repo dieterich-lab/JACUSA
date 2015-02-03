@@ -416,11 +416,12 @@ public abstract class AbstractPileupBuilder {
 				
 				switch (orientation) {
 				case 1:
-					// TODO test
 					if ((genomicPosition + offset) - windowCoordinates.getGenomicWindowEnd() <= distance) {
 						for (AbstractFilterStorage<?> filter : filterContainer.get(CigarOperator.M)) {
 							filter.processAlignmentMatch(windowPosition, readPosition + offset, genomicPosition + offset, cigarElement, record, baseI, qual);
 						}						
+					} else {
+						return;
 					}
 					break;
 				case -1: // speedup jump to covered position

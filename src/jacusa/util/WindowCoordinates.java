@@ -4,7 +4,7 @@ public class WindowCoordinates {
 
 	private String contig;
 	private int genomicWindowStart;
-	
+
 	private int windowSize;
 	private int maxGenomicPosition;
 
@@ -88,6 +88,10 @@ public class WindowCoordinates {
 			return -1;
 		}
 		*/
+		
+		if(genomicPosition > getGenomicWindowEnd()){
+			return Integer.MAX_VALUE;
+		}
 
 		return genomicPosition - genomicWindowStart;
 	}
