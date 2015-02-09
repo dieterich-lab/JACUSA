@@ -35,7 +35,7 @@ public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 		super(
 				'D', 
 				// TODO "Filter distance to Intron and INDEL position. Default: " + DISTANCE + ":" + MIN_RATIO + ":" + MIN_COUNT +" (D:distance:min_ratio:min_count)", 
-				"Filter distance to Intron and INDEL position. Default: " + DISTANCE + ":" + MIN_RATIO + " (D:distance:min_ratio)",
+				"Filter distance to Read Start/End, Intron, and INDEL position. Default: " + DISTANCE + ":" + MIN_RATIO + " (D:distance:min_ratio)",
 				true,
 				cigarOperator);
 		this.parameters = parameters;
