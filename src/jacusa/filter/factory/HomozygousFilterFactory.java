@@ -1,9 +1,7 @@
 package jacusa.filter.factory;
 
-import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.AbstractStorageFilter;
-import jacusa.filter.storage.AbstractFilterStorage;
 import jacusa.filter.storage.DummyFilterFillCache;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
@@ -15,7 +13,7 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 
 	private int sample;
 
-	public HomozygousFilterFactory(final AbstractParameters parameters) {
+	public HomozygousFilterFactory() {
 		super('H', "Filter non-homozygous pileup/BAM (1 or 2). Default: none");
 		sample = 0;
 	}
@@ -36,7 +34,7 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 	}
 
 	@Override
-	public AbstractFilterStorage<Void> createFilterStorage(final WindowCoordinates windowCoordinates, final SampleParameters sampleParameters) {
+	public DummyFilterFillCache createFilterStorage(final WindowCoordinates windowCoordinates, final SampleParameters sampleParameters) {
 		// storage is not needed
 		return new DummyFilterFillCache(getC());
 	}

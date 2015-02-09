@@ -26,6 +26,7 @@ import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.filter.factory.DistanceFilterFactory;
 import jacusa.filter.factory.HomopolymerFilterFactory;
 import jacusa.filter.factory.HomozygousFilterFactory;
+import jacusa.filter.factory.MaxAlleleCountFilterFactors;
 import jacusa.filter.factory.RareEventFilterFactory;
 import jacusa.io.format.result.AbstractResultFormat;
 import jacusa.io.format.result.DefaultResultFormat;
@@ -129,7 +130,8 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 
 		AbstractFilterFactory<?>[] filters = new AbstractFilterFactory[] {
 				new DistanceFilterFactory(parameters),
-				new HomozygousFilterFactory(parameters),
+				new HomozygousFilterFactory(),
+				new MaxAlleleCountFilterFactors(),
 				new HomopolymerFilterFactory(parameters),
 				new RareEventFilterFactory(parameters),
 		};

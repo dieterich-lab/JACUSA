@@ -40,6 +40,7 @@ import jacusa.filter.factory.DistanceFilterFactory;
 import jacusa.filter.factory.HomopolymerFilterFactory;
 import jacusa.filter.factory.HomozygousFilterFactory;
 import jacusa.filter.factory.INDEL_DistanceFilterFactory;
+import jacusa.filter.factory.MaxAlleleCountFilterFactors;
 import jacusa.filter.factory.MinDifferenceFilterFactory;
 import jacusa.filter.factory.ReadPositionDistanceFilterFactory;
 import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
@@ -225,7 +226,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 				new INDEL_DistanceFilterFactory(parameters),
 				new ReadPositionDistanceFilterFactory(parameters),
 				new SpliceSiteDistanceFilterFactory(parameters),
-				new HomozygousFilterFactory(parameters),
+				new HomozygousFilterFactory(),
+				new MaxAlleleCountFilterFactors(),
 				new HomopolymerFilterFactory(parameters),
 				new RareEventFilterFactory(parameters),
 				new MinDifferenceFilterFactory(parameters)

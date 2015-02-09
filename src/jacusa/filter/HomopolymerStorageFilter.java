@@ -23,13 +23,8 @@ public class HomopolymerStorageFilter extends AbstractWindowStorageFilter {
 		Counts[] counts1 = getCounts(location, windowIterator.getFilterContainers4Replicates1(location));
 		Counts[] counts2 = getCounts(location, windowIterator.getFilterContainers4Replicates2(location));
 
-/*		
-int w1 = windowIterator.getFilterContainers4Replicates1(location)[0].getWindowCoordinates().convert2WindowPosition(location.genomicPosition);
-int w2 = windowIterator.getFilterContainers4Replicates2(location)[0].getWindowCoordinates().convert2WindowPosition(location.genomicPosition);
- */
-		
 	final int[] variantBaseIs = countFilter.getVariantBaseIs(parallelPileup);
-		if (variantBaseIs.length == 0 || variantBaseIs.length > 1) {
+		if (variantBaseIs.length == 0) {
 			return false;
 		}
 		

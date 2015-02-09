@@ -41,13 +41,13 @@ public class DistanceFilterStorage extends AbstractWindowFilterStorage {
 		// read start
 		alignmentBlock = alignmentBlocks.get(0);
 		windowPosition = windowCache.getWindowCoordinates().convert2WindowPosition(alignmentBlock.getReferenceStart());
-		addRegion(windowPosition, distance, alignmentBlock.getReadStart() - 1, record);
-
+		addRegion(windowPosition, distance + 1, alignmentBlock.getReadStart() - 1, record);
+	
 		// read end
 		alignmentBlock = alignmentBlocks.get(alignmentBlocks.size() - 1); // get last alignment
-		windowPosition = windowCache.getWindowCoordinates().convert2WindowPosition(alignmentBlock.getReferenceStart() + alignmentBlock.getLength() - 1);
+		windowPosition = windowCache.getWindowCoordinates().convert2WindowPosition(alignmentBlock.getReferenceStart() + alignmentBlock.getLength() - 1 - distance);
 		// note: alignmentBlock.getReadStart() is 1-indexed
-		addRegion(windowPosition - distance, distance, alignmentBlock.getReadStart() - 1 + alignmentBlock.getLength() - 1 - distance, record);
+		addRegion(windowPosition, distance + 1, alignmentBlock.getReadStart() - 1 + alignmentBlock.getLength() - 1 - distance, record);
 	}
 	
 	/*
@@ -62,34 +62,32 @@ public class DistanceFilterStorage extends AbstractWindowFilterStorage {
 	// process IN
 	@Override
 	public void processInsertion(int windowPosition, int readPosition, int genomicPosition, int upstreamMatch, int downstreamMatch, CigarElement cigarElement, SAMRecord record) {
-		int upstreamD = Math.min(distance, upstreamMatch);
+ 		int upstreamD = Math.min(distance, upstreamMatch);
 		addRegion(windowPosition - upstreamD, upstreamD, readPosition - upstreamD, record);
-		
+
 		int downStreamD = Math.min(distance, downstreamMatch);
-		addRegion(windowPosition + cigarElement.getLength(), downStreamD, readPosition + cigarElement.getLength(), record);
+		addRegion(windowPosition, downStreamD + 1, readPosition + cigarElement.getLength(), record);
 	}
 
 	// process DELs
 	@Override
 	public void processDeletion(int windowPosition, int readPosition, int genomicPosition, int upstreamMatch, int downstreamMatch, CigarElement cigarElement, SAMRecord record) {
 		int upstreamD = Math.min(distance, upstreamMatch);
-		addRegion(windowPosition - upstreamD, upstreamD, readPosition - upstreamD, record);
-		
+		addRegion(windowPosition - upstreamD, upstreamD + 1, readPosition - upstreamD, record);
+
+		windowPosition = windowCache.getWindowCoordinates().convert2WindowPosition(genomicPosition + cigarElement.getLength());
 		int downStreamD = Math.min(distance, downstreamMatch);
-		addRegion(windowPosition, downStreamD, readPosition, record);
+		addRegion(windowPosition, downStreamD + 1, readPosition, record);
 	}
 
 	// process SpliceSites
 	@Override
 	public void processSkipped(int windowPosition, int readPosition, int genomicPosition, int upstreamMatch, int downstreamMatch, CigarElement cigarElement, SAMRecord record) {
-		// TODO test
 		int upstreamD = Math.min(distance, upstreamMatch);
-		addRegion(windowPosition - upstreamD, upstreamD, readPosition - upstreamD, record);
-		
-		// int genomicPosition2 = windowCache.getWindowCoordinates().getGenomicPosition(windowPosition);
+		addRegion(windowPosition - upstreamD, upstreamD + 1, readPosition - upstreamD, record);
 		
 		int downStreamD = Math.min(distance, downstreamMatch);
-		addRegion(windowPosition + cigarElement.getLength(), downStreamD, readPosition, record);
+		addRegion(windowPosition + cigarElement.getLength(), downStreamD + 1, readPosition, record);
 	}
 
 	/**

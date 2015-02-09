@@ -13,13 +13,13 @@ import jacusa.util.WindowCoordinates;
 
 public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 
-	private static int DISTANCE = 6;
+	private static int DISTANCE = 5;
 	private static double MIN_RATIO = 0.5;
-	private static int MIN_COUNT = 2;
+	private static int MIN_COUNT = 2; // TODO
 
 	private int distance;
 	private double minRatio;
-	private int minCount;
+	private int minCount; // TODO
 	
 	private AbstractParameters parameters;
 	
@@ -34,7 +34,8 @@ public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 	public DistanceFilterFactory(AbstractParameters parameters) {
 		super(
 				'D', 
-				"Filter distance to Intron and INDEL position. Default: " + DISTANCE + ":" + MIN_RATIO + ":" + MIN_COUNT +" (D:distance:min_ratio:min_count)", 
+				// TODO "Filter distance to Intron and INDEL position. Default: " + DISTANCE + ":" + MIN_RATIO + ":" + MIN_COUNT +" (D:distance:min_ratio:min_count)", 
+				"Filter distance to Intron and INDEL position. Default: " + DISTANCE + ":" + MIN_RATIO + " (D:distance:min_ratio)",
 				true,
 				cigarOperator);
 		this.parameters = parameters;
@@ -69,7 +70,7 @@ public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 				}
 				this.minRatio = minRatio;
 				break;
-			
+			/* TODO
 			case 3:
 				final int minCount = Integer.valueOf(s[i]);
 				if (minCount < 0) {
@@ -77,7 +78,7 @@ public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 				}
 				this.minCount = minCount;
 				break;
-				
+			*/
 			default:
 				throw new IllegalArgumentException("Invalid argument: " + line);
 			}
