@@ -18,11 +18,13 @@ public interface ParallelPileup {
 	abstract int getN();
 
 	abstract String getContig();
-	abstract int getPosition();
+	abstract int getStart();
+	abstract int getEnd();
 	abstract STRAND getStrand();
 
 	abstract void setContig(String contig);
-	abstract void setPosition(int position);
+	abstract void setStart(int start);
+	abstract void setEnd(int end);
 	abstract void setStrand(STRAND strand);
 
 	abstract STRAND getStrand1();

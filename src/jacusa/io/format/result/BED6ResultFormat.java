@@ -6,7 +6,7 @@ import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 
-public class BEDResultFormat extends AbstractResultFormat {
+public class BED6ResultFormat extends AbstractResultFormat {
 
 	public static final char CHAR = 'B';
 	
@@ -18,7 +18,7 @@ public class BEDResultFormat extends AbstractResultFormat {
 	private FilterConfig filterConfig;
 	public Phred2Prob phred2Prob;
 
-	public BEDResultFormat(BaseConfig baseConfig, FilterConfig filterConfig) {
+	public BED6ResultFormat(BaseConfig baseConfig, FilterConfig filterConfig) {
 		super(CHAR, "BED like output");
 		this.filterConfig = filterConfig;
 
@@ -87,9 +87,9 @@ public class BEDResultFormat extends AbstractResultFormat {
 		// coordinates
 		sb.append(parallelPileup.getContig());
 		sb.append(SEP);
-		sb.append(parallelPileup.getPosition() - 1);
+		sb.append(parallelPileup.getStart() - 1);
 		sb.append(SEP);
-		sb.append(parallelPileup.getPosition());
+		sb.append(parallelPileup.getEnd());
 		
 		sb.append(SEP);
 		sb.append("variant");

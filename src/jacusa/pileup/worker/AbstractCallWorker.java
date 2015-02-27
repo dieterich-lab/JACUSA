@@ -6,7 +6,7 @@ import jacusa.filter.AbstractStorageFilter;
 import jacusa.filter.FilterConfig;
 import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.io.format.result.AbstractResultFormat;
-import jacusa.io.format.result.BEDResultFormat;
+import jacusa.io.format.result.BED6ResultFormat;
 import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.dispatcher.call.AbstractCallWorkerDispatcher;
@@ -31,6 +31,14 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 		this.format = format;
 	}
 
+	protected StatisticCalculator getStatisticCalculator() {
+		return statisticCalculator;
+	}
+	
+	protected AbstractResultFormat getResultFormat() {
+		return format;
+	}
+	
 	@Override
 	protected void processParallelPileupIterator(final AbstractWindowIterator parallelPileupIterator) {
 		// print informative log
@@ -53,15 +61,15 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 
 			if (! filterConfig.hasFiters() || statisticCalculator.filter(unfilteredValue)) {
 				// no filters
-				sb.append(format.convert2String(parallelPileup, unfilteredValue, Character.toString(BEDResultFormat.EMPTY)));
+				sb.append(format.convert2String(parallelPileup, unfilteredValue, Character.toString(BED6ResultFormat.EMPTY)));
 			} else { // calculate filters or quit
-				String filterInfo = Character.toString(BEDResultFormat.EMPTY);
+				String filterInfo = Character.toString(BED6ResultFormat.EMPTY);
 				// apply each filter
 				for (AbstractFilterFactory<?> filterFactory : filterConfig.getFactories()) {
 					AbstractStorageFilter<?> storageFilter = filterFactory.createStorageFilter();
 
 					if (storageFilter.filter(parallelPileup, location, parallelPileupIterator)) {
-						if (filterInfo.equals(Character.toString(BEDResultFormat.EMPTY))) {
+						if (filterInfo.equals(Character.toString(BED6ResultFormat.EMPTY))) {
 							filterInfo = filterFactory.getC() + storageFilter.getFilterInfo();
 						} else {
 							filterInfo += "," + filterFactory.getC() + storageFilter.getFilterInfo();

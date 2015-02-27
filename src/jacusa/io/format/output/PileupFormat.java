@@ -28,7 +28,7 @@ public class PileupFormat extends AbstractOutputFormat {
 		// coordinates
 		sb.append(parallelPileup.getContig());
 		sb.append(SEP);
-		sb.append(parallelPileup.getPosition());
+		sb.append(parallelPileup.getStart());
 
 		addPileups(sb, parallelPileup.getStrand1(), parallelPileup.getPileups1());
 		addPileups(sb, parallelPileup.getStrand2(), parallelPileup.getPileups2());

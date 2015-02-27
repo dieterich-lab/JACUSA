@@ -84,7 +84,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		} catch (StackOverflowError e) {
 			System.out.println("Error: Numerical Stability");
 			System.out.println(parallelPileup.getContig());
-			System.out.println(parallelPileup.getPosition());
+			System.out.println(parallelPileup.getStart());
 			System.out.println(parallelPileup.prettyPrint());
 			return -1.0;
 		}

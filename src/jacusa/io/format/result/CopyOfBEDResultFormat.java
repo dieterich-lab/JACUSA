@@ -1,28 +1,28 @@
 package jacusa.io.format.result;
 
+import jacusa.filter.FilterConfig;
 import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 
-// CHANGED
-public class DebugResultFormat extends AbstractResultFormat {
+public class CopyOfBEDResultFormat extends AbstractResultFormat {
 
-	public static final char CHAR = 'X';
+	public static final char CHAR = 'B';
 	
 	public static final char COMMENT= '#';
 	public static final char EMPTY 	= '*';
 	public static final char SEP 	= '\t';
 	public static final char SEP2 	= ',';
 
-	private BaseConfig baseConfig;
+	private FilterConfig filterConfig;
 	public Phred2Prob phred2Prob;
 
-	public DebugResultFormat(BaseConfig baseConfig) {
-		super(CHAR, "Debug BED like output");
-		this.baseConfig = baseConfig;
+	public CopyOfBEDResultFormat(BaseConfig baseConfig, FilterConfig filterConfig) {
+		super(CHAR, "BED like output");
+		this.filterConfig = filterConfig;
 
-		phred2Prob = Phred2Prob.getInstance(this.baseConfig.getBases().length);
+		phred2Prob = Phred2Prob.getInstance(baseConfig.getBaseLength());
 	}
 
 	@Override
@@ -43,6 +43,7 @@ public class DebugResultFormat extends AbstractResultFormat {
 		sb.append(getSEP());
 
 		// stat	
+		sb.append(getSEP());
 		sb.append("stat");
 		sb.append(getSEP());
 		
@@ -54,7 +55,13 @@ public class DebugResultFormat extends AbstractResultFormat {
 		sb.append(getSEP());
 		// (2) second sample  infos
 		addSampleHeader(sb, '2', parallelPileup.getN2());
-		
+
+		// add filtering info
+		if (filterConfig.hasFiters()) {
+			sb.append(getSEP());
+			sb.append("filter_info");
+		}
+
 		return sb.toString();
 	}
 	
@@ -82,7 +89,7 @@ public class DebugResultFormat extends AbstractResultFormat {
 		sb.append(SEP);
 		sb.append(parallelPileup.getStart() - 1);
 		sb.append(SEP);
-		sb.append(parallelPileup.getStart());
+		sb.append(parallelPileup.getEnd());
 		
 		sb.append(SEP);
 		sb.append("variant");
@@ -101,10 +108,10 @@ public class DebugResultFormat extends AbstractResultFormat {
 		addPileups(sb, parallelPileup.getPileups1());
 		// (2) second pileups
 		addPileups(sb, parallelPileup.getPileups2());
-		
+
 		return sb;
 	}
-	
+
 	@Override
 	public String convert2String(ParallelPileup parallelPileup) {
 		final StringBuilder sb = convert2StringHelper(parallelPileup, Double.NaN);
@@ -112,11 +119,12 @@ public class DebugResultFormat extends AbstractResultFormat {
 	}
 	
 	@Override
-	public String convert2String(final ParallelPileup parallelPileup, final double value, String filterInfo) {
+	public String convert2String(final ParallelPileup parallelPileup, final double value, final String filterInfo) {
 		final StringBuilder sb = convert2StringHelper(parallelPileup, value);
+
 		sb.append(SEP);
 		sb.append(filterInfo);
-		
+
 		return sb.toString();
 	}
 	
@@ -137,26 +145,6 @@ public class DebugResultFormat extends AbstractResultFormat {
 		}
 	}
 
-	/* old version where filtered counts where part of ParallelPileup
-	private void addFilterCounts(StringBuilder sb, Pileup[] pileups, Counts[][] filterCounts) {
-		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
-			for (int filterCountsI = 0; filterCountsI < filterCounts[pileupI].length; ++filterCountsI) {
-				if (filterCounts[pileupI][filterCountsI] != null) {
-					Counts counts = filterCounts[pileupI][filterCountsI];
-					sb.append(SEP);
-					int baseI = 0;
-					sb.append(counts.getBaseCount()[baseI]);
-					baseI++;
-					for (; baseI < counts.getBaseCount().length ; ++baseI) {
-						sb.append(SEP2);
-						sb.append(counts.getBaseCount()[baseI]);
-					}
-				}
-			}
-		}
-	}
-	*/
-
 	/**
 	 * Last column holds the final value
 	 */
@@ -166,6 +154,12 @@ public class DebugResultFormat extends AbstractResultFormat {
 		return Double.parseDouble(cols[4]);
 	}
 
+	@Override
+	public String getFilterInfo(String line) {
+		String[] cols = line.split(Character.toString(SEP));
+		return cols[cols.length - 1];
+	}
+	
 	public char getCOMMENT() {
 		return COMMENT;
 	}
@@ -182,9 +176,4 @@ public class DebugResultFormat extends AbstractResultFormat {
 		return SEP2;
 	}
 
-	@Override
-	public String getFilterInfo(String line) {
-		return Character.toString(getEMPTY());
-	}
-	
 }
