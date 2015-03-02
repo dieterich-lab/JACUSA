@@ -1,6 +1,7 @@
 package jacusa.cli.options;
 
 import jacusa.cli.parameters.StatisticParameters;
+import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.method.call.statistic.StatisticCalculator;
 
 import java.util.Map;
@@ -53,10 +54,17 @@ public class StatisticCalculatorOption extends AbstractACOption {
 	public void process(CommandLine line) throws Exception {
 		if (line.hasOption(opt)) {
 			String name = line.getOptionValue(opt);
+			String str = Character.toString(AbstractFilterFactory.SEP);
+			if (name.indexOf(str) > -1) {
+				String[] cols = name.split(str, 2);
+				name = cols[0];
+			}
+
 			if (! statistics.containsKey(name)) {
 				throw new IllegalArgumentException("Unknown statistic: " + name);
 			}
 			parameters.setStatisticCalculator(statistics.get(name));
+			parameters.getStatisticCalculator().processCLI(line.getOptionValue(opt));
 		}
 	}
 

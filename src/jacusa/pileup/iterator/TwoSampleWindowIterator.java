@@ -82,6 +82,7 @@ public class TwoSampleWindowIterator extends AbstractTwoSampleIterator {
 					parallelPileup.setPileups1(new Pileup[0]);
 					parallelPileup.setPileups2(new Pileup[0]);
 				}
+				locationAdvancer.advance();
 				break;
 
 			case 1:

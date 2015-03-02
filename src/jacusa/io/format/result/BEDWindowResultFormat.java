@@ -107,7 +107,9 @@ public class BEDWindowResultFormat extends AbstractResultFormat {
 			addPileup(sb, parallelPileup.getPileups1()[i]);
 			// (2) second pileups
 			addPileup(sb, parallelPileup.getPileups2()[i]);
-			sb.append("\n");
+			if (i + 1 < n) {
+				sb.append("\n");
+			}
 		}
 
 		return sb;
@@ -124,10 +126,8 @@ public class BEDWindowResultFormat extends AbstractResultFormat {
 	public String convert2String(final ParallelPileup parallelPileup, final double value, final String filterInfo) {
 		final StringBuilder sb = convert2StringHelper(parallelPileup, value);
 
-		/* 
 		sb.append(SEP);
 		sb.append(filterInfo);
-		*/
 
 		return sb.toString();
 	}

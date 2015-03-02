@@ -1,8 +1,14 @@
 package jacusa.pileup.worker;
 
+import java.io.IOException;
+
+import jacusa.JACUSA;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.cli.parameters.TwoSampleCallParameters;
+import jacusa.io.format.result.BEDWindowResultFormat;
+import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.dispatcher.call.TwoSampleWindowCallWorkerDispatcher;
+import jacusa.pileup.iterator.AbstractWindowIterator;
 import jacusa.pileup.iterator.TwoSampleWindowIterator;
 import jacusa.pileup.iterator.variant.Variant;
 import jacusa.pileup.iterator.variant.VariantParallelPileup;
@@ -37,6 +43,40 @@ public class TwoSampleWindowCallWorker extends AbstractCallWorker {
 		SampleParameters sample2 = parameters.getSample2();
 		
 		return new TwoSampleWindowIterator(coordinate, variant, readers1, readers2, sample1, sample2, parameters);
+	}
+	
+	@Override
+	protected void processParallelPileupIterator(final AbstractWindowIterator parallelPileupIterator) {
+		// print informative log
+		JACUSA.printLog("Started screening window: " + 
+				parallelPileupIterator.getCoordinate().getSequenceName() + 
+				":" + 
+				parallelPileupIterator.getCoordinate().getStart() + 
+				"-" + 
+				parallelPileupIterator.getCoordinate().getEnd());
+
+		// iterate over parallel pileups
+		while (parallelPileupIterator.hasNext()) {
+			final ParallelPileup parallelPileup = parallelPileupIterator.getParallelPileup(); 
+
+			// calculate unfiltered value
+			final double unfilteredValue = getStatisticCalculator().getStatistic(parallelPileup);
+
+			final StringBuilder sb = new StringBuilder();
+
+			// no filters
+			sb.append(getResultFormat().convert2String(parallelPileup, unfilteredValue, Character.toString(BEDWindowResultFormat.EMPTY)));
+			
+			// considered comparisons
+			comparisons++;
+
+			try {
+				// write output 
+				tmpOutputWriter.write(sb.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	@Override

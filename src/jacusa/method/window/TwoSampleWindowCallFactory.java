@@ -32,6 +32,7 @@ import jacusa.cli.parameters.SampleParameters;
 import jacusa.cli.parameters.TwoSampleCallParameters;
 import jacusa.io.format.result.AbstractResultFormat;
 import jacusa.io.format.result.BED6ResultFormat;
+import jacusa.io.format.result.BEDWindowResultFormat;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomial;
@@ -156,7 +157,7 @@ public class TwoSampleWindowCallFactory extends AbstractMethodFactory {
 	public Map<Character, AbstractResultFormat> getResultFormats() {
 		Map<Character, AbstractResultFormat> resultFormats = new HashMap<Character, AbstractResultFormat>();
 
-		AbstractResultFormat resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		AbstractResultFormat resultFormat = new BEDWindowResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;
