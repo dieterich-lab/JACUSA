@@ -91,7 +91,7 @@ public abstract class AbstractCountFilter {
 
 		final ParallelPileup filteredParallelPileup = new DefaultParallelPileup(parallelPileup.getN1(), parallelPileup.getN2());
 		filteredParallelPileup.setContig(parallelPileup.getContig());
-		filteredParallelPileup.setPosition(parallelPileup.getPosition());
+		filteredParallelPileup.setStart(parallelPileup.getStart());
 		filteredParallelPileup.setStrand(parallelPileup.getStrand());
 
 		if (filteredPileups1 == null) {

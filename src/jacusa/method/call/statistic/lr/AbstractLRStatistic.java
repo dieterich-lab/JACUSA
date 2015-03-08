@@ -85,7 +85,7 @@ public abstract class AbstractLRStatistic implements StatisticCalculator {
 	}
 	
 	public boolean filter(double value) {
-		return parameters.getStat() < value;
+		return parameters.getMaxStat() < value;
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package jacusa.method.call.statistic.dirmult;
 
-
 import jacusa.cli.parameters.StatisticParameters;
 import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.method.call.statistic.StatisticCalculator;
@@ -20,53 +19,42 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 
 	// options for paremeters estimation
 	protected int maxIterations = 100;
-	protected double epsilon = 0.001;
+	protected double epsilon = 0.01;
 
 	protected final StatisticParameters parameters;
 	protected final BaseConfig baseConfig;
 	protected Phred2Prob phred2Prob;
 
-	private boolean filterBases;
+	protected boolean onlyObservedBases;
 	
 	public AbstractDirMultStatistic(final BaseConfig baseConfig, final StatisticParameters parameters) {
 		this.parameters = parameters;
-		final int n = baseConfig.getBases().length; 
+		final int n = baseConfig.getBaseLength();
 		this.baseConfig = baseConfig;
 		phred2Prob = Phred2Prob.getInstance(n);
-		filterBases = false;
+		onlyObservedBases = false;
 	}
 
 	protected abstract void populate(final Pileup[] pileups, final int[] baseIs, double[] alpha, double[] pileupCoverages, double[][] pileupMatrix);
-	
-	@Deprecated
-	protected boolean isFilterBases() {
-		return filterBases;
-	}
-
-	@Deprecated
-	protected void setFilterBases(final boolean filterBases) {
-		this.filterBases = filterBases;
-	}
 
 	@Override
 	public double getStatistic(ParallelPileup parallelPileup) {
-		final int baseIs[] = {0, 1, 2, 3};
-		// final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
+		final int baseIs[] = getBaseIs(parallelPileup);
+		int baseN = baseConfig.getBaseLength();
 
-		ChiSquareDist dist = new ChiSquareDist(baseIs.length);
-		int baseN = baseIs.length;
+		ChiSquareDist dist = new ChiSquareDist(baseN); // FIXME
 
 		double[] alpha1 = new double[baseN];
 		double[] pileupCoverages1 = new double[parallelPileup.getN1()];
-		double[][] pileupMatrix1 = new double[parallelPileup.getN1()][baseIs.length];
+		double[][] pileupMatrix1 = new double[parallelPileup.getN1()][baseN];
 
 		double[] alpha2 = new double[baseN];
 		double[] pileupCoverages2 = new double[parallelPileup.getN2()];
-		double[][] pileupMatrix2 = new double[parallelPileup.getN2()][baseIs.length];
+		double[][] pileupMatrix2 = new double[parallelPileup.getN2()][baseN];
 
 		double[] alphaP = new double[baseN];
 		double[] pileupCoveragesP = new double[parallelPileup.getN()];
-		double[][] pileupMatrixP = new double[parallelPileup.getN()][baseIs.length];
+		double[][] pileupMatrixP = new double[parallelPileup.getN()][baseN];
 
 		populate(parallelPileup.getPileups1(), baseIs, alpha1, pileupCoverages1, pileupMatrix1);
 		populate(parallelPileup.getPileups2(), baseIs, alpha2, pileupCoverages2, pileupMatrix2);
@@ -82,14 +70,23 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 
 			p = 1 - dist.cdf(z);
 		} catch (StackOverflowError e) {
-			System.out.println("Error: Numerical Stability");
+			System.out.println("Warning: Numerical Stability");
 			System.out.println(parallelPileup.getContig());
-			System.out.println(parallelPileup.getPosition());
+			System.out.println(parallelPileup.getStart());
 			System.out.println(parallelPileup.prettyPrint());
 			return -1.0;
 		}
 
 		return p;
+	}
+
+	protected void printAlpha(double[] alphas) {
+		StringBuilder sb = new StringBuilder();
+		for (double alpha : alphas) {
+			sb.append(Double.toString(alpha));
+			sb.append("\t");
+		}
+		System.out.println(sb.toString());
 	}
 	
 	// estimate alpha and returns loglik
@@ -211,29 +208,41 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 
 	@Override
 	public boolean filter(double value) {
-		return parameters.getStat() < value;
+		return parameters.getMaxStat() < value;
 	}
 
+	// format -u DirMult:epsilon=<epsilon>:maxIterations=<maxIterions>:onlyObserved
+	@Override
 	public void processCLI(String line) {
 		String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
-		// format -u DirMult:epsilon:maxIterations
+
 		for (int i = 1; i < s.length; ++i) {
-			
+			// key=value
+			String[] kv = s[i].split("=");
+			String key = kv[0];
+			String value = new String();
+			if (kv.length == 2) {
+				value = kv[1];
+			}
 
-			switch(i) {
-
-			case 1:
-				epsilon = Double.parseDouble(s[i]);
-				break;
-
-			case 2:
-				maxIterations = Integer.parseInt(s[i]);
-				break;
-				
-			default:
-				throw new IllegalArgumentException("Invalid argument " + line);
+			// set value
+			if (key.equals("epsilon")) {
+				epsilon = Double.parseDouble(value);
+			} else if(key.equals("maxIterations")) {
+				maxIterations = Integer.parseInt(value);
+			} else if(key.equals("onlyObserved")) {
+				onlyObservedBases = true;
+			} else {
+				throw new IllegalArgumentException("Invalid argument " + key + " IN: " + line);
 			}
 		}
 	}
-	
+
+	public int[] getBaseIs(ParallelPileup parallelPileup) {
+		if (onlyObservedBases) {
+			return parallelPileup.getPooledPileup().getAlleles();
+		}
+
+		return new int[]{0, 1, 2, 3};
+	}
 }

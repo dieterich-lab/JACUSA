@@ -5,7 +5,8 @@ import jacusa.pileup.DefaultPileup.STRAND;
 public final class DefaultParallelPileup implements ParallelPileup {
 
 	private String contig;
-	private int position;
+	private int start;
+	private int end;
 	private STRAND strand;
 	
 	private Pileup pileup1;
@@ -18,13 +19,15 @@ public final class DefaultParallelPileup implements ParallelPileup {
 
 	public DefaultParallelPileup() {
 		contig = new String();
-		position = -1;
+		start = -1;
+		end = -1;
 		strand = STRAND.UNKNOWN;
 	}
 
 	public DefaultParallelPileup(final ParallelPileup parallelPileup) {
 		this.contig 	= parallelPileup.getContig();
-		this.position 	= parallelPileup.getPosition();
+		this.start 		= parallelPileup.getStart();
+		this.end 		= parallelPileup.getEnd();
 		this.strand 	= parallelPileup.getStrand();
 		
 		this.pileup1 = new DefaultPileup(parallelPileup.getPooledPileup1());
@@ -56,7 +59,7 @@ public final class DefaultParallelPileup implements ParallelPileup {
 		this.pileups1 = new Pileup[pileups1.length];
 		System.arraycopy(pileups1, 0, this.pileups1, 0, pileups1.length);
 		this.pileups2 = new Pileup[pileups2.length];
-		System.arraycopy(pileups2, 0, this.pileups2, pileups1.length, pileups2.length);
+		System.arraycopy(pileups2, 0, this.pileups2, 0, pileups2.length);
 
 		System.arraycopy(pileups1, 0, pileupsP, 0, pileups1.length);
 		System.arraycopy(pileups2,0, pileupsP, pileups1.length, pileups2.length);
@@ -139,10 +142,15 @@ public final class DefaultParallelPileup implements ParallelPileup {
 	}
 
 	@Override
-	public int getPosition() {
-		return position;
+	public int getStart() {
+		return start;
 	}
 
+	@Override
+	public int getEnd() {
+		return end;
+	}
+	
 	@Override
 	public STRAND getStrand() {
 		return strand;
@@ -154,10 +162,15 @@ public final class DefaultParallelPileup implements ParallelPileup {
 	}
 	
 	@Override
-	public void setPosition(int position) {
-		this.position = position;
+	public void setStart(int start) {
+		this.start = start;
 	}
 
+	@Override
+	public void setEnd(int end) {
+		this.end = end;
+	}
+	
 	@Override
 	public void setStrand(STRAND strand) {
 		this.strand = strand;
@@ -301,5 +314,7 @@ public final class DefaultParallelPileup implements ParallelPileup {
 		
 		return ret;
 	}
+
+	
 	
 }

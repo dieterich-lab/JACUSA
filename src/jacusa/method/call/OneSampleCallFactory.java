@@ -9,7 +9,7 @@ import jacusa.cli.options.FilterConfigOption;
 import jacusa.cli.options.FormatOption;
 import jacusa.cli.options.HelpOption;
 import jacusa.cli.options.MaxThreadOption;
-import jacusa.cli.options.PathnameArg;
+import jacusa.cli.options.SAMPathnameArg;
 import jacusa.cli.options.ResultFileOption;
 import jacusa.cli.options.StatisticCalculatorOption;
 import jacusa.cli.options.StatisticFilterOption;
@@ -173,7 +173,7 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 			throw new ParseException("BAM File is not provided!");
 		}
 		
-		PathnameArg pa = new PathnameArg(1, parameters.getSample1());
+		SAMPathnameArg pa = new SAMPathnameArg(1, parameters.getSample1());
 		pa.processArg(args[0]);
 		
 		return true;

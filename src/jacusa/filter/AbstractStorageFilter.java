@@ -1,6 +1,6 @@
 package jacusa.filter;
 
-import jacusa.io.format.result.BEDResultFormat;
+import jacusa.io.format.result.BED6ResultFormat;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.iterator.AbstractWindowIterator;
 import jacusa.util.Location;
@@ -39,7 +39,7 @@ public abstract class AbstractStorageFilter<T> {
 	}
 
 	public final void resetFilterInfo() {
-		setFilterInfo(Character.toString(BEDResultFormat.EMPTY));
+		setFilterInfo(Character.toString(BED6ResultFormat.EMPTY));
 	}
 
 }

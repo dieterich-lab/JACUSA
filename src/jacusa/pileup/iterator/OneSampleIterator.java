@@ -35,7 +35,7 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 	public boolean hasNext() {
 		while (hasNextA()) {
 			parallelPileup.setContig(coordinate.getSequenceName());
-			parallelPileup.setPosition(location.genomicPosition);
+			parallelPileup.setStart(location.genomicPosition);
 
 			parallelPileup.setPileups1(parallelPileup.getPileups1());
 			int baseI = getHomomorphBaseI(parallelPileup.getPooledPileup1());

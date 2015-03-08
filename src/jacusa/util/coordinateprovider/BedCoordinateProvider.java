@@ -48,6 +48,10 @@ public class BedCoordinateProvider implements CoordinateProvider {
 			String line;
 			try {
 				line = br.readLine();
+				line = line.trim();
+				if(line.startsWith("#") || line.isEmpty()) {
+					return next();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 				return null;

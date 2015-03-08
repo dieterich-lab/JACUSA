@@ -80,9 +80,9 @@ public class DebugResultFormat extends AbstractResultFormat {
 		// coordinates
 		sb.append(parallelPileup.getContig());
 		sb.append(SEP);
-		sb.append(parallelPileup.getPosition() - 1);
+		sb.append(parallelPileup.getStart() - 1);
 		sb.append(SEP);
-		sb.append(parallelPileup.getPosition());
+		sb.append(parallelPileup.getStart());
 		
 		sb.append(SEP);
 		sb.append("variant");

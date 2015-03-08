@@ -8,7 +8,6 @@ import jacusa.util.MathUtil;
 
 import java.util.Arrays;
 
-// CHECKED
 public class DirichletMultinomial extends AbstractDirMultStatistic {
 
 	public DirichletMultinomial(final BaseConfig baseConfig, final StatisticParameters parameters) {
@@ -50,7 +49,7 @@ public class DirichletMultinomial extends AbstractDirMultStatistic {
 
 	@Override
 	public String getDescription() {
-		return "Dirichlet-Multinomial - Only Phred score (DirMult:epsilon:maxIterations)";
+		return "Dirichlet-Multinomial - Only Phred score (DirMult:epsilon=<epsilon>:maxIterations=<maxIterations>)";
 	}
 
 }

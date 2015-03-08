@@ -24,4 +24,8 @@ public class Location {
 		strand = location.strand;
 	}
 
+	public String toString() {
+		return contig + "_" + genomicPosition + "-" + (genomicPosition + 1);
+	}
+
 }

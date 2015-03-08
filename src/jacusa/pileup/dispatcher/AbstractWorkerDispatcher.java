@@ -50,7 +50,7 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 		this.format		= format;
 	}
 
-	protected abstract void processFinishedWorker(final T processParallelPileup);
+	protected abstract void processFinishedWorker(final T worker);
 	protected abstract T buildNextWorker();	
 	protected abstract void processTmpLine(final String line) throws IOException;
 	protected abstract String getHeader();
@@ -67,7 +67,7 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 	public synchronized boolean hasNext() {
 		return coordinateProvider.hasNext();
 	}
-	
+
 	public final int run() {
 		synchronized (this) {
 

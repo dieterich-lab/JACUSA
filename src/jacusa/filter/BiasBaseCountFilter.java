@@ -28,7 +28,7 @@ public class BiasBaseCountFilter extends AbstractStorageFilter<BaseCount> {
 		FilterContainer[] replicateFilterContainer2 = windowIterator.getFilterContainers4Replicates2(location);
 
 		// genomic position need to extract counts from filterContainer
- 		int genomicPosition = parallelPileup.getPosition();
+ 		int genomicPosition = parallelPileup.getStart();
 		// [replicateI][baseI][dataI]
 		int[][][] counts1 = getCounts(genomicPosition, replicateFilterContainer1);
 		int[][][] counts2 = getCounts(genomicPosition, replicateFilterContainer2);

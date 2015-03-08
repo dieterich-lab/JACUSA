@@ -100,7 +100,7 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		// coordinates
 		sb.append(parallelPileup.getContig());
 		sb.append(SEP);
-		sb.append(parallelPileup.getPosition());
+		sb.append(parallelPileup.getStart());
 
 		// (1) first pileups
 		addPileups(sb, parallelPileup.getStrand1(), parallelPileup.getPileups1());
