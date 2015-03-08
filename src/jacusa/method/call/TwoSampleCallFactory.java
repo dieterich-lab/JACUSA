@@ -43,10 +43,10 @@ import jacusa.filter.factory.HomozygousFilterFactory;
 import jacusa.filter.factory.INDEL_DistanceFilterFactory;
 import jacusa.filter.factory.MaxAlleleCountFilterFactors;
 import jacusa.filter.factory.MinDifferenceFilterFactory;
-import jacusa.filter.factory.OutlierFilterFactory;
+//import jacusa.filter.factory.OutlierFilterFactory;
 import jacusa.filter.factory.ReadPositionDistanceFilterFactory;
 import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
-import jacusa.filter.factory.ZeroCountFilterFactory;
+//import jacusa.filter.factory.ZeroCountFilterFactory;
 //import jacusa.filter.factory.MAPQBiasFilterFactory;
 import jacusa.filter.factory.ReadPositionalBiasFilterFactory;
 import jacusa.filter.factory.RareEventFilterFactory;
@@ -229,8 +229,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 				new ReadPositionalBiasFilterFactory(parameters),
 //				new BASQBiasFilterFactory(parameters),
 //				new MAPQBiasFilterFactory(parameters),
-				new OutlierFilterFactory(parameters.getStatisticParameters()),
-				new ZeroCountFilterFactory(parameters.getStatisticParameters()),
+//				new OutlierFilterFactory(parameters.getStatisticParameters()),
+//				new ZeroCountFilterFactory(parameters.getStatisticParameters()),
 				new DistanceFilterFactory(parameters),
 				new INDEL_DistanceFilterFactory(parameters),
 				new ReadPositionDistanceFilterFactory(parameters),

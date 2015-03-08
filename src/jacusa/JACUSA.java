@@ -4,7 +4,6 @@ import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.TwoSampleCallFactory;
-import jacusa.method.call.TwoSampleDebugCallFactory;
 import jacusa.method.pileup.TwoSamplePileupFactory;
 import jacusa.method.window.TwoSampleWindowCallFactory;
 import jacusa.pileup.dispatcher.AbstractWorkerDispatcher;
@@ -50,7 +49,6 @@ public class JACUSA {
 		AbstractMethodFactory[] factories = new AbstractMethodFactory[] {
 			// new OneSampleCallFactory(), 
 			new TwoSampleCallFactory(),
-			new TwoSampleDebugCallFactory(), 
 			new TwoSamplePileupFactory(),
 			new TwoSampleWindowCallFactory()
 		};

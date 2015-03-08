@@ -6,23 +6,25 @@ import jacusa.cli.parameters.SampleParameters;
 import jacusa.cli.parameters.StatisticParameters;
 import jacusa.filter.AbstractStorageFilter;
 import jacusa.filter.storage.DummyFilterFillCache;
-import jacusa.method.call.statistic.StatisticCalculator;
+//import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.iterator.AbstractWindowIterator;
 import jacusa.util.Location;
 import jacusa.util.WindowCoordinates;
-
+// FINISIH
 public class OutlierFilterFactory extends AbstractFilterFactory<Void> {
 
+	/*
 	private StatisticParameters statisticParameters;	
 	private StatisticCalculator statisticCalculator;
+	*/
 	
 	public OutlierFilterFactory(StatisticParameters statisticParameters) {
 		super('O', "Outlier filter");
-		this.statisticParameters = statisticParameters;
+		//this.statisticParameters = statisticParameters;
 
-		statisticCalculator = statisticParameters.getStatisticCalculator();
+		//statisticCalculator = statisticParameters.getStatisticCalculator();
 	}
 
 	@Override
