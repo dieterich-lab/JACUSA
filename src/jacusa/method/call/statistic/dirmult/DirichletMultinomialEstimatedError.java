@@ -25,7 +25,8 @@ public class DirichletMultinomialEstimatedError extends AbstractDirMultStatistic
 
 	@Override
 	public String getDescription() {
-		return "Dirichlet-Multinomial (phred score ignored) with estiamted error = " + estimatedError + " (DirMult-EE:epsilon:maxIterations:estimatedError)";
+		return "Dirichlet-Multinomial (phred score IGNORED) estiamted error used = " + estimatedError + 
+				" (DirMult-EE:epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>)";
 	}
 
 	protected void populate(final Pileup[] pileups, final int[] baseIs, double[] alpha, double[] pileupCoverages, double[][] pileupMatrix) {
@@ -68,27 +69,31 @@ public class DirichletMultinomialEstimatedError extends AbstractDirMultStatistic
 		return new DirichletMultinomialEstimatedError(baseConfig, parameters);
 	}
 
+	// format -u DirMult:epsilon=<epsilon>:maxIterations=<maxIterions>:estimatedError=<estimatedError>
 	@Override
 	public void processCLI(String line) {
 		String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
-		// format -u DirMult-EE:epsilon:maxIterations:estimatedError
+
 		for (int i = 1; i < s.length; ++i) {
-			switch(i) {
+			// key=value
+			String[] kv = s[i].split("=");
+			String key = kv[0];
+			String value = new String();
+			if (kv.length == 2) {
+				value = kv[1];
+			}
 
-			case 1:
-				epsilon = Double.parseDouble(s[i]);
-				break;
-
-			case 2:
-				maxIterations = Integer.parseInt(s[i]);
-				break;
-
-			case 3:
-				estimatedError = Double.parseDouble(s[i]);
-				break;
-				
-			default:
-				throw new IllegalArgumentException("Invalid argument " + line);
+			// set value
+			if (key.equals("epsilon")) {
+				epsilon = Double.parseDouble(value);
+			} else if (key.equals("maxIterations")) {
+				maxIterations = Integer.parseInt(value);
+			} else if (key.equals("estimatedError")) {
+				estimatedError = Double.parseDouble(value);
+			} else if(key.equals("onlyObserved")) {
+				onlyObservedBases = true;
+			} else {
+				throw new IllegalArgumentException("Invalid argument " + key + " IN: " + line);
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.TwoSampleCallFactory;
+import jacusa.method.call.TwoSampleDebugCallFactory;
 import jacusa.method.pileup.TwoSamplePileupFactory;
 import jacusa.method.window.TwoSampleWindowCallFactory;
 import jacusa.pileup.dispatcher.AbstractWorkerDispatcher;
@@ -32,7 +33,7 @@ public class JACUSA {
 	// timer used for all time measurements
 	private static SimpleTimer timer;
 	public static final String NAME = "jacusa";
-	public static final String VERSION = "0.999-WINDOW";
+	public static final String VERSION = "0.999-DEVEL";
 
 	// command line interface
 	private CLI cli;
@@ -48,7 +49,8 @@ public class JACUSA {
 
 		AbstractMethodFactory[] factories = new AbstractMethodFactory[] {
 			// new OneSampleCallFactory(), 
-			new TwoSampleCallFactory(), 
+			new TwoSampleCallFactory(),
+			new TwoSampleDebugCallFactory(), 
 			new TwoSamplePileupFactory(),
 			new TwoSampleWindowCallFactory()
 		};

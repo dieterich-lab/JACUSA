@@ -13,7 +13,7 @@ import jacusa.cli.options.MaxThreadOption;
 import jacusa.cli.options.MinBASQOption;
 import jacusa.cli.options.MinCoverageOption;
 import jacusa.cli.options.MinMAPQOption;
-import jacusa.cli.options.PathnameArg;
+import jacusa.cli.options.SAMPathnameArg;
 import jacusa.cli.options.ResultFileOption;
 import jacusa.cli.options.VersionOption;
 import jacusa.cli.options.WindowSizeOption;
@@ -127,9 +127,9 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 			throw new ParseException("BAM File is not provided!");
 		}
 
-		PathnameArg pa = new PathnameArg(1, parameters.getSample1());
+		SAMPathnameArg pa = new SAMPathnameArg(1, parameters.getSample1());
 		pa.processArg(args[0]);
-		pa = new PathnameArg(2, parameters.getSample2());
+		pa = new SAMPathnameArg(2, parameters.getSample2());
 		pa.processArg(args[1]);
 
 		return true;

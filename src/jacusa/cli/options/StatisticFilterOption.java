@@ -22,7 +22,7 @@ public class StatisticFilterOption  extends AbstractACOption {
 		return OptionBuilder.withLongOpt(longOpt)
 			.withArgName(longOpt.toUpperCase())
 			.hasArg(true)
-	        .withDescription("Filter positions dependening on the " + longOpt.toUpperCase() + "\n default: " + parameters.getStat())
+	        .withDescription("Filter positions dependening on the " + longOpt.toUpperCase() + "\n default: " + parameters.getMaxStat())
 	        .create(opt);
 	}
 

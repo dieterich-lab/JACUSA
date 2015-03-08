@@ -52,6 +52,7 @@ public class TwoSampleIterator extends AbstractTwoSampleIterator {
 				
 				parallelPileup.setContig(coordinate.getSequenceName());
 				parallelPileup.setStart(location.genomicPosition);
+				parallelPileup.setEnd(parallelPileup.getStart()); // FIXME working in all 	
 
 				parallelPileup.setStrand(location.strand);
 				parallelPileup.setPileups1(getPileups(location, pileupBuilders1));
@@ -72,7 +73,7 @@ public class TwoSampleIterator extends AbstractTwoSampleIterator {
 				// adjust actualPosition; instead of iterating jump to specific position
 				locationAdvancer.setLocation2(location1);
 				adjustCurrentGenomicPosition(location1, pileupBuilders2);
-				
+
 				break;
 			}
 		}

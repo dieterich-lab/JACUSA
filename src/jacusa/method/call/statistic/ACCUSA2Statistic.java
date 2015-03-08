@@ -89,7 +89,7 @@ public class ACCUSA2Statistic implements StatisticCalculator {
 
 	@Override
 	public boolean filter(double value) {
-		return parameters.getStat() > value;
+		return parameters.getMaxStat() > value;
 	}
 
 	@Override

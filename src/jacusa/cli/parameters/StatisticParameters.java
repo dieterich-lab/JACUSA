@@ -1,20 +1,16 @@
 package jacusa.cli.parameters;
 
-import jacusa.estimate.AbstractEstimateParameters;
 import jacusa.method.call.statistic.StatisticCalculator;
 
 public class StatisticParameters {
 
 	// filter: statistic
 	private StatisticCalculator statisticCalculator;
-	@Deprecated
-	private AbstractEstimateParameters estimateParameters;
-	private double stat;
-	private int permutations;
+	private double maxStat;
+	
 	
 	public StatisticParameters() {
-		stat				= 0.3;
-		permutations		= 100;
+		maxStat				= 0.3;
 	}
 
 	public StatisticParameters(final StatisticCalculator statisticCalculator) {
@@ -22,33 +18,18 @@ public class StatisticParameters {
 		this.statisticCalculator = statisticCalculator;
 	}
 
-	@Deprecated
-	public StatisticParameters(final StatisticCalculator statisticCalculator, final AbstractEstimateParameters estimateParameters) {
-		this();
-		this.statisticCalculator = statisticCalculator;
-		this.estimateParameters = estimateParameters;
-	}
-
-	public int getPermutations() {
-		return permutations;
-	}
-
-	public void setPermutations(int permutations) {
-		this.permutations = permutations;
-	}
-
 	/**
-	 * @return the stat
+	 * @return the maxStat
 	 */
-	public double getStat() {
-		return stat;
+	public double getMaxStat() {
+		return maxStat;
 	}
 
 	/**
 	 * @param stat the stat to set
 	 */
 	public void setStat(double stat) {
-		this.stat = stat;
+		this.maxStat = stat;
 	}
 	
 	/**
@@ -63,16 +44,6 @@ public class StatisticParameters {
 	 */
 	public void setStatisticCalculator(StatisticCalculator statisticCalculator) {
 		this.statisticCalculator = statisticCalculator;
-	}
-	
-	@Deprecated
-	public AbstractEstimateParameters getEstimateParameters() {
-		return estimateParameters;
-	}
-
-	@Deprecated
-	public void setEstimateParameters(AbstractEstimateParameters estimateParameters) {
-		this.estimateParameters = estimateParameters;
 	}
 
 }

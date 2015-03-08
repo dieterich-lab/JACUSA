@@ -59,7 +59,7 @@ public final class DefaultParallelPileup implements ParallelPileup {
 		this.pileups1 = new Pileup[pileups1.length];
 		System.arraycopy(pileups1, 0, this.pileups1, 0, pileups1.length);
 		this.pileups2 = new Pileup[pileups2.length];
-		System.arraycopy(pileups2, 0, this.pileups2, pileups1.length, pileups2.length);
+		System.arraycopy(pileups2, 0, this.pileups2, 0, pileups2.length);
 
 		System.arraycopy(pileups1, 0, pileupsP, 0, pileups1.length);
 		System.arraycopy(pileups2,0, pileupsP, pileups1.length, pileups2.length);

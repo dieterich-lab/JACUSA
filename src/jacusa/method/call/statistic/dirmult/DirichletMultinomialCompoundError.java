@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic {
 
-	private double estimatedError = 0.01;
+	protected double estimatedError = 0.01;
 
 	public DirichletMultinomialCompoundError(final BaseConfig baseConfig, final StatisticParameters parameters) {
 		super(baseConfig, parameters);
@@ -24,7 +24,8 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 
 	@Override
 	public String getDescription() {
-		return "Dirichlet-Multinomial with compound error: (estimated error + phred score) ; estimated error = " + estimatedError + " (DirMult-CE:epsilon:maxIterations:estimatedError)";
+		return "Dirichlet-Multinomial with compound error: (estimated error + phred score) ; estimated error = " + estimatedError + 
+				" (DirMult-CE:epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>)";
 	}
 
 	protected void populate(final Pileup[] pileups, final int[] baseIs, double[] alpha, double[] pileupCoverages, double[][] pileupMatrix) {
@@ -69,27 +70,31 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 		return new DirichletMultinomialCompoundError(baseConfig, parameters);
 	}
 
+	// format -u DirMult:epsilon=<epsilon>:maxIterations=<maxIterions>:estimatedError=<estimatedError>
 	@Override
 	public void processCLI(String line) {
 		String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
-		// format -u DirMult-CE:epsilon:maxIterations:estimatedError
+
 		for (int i = 1; i < s.length; ++i) {
-			switch(i) {
+			// key=value
+			String[] kv = s[i].split("=");
+			String key = kv[0];
+			String value = new String();
+			if (kv.length == 2) {
+				value = kv[1];
+			}
 
-			case 1:
-				epsilon = Double.parseDouble(s[i]);
-				break;
-
-			case 2:
-				maxIterations = Integer.parseInt(s[i]);
-				break;
-
-			case 3:
-				estimatedError = Double.parseDouble(s[i]);
-				break;
-				
-			default:
-				throw new IllegalArgumentException("Invalid argument " + line);
+			// set value
+			if (key.equals("epsilon")) {
+				epsilon = Double.parseDouble(value);
+			} else if (key.equals("maxIterations")) {
+				maxIterations = Integer.parseInt(value);
+			} else if (key.equals("estimatedError")) {
+				estimatedError = Double.parseDouble(value);
+			} else if(key.equals("onlyObserved")) {
+				onlyObservedBases = true;
+			} else {
+				throw new IllegalArgumentException("Invalid argument " + key + " IN: " + line);
 			}
 		}
 	}

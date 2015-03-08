@@ -6,7 +6,7 @@ public interface StatisticCalculator {
 
 	// Make sure this is always >= 0
 	public double getStatistic(ParallelPileup parallelPileup);
-	
+
 	// filter everything < value  
 	public boolean filter(double value);
 

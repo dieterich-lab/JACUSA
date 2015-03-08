@@ -1,5 +1,6 @@
 package jacusa.method.call;
 
+
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
 import jacusa.cli.options.BaseConfigOption;
@@ -13,7 +14,7 @@ import jacusa.cli.options.MaxThreadOption;
 import jacusa.cli.options.MinBASQOption;
 import jacusa.cli.options.MinCoverageOption;
 import jacusa.cli.options.MinMAPQOption;
-import jacusa.cli.options.PathnameArg;
+import jacusa.cli.options.SAMPathnameArg;
 import jacusa.cli.options.ResultFileOption;
 import jacusa.cli.options.StatisticCalculatorOption;
 import jacusa.cli.options.StatisticFilterOption;
@@ -42,8 +43,10 @@ import jacusa.filter.factory.HomozygousFilterFactory;
 import jacusa.filter.factory.INDEL_DistanceFilterFactory;
 import jacusa.filter.factory.MaxAlleleCountFilterFactors;
 import jacusa.filter.factory.MinDifferenceFilterFactory;
+import jacusa.filter.factory.OutlierFilterFactory;
 import jacusa.filter.factory.ReadPositionDistanceFilterFactory;
 import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
+import jacusa.filter.factory.ZeroCountFilterFactory;
 //import jacusa.filter.factory.MAPQBiasFilterFactory;
 import jacusa.filter.factory.ReadPositionalBiasFilterFactory;
 import jacusa.filter.factory.RareEventFilterFactory;
@@ -63,6 +66,7 @@ import jacusa.method.call.statistic.dirmult.DirichletMultinomial;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialPooledError;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialCompoundError;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialEstimatedError;
+import jacusa.method.call.statistic.dirmult.DirichletMultinomialRobustCompoundError;
 //import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
 //import jacusa.method.call.statistic.lr.LR_SPEC_Statistic;
 import jacusa.pileup.dispatcher.call.TwoSampleCallWorkerDispatcher;
@@ -209,6 +213,9 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		statistic = new DirichletMultinomialCompoundError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
+		statistic = new DirichletMultinomialRobustCompoundError	(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistics.put(statistic.getName(), statistic);
+		
 		statistic = new DirichletMultinomialEstimatedError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 		
@@ -222,6 +229,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 				new ReadPositionalBiasFilterFactory(parameters),
 //				new BASQBiasFilterFactory(parameters),
 //				new MAPQBiasFilterFactory(parameters),
+				new OutlierFilterFactory(parameters.getStatisticParameters()),
+				new ZeroCountFilterFactory(parameters.getStatisticParameters()),
 				new DistanceFilterFactory(parameters),
 				new INDEL_DistanceFilterFactory(parameters),
 				new ReadPositionDistanceFilterFactory(parameters),
@@ -282,9 +291,9 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 			throw new ParseException("BAM File is not provided!");
 		}
 
-		PathnameArg pa = new PathnameArg(1, parameters.getSample1());
+		SAMPathnameArg pa = new SAMPathnameArg(1, parameters.getSample1());
 		pa.processArg(args[0]);
-		pa = new PathnameArg(2, parameters.getSample2());
+		pa = new SAMPathnameArg(2, parameters.getSample2());
 		pa.processArg(args[1]);
 
 		return true;
