@@ -33,7 +33,7 @@ public class JACUSA {
 	// timer used for all time measurements
 	private static SimpleTimer timer;
 	public static final String NAME = "jacusa";
-	public static final String VERSION = "0.999-DEVEL";
+	public static final String VERSION = "0.999-BETA4";
 
 	// command line interface
 	private CLI cli;
