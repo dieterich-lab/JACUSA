@@ -40,7 +40,7 @@ public class ACCUSA2Statistic implements StatisticCalculator {
 
 	public double getStatistic(final ParallelPileup parallelPileup) {
 		// use all bases for calculation
-		final int baseIs[] = {0, 1, 2, 3};
+		final int baseIs[] = baseConfig.getBasesI();
 		// use only observed bases per parallelPileup
 
 		// first sample

@@ -16,12 +16,14 @@ public class BED6ResultFormat extends AbstractResultFormat {
 	public static final char SEP2 	= ',';
 
 	private FilterConfig filterConfig;
+	private BaseConfig baseConfig;
 	public Phred2Prob phred2Prob;
 
 	public BED6ResultFormat(BaseConfig baseConfig, FilterConfig filterConfig) {
 		super(CHAR, "BED like output");
 		this.filterConfig = filterConfig;
 
+		this.baseConfig = baseConfig;
 		phred2Prob = Phred2Prob.getInstance(baseConfig.getBaseLength());
 	}
 
@@ -43,7 +45,6 @@ public class BED6ResultFormat extends AbstractResultFormat {
 		sb.append(getSEP());
 
 		// stat	
-		sb.append(getSEP());
 		sb.append("stat");
 		sb.append(getSEP());
 		
@@ -135,12 +136,25 @@ public class BED6ResultFormat extends AbstractResultFormat {
 		// output sample: Ax,Cx,Gx,Tx
 		for (Pileup pileup : pileups) {
 			sb.append(SEP);
-			int baseI = 0;
-			sb.append(pileup.getCounts().getBaseCount()[baseI]);
-			baseI++;
-			for (; baseI < pileup.getCounts().getBaseCount().length ; ++baseI) {
+
+			int i = 0;
+			char b = BaseConfig.VALID[i];
+			int baseI = baseConfig.getBaseI((byte)b);
+			int count = 0;
+			if (baseI >= 0) {
+				count = pileup.getCounts().getBaseCount()[baseI];
+			}
+			sb.append(count);
+			++i;
+			for (; i < BaseConfig.VALID.length; ++i) {
+				b = BaseConfig.VALID[i];
+				baseI = baseConfig.getBaseI((byte)b);
+				count = 0;
+				if (baseI >= 0) {
+					count = pileup.getCounts().getBaseCount()[baseI];
+				}
 				sb.append(SEP2);
-				sb.append(pileup.getCounts().getBaseCount()[baseI]);
+				sb.append(count);
 			}
 		}
 	}

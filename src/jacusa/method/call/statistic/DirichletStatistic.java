@@ -36,8 +36,7 @@ public class DirichletStatistic implements StatisticCalculator {
 
 	@Override
 	public double getStatistic(ParallelPileup parallelPileup) {
-		final int baseIs[] = {0, 1, 2, 3};
-		// final int baseIs[] = parallelPileup.getPooledPileup().getAlleles();
+		final int baseIs[] = baseConfig.getBasesI();
 
 		ChiSquareDist dist = new ChiSquareDist(4);
 

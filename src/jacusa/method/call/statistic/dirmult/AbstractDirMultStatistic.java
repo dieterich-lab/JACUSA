@@ -19,14 +19,14 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 
 	// options for paremeters estimation
 	protected int maxIterations = 100;
-	protected double epsilon = 0.01;
+	protected double epsilon = 0.01; // TODO make smaller
 
 	protected final StatisticParameters parameters;
 	protected final BaseConfig baseConfig;
 	protected Phred2Prob phred2Prob;
 
 	protected boolean onlyObservedBases;
-	
+
 	public AbstractDirMultStatistic(final BaseConfig baseConfig, final StatisticParameters parameters) {
 		this.parameters = parameters;
 		final int n = baseConfig.getBaseLength();
@@ -67,7 +67,6 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			double logLikelihoodP = maximizeLogLikelihood(baseIs, alphaP, pileupCoveragesP, pileupMatrixP);
 			// LRT
 			double z = -2 * (logLikelihoodP - (logLikelihood1 + logLikelihood2));
-
 			p = 1 - dist.cdf(z);
 		} catch (StackOverflowError e) {
 			System.out.println("Warning: Numerical Stability");
@@ -243,6 +242,6 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			return parallelPileup.getPooledPileup().getAlleles();
 		}
 
-		return new int[]{0, 1, 2, 3};
+		return baseConfig.getBasesI();
 	}
 }

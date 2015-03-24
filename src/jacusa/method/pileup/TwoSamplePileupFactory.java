@@ -6,6 +6,7 @@ import jacusa.cli.options.AbstractACOption;
 import jacusa.cli.options.BaseConfigOption;
 import jacusa.cli.options.BedCoordinatesOption;
 import jacusa.cli.options.DebugOption;
+import jacusa.cli.options.FilterConfigOption;
 import jacusa.cli.options.FormatOption;
 import jacusa.cli.options.HelpOption;
 import jacusa.cli.options.MaxDepthOption;
@@ -18,11 +19,28 @@ import jacusa.cli.options.ResultFileOption;
 import jacusa.cli.options.VersionOption;
 import jacusa.cli.options.WindowSizeOption;
 import jacusa.cli.options.pileupbuilder.TwoSamplePileupBuilderOption;
+import jacusa.cli.options.sample.MaxDepthSampleOption;
+import jacusa.cli.options.sample.MinBASQSampleOption;
+import jacusa.cli.options.sample.MinCoverageSampleOption;
+import jacusa.cli.options.sample.MinMAPQSampleOption;
 import jacusa.cli.options.sample.filter.FilterFlagOption;
+import jacusa.cli.options.sample.filter.FilterNHsamTagOption;
+import jacusa.cli.options.sample.filter.FilterNMsamTagOption;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.cli.parameters.TwoSamplePileupParameters;
+import jacusa.filter.factory.AbstractFilterFactory;
+import jacusa.filter.factory.DistanceFilterFactory;
+import jacusa.filter.factory.HomopolymerFilterFactory;
+import jacusa.filter.factory.HomozygousFilterFactory;
+import jacusa.filter.factory.INDEL_DistanceFilterFactory;
+import jacusa.filter.factory.MaxAlleleCountFilterFactors;
+import jacusa.filter.factory.MinDifferenceFilterFactory;
+import jacusa.filter.factory.RareEventFilterFactory;
+import jacusa.filter.factory.ReadPositionDistanceFilterFactory;
+import jacusa.filter.factory.ReadPositionalBiasFilterFactory;
+import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
 import jacusa.io.format.output.AbstractOutputFormat;
 import jacusa.io.format.output.PileupFormat;
 import jacusa.method.AbstractMethodFactory;
@@ -52,21 +70,34 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 		parameters = new TwoSamplePileupParameters();
 	}
 
+	protected void initSampleACOptions(int sample, SampleParameters sampleParameters) {
+		acOptions.add(new MinMAPQSampleOption(sample, sampleParameters));
+		acOptions.add(new MinBASQSampleOption(sample, sampleParameters));
+		acOptions.add(new MinCoverageSampleOption(sample, sampleParameters));
+		acOptions.add(new MaxDepthSampleOption(sample, sampleParameters));
+		acOptions.add(new FilterNHsamTagOption(sample, sampleParameters));
+		acOptions.add(new FilterNMsamTagOption(sample, sampleParameters));
+	}
+	
 	public void initACOptions() {
 		SampleParameters sample1 = parameters.getSample1();
 		SampleParameters sample2 = parameters.getSample2();
 
+		for (int sampleI = 1; sampleI <= 2; ++sampleI) {
+			initSampleACOptions(sampleI, sample1);
+			initSampleACOptions(sampleI, sample2);
+		}
 		SampleParameters[] samples = new SampleParameters[] {
 			sample1, sample2
 		};
-		
+
 		// global settings
 		acOptions.add(new MinMAPQOption(samples));
 		acOptions.add(new MinBASQOption(samples));
 		acOptions.add(new MinCoverageOption(samples));
 		acOptions.add(new MaxDepthOption(samples));
 		acOptions.add(new FilterFlagOption(samples));
-
+		
 		acOptions.add(new TwoSamplePileupBuilderOption(sample1, sample2));
 
 		acOptions.add(new BedCoordinatesOption(parameters));
@@ -80,6 +111,7 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 		}
 
 		acOptions.add(new BaseConfigOption(parameters));
+		acOptions.add(new FilterConfigOption(parameters, getFilterFactories()));
 		acOptions.add(new WindowSizeOption(parameters));
 
 		acOptions.add(new MaxThreadOption(parameters));
@@ -97,6 +129,33 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 		return outputFormats;
 	}
 
+	public Map<Character, AbstractFilterFactory<?>> getFilterFactories() {
+		Map<Character, AbstractFilterFactory<?>> abstractPileupFilters = new HashMap<Character, AbstractFilterFactory<?>>();
+
+		AbstractFilterFactory<?>[] filterFactories = new AbstractFilterFactory[] {
+				new ReadPositionalBiasFilterFactory(parameters),
+//				new BASQBiasFilterFactory(parameters),
+//				new MAPQBiasFilterFactory(parameters),
+//				new OutlierFilterFactory(parameters.getStatisticParameters()),
+//				new ZeroCountFilterFactory(parameters.getStatisticParameters()),
+				new DistanceFilterFactory(parameters),
+				new INDEL_DistanceFilterFactory(parameters),
+				new ReadPositionDistanceFilterFactory(parameters),
+				new SpliceSiteDistanceFilterFactory(parameters),
+				new HomozygousFilterFactory(),
+				new MaxAlleleCountFilterFactors(),
+				new HomopolymerFilterFactory(parameters),
+				new RareEventFilterFactory(parameters),
+				new MinDifferenceFilterFactory(parameters)
+//				new FDRFilterFactory(parameters.getStatisticParameters()),
+		};
+		for (AbstractFilterFactory<?> filterFactory : filterFactories) {
+			abstractPileupFilters.put(filterFactory.getC(), filterFactory);
+		}
+
+		return abstractPileupFilters;
+	}
+	
 	@Override
 	public MpileupWorkerDispatcher getInstance(CoordinateProvider coordinateProvider) {
 		if(instance == null) {
