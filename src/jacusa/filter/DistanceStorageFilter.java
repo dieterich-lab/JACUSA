@@ -6,6 +6,7 @@ import jacusa.pileup.BaseConfig;
 import jacusa.pileup.Counts;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.iterator.AbstractWindowIterator;
+import jacusa.result.Result;
 import jacusa.util.Location;
 
 public class DistanceStorageFilter extends AbstractWindowStorageFilter {
@@ -20,7 +21,9 @@ public class DistanceStorageFilter extends AbstractWindowStorageFilter {
 	}
 
 	@Override
-	public boolean filter(ParallelPileup parallelPileup, Location location, AbstractWindowIterator windowIterator) {
+	public boolean filter(final Result result, final Location location, final AbstractWindowIterator windowIterator) {
+		final ParallelPileup parallelPileup = result.getParellelPileup();
+
 		Counts[] counts1 = getCounts(location, windowIterator.getFilterContainers4Replicates1(location));
 		Counts[] counts2 = getCounts(location, windowIterator.getFilterContainers4Replicates2(location));
 

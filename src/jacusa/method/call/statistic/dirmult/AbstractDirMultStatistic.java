@@ -158,13 +158,42 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			b = b / (1.0 / z + b_DenominatorSum);
 
 			loglikOld = getLogLikelihood(alphaOld, baseIs, coverages, matrix);
+			
+			/*
+			StringBuilder sb1 = new StringBuilder();
+			sb1.append("g");
+			StringBuilder sb2 = new StringBuilder();
+			sb2.append("Q");
+			StringBuilder sb3 = new StringBuilder();
+			sb3.append("a1");
+			StringBuilder sb4 = new StringBuilder();
+			sb4.append("a2");
+			*/
+			
 			// update alphaNew
 			for (int baseI : baseIs) {
 				alphaNew[baseI] = alphaOld[baseI] - (gradient[baseI] - b) / Q[baseI];
 				if (alphaNew[baseI] < 0.0) {
 					alphaNew[baseI] = 0.001;
 				}
+				
+				/*
+				sb1.append("\t" + gradient[baseI]);
+				sb2.append("\t" + Q[baseI]);
+				sb3.append("\t" + alphaOld[baseI]);
+				sb4.append("\t" + alphaNew[baseI]);
+				*/
 			}
+			/*
+			System.out.println(iteration + "=====");
+			System.out.println(sb3.toString());
+			System.out.println(sb4.toString());
+			System.out.println(sb1.toString());
+			System.out.println("b\t" + b);
+			System.out.println(sb2.toString());
+			System.out.println("=====");
+			*/
+
 			loglikNew = getLogLikelihood(alphaNew, baseIs, coverages, matrix);
 
 			// check if converged
@@ -207,7 +236,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 
 	@Override
 	public boolean filter(double value) {
-		return parameters.getMaxStat() < value;
+		return parameters.getThreshold() < value;
 	}
 
 	// format -u DirMult:epsilon=<epsilon>:maxIterations=<maxIterions>:onlyObserved

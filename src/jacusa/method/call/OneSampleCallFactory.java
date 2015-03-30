@@ -28,9 +28,8 @@ import jacusa.filter.factory.HomopolymerFilterFactory;
 import jacusa.filter.factory.HomozygousFilterFactory;
 import jacusa.filter.factory.MaxAlleleCountFilterFactors;
 import jacusa.filter.factory.RareEventFilterFactory;
-import jacusa.io.format.result.AbstractResultFormat;
-import jacusa.io.format.result.DefaultResultFormat;
-import jacusa.io.format.result.PileupResultFormat;
+import jacusa.io.format.AbstractOutputFormat;
+import jacusa.io.format.DefaultOutputFormat;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.statistic.DirichletMOMsStatistic;
 import jacusa.method.call.statistic.StatisticCalculator;
@@ -72,7 +71,7 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 			Character[] a = getFormats().keySet().toArray(new Character[1]);
 			parameters.setFormat(getFormats().get(a[0]));
 		} else {
-			acOptions.add(new FormatOption<AbstractResultFormat>(parameters, getFormats()));
+			acOptions.add(new FormatOption<AbstractOutputFormat>(parameters, getFormats()));
 		}
 
 		acOptions.add(new MaxThreadOption(parameters));
@@ -142,13 +141,13 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 		return abstractPileupFilters;
 	}
 
-	public Map<Character, AbstractResultFormat> getFormats() {
-		Map<Character, AbstractResultFormat> resultFormats = new HashMap<Character, AbstractResultFormat>();
+	public Map<Character, AbstractOutputFormat> getFormats() {
+		Map<Character, AbstractOutputFormat> resultFormats = new HashMap<Character, AbstractOutputFormat>();
 
-		AbstractResultFormat resultFormat = new DefaultResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
-		resultFormats.put(resultFormat.getC(), resultFormat);
-
-		resultFormat = new PileupResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		int n = parameters.getSample1().getPathnames().length;
+		
+		AbstractOutputFormat resultFormat = new DefaultOutputFormat(
+				n, 0, parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;

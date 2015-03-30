@@ -11,6 +11,7 @@ import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.iterator.AbstractWindowIterator;
 import jacusa.pileup.sample.PermutateBases;
 import jacusa.pileup.sample.PermutateParallelPileup;
+import jacusa.result.Result;
 import jacusa.util.Location;
 import jacusa.util.WindowCoordinates;
 
@@ -55,7 +56,8 @@ public class FDRFilterFactory extends AbstractFilterFactory<Void> {
 		}
 
 		@Override
-		public boolean filter(final ParallelPileup parallelPileup, final Location location,	final AbstractWindowIterator windowIterator) {
+		public boolean filter(final Result result, final Location location,	final AbstractWindowIterator windowIterator) {
+			final ParallelPileup parallelPileup = result.getParellelPileup();
 			double observedStat = calculator.getStatistic(parallelPileup); 
 			System.out.println(parallelPileup.prettyPrint());
 
@@ -72,7 +74,7 @@ public class FDRFilterFactory extends AbstractFilterFactory<Void> {
 
 			double eFdr = (double)c / (double)n;
 
-			setFilterInfo(":FDR=" + Double.toString(eFdr));
+			result.addFilterInfo("FDR=" + Double.toString(eFdr));
 
 			return eFdr <= fdr;
 		}

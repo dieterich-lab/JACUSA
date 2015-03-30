@@ -62,6 +62,7 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 		}
 		for (int baseI : baseIs) {
 			alpha[baseI] = alpha[baseI] / (double)pileups.length;
+			alpha[baseI] = 0.1; // FIXME
 		}
 	}
 	

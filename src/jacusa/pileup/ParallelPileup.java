@@ -39,4 +39,6 @@ public interface ParallelPileup {
 	abstract int[] getVariantBaseIs();
 
 	String prettyPrint();
+
+	abstract ParallelPileup copy();
 }

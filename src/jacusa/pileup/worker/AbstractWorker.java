@@ -1,115 +1,125 @@
 package jacusa.pileup.worker;
 
-import jacusa.io.Output;
-import jacusa.io.TmpWriter;
-import jacusa.io.format.output.AbstractOutputFormat;
+import jacusa.JACUSA;
+import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.dispatcher.AbstractWorkerDispatcher;
 import jacusa.pileup.iterator.AbstractWindowIterator;
+import jacusa.result.Result;
 import jacusa.util.Coordinate;
+import jacusa.util.Location;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import net.sf.samtools.SAMFileReader;
 
 public abstract class AbstractWorker extends Thread {
 
-	protected AbstractWorkerDispatcher<? extends AbstractWorker> workerDispatcher;
+	public static enum STATUS {INIT, READY, FINISHED, BUSY, DONE};
+
+	private Coordinate coordinate;
 	protected AbstractWindowIterator parallelPileupIterator;
 
-	protected final int maxThreads;
-	protected final int threadId;
+	protected AbstractWorkerDispatcher<? extends AbstractWorker> workerDispatcher;
 
+	private final int threadId;
+	protected final int maxThreads;
+
+	private STATUS status;
 	protected int comparisons;
 
-	// output related
-	// current writer
-	protected TmpWriter tmpOutputWriter;
-	protected Output output;
-	protected AbstractOutputFormat format;
-
-	// indicates if computation is finished
-	private boolean isFinished;
-
+	private BufferedWriter bw;
+	
 	public AbstractWorker(
-			AbstractWorkerDispatcher<? extends AbstractWorker> workerDispatcher, 
-			int maxThreads, 
-			Output output, 
-			AbstractOutputFormat format) {
-		this.workerDispatcher 	= workerDispatcher; 
-
+			AbstractWorkerDispatcher<? extends AbstractWorker> workerDispatcher,
+			int threadId, 
+			int maxThreads) {
+		this.workerDispatcher 	= workerDispatcher;
+		this.threadId			= threadId;
 		this.maxThreads			= maxThreads;
-		isFinished 				= false;
+
+		status 					= STATUS.INIT;
 		comparisons 			= 0;
-
-		threadId				= workerDispatcher.getWorkerContainer().size();
-
-		final String tmpFilename = output.getInfo() + "_tmp" + String.valueOf(threadId) + ".gz";
-		try {
-			tmpOutputWriter		= new TmpWriter(tmpFilename);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
-		this.output				= output;
-		this.format				= format;
 		
-	}
-
-	private synchronized void writeMarker() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(format.getCOMMENT());
-		sb.append(format.getCOMMENT());
-		String s = sb.toString();
-
+		String filename = workerDispatcher.getOutput().getInfo() + "_" + threadId + "_tmp.gz";
+		final File file = new File(filename);
 		try {
-			tmpOutputWriter.write(s);
+			bw = new BufferedWriter(new FileWriter(file));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+	public synchronized void setCoordinate(Coordinate coordinate) {
+		this.coordinate = coordinate;
+	}
+	
 	public final void run() {
-		processParallelPileupIterator(parallelPileupIterator);
+		while (status != STATUS.FINISHED) {
+			switch (status) {
 
-		if (maxThreads > 1) {
-			writeMarker();
-		}
-
-		while (! isFinished) {
-			Coordinate annotatedCoordinate = null;
-
-			synchronized (workerDispatcher) {
-				if (workerDispatcher.hasNext()) {
-					annotatedCoordinate = workerDispatcher.next(this);
-				} else {
-					isFinished = true;
+			case READY:
+				synchronized (workerDispatcher) {
+					final int size = workerDispatcher.getThreadIds().size(); 
+					if (size > 0) {
+						try {
+							bw.write("##\n");
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+					workerDispatcher.getThreadIds().add(getThreadId());
 				}
-			}
 
-			if (annotatedCoordinate != null) {
-				parallelPileupIterator = buildIterator(annotatedCoordinate);
-				processParallelPileupIterator(parallelPileupIterator);
-
-				if (maxThreads > 1) {
-					writeMarker();
+				synchronized (this) {
+					status = STATUS.BUSY;
+					parallelPileupIterator = buildIterator(coordinate);
+					processParallelPileupIterator(parallelPileupIterator);
+					status = STATUS.INIT;
 				}
+
+				
+			break;
+				
+			case INIT:
+				Coordinate coordinate = null;
+				synchronized (workerDispatcher) {
+					if (workerDispatcher.hasNext()) {
+						coordinate = workerDispatcher.next();
+					}
+				}
+				synchronized (this) {
+					if (coordinate == null) {
+						setStatus(STATUS.FINISHED);
+					} else {
+						setCoordinate(coordinate);
+						setStatus(STATUS.READY);
+					}
+				}
+				break;
+
+			
+			default:
+				break;
 			}
 		}
-
-		// this thread is done - tell dispatcher
+		
 		synchronized (workerDispatcher) {
 			workerDispatcher.notify();
 		}
-
-		close();
+		
+		try {
+			bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public int getThreadId() {
 		return threadId;
 	}
-
-	protected abstract void close();
 
 	/**
 	 * 
@@ -152,19 +162,47 @@ public abstract class AbstractWorker extends Thread {
 				reader.close();
 			}
 		}
-
-		try {
-			tmpOutputWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
+	protected abstract Result processParallelPileup(ParallelPileup parallelPileup, final Location location, final AbstractWindowIterator parallelPileupIterator);
+	
 	/**
 	 * 
 	 * @param parallelPileupIterator
 	 */
-	abstract protected void processParallelPileupIterator(AbstractWindowIterator parallelPileupIterator);
+	protected synchronized void processParallelPileupIterator(final AbstractWindowIterator parallelPileupIterator) {
+		// print informative log
+		JACUSA.printLog("Started screening contig " + 
+				parallelPileupIterator.getCoordinate().getSequenceName() + 
+				":" + 
+				parallelPileupIterator.getCoordinate().getStart() + 
+				"-" + 
+				parallelPileupIterator.getCoordinate().getEnd());
+
+		// iterate over parallel pileups
+		while (parallelPileupIterator.hasNext()) {
+			final Location location = parallelPileupIterator.next();
+			final ParallelPileup parallelPileup = parallelPileupIterator.getParallelPileup().copy();
+			final Result result = processParallelPileup(parallelPileup, location, parallelPileupIterator);
+
+			// considered comparisons
+
+			comparisons++;
+
+			if (result == null) {
+				continue;
+			}
+
+			final String line = workerDispatcher.getFormat().convert2String(result);
+			try {
+				bw.write(line + "\n");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	abstract protected void close();
 
 	/**
 	 * 
@@ -172,18 +210,18 @@ public abstract class AbstractWorker extends Thread {
 	 * @param parameters
 	 * @return
 	 */
-	abstract protected AbstractWindowIterator buildIterator(Coordinate coordinate);
-
+	protected abstract AbstractWindowIterator buildIterator(Coordinate coordinate);
+	
 	public final int getComparisons() {
 		return comparisons;
 	}
 
-	public final boolean isFinished() {
-		return isFinished;
+	public STATUS getStatus() {
+		return status;
 	}
-
-	public final TmpWriter getTmpOutputWriter() {
-		return tmpOutputWriter;
+	
+	public void setStatus(STATUS status) {
+		this.status = status;
 	}
-
+	
 }

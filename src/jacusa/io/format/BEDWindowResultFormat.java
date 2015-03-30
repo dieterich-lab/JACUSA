@@ -1,12 +1,13 @@
-package jacusa.io.format.result;
+package jacusa.io.format;
 
 import jacusa.filter.FilterConfig;
 import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
+import jacusa.result.Result;
 
-public class BEDWindowResultFormat extends AbstractResultFormat {
+public class BEDWindowResultFormat extends AbstractOutputFormat {
 
 	public static final char CHAR = 'B';
 	
@@ -15,16 +16,26 @@ public class BEDWindowResultFormat extends AbstractResultFormat {
 	public static final char SEP 	= '\t';
 	public static final char SEP2 	= ',';
 
+	private int replicates1;
+	private int replicates2;
+	
 	public Phred2Prob phred2Prob;
 
-	public BEDWindowResultFormat(BaseConfig baseConfig, FilterConfig filterConfig) {
+	public BEDWindowResultFormat(
+			final int replicates1, 
+			final int replicates2, 
+			final BaseConfig baseConfig, 
+			final FilterConfig filterConfig) {
 		super(CHAR, "BED like window output");
 
+		this.replicates1 = replicates1;
+		this.replicates2 = replicates2;
+		
 		phred2Prob = Phred2Prob.getInstance(baseConfig.getBaseLength());
 	}
 
 	@Override
-	public String getHeader(ParallelPileup parallelPileup) {
+	public String getHeader() {
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append(COMMENT);
@@ -49,10 +60,10 @@ public class BEDWindowResultFormat extends AbstractResultFormat {
 		sb.append(getSEP());
 		
 		// (1) first sample  infos
-		addSampleHeader(sb, '1', parallelPileup.getN1());
+		addSampleHeader(sb, '1', replicates1);
 		sb.append(getSEP());
 		// (2) second sample  infos
-		addSampleHeader(sb, '2', parallelPileup.getN2());
+		addSampleHeader(sb, '2', replicates2);
 
 		/* no filters for window calling
 		// add filtering info
@@ -116,22 +127,12 @@ public class BEDWindowResultFormat extends AbstractResultFormat {
 	}
 
 	@Override
-	public String convert2String(ParallelPileup parallelPileup) {
+	public String convert2String(Result result) {
+		final ParallelPileup parallelPileup = result.getParellelPileup();
 		final StringBuilder sb = convert2StringHelper(parallelPileup, Double.NaN);
 		return sb.toString();		
 	}
-	
-	// FIXME filterInfo
-	@Override
-	public String convert2String(final ParallelPileup parallelPileup, final double value, final String filterInfo) {
-		final StringBuilder sb = convert2StringHelper(parallelPileup, value);
 
-		sb.append(SEP);
-		sb.append(filterInfo);
-
-		return sb.toString();
-	}
-	
 	/*
 	 * Helper function
 	 */
@@ -145,21 +146,6 @@ public class BEDWindowResultFormat extends AbstractResultFormat {
 			sb.append(SEP2);
 			sb.append(pileup.getCounts().getBaseCount()[baseI]);
 		}
-	}
-
-	/**
-	 * Last column holds the final value
-	 */
-	@Override
-	public double extractValue(String line) {
-		String[] cols = line.split(Character.toString(SEP));
-		return Double.parseDouble(cols[4]);
-	}
-
-	@Override
-	public String getFilterInfo(String line) {
-		String[] cols = line.split(Character.toString(SEP));
-		return cols[cols.length - 1];
 	}
 	
 	public char getCOMMENT() {

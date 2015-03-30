@@ -23,17 +23,14 @@ import jacusa.util.coordinateprovider.CoordinateProvider;
 public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispatcher<TwoSampleDebugCallWorker> {
 
 	private TwoSampleCallParameters parameters;
-	private int replicates1;
-	private int replicates2;
 	private Map<String, ParallelPileup> coord2parallelPileup; 
 	
 	public TwoSampleDebugCallWorkerDispatcher(CoordinateProvider coordinateProvider, TwoSampleCallParameters parameters) throws IOException {
 		super(	coordinateProvider, 
 				parameters.getMaxThreads(), 
-				parameters.getStatisticParameters(),
 				parameters.getOutput(), 
-				parameters.getFormat(),
-				parameters.isDebug());
+				parameters.getFormat()
+		);
 		
 		this.parameters = parameters;
 		coord2parallelPileup = initCoord2parallelPileup(parameters.getSample1().getPathnames()[0]);
@@ -50,11 +47,9 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 			String[] header = {"#contig", "start", "end", "name", "stat", "strand", "bases12", "bases21"};
 			List<Integer> replicateIndex1 = new ArrayList<Integer>();
 			replicateIndex1.add(6);
-			replicates1 = replicateIndex1.size();
 
 			List<Integer> replicateIndex2 = new ArrayList<Integer>();
 			replicateIndex2.add(7);
-			replicates2 = replicateIndex2.size();
 			
 			// parsing
 			String line;
@@ -75,9 +70,6 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 							replicateIndex2.add(i);
 						}
 					}
-					replicates1 = replicateIndex1.size();
-					replicates2 = replicateIndex2.size();
-
 					continue;
 				}
 				if (line.isEmpty()) {
@@ -133,16 +125,6 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 		}
 		return pileups;
 	}
-	
-	@Override
-	protected void processFinishedWorker(TwoSampleDebugCallWorker worker) {
-		addComparisons(worker.getComparisons());
-	}
-
-	@Override
-	protected String getHeader() {
-		return getFormat().getHeader(new DefaultParallelPileup(replicates1, replicates2));
-	}
 
 	public Map<String, ParallelPileup> getCoord2parallelPileup() {
 		return coord2parallelPileup;
@@ -150,7 +132,11 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 
 	@Override
 	protected TwoSampleDebugCallWorker buildNextWorker() {
-		return new TwoSampleDebugCallWorker(this, parameters);
+		return new TwoSampleDebugCallWorker(
+				this,
+				this.getWorkerContainer().size(),
+				parameters
+		);
 	}
 
 }

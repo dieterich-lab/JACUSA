@@ -30,9 +30,9 @@ import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.cli.parameters.TwoSampleCallParameters;
-import jacusa.io.format.result.AbstractResultFormat;
-import jacusa.io.format.result.BED6ResultFormat;
-import jacusa.io.format.result.BEDWindowResultFormat;
+import jacusa.io.format.AbstractOutputFormat;
+import jacusa.io.format.BED6ResultFormat;
+import jacusa.io.format.BEDWindowResultFormat;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomial;
@@ -105,7 +105,7 @@ public class TwoSampleWindowCallFactory extends AbstractMethodFactory {
 			parameters.setFormat(getResultFormats().get(a[0]));
 		} else {
 			parameters.setFormat(getResultFormats().get(BED6ResultFormat.CHAR));
-			acOptions.add(new FormatOption<AbstractResultFormat>(parameters, getResultFormats()));
+			acOptions.add(new FormatOption<AbstractOutputFormat>(parameters, getResultFormats()));
 		}
 
 		acOptions.add(new MaxThreadOption(parameters));
@@ -154,10 +154,10 @@ public class TwoSampleWindowCallFactory extends AbstractMethodFactory {
 		return statistics;
 	}
 
-	public Map<Character, AbstractResultFormat> getResultFormats() {
-		Map<Character, AbstractResultFormat> resultFormats = new HashMap<Character, AbstractResultFormat>();
+	public Map<Character, AbstractOutputFormat> getResultFormats() {
+		Map<Character, AbstractOutputFormat> resultFormats = new HashMap<Character, AbstractOutputFormat>();
 
-		AbstractResultFormat resultFormat = new BEDWindowResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		AbstractOutputFormat resultFormat = new BEDWindowResultFormat(1, 1, parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;

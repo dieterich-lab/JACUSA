@@ -138,7 +138,7 @@ public final class DirichletMOMsStatistic implements StatisticCalculator {
 
 	@Override
 	public boolean filter(double value) {
-		return parameters.getMaxStat() < value;
+		return parameters.getThreshold() < value;
 	}
 
 	@Override

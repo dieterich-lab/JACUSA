@@ -1,11 +1,10 @@
 package jacusa.cli.parameters;
 
-import jacusa.io.format.result.AbstractResultFormat;
-import jacusa.io.format.result.DefaultResultFormat;
+import jacusa.io.format.AbstractOutputFormat;
+import jacusa.io.format.DefaultOutputFormat;
 import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
 
-public class TwoSampleCallParameters extends AbstractParameters implements hasSampleB, hasStatisticCalculator, hasResultFormat {
-
+public class TwoSampleCallParameters extends AbstractParameters implements hasSampleB, hasStatisticCalculator {
 	private SampleParameters sampleB;
 	private StatisticParameters statisticParameters;
 
@@ -16,7 +15,7 @@ public class TwoSampleCallParameters extends AbstractParameters implements hasSa
 		statisticParameters = new StatisticParameters();
 		statisticParameters.setStatisticCalculator(new LR_SENS_Statistic(getBaseConfig(), statisticParameters));
 
-		super.setFormat(new DefaultResultFormat(getBaseConfig(), getFilterConfig()));
+		super.setFormat(new DefaultOutputFormat(0, 0, getBaseConfig(), getFilterConfig()));
 	}
 
 	@Override
@@ -30,12 +29,12 @@ public class TwoSampleCallParameters extends AbstractParameters implements hasSa
 	}
 
 	@Override
-	public AbstractResultFormat getFormat() {
-		return (AbstractResultFormat)super.getFormat();
+	public AbstractOutputFormat getFormat() {
+		return (AbstractOutputFormat)super.getFormat();
 	}
 
 	@Override
-	public void setFormat(AbstractResultFormat format) {
+	public void setFormat(AbstractOutputFormat format) {
 		super.setFormat(format);
 	}
 

@@ -1,6 +1,5 @@
 package jacusa.pileup.worker;
 
-import jacusa.JACUSA;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.cli.parameters.TwoSamplePileupParameters;
 import jacusa.pileup.ParallelPileup;
@@ -10,9 +9,9 @@ import jacusa.pileup.iterator.AbstractWindowIterator;
 import jacusa.pileup.iterator.TwoSampleIterator;
 import jacusa.pileup.iterator.variant.AllParallelPileup;
 import jacusa.pileup.iterator.variant.Variant;
+import jacusa.result.Result;
 import jacusa.util.Coordinate;
-
-import java.io.IOException;
+import jacusa.util.Location;
 
 import net.sf.samtools.SAMFileReader;
 
@@ -24,42 +23,29 @@ public class MpileupWorker extends AbstractWorker {
 
 	private final Variant variant;
 	
-	public MpileupWorker(MpileupWorkerDispatcher workerDispatcher, TwoSamplePileupParameters parameters) {
-		super(workerDispatcher, parameters.getMaxThreads(), parameters.getOutput(), parameters.getFormat());
+	public MpileupWorker(
+			MpileupWorkerDispatcher workerDispatcher,
+			int threadId,
+			TwoSamplePileupParameters parameters) {
+		super(
+				workerDispatcher, 
+				threadId,
+				parameters.getMaxThreads()
+		);
 		this.parameters = parameters;
 
 		readers1 = initReaders(parameters.getSample1().getPathnames());
 		readers2 = initReaders(parameters.getSample2().getPathnames());
 		
 		variant = new AllParallelPileup();
-		
-		parallelPileupIterator  = buildIterator(workerDispatcher.next(this));
 	}
 
 	@Override
-	protected void processParallelPileupIterator(AbstractWindowIterator parallelPileupIterator) {
-		JACUSA.printLog("Started screening contig " + 
-				parallelPileupIterator.getCoordinate().getSequenceName() + 
-				":" + 
-				parallelPileupIterator.getCoordinate().getStart() + 
-				"-" + 
-				parallelPileupIterator.getCoordinate().getEnd());
-
-		while (parallelPileupIterator.hasNext()) {
-			// considered comparisons
-			comparisons++;
-
-			StringBuilder sb = new StringBuilder();
-			parallelPileupIterator.next();
-			ParallelPileup parallelPileup = parallelPileupIterator.getParallelPileup();
-			
-			sb.append(parameters.getFormat().convert2String(parallelPileup));
-			try {
-				tmpOutputWriter.write(sb.toString());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+	protected Result processParallelPileup(ParallelPileup parallelPileup, final Location location, final AbstractWindowIterator parallelPileupIterator) {
+		Result result = new Result();
+		result.setParellelPileup(parallelPileup);
+		
+		return result;
 	}
 
 	@Override

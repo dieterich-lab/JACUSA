@@ -3,7 +3,7 @@ package jacusa.cli.parameters;
 import jacusa.filter.FilterConfig;
 import jacusa.io.Output;
 import jacusa.io.OutputPrinter;
-import jacusa.io.format.output.AbstractOutputFormat;
+import jacusa.io.format.AbstractOutputFormat;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.builder.PileupBuilderFactory;

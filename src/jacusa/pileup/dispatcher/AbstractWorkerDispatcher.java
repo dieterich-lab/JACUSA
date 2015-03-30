@@ -1,67 +1,52 @@
 package jacusa.pileup.dispatcher;
 
 import jacusa.io.Output;
-import jacusa.io.TmpOutputReader;
-import jacusa.io.TmpWriter;
-import jacusa.io.format.output.AbstractOutputFormat;
+import jacusa.io.format.AbstractOutputFormat;
 import jacusa.pileup.worker.AbstractWorker;
 import jacusa.util.Coordinate;
 import jacusa.util.coordinateprovider.CoordinateProvider;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 
 	private CoordinateProvider coordinateProvider;
-
 	private int maxThreads;
-	private final List<T> workerContainer;
-	private final List<T> runningWorkers;
-	
-	private Integer comparisons;
-
 	private Output output;
 	private AbstractOutputFormat format;
-	private boolean isDebug;
 
-	private Vector<Integer> threadIDs;
+	private final List<T> workerContainer;
+	private final List<T> runningWorkers;
 
+	private Integer comparisons;
+	private List<Integer> threadIds;
+	
 	public AbstractWorkerDispatcher(
 			final CoordinateProvider coordinateProvider, 
 			final int maxThreads, 
 			final Output output, 
-			final AbstractOutputFormat format, 
-			final boolean isDebug) {
+			final AbstractOutputFormat format) {
 		this.coordinateProvider = coordinateProvider;
+		this.maxThreads 		= maxThreads;
+		this.output 			= output;
+		this.format				= format;
 
-		threadIDs = new Vector<Integer>(5000);
-
-		this.maxThreads = maxThreads;
-		workerContainer = new ArrayList<T>(maxThreads);
-		runningWorkers	= new ArrayList<T>(maxThreads);
-
-		comparisons 	= 0;
-
-		this.output		= output;
-		this.format		= format;
+		workerContainer 		= new ArrayList<T>(maxThreads);
+		runningWorkers			= new ArrayList<T>(maxThreads);
+		comparisons 			= 0;
+		threadIds				= new ArrayList<Integer>(10000);
 	}
 
-	protected abstract void processFinishedWorker(final T worker);
 	protected abstract T buildNextWorker();	
-	protected abstract void processTmpLine(final String line) throws IOException;
-	protected abstract String getHeader();
-	
-	public synchronized Coordinate next(final AbstractWorker worker) {
-		final int threadId = worker.getThreadId();
 
-		threadIDs.add(threadId);
-		Coordinate coordinate = coordinateProvider.next();
-
-		return coordinate;
+	public synchronized Coordinate next() {
+		return coordinateProvider.next();
 	}
 
 	public synchronized boolean hasNext() {
@@ -69,27 +54,44 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 	}
 
 	public final int run() {
-		synchronized (this) {
-
-			while (hasNext() || ! workerContainer.isEmpty()) {
-
-				// clean finished threads
-				for (int i = 0; i < runningWorkers.size(); ++i) {
-					T runningWorker = runningWorkers.get(i);
-
-					if (runningWorker.isFinished()) {
+		// write Header
+		try {
+			String header = format.getHeader();
+			if (header != null) {
+				output.write(header);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		while (hasNext() || ! runningWorkers.isEmpty()) {
+			for (int i = 0; i < runningWorkers.size(); ++i) {
+				T runningWorker = runningWorkers.get(i);
+				
+				switch (runningWorker.getStatus()) {
+				case FINISHED:
+					synchronized (comparisons) {
 						comparisons += runningWorker.getComparisons();
-						processFinishedWorker(runningWorker);
+					}
+					synchronized (runningWorkers) {
 						runningWorkers.remove(runningWorker);
 					}
-				}
+					break;
 
+				default:
+					break;
+				}
+			} 
+
+			synchronized (this) {
 				// fill thread container
 				while (runningWorkers.size() < maxThreads && hasNext()) {
 					T worker = buildNextWorker();
+					
+					threadIds.add(worker.getThreadId());
+					
 					workerContainer.add(worker);
 					runningWorkers.add(worker);
-
 					worker.start();
 				}
 
@@ -97,7 +99,6 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 				if (! hasNext() && runningWorkers.isEmpty()) {
 					break;
 				}
-
 				try {
 					this.wait();
 				} catch (InterruptedException e) {
@@ -106,8 +107,8 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 			}
 		}
 
-		// finally write the output and cleanup
-		writeOuptut();
+		writeOutput();
+
 		return comparisons;
 	}
 
@@ -123,73 +124,57 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 	public void addComparisons(int comparisons) {
 		this.comparisons += comparisons;
 	}
+	
+	public AbstractOutputFormat getFormat() {
+		return format;
+	}
 
-	protected void writeOuptut() {
-		// write Header
-		try {
-			String header = getHeader();
-			if (header != null) {
-				output.write(getHeader());
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
+	public Output getOutput() {
+		return output;
+	}
 
-		// build reader array
-		TmpOutputReader[] tmpOutputReaders = new TmpOutputReader[getWorkerContainer().size()];
-		for (int i = 0; i < getWorkerContainer().size(); ++i) {
-			final TmpWriter tmpOutputWriter = getWorkerContainer().get(i).getTmpOutputWriter();
+	public List<Integer> getThreadIds() {
+		return threadIds;
+	}
+	
+	protected void writeOutput() {
+		BufferedReader[] brs = new BufferedReader[maxThreads];
+		for (int threadId = 0; threadId < maxThreads; ++threadId) {
+			String filename = output.getInfo() + "_" + threadId + "_tmp.gz";
+			final File file = new File(filename); 
 			try {
-				tmpOutputWriter.close();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			TmpOutputReader tmpOutputReader;
-			try {
-				tmpOutputReader = new TmpOutputReader(tmpOutputWriter.getInfo());
-			} catch (IOException e) {
+				brs[threadId] = new BufferedReader(new FileReader(file));
+			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-				return;
 			}
-			tmpOutputReaders[i] = tmpOutputReader;
 		}
 
-		// read data and change readers based on meta info/nextThreadId on the fly to reconstruct order of output
-
-		int threadI = 0;
-		TmpOutputReader tmpOutputReader = tmpOutputReaders[threadI];
-		try {
-			String line = null;
-			while ((line = tmpOutputReader.readLine()) != null) {
-				if (line.length() > 1 && 
-						line.charAt(0) == format.getCOMMENT() && 
-						line.charAt(1) == format.getCOMMENT()) {
-					threadI++;
-					if (threadI < threadIDs.size()) {
-						tmpOutputReader = tmpOutputReaders[threadIDs.get(threadI)];
-					}
-				} else {
-					processTmpLine(line);
+		for (int threadId : threadIds) {
+			final BufferedReader br = brs[threadId];
+			try {
+				String line;
+				while((line = br.readLine()) != null && ! line.startsWith("##")) {
+					output.write(line);
 				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return;
-		}
-
-		for (int i = 0; i < getWorkerContainer().size(); ++i) {
-			try {
-				tmpOutputReaders[i].close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			// leave tmp files if needed
-			if (! isDebug) {
-				new File(getWorkerContainer().get(i).getTmpOutputWriter().getInfo()).delete();
+		}
+		
+		for (BufferedReader br : brs) {
+			try {
+				
+				br.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
-
+		
+		for (int threadId = 0; threadId < maxThreads; ++threadId) {
+			String filename = output.getInfo() + "_" + threadId + "_tmp.gz";
+			new File(filename).delete();
+		}
+		
 		try {
 			output.close();
 		} catch (IOException e) {
@@ -197,8 +182,4 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 		}
 	}
 
-	protected Output getOutput() {
-		return output;
-	}
-	
 }

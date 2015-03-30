@@ -22,7 +22,7 @@ public class StatisticFilterOption  extends AbstractACOption {
 		return OptionBuilder.withLongOpt(longOpt)
 			.withArgName(longOpt.toUpperCase())
 			.hasArg(true)
-	        .withDescription("Filter positions dependening on the " + longOpt.toUpperCase() + "\n default: " + parameters.getMaxStat())
+	        .withDescription("Filter positions dependening on the " + longOpt.toUpperCase() + "\n default: " + parameters.getThreshold())
 	        .create(opt);
 	}
 
@@ -34,7 +34,7 @@ public class StatisticFilterOption  extends AbstractACOption {
 	    	if (stat < 0 || stat > 1) {
 	    		throw new Exception("Invalid value for " + longOpt.toUpperCase() + ". Allowed values are 0 <= " + longOpt.toUpperCase() + " <= 1");
 	    	}
-	    	parameters.setStat(stat);
+	    	parameters.setThreshold(stat);
 		}
 	}
 

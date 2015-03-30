@@ -1,7 +1,7 @@
 package jacusa.cli.options;
 
 import jacusa.cli.parameters.AbstractParameters;
-import jacusa.io.format.output.AbstractOutputFormat;
+import jacusa.io.format.AbstractOutputFormat;
 
 import java.util.Map;
 

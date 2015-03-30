@@ -17,9 +17,9 @@ import jacusa.cli.parameters.TwoSampleCallParameters;
 import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.filter.factory.OutlierFilterFactory;
 import jacusa.filter.factory.ZeroCountFilterFactory;
-import jacusa.io.format.result.AbstractResultFormat;
-import jacusa.io.format.result.BED6ResultFormat;
-import jacusa.io.format.result.DebugResultFormat;
+import jacusa.io.format.AbstractOutputFormat;
+import jacusa.io.format.BED6ResultFormat;
+import jacusa.io.format.DebugResultFormat;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomial;
@@ -73,7 +73,7 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 			parameters.setFormat(getResultFormats().get(a[0]));
 		} else {
 			parameters.setFormat(getResultFormats().get(BED6ResultFormat.CHAR));
-			acOptions.add(new FormatOption<AbstractResultFormat>(parameters, getResultFormats()));
+			acOptions.add(new FormatOption<AbstractOutputFormat>(parameters, getResultFormats()));
 		}
 
 		if (getStatistics().size() == 1 ) {
@@ -119,38 +119,6 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 
 		StatisticCalculator statistic = null;
 
-		// TODO removed for inhouse release
-		//statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		//statistics.put(statistic.getName(), statistic);
-		
-		// TODO removed for inhouse release
-		//statistic = new LR_SPEC_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		//statistics.put(statistic.getName(), statistic);
-	
-		// TODO removed for inhouse release
-		//statistic = new LR_SENS_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		//statistics.put(statistic.getName(), statistic);
-
-		// TODO removed for inhouse release
-		//statistic = new DirichletBayesStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		//statistics.put(statistic.getName(), statistic);
-		
-		// TODO removed for inhouse release
-		//statistic = new DirichletMOMsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		//statistics.put(statistic.getName(), statistic);
-
-		/*
-		statistic = new WeightedMethodOfMomentsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
-		*/
-
-		// TODO removed for inhouse release
-		//statistic = new DirichletStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		//statistics.put(statistic.getName(), statistic);
-
-		//statistic = new DirichletBayesLRStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		//statistics.put(statistic.getName(), statistic);
-
 		statistic = new DirichletMultinomial(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
@@ -169,10 +137,13 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 		return statistics;
 	}
 
-	public Map<Character, AbstractResultFormat> getResultFormats() {
-		Map<Character, AbstractResultFormat> resultFormats = new HashMap<Character, AbstractResultFormat>();
+	public Map<Character, AbstractOutputFormat> getResultFormats() {
+		Map<Character, AbstractOutputFormat> resultFormats = new HashMap<Character, AbstractOutputFormat>();
 
-		AbstractResultFormat resultFormat = new DebugResultFormat(parameters.getBaseConfig());
+		int n1 = parameters.getSample1().getPathnames().length;
+		int n2 = parameters.getSample2().getPathnames().length;
+		
+		AbstractOutputFormat resultFormat = new DebugResultFormat(n1, n2, parameters.getBaseConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;

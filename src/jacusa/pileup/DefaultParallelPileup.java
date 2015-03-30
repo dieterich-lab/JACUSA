@@ -24,26 +24,35 @@ public final class DefaultParallelPileup implements ParallelPileup {
 		strand = STRAND.UNKNOWN;
 	}
 
+	@Override
+	public ParallelPileup copy() {
+		return new DefaultParallelPileup(this);
+	}
+
 	public DefaultParallelPileup(final ParallelPileup parallelPileup) {
 		this.contig 	= parallelPileup.getContig();
 		this.start 		= parallelPileup.getStart();
 		this.end 		= parallelPileup.getEnd();
 		this.strand 	= parallelPileup.getStrand();
-		
+
 		this.pileup1 = new DefaultPileup(parallelPileup.getPooledPileup1());
 		this.pileup2 = new DefaultPileup(parallelPileup.getPooledPileup2());
 		this.pileupP = new DefaultPileup(parallelPileup.getPooledPileup());
 
 		int n1 = parallelPileup.getPileups1().length;
-		pileups1 = new Pileup[n1];
-		System.arraycopy(parallelPileup.getPileups1(), 0, pileups1, 0, n1);
 		int n2 = parallelPileup.getPileups2().length;
-		pileups2 = new Pileup[n2];
-		System.arraycopy(parallelPileup.getPileups2(), 0, pileups2, 0, n2);
-
 		pileupsP = new Pileup[n1 + n2];
-		System.arraycopy(pileups1, 0, pileupsP, 0, n1);
-		System.arraycopy(pileups2, 0, pileupsP, n1, n2);
+
+		pileups1 = new Pileup[n1];
+		for (int i = 0; i < n1; ++i) {
+			pileups1[i] = new DefaultPileup(parallelPileup.getPileups1()[i]);
+			pileupsP[i] = pileups1[i];
+		}
+		pileups2 = new Pileup[n2];
+		for (int i = 0; i < n2; ++i) {
+			pileups2[i] = new DefaultPileup(parallelPileup.getPileups2()[i]);
+			pileupsP[i + n1] = pileups2[i];
+		}
 	}
 
 	public DefaultParallelPileup(final int n1, final int n2) {
@@ -274,17 +283,17 @@ public final class DefaultParallelPileup implements ParallelPileup {
 	public String prettyPrint() {
 		StringBuilder sb = new StringBuilder();
 
-		addPileup(sb, "1", pileup1);
+		addPileup(sb, "1", getPooledPileup1());
 		for (int pileupI = 0; pileupI < getPileups1().length; ++pileupI) {
-			addPileup(sb, "A" + pileupI, getPileups1()[pileupI]);
+			addPileup(sb, "1" + pileupI, getPileups1()[pileupI]);
 		}
 
-		addPileup(sb, "2", pileup2);
+		addPileup(sb, "2", getPooledPileup2());
 		for (int pileupI = 0; pileupI < getPileups2().length; ++pileupI) {
-			addPileup(sb, "B" + pileupI, getPileups2()[pileupI]);
+			addPileup(sb, "2" + pileupI, getPileups2()[pileupI]);
 		}
 
-		addPileup(sb, "P", pileupP);
+		addPileup(sb, "P", getPooledPileup());
 		for (int pileupI = 0; pileupI < getPileupsP().length; ++pileupI) {
 			addPileup(sb, "P" + pileupI, getPileupsP()[pileupI]);
 		}
@@ -294,13 +303,24 @@ public final class DefaultParallelPileup implements ParallelPileup {
 	
 	protected void addPileup(StringBuilder sb, String sample, Pileup pileup) {
 		sb.append(sample);
+		sb.append('\t');
+		boolean flag = false;
 		for (int count : pileup.getCounts().getBaseCount()) {
-			sb.append('\t');
+			if (flag) {
+				sb.append('\t');
+			}
+			flag = true;
 			sb.append(count);
 		}
+		sb.append('|');
+		flag = false;
 		for (int count : pileup.getCounts().getBaseCount()) {
-			sb.append('\t');
-			sb.append((double)count / (double)pileup.getCoverage());
+			if (flag) {
+				sb.append('\t');
+			}
+			flag = true;
+			double d = (int)(100d * (double)count / (double)pileup.getCoverage());
+			sb.append(d / 100d);
 		}
 		sb.append('\n');
 	}

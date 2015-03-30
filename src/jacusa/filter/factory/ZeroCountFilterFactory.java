@@ -13,6 +13,7 @@ import jacusa.pileup.DefaultPileup;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.iterator.AbstractWindowIterator;
+import jacusa.result.Result;
 import jacusa.util.Location;
 import jacusa.util.WindowCoordinates;
 
@@ -48,7 +49,8 @@ public class ZeroCountFilterFactory extends AbstractFilterFactory<Void> {
 		}
 		
 		@Override
-		public boolean filter(ParallelPileup parallelPileup, Location location,	AbstractWindowIterator windowIterator) {
+		public boolean filter(final Result result, final Location location,	final AbstractWindowIterator windowIterator) {
+			final ParallelPileup parallelPileup = result.getParellelPileup();
 			int a1 = parallelPileup.getPooledPileup1().getAlleles().length;
 			int a2 = parallelPileup.getPooledPileup2().getAlleles().length;
 			int[] alleles = parallelPileup.getPooledPileup().getAlleles();
@@ -86,7 +88,7 @@ public class ZeroCountFilterFactory extends AbstractFilterFactory<Void> {
 
 			double statistic = statisticCalculator.getStatistic(pp);
 			System.err.println(statistic);
-			return statistic > statisticParameters.getMaxStat();
+			return statistic > statisticParameters.getThreshold();
 		}
 
 		private Pileup[] flat(Pileup[] pileups, List<Integer> variantBaseIs, int baseI) {

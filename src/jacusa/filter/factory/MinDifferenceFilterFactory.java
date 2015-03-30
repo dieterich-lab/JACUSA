@@ -8,6 +8,7 @@ import jacusa.filter.storage.DummyFilterFillCache;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.iterator.AbstractWindowIterator;
+import jacusa.result.Result;
 import jacusa.util.Location;
 import jacusa.util.WindowCoordinates;
 
@@ -103,7 +104,8 @@ public class MinDifferenceFilterFactory extends AbstractFilterFactory<Void> {
 		}
 
 		@Override
-		public boolean filter(final ParallelPileup parallelPileup, final Location location, final AbstractWindowIterator windowIterator) {
+		public boolean filter(final Result result, final Location location, final AbstractWindowIterator windowIterator) {
+			final ParallelPileup parallelPileup = result.getParellelPileup();
 			for (int baseI : parallelPileup.getPooledPileup().getAlleles()) {
 				int diffCount = Math.abs(parallelPileup.getPooledPileup1().getCounts().getBaseCount(baseI) - parallelPileup.getPooledPileup2().getCounts().getBaseCount(baseI));
 				int total = parallelPileup.getPooledPileup1().getCounts().getBaseCount(baseI) + parallelPileup.getPooledPileup2().getCounts().getBaseCount(baseI);
@@ -126,7 +128,9 @@ public class MinDifferenceFilterFactory extends AbstractFilterFactory<Void> {
 		}
 
 		@Override
-		public boolean filter(final ParallelPileup parallelPileup, final Location location, final AbstractWindowIterator windowIterator) {
+		public boolean filter(final Result result, final Location location, final AbstractWindowIterator windowIterator) {
+			final ParallelPileup parallelPileup = result.getParellelPileup();
+
 			for (int baseI : parallelPileup.getPooledPileup().getAlleles()) {
 				int count1 = 0;
 				for (Pileup pileup : parallelPileup.getPileups1()) {

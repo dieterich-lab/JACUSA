@@ -1,20 +1,26 @@
-package jacusa.io.format.result;
+package jacusa.io.format;
 
 import jacusa.JACUSA;
 import jacusa.pileup.ParallelPileup;
+import jacusa.result.Result;
 
 import java.util.Calendar;
 
-public class VCF_ResultFormat extends AbstractResultFormat {
+public class VCF_ResultFormat extends AbstractOutputFormat {
 
 	public static final char CHAR = 'V';
-	
-	public VCF_ResultFormat() {
+
+	private String[] pathnames1;
+	private String[] pathnames2;
+
+	public VCF_ResultFormat(final String[] pathnames1, final String[] pathnames2) {
 		super(CHAR, "VCF output");
+		this.pathnames1 = pathnames1;
+		this.pathnames2 = pathnames2;
 	}
 	
 	@Override
-	public String getHeader(ParallelPileup parallelPileup) {
+	public String getHeader() {
 		StringBuilder sb = new StringBuilder();
 		
 		sb.append(getCOMMENT());
@@ -53,16 +59,13 @@ public class VCF_ResultFormat extends AbstractResultFormat {
 			sb.append(getSEP());
 			sb.append(cols[i]);
 		}
-		for (int i = 0; i < parallelPileup.getN(); ++i) {
+		for (String pathname : pathnames1)  {
 			sb.append(getSEP());
-			sb.append("sample");
-			if (i < parallelPileup.getN1()) {
-				sb.append("A");
-				
-			} else {
-				sb.append("B");
-			}
-			sb.append(i);
+			sb.append(pathname);
+		}
+		for (String pathname : pathnames2)  {
+			sb.append(getSEP());
+			sb.append(pathname);
 		}
 		sb.append('\n');
 
@@ -70,8 +73,10 @@ public class VCF_ResultFormat extends AbstractResultFormat {
 	}
 
 	@Override
-	public String convert2String(final ParallelPileup parallelPileup, final double value, final String filterInfo) {
-		StringBuilder sb = new StringBuilder();
+	public String convert2String(Result result) {
+		final StringBuilder sb = new StringBuilder();
+		final ParallelPileup parallelPileup = result.getParellelPileup();
+		final String filterInfo = (String)result.getObject("filterInfo");
 		
 		String[] cols = {
 				// contig
@@ -114,33 +119,14 @@ public class VCF_ResultFormat extends AbstractResultFormat {
 		return sb.toString();
 	}
 
-	@Override
-	public String getFilterInfo(String line) {
-		String cols[] = line.split(Character.toString(getSEP()));
-		return cols[4];
-	}
-	
-	@Override
-	public String convert2String(ParallelPileup parallelPileup) {
-		return null;
-	}
-
-	@Override
-	public double extractValue(String line) {
-		return 0;
-	}
-
-	@Override
 	public char getCOMMENT() {
 		return '#';
 	}
 
-	@Override
 	public char getSEP() {
 		return '\t';
 	}
 
-	@Override
 	public char getSEP2() {
 		return ';';
 	}
@@ -149,7 +135,6 @@ public class VCF_ResultFormat extends AbstractResultFormat {
 		return ':';
 	}
 	
-	@Override
 	public char getEMPTY() {
 		return '.';
 	}

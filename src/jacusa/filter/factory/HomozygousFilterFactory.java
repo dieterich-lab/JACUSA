@@ -6,6 +6,7 @@ import jacusa.filter.storage.DummyFilterFillCache;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.iterator.AbstractWindowIterator;
+import jacusa.result.Result;
 import jacusa.util.Location;
 import jacusa.util.WindowCoordinates;
 
@@ -60,7 +61,8 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 		}
 		
 		@Override
-		public boolean filter(final ParallelPileup parallelPileup, final Location location,	final AbstractWindowIterator windowIterator) {
+		public boolean filter(final Result result, final Location location,	final AbstractWindowIterator windowIterator) {
+			final ParallelPileup parallelPileup = result.getParellelPileup();
 			Pileup pileup = null;
 	
 			switch (sample) {

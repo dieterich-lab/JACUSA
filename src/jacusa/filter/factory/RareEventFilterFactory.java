@@ -9,6 +9,7 @@ import jacusa.pileup.Counts;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.iterator.AbstractWindowIterator;
+import jacusa.result.Result;
 import jacusa.util.Location;
 import jacusa.util.WindowCoordinates;
 
@@ -115,7 +116,8 @@ public class RareEventFilterFactory extends AbstractFilterFactory<Void> {
 		}
 
 		@Override
-		public boolean filter(final ParallelPileup parallelPileup, final Location location, final AbstractWindowIterator windowIterator) {
+		public boolean filter(final Result result, final Location location, final AbstractWindowIterator windowIterator) {
+			final ParallelPileup parallelPileup = result.getParellelPileup();
 			for (int baseI : parallelPileup.getPooledPileup1().getAlleles()) {
 				if (! isValid(baseI, parallelPileup.getPooledPileup1().getCoverage(), parallelPileup.getPooledPileup1().getCounts())) {
 					return true;
@@ -139,7 +141,8 @@ public class RareEventFilterFactory extends AbstractFilterFactory<Void> {
 		}
 
 		@Override
-		public boolean filter(final ParallelPileup parallelPileup, final Location location, final AbstractWindowIterator windowIterator) {
+		public boolean filter(final Result result, final Location location, final AbstractWindowIterator windowIterator) {
+			final ParallelPileup parallelPileup = result.getParellelPileup();
 			if (filter(parallelPileup.getPooledPileup1().getAlleles(), parallelPileup.getPileups1()) || 
 					filter(parallelPileup.getPooledPileup2().getAlleles(), parallelPileup.getPileups2())) {
 				return true;

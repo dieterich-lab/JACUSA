@@ -6,11 +6,11 @@ public class StatisticParameters {
 
 	// filter: statistic
 	private StatisticCalculator statisticCalculator;
-	private double maxStat;
+	private double threshold;
 	
 	
 	public StatisticParameters() {
-		maxStat				= 0.3;
+		threshold = 0.3;
 	}
 
 	public StatisticParameters(final StatisticCalculator statisticCalculator) {
@@ -21,15 +21,15 @@ public class StatisticParameters {
 	/**
 	 * @return the maxStat
 	 */
-	public double getMaxStat() {
-		return maxStat;
+	public double getThreshold() {
+		return threshold;
 	}
 
 	/**
-	 * @param stat the stat to set
+	 * @param threshold the stat to set
 	 */
-	public void setStat(double stat) {
-		this.maxStat = stat;
+	public void setThreshold(double threshold) {
+		this.threshold = threshold;
 	}
 	
 	/**

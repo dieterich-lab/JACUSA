@@ -1,10 +1,11 @@
-package jacusa.io.format.output;
+package jacusa.io.format;
 
 import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.DefaultPileup.STRAND;
+import jacusa.result.Result;
 import net.sf.samtools.SAMUtils;
 
 public class PileupFormat extends AbstractOutputFormat {
@@ -22,8 +23,9 @@ public class PileupFormat extends AbstractOutputFormat {
 	}
 
 	@Override
-	public String convert2String(ParallelPileup parallelPileup) {
-		StringBuilder sb = new StringBuilder();
+	public String convert2String(final Result result) {
+		final StringBuilder sb = new StringBuilder();
+		final ParallelPileup parallelPileup = result.getParellelPileup();
 
 		// coordinates
 		sb.append(parallelPileup.getContig());
@@ -46,10 +48,10 @@ public class PileupFormat extends AbstractOutputFormat {
 			sb.append(pileup.getCoverage());
 			sb.append(SEP);
 			
-			for (int base : pileup.getAlleles()) {
+			for (int baseI : pileup.getAlleles()) {
 				// print bases 
-				for (int i = 0; i < pileup.getCounts().getBaseCount()[base]; ++i) {
-					sb.append(baseConfig.getBases()[base]);
+				for (int i = 0; i < pileup.getCounts().getBaseCount(baseI); ++i) {
+					sb.append(baseConfig.getBases()[baseI]);
 				}
 			}
 
@@ -71,22 +73,18 @@ public class PileupFormat extends AbstractOutputFormat {
 		}
 	}
 	
-	@Override
 	public char getCOMMENT() {
 		return COMMENT;
 	}
 
-	@Override
 	public char getEMPTY() {
 		return EMPTY;
 	}
 
-	@Override
 	public char getSEP() {
 		return SEP;
 	}
 
-	@Override
 	public char getSEP2() {
 		return SEP2;
 	}

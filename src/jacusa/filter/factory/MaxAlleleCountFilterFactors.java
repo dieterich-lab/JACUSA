@@ -5,6 +5,7 @@ import jacusa.filter.AbstractStorageFilter;
 import jacusa.filter.storage.DummyFilterFillCache;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.iterator.AbstractWindowIterator;
+import jacusa.result.Result;
 import jacusa.util.Location;
 import jacusa.util.WindowCoordinates;
 
@@ -64,8 +65,8 @@ public class MaxAlleleCountFilterFactors extends AbstractFilterFactory<Void> {
 		}
 		
 		@Override
-		public boolean filter(ParallelPileup parallelPileup, Location location,
-				AbstractWindowIterator windowIterator) {
+		public boolean filter(final Result result, final Location location, final AbstractWindowIterator windowIterator) {
+			final ParallelPileup parallelPileup = result.getParellelPileup();
 			return parallelPileup.getPooledPileup().getAlleles().length > alleleCount;
 		}
 	}

@@ -86,7 +86,7 @@ public class DirichletBayesStatistic implements StatisticCalculator {
 
 	@Override
 	public boolean filter(double value) {
-		return parameters.getMaxStat() < 0;
+		return parameters.getThreshold() < 0;
 	}
 
 	@Override

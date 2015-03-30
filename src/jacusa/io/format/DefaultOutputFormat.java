@@ -1,4 +1,4 @@
-package jacusa.io.format.result;
+package jacusa.io.format;
 
 import jacusa.filter.FilterConfig;
 import jacusa.phred2prob.Phred2Prob;
@@ -6,10 +6,11 @@ import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.DefaultPileup.STRAND;
+import jacusa.result.Result;
 import jacusa.util.StringCollapse;
 
 // CHANGED
-public class DefaultResultFormat extends AbstractResultFormat {
+public class DefaultOutputFormat extends AbstractOutputFormat {
 
 	public static final char CHAR = 'D';
 	
@@ -22,8 +23,19 @@ public class DefaultResultFormat extends AbstractResultFormat {
 	private FilterConfig filterConfig;
 	public Phred2Prob phred2Prob;
 
-	public DefaultResultFormat(BaseConfig baseConfig, FilterConfig filterConfig) {
+	private int replicates1;
+	private int replicates2;
+	
+	public DefaultOutputFormat(
+			final int replicates1,
+			final int replicates2, 
+			final BaseConfig baseConfig, 
+			final FilterConfig filterConfig) {
 		super(CHAR, "ACCUSA2 default output");
+		
+		this.replicates1 = replicates1;
+		this.replicates2 = replicates2;
+		
 		this.baseConfig = baseConfig;
 		this.filterConfig = filterConfig;
 		
@@ -31,7 +43,7 @@ public class DefaultResultFormat extends AbstractResultFormat {
 	}
 
 	@Override
-	public String getHeader(ParallelPileup parallelPileup) {
+	public String getHeader() {
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append(COMMENT);
@@ -43,10 +55,10 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		sb.append(getSEP());
 
 		// (1) first sample  infos
-		addSampleHeader(sb, 'A', parallelPileup.getN1());
+		addSampleHeader(sb, '1', replicates1);
 		sb.append(getSEP());
 		// (2) second sample  infos
-		addSampleHeader(sb, 'B', parallelPileup.getN2());
+		addSampleHeader(sb, '2', replicates2);
 
 		//add means and vars
 		sb.append(getSEP());
@@ -111,12 +123,13 @@ public class DefaultResultFormat extends AbstractResultFormat {
 	}
 	
 	@Override
-	public String convert2String(ParallelPileup parallelPileup) {
+	public String convert2String(Result result) {
+		final ParallelPileup parallelPileup = result.getParellelPileup();
 		final StringBuilder sb = convert2StringHelper(parallelPileup);
 		return sb.toString();		
 	}
-	
-	@Override
+
+	// TODO what to do with this?
 	public String convert2String(final ParallelPileup parallelPileup, final double value, final String filterInfo) {
 		final StringBuilder sb = convert2StringHelper(parallelPileup);
 	
@@ -187,21 +200,6 @@ public class DefaultResultFormat extends AbstractResultFormat {
 		}
 	}
 
-	/**
-	 * Last column holds the final value
-	 */
-	@Override
-	public double extractValue(String line) {
-		String[] cols = line.split(Character.toString(SEP));
-		return Double.parseDouble(cols[cols.length - 2]);
-	}
-
-	@Override
-	public String getFilterInfo(String line) {
-		String cols[] = line.split(Character.toString(SEP));
-		return cols[cols.length];
-	}
-	
 	public char getCOMMENT() {
 		return COMMENT;
 	}

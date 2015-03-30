@@ -1,124 +1,68 @@
 package jacusa.filter.factory;
 
-import java.util.Arrays;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.cli.parameters.StatisticParameters;
 import jacusa.filter.AbstractStorageFilter;
 import jacusa.filter.storage.DummyFilterFillCache;
-//import jacusa.method.call.statistic.StatisticCalculator;
-import jacusa.pileup.ParallelPileup;
-import jacusa.pileup.Pileup;
-import jacusa.pileup.iterator.AbstractWindowIterator;
-import jacusa.util.Location;
+import jacusa.filter.storage.outlier.OutlierStorageFilter;
+import jacusa.filter.storage.outlier.VarianceOutlierFilter;
+
 import jacusa.util.WindowCoordinates;
 // FINISIH
 public class OutlierFilterFactory extends AbstractFilterFactory<Void> {
 
-	/*
-	private StatisticParameters statisticParameters;	
-	private StatisticCalculator statisticCalculator;
-	*/
+	private OutlierStorageFilter filter;
+	private Map<String, OutlierStorageFilter> type2filter;
 	
 	public OutlierFilterFactory(StatisticParameters statisticParameters) {
 		super('O', "Outlier filter");
-		//this.statisticParameters = statisticParameters;
 
-		//statisticCalculator = statisticParameters.getStatisticCalculator();
+		type2filter = new HashMap<String, OutlierStorageFilter>();
+		OutlierStorageFilter[] filters = new OutlierStorageFilter[] {
+				new VarianceOutlierFilter(getC()),
+		};
+		for (OutlierStorageFilter filter : filters) {
+			type2filter.put(filter.getType(), filter);
+		}
 	}
 
 	@Override
-	public void processCLI(String line) throws IllegalArgumentException {
+	public void processCLI(String line) {
+		String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
+
+		for (int i = 1; i < s.length; ++i) {
+			// key=value
+			String[] kv = s[i].split("=");
+			String key = kv[0];
+			String value = new String();
+			if (kv.length == 2) {
+				value = kv[1];
+			}
+
+			// set value
+			if (key.equals("type") && type2filter.keySet().contains(value)) {
+				filter = type2filter.get(value).createInstance(getC());
+				filter.process(line);
+			} else {
+				throw new IllegalArgumentException("Invalid argument " + key + " IN: " + line);
+			}
+		}
 	}
 
-	public VarianceOutlierFilter createStorageFilter() {
-		return new VarianceOutlierFilter(getC());
+	public AbstractStorageFilter<Void> createStorageFilter() {
+		return filter;
 	}
 
 	@Override
 	public DummyFilterFillCache createFilterStorage(final WindowCoordinates windowCoordinates, final SampleParameters sampleParameters) {
 		return new DummyFilterFillCache(getC());
 	}
+
 	
-	private class VarianceOutlierFilter extends AbstractStorageFilter<Void>{
-
-		public VarianceOutlierFilter(final char c) {
-			super(c);
-		}
-
-		@Override
-		public boolean filter(ParallelPileup parallelPileup, Location location,	AbstractWindowIterator windowIterator) {
-			if (parallelPileup.getN1() == 1 && parallelPileup.getN2() == 1) {
-				return false;
-			}
-
-			if (parallelPileup.getN1() > 1 && parallelPileup.getN2() > 1) {
-				double[] variance1 = variance(parallelPileup.getPooledPileup1(), parallelPileup.getPileups1());
-				double[] variance2 = variance(parallelPileup.getPooledPileup2(), parallelPileup.getPileups2());
-				double[] pooledVariance = variance(parallelPileup.getPooledPileup(), parallelPileup.getPileupsP());
-				return isOutlier(variance1, pooledVariance) || isOutlier(variance2, pooledVariance);
-			}
-
-			if (parallelPileup.getN1() > 1) {
-				double[] variance1 = variance(parallelPileup.getPooledPileup1(), parallelPileup.getPileups1());
-				double[] pooledVariance = variance(parallelPileup.getPooledPileup(), parallelPileup.getPileupsP());
-				return isOutlier(variance1, pooledVariance);
-			}
-
-			if (parallelPileup.getN2() > 1) {
-				double[] variance2 = variance(parallelPileup.getPooledPileup2(), parallelPileup.getPileups2());
-				double[] pooledVariance = variance(parallelPileup.getPooledPileup(), parallelPileup.getPileupsP());
-				return isOutlier(variance2, pooledVariance);
-			}
-
-			return false;
-		}
-
-		private boolean isOutlier(double[] var, double[] pooledVar) {
-			double varNorm = norm(var);
-			double pooledVarNorm = norm(pooledVar);
-			return varNorm > pooledVarNorm;
-		}
-
-		private double norm(double[] vec) {
-			double s = 0.0;
-			for (double e : vec) {
-				s += Math.pow(e, 2.0);
-			}
-			return Math.sqrt(s);
-		}
-
-		private double[] mean(Pileup pooled, Pileup[] pileups) {
-			double[] mean = new double[pooled.getCounts().getBaseCount().length];
-			Arrays.fill(mean, 0.0);
-			int n = pileups.length;
-			
-			for (int i = 0; i < pooled.getCounts().getBaseCount().length; ++i) {
-				mean[i] = (double)pooled.getCounts().getBaseCount(i) / (double)n;
-			}
-
-			return mean;
-		}
-
-		private double[] variance(Pileup pooled, Pileup[] pileups) {
-			double[] mean = mean(pooled, pileups);
-			double[] variance = new double[pooled.getCounts().getBaseCount().length];
-			Arrays.fill(mean, 0.0);
-			int n = pileups.length;
-
-			for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
-				for (int baseI = 0; baseI < pooled.getCounts().getBaseCount().length; ++baseI) {
-					variance[baseI] += Math.pow(mean[baseI] - (double)pileups[pileupI].getCounts().getBaseCount(baseI), 2.0);
-				}
-			}
-			for (int baseI = 0; baseI < pooled.getCounts().getBaseCount().length; ++baseI) {
-				variance[baseI] /= (double)(n - 1);
-			}
-
-			return variance;
-		}
-
-	}
 }
 		
 		

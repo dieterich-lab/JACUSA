@@ -1,6 +1,5 @@
 package jacusa.method.call;
 
-
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
 import jacusa.cli.options.BaseConfigOption;
@@ -43,6 +42,7 @@ import jacusa.filter.factory.HomozygousFilterFactory;
 import jacusa.filter.factory.INDEL_DistanceFilterFactory;
 import jacusa.filter.factory.MaxAlleleCountFilterFactors;
 import jacusa.filter.factory.MinDifferenceFilterFactory;
+import jacusa.filter.factory.OutlierFilterFactory;
 //import jacusa.filter.factory.OutlierFilterFactory;
 import jacusa.filter.factory.ReadPositionDistanceFilterFactory;
 import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
@@ -50,11 +50,13 @@ import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
 //import jacusa.filter.factory.MAPQBiasFilterFactory;
 import jacusa.filter.factory.ReadPositionalBiasFilterFactory;
 import jacusa.filter.factory.RareEventFilterFactory;
-import jacusa.io.format.result.AbstractResultFormat;
-import jacusa.io.format.result.BED6ResultFormat;
+import jacusa.io.format.AbstractOutputFormat;
+import jacusa.io.format.BED6ResultFormat;
+import jacusa.io.format.DebugResultFormat;
+import jacusa.io.format.DefaultOutputFormat;
+import jacusa.io.format.PileupResultFormat;
+import jacusa.io.format.VCF_ResultFormat;
 //import jacusa.io.format.result.DebugResultFormat;
-import jacusa.io.format.result.DefaultResultFormat;
-import jacusa.io.format.result.PileupResultFormat;
 //import jacusa.io.format.result.VCF_ResultFormat;
 import jacusa.method.AbstractMethodFactory;
 //import jacusa.method.call.statistic.ACCUSA2Statistic;
@@ -135,7 +137,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 			parameters.setFormat(getResultFormats().get(a[0]));
 		} else {
 			parameters.setFormat(getResultFormats().get(BED6ResultFormat.CHAR));
-			acOptions.add(new FormatOption<AbstractResultFormat>(parameters, getResultFormats()));
+			acOptions.add(new FormatOption<AbstractOutputFormat>(parameters, getResultFormats()));
 		}
 
 		acOptions.add(new MaxThreadOption(parameters));
@@ -239,7 +241,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 				new MaxAlleleCountFilterFactors(),
 				new HomopolymerFilterFactory(parameters),
 				new RareEventFilterFactory(parameters),
-				new MinDifferenceFilterFactory(parameters)
+				new MinDifferenceFilterFactory(parameters),
+				new OutlierFilterFactory(parameters.getStatisticParameters())
 //				new FDRFilterFactory(parameters.getStatisticParameters()),
 		};
 		for (AbstractFilterFactory<?> filterFactory : filterFactories) {
@@ -249,25 +252,31 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		return abstractPileupFilters;
 	}
 
-	public Map<Character, AbstractResultFormat> getResultFormats() {
-		Map<Character, AbstractResultFormat> resultFormats = new HashMap<Character, AbstractResultFormat>();
+	public Map<Character, AbstractOutputFormat> getResultFormats() {
+		Map<Character, AbstractOutputFormat> resultFormats = new HashMap<Character, AbstractOutputFormat>();
 
-		AbstractResultFormat resultFormat = new DefaultResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		int n1 = parameters.getSample1().getPathnames().length;
+		int n2 = parameters.getSample2().getPathnames().length;
+		
+		AbstractOutputFormat resultFormat = new DefaultOutputFormat(
+				n1, n2, parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
-		resultFormat = new PileupResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		resultFormat = new PileupResultFormat(
+				n1, n2, parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 		
-		resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		resultFormat = new BED6ResultFormat(
+				n1, n2, parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
-		// TODO removed for inhouse release
-		//resultFormat = new DebugResultFormat(parameters.getBaseConfig());
-		//resultFormats.put(resultFormat.getC(), resultFormat);
+		resultFormat = new DebugResultFormat(n1, n2, parameters.getBaseConfig());
+		resultFormats.put(resultFormat.getC(), resultFormat);
 
-		// TODO removed for inhouse release
-		//resultFormat = new VCF_ResultFormat();
-		//resultFormats.put(resultFormat.getC(), resultFormat);
+		resultFormat = new VCF_ResultFormat(
+				parameters.getSample1().getPathnames(), 
+				parameters.getSample2().getPathnames());
+		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;
 	}

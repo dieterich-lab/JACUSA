@@ -9,6 +9,7 @@ import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 import jacusa.filter.storage.bias.BaseCount;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.iterator.AbstractWindowIterator;
+import jacusa.result.Result;
 import jacusa.util.Location;
 import jacusa.util.MathUtil;
 
@@ -23,7 +24,9 @@ public class BiasBaseCountFilter extends AbstractStorageFilter<BaseCount> {
 	}
 
 	@Override
-	public boolean filter(ParallelPileup parallelPileup, Location location, AbstractWindowIterator windowIterator) {
+	public boolean filter(final Result result, Location location, AbstractWindowIterator windowIterator) {
+		final ParallelPileup parallelPileup = result.getParellelPileup();
+		
 		FilterContainer[] replicateFilterContainer1 = windowIterator.getFilterContainers4Replicates1(location);
 		FilterContainer[] replicateFilterContainer2 = windowIterator.getFilterContainers4Replicates2(location);
 
@@ -59,11 +62,10 @@ public class BiasBaseCountFilter extends AbstractStorageFilter<BaseCount> {
 		// filter positions with divergent distributions of data
 		if (1 - prob <= probT) {
 			// provide meta information
-			setFilterInfo(":" + Double.toString(phred));
+			result.addFilterInfo(getC() + "=" + Double.toString(phred));
 			return true;
 		}
-		
-		resetFilterInfo();
+
 		return false;
 	}
 

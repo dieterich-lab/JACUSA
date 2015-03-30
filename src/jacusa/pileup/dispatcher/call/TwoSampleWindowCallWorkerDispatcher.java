@@ -1,7 +1,6 @@
 package jacusa.pileup.dispatcher.call;
 
 import jacusa.cli.parameters.TwoSampleCallParameters;
-import jacusa.pileup.DefaultParallelPileup;
 import jacusa.pileup.worker.TwoSampleWindowCallWorker;
 import jacusa.util.coordinateprovider.CoordinateProvider;
 
@@ -14,24 +13,23 @@ public class TwoSampleWindowCallWorkerDispatcher extends AbstractCallWorkerDispa
 	public TwoSampleWindowCallWorkerDispatcher(CoordinateProvider coordinateProvider, TwoSampleCallParameters parameters) throws IOException {
 		super(	coordinateProvider, 
 				parameters.getMaxThreads(), 
-				parameters.getStatisticParameters(),
 				parameters.getOutput(), 
-				parameters.getFormat(),
-				parameters.isDebug());
+				parameters.getFormat()
+		);
 
 		this.parameters = parameters;
 	}
 
 	@Override
 	protected TwoSampleWindowCallWorker buildNextWorker() {
-		return new TwoSampleWindowCallWorker(this, parameters);
+		return new TwoSampleWindowCallWorker(
+				this,
+				this.getWorkerContainer().size(),
+				parameters
+		);
 	}
 
-	@Override
-	protected void processFinishedWorker(TwoSampleWindowCallWorker worker) {
-		addComparisons(worker.getComparisons());
-	}
-
+	/* TODO move to format 
 	@Override
 	protected String getHeader() {
 		int replicates1 = parameters.getSample1().getPathnames().length;
@@ -39,5 +37,6 @@ public class TwoSampleWindowCallWorkerDispatcher extends AbstractCallWorkerDispa
 
 		return getFormat().getHeader(new DefaultParallelPileup(replicates1, replicates2));
 	}
+	*/
 
 }

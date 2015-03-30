@@ -18,17 +18,22 @@ public class TwoSampleCallWorker extends AbstractCallWorker {
 	
 	private final Variant variant;
 	
-	public TwoSampleCallWorker(final TwoSampleCallWorkerDispatcher threadDispatcher, TwoSampleCallParameters parameters) {
-		super(threadDispatcher, parameters.getStatisticParameters().getStatisticCalculator(), parameters.getFormat(), parameters);
+	public TwoSampleCallWorker(
+			final TwoSampleCallWorkerDispatcher threadDispatcher,
+			final int threadId,
+			final TwoSampleCallParameters parameters) {
+		super(
+				threadDispatcher, 
+				threadId,
+				parameters.getStatisticParameters(), 
+				parameters
+		);
 
 		this.parameters = parameters;
 		readers1 = initReaders(parameters.getSample1().getPathnames());
 		readers2 = initReaders(parameters.getSample2().getPathnames());
 
 		variant = new VariantParallelPileup();
-		synchronized (workerDispatcher) {
-			parallelPileupIterator  = buildIterator(workerDispatcher.next(this));
-		}
 	}
 
 	@Override

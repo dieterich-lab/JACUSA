@@ -16,15 +16,21 @@ public class OneSampleCallWorker extends AbstractCallWorker {
 	
 	private final Variant variant;
 
-	public OneSampleCallWorker(OneSampleCallWorkerDispatcher threadDispatcher, OneSampleCallParameters parameters) {
-		super(threadDispatcher, parameters.getStatisticParameters().getStatisticCalculator(), parameters.getFormat(), parameters);
+	public OneSampleCallWorker(
+			final OneSampleCallWorkerDispatcher threadDispatcher,
+			final int threadId,
+			final OneSampleCallParameters parameters) {
+		super(
+				threadDispatcher,
+				threadId,
+				parameters.getStatisticParameters(),
+				parameters
+		);
 
 		this.parameters = parameters;
 		readers1 = initReaders(parameters.getSample1().getPathnames());
 
 		variant = new VariantParallelPileup();
-
-		parallelPileupIterator  = buildIterator(workerDispatcher.next(this));
 	}
 
 	@Override

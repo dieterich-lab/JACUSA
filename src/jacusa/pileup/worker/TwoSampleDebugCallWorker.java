@@ -13,15 +13,18 @@ public class TwoSampleDebugCallWorker extends AbstractCallWorker {
 	private Map<String, ParallelPileup> coord2parallelPileup;
 	private TwoSampleCallParameters parameters;
 
-	public TwoSampleDebugCallWorker(final TwoSampleDebugCallWorkerDispatcher threadDispatcher, TwoSampleCallParameters parameters) {
-		super(threadDispatcher, parameters.getStatisticParameters().getStatisticCalculator(), parameters.getFormat(), parameters);
+	public TwoSampleDebugCallWorker(
+			final TwoSampleDebugCallWorkerDispatcher threadDispatcher, 
+			final int threadId,
+			TwoSampleCallParameters parameters) {
+		super(
+				threadDispatcher, 
+				threadId,
+				parameters.getStatisticParameters(), 
+		parameters);
 
 		coord2parallelPileup = threadDispatcher.getCoord2parallelPileup();
 		this.parameters = parameters;
-
-		synchronized (workerDispatcher) {
-			parallelPileupIterator  = buildIterator(workerDispatcher.next(this));
-		}
 	}
 	
 	@Override

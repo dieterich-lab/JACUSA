@@ -1,11 +1,11 @@
 package jacusa.cli.parameters;
 
-import jacusa.io.format.result.AbstractResultFormat;
+import jacusa.io.format.AbstractOutputFormat;
 
-public class OneSampleCallParameters extends AbstractParameters implements hasStatisticCalculator, hasResultFormat {
+public class OneSampleCallParameters extends AbstractParameters implements hasStatisticCalculator {
 
 	private StatisticParameters statisticParameters;
-	private AbstractResultFormat format;
+	private AbstractOutputFormat format;
 
 	public OneSampleCallParameters() {
 		super();
@@ -19,12 +19,12 @@ public class OneSampleCallParameters extends AbstractParameters implements hasSt
 	}
 
 	@Override
-	public void setFormat(AbstractResultFormat format) {
+	public void setFormat(AbstractOutputFormat format) {
 		this.format = format;
 	}
 	
 	@Override
-	public AbstractResultFormat getFormat() {
+	public AbstractOutputFormat getFormat() {
 		return format;
 	}
 	
