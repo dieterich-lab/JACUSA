@@ -67,6 +67,18 @@ public abstract class AbstractWorker extends Thread {
 					parallelPileupIterator = buildIterator(coordinate);
 					processParallelPileupIterator(parallelPileupIterator);
 					status = STATUS.INIT;
+					
+					synchronized (workerDispatcher) {
+						if (workerDispatcher.hasNext()) {
+							if (maxThreads > 0 && workerDispatcher.getThreadIds().size() > 0) {
+								try {
+									bw.write("##\n");
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					}
 				}
 			break;
 				
@@ -74,13 +86,6 @@ public abstract class AbstractWorker extends Thread {
 				Coordinate coordinate = null;
 				synchronized (workerDispatcher) {
 					if (workerDispatcher.hasNext()) {
-						if (maxThreads > 0 && workerDispatcher.getThreadIds().size() > 0) {
-							try {
-								bw.write("##\n");
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
 						workerDispatcher.getThreadIds().add(getThreadId());
 						coordinate = workerDispatcher.next();
 					}
