@@ -25,7 +25,7 @@ public class DirichletMultinomialRobustCompoundError extends DirichletMultinomia
 	}
 
 	@Override
-	public double getStatistic(ParallelPileup parallelPileup) {
+	public double getStatistic(final ParallelPileup parallelPileup) {
 		int a1 = parallelPileup.getPooledPileup1().getAlleles().length;
 		int a2 = parallelPileup.getPooledPileup2().getAlleles().length;
 		int[] alleles = parallelPileup.getPooledPileup().getAlleles();
@@ -54,7 +54,6 @@ public class DirichletMultinomialRobustCompoundError extends DirichletMultinomia
 		if (a1 > 1 && a2 == 1 && aP == 2) {
 			pp = new DefaultParallelPileup(parallelPileup.getPileups1(), parallelPileup.getPileups1());
 			pp.setPileups1(flat(pp.getPileups1(), variantBaseIs, targetBaseI));
-			
 		} else if (a2 > 1 && a1 == 1 && aP == 2) {
 			pp = new DefaultParallelPileup(parallelPileup.getPileups2(), parallelPileup.getPileups2());
 			pp.setPileups2(flat(pp.getPileups2(), variantBaseIs, targetBaseI));

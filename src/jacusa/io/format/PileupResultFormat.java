@@ -3,7 +3,7 @@ package jacusa.io.format;
 import jacusa.filter.FilterConfig;
 import jacusa.io.format.PileupFormat;
 import jacusa.pileup.BaseConfig;
-import jacusa.result.Result;
+import jacusa.pileup.Result;
 
 public class PileupResultFormat extends AbstractOutputFormat {
 

@@ -4,7 +4,7 @@ import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
-import jacusa.result.Result;
+import jacusa.pileup.Result;
 
 // CHANGED
 public class DebugResultFormat extends AbstractOutputFormat {

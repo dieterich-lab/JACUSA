@@ -8,10 +8,10 @@ import jacusa.filter.storage.AbstractFilterStorage;
 import jacusa.filter.storage.DummyFilterFillCache;
 import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.pileup.ParallelPileup;
+import jacusa.pileup.Result;
 import jacusa.pileup.iterator.AbstractWindowIterator;
 import jacusa.pileup.sample.PermutateBases;
 import jacusa.pileup.sample.PermutateParallelPileup;
-import jacusa.result.Result;
 import jacusa.util.Location;
 import jacusa.util.WindowCoordinates;
 

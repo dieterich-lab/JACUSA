@@ -6,8 +6,8 @@ import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.pileup.DefaultParallelPileup;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
+import jacusa.pileup.Result;
 import jacusa.pileup.iterator.AbstractWindowIterator;
-import jacusa.result.Result;
 import jacusa.util.Location;
 
 class MaxRangeOutlierFilter extends OutlierStorageFilter {

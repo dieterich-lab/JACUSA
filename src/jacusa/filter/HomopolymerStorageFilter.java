@@ -5,8 +5,8 @@ import jacusa.filter.counts.MinCountFilter;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.Counts;
 import jacusa.pileup.ParallelPileup;
+import jacusa.pileup.Result;
 import jacusa.pileup.iterator.AbstractWindowIterator;
-import jacusa.result.Result;
 import jacusa.util.Location;
 
 public class HomopolymerStorageFilter extends AbstractWindowStorageFilter {

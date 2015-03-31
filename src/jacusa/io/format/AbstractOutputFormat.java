@@ -1,6 +1,6 @@
 package jacusa.io.format;
 
-import jacusa.result.Result;
+import jacusa.pileup.Result;
 
 public abstract class AbstractOutputFormat {
 

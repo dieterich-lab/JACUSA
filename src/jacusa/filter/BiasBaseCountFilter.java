@@ -8,8 +8,8 @@ import java.util.List;
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 import jacusa.filter.storage.bias.BaseCount;
 import jacusa.pileup.ParallelPileup;
+import jacusa.pileup.Result;
 import jacusa.pileup.iterator.AbstractWindowIterator;
-import jacusa.result.Result;
 import jacusa.util.Location;
 import jacusa.util.MathUtil;
 

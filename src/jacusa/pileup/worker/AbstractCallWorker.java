@@ -7,9 +7,9 @@ import jacusa.filter.FilterConfig;
 import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.pileup.ParallelPileup;
+import jacusa.pileup.Result;
 import jacusa.pileup.dispatcher.call.AbstractCallWorkerDispatcher;
 import jacusa.pileup.iterator.AbstractWindowIterator;
-import jacusa.result.Result;
 import jacusa.util.Location;
 
 public abstract class AbstractCallWorker extends AbstractWorker {
@@ -36,18 +36,16 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 
 	@Override
 	protected Result processParallelPileup(final ParallelPileup parallelPileup, final Location location, final AbstractWindowIterator parallelPileupIterator) {
-		// calculate unfiltered value
-		final double unfilteredValue = statisticCalculator.getStatistic(parallelPileup);
-		if (unfilteredValue > threshold) {
-			return null;
-		}
-
 		// result object
 		Result result = new Result();
 		result.setParellelPileup(parallelPileup);
-		result.setStatistic(unfilteredValue);
+		statisticCalculator.addStatistic(result);
+		
+		if (result.getStatistic() > threshold) {
+			return null;
+		}
 
-		if (! filterConfig.hasFiters() || statisticCalculator.filter(unfilteredValue)) {
+		if (! filterConfig.hasFiters()) {
 			// no filters
 			result.setObject("filter", "*");
 		} else {

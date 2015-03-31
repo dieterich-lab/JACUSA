@@ -5,6 +5,7 @@ import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
+import jacusa.pileup.Result;
 import jacusa.util.MathUtil;
 
 import java.util.Arrays;
@@ -111,6 +112,14 @@ public final class DirichletMOMsStatistic implements StatisticCalculator {
 		}
 	}
 	*/
+	
+	@Override
+	public void addStatistic(Result result) {
+		final double statistic = getStatistic(result.getParellelPileup());
+		if (! filter(statistic)) {
+			result.setStatistic(statistic);
+		}
+	}
 	
 	public double getStatistic(final ParallelPileup parallelPileup) {
 		final int baseIs[] = {0, 1, 2, 3};

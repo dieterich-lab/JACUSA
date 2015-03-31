@@ -3,13 +3,13 @@ package jacusa.pileup.worker;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.cli.parameters.TwoSamplePileupParameters;
 import jacusa.pileup.ParallelPileup;
+import jacusa.pileup.Result;
 import jacusa.pileup.dispatcher.pileup.MpileupWorkerDispatcher;
 import jacusa.pileup.iterator.AbstractTwoSampleIterator;
 import jacusa.pileup.iterator.AbstractWindowIterator;
 import jacusa.pileup.iterator.TwoSampleIterator;
 import jacusa.pileup.iterator.variant.AllParallelPileup;
 import jacusa.pileup.iterator.variant.Variant;
-import jacusa.result.Result;
 import jacusa.util.Coordinate;
 import jacusa.util.Location;
 

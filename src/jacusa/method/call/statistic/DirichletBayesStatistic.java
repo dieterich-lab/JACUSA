@@ -7,6 +7,7 @@ import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
+import jacusa.pileup.Result;
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 
 public class DirichletBayesStatistic implements StatisticCalculator {
@@ -24,6 +25,14 @@ public class DirichletBayesStatistic implements StatisticCalculator {
 		this.baseConfig = baseConfig;
 	}
 
+	@Override
+	public void addStatistic(Result result) {
+		final double statistic = getStatistic(result.getParellelPileup());
+		if (! filter(statistic)) {
+			result.setStatistic(statistic);
+		}
+	}
+	
 	public double getStatistic(final ParallelPileup parallelPileup) {
 		// use all bases for calculation
 		final int baseIs[] = baseConfig.getBasesI();

@@ -5,8 +5,8 @@ import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
+import jacusa.pileup.Result;
 import jacusa.pileup.DefaultPileup.STRAND;
-import jacusa.result.Result;
 import jacusa.util.StringCollapse;
 
 // CHANGED

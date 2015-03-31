@@ -12,8 +12,8 @@ import jacusa.pileup.DefaultParallelPileup;
 import jacusa.pileup.DefaultPileup;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
+import jacusa.pileup.Result;
 import jacusa.pileup.iterator.AbstractWindowIterator;
-import jacusa.result.Result;
 import jacusa.util.Location;
 import jacusa.util.WindowCoordinates;
 

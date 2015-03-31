@@ -88,8 +88,6 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 				while (runningWorkers.size() < maxThreads && hasNext()) {
 					T worker = buildNextWorker();
 					
-					threadIds.add(worker.getThreadId());
-					
 					workerContainer.add(worker);
 					runningWorkers.add(worker);
 					worker.start();

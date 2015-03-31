@@ -1,14 +1,17 @@
 package jacusa.method.call.statistic;
 
 import jacusa.pileup.ParallelPileup;
+import jacusa.pileup.Result;
+
 
 public interface StatisticCalculator {
 
 	// Make sure this is always >= 0
-	public double getStatistic(ParallelPileup parallelPileup);
+	public void addStatistic(final Result result);
+	public double getStatistic(final ParallelPileup parallelPileup);
 
 	// filter everything < value  
-	public boolean filter(double value);
+	public boolean filter(final double value);
 
 	public StatisticCalculator newInstance();
 

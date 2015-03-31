@@ -7,6 +7,7 @@ import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
+import jacusa.pileup.Result;
 import jacusa.util.MathUtil;
 
 import java.util.Arrays;
@@ -27,6 +28,10 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 
 	protected boolean onlyObservedBases;
 
+	protected double[] alpha1;
+	protected double[] alpha2;
+	protected double[] alphaP;
+	
 	public AbstractDirMultStatistic(final BaseConfig baseConfig, final StatisticParameters parameters) {
 		this.parameters = parameters;
 		final int n = baseConfig.getBaseLength();
@@ -38,27 +43,62 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 	protected abstract void populate(final Pileup[] pileups, final int[] baseIs, double[] alpha, double[] pileupCoverages, double[][] pileupMatrix);
 
 	@Override
-	public double getStatistic(ParallelPileup parallelPileup) {
+	public synchronized void addStatistic(Result result) {
+		final double statistic = getStatistic(result.getParellelPileup());
+		result.setStatistic(statistic);
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("alpha1=");
+		sb.append(Double.toString(alpha1[0]));
+		for (int i = 1; i < alpha1.length; ++i) {
+			sb.append(",");
+			sb.append(Double.toString(alpha1[i]));
+		}
+		sb.append(";alpha2=");
+		sb.append(Double.toString(alpha2[0]));
+		for (int i = 1; i < alpha2.length; ++i) {
+			sb.append(",");
+			sb.append(Double.toString(alpha2[i]));
+		}
+		sb.append(";alphaP=");
+		sb.append(Double.toString(alphaP[0]));
+		for (int i = 1; i < alphaP.length; ++i) {
+			sb.append(",");
+			sb.append(Double.toString(alphaP[i]));
+		}
+		result.addInfo(sb.toString());
+	}
+	
+	@Override
+	public double getStatistic(final ParallelPileup parallelPileup) {
 		final int baseIs[] = getBaseIs(parallelPileup);
 		int baseN = baseConfig.getBaseLength();
 
-		ChiSquareDist dist = new ChiSquareDist(baseN); // FIXME
+		ChiSquareDist dist = new ChiSquareDist(baseN);
 
-		double[] alpha1 = new double[baseN];
+		alpha1 = new double[baseN];
 		double[] pileupCoverages1 = new double[parallelPileup.getN1()];
 		double[][] pileupMatrix1 = new double[parallelPileup.getN1()][baseN];
 
-		double[] alpha2 = new double[baseN];
+		alpha2 = new double[baseN];
 		double[] pileupCoverages2 = new double[parallelPileup.getN2()];
 		double[][] pileupMatrix2 = new double[parallelPileup.getN2()][baseN];
 
-		double[] alphaP = new double[baseN];
+		alphaP = new double[baseN];
 		double[] pileupCoveragesP = new double[parallelPileup.getN()];
 		double[][] pileupMatrixP = new double[parallelPileup.getN()][baseN];
 
 		populate(parallelPileup.getPileups1(), baseIs, alpha1, pileupCoverages1, pileupMatrix1);
 		populate(parallelPileup.getPileups2(), baseIs, alpha2, pileupCoverages2, pileupMatrix2);
 		populate(parallelPileup.getPileupsP(), baseIs, alphaP, pileupCoveragesP, pileupMatrixP);
+		
+		if (parallelPileup.getN1() == 1) {
+			// System.arraycopy(alphaP, 0, alpha1, 0, alphaP.length);
+		}
+		
+		if (parallelPileup.getN2() == 1) {
+			// System.arraycopy(alphaP, 0, alpha2, 0, alphaP.length);
+		}
 
 		double p = -1.0;
 		try {
@@ -73,12 +113,13 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			System.out.println(parallelPileup.getContig());
 			System.out.println(parallelPileup.getStart());
 			System.out.println(parallelPileup.prettyPrint());
-			return -1.0;
+			return Double.MAX_VALUE;
 		}
 
 		return p;
 	}
 
+	/* TODO remove 
 	protected void printAlpha(double[] alphas) {
 		StringBuilder sb = new StringBuilder();
 		for (double alpha : alphas) {
@@ -87,6 +128,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		}
 		System.out.println(sb.toString());
 	}
+	*/
 	
 	// estimate alpha and returns loglik
 	protected double maximizeLogLikelihood(int[] baseIs, double[] alphaOld, double coverages[], double[][] matrix) {

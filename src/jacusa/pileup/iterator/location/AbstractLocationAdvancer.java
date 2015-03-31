@@ -23,9 +23,9 @@ public abstract class AbstractLocationAdvancer {
 			return new DULocationAdvance(loc1, loc2);
 		} else if (! isDirected1 && isDirected2) {
 			return new UDLocationAdvance(loc1, loc2);
-		} else {
-			return null; // FIXME
 		}
+		
+		return null;
 	}
 	
 	public Location getLocation1() {

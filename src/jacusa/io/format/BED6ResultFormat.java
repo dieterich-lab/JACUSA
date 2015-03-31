@@ -5,7 +5,7 @@ import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
-import jacusa.result.Result;
+import jacusa.pileup.Result;
 
 public class BED6ResultFormat extends AbstractOutputFormat {
 
@@ -94,7 +94,10 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 		}
 	}
 
-	private StringBuilder convert2StringHelper(final ParallelPileup parallelPileup, final double value) {
+	@Override
+	public String convert2String(Result result) {
+		final ParallelPileup parallelPileup = result.getParellelPileup();
+		final double statistic = result.getStatistic();
 		final StringBuilder sb = new StringBuilder();
 
 		// coordinates
@@ -108,10 +111,10 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 		sb.append("variant");
 		
 		sb.append(SEP);
-		if (Double.isNaN(value)) {
+		if (Double.isNaN(statistic)) {
 			sb.append("NA");
 		} else {
-			sb.append(value);
+			sb.append(statistic);
 		}
 
 		sb.append(SEP);
@@ -122,14 +125,6 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 		// (2) second pileups
 		addPileups(sb, parallelPileup.getPileups2());
 
-		return sb;
-	}
-
-	@Override
-	public String convert2String(Result result) {
-		final ParallelPileup parallelPileup = result.getParellelPileup();
-		
-		final StringBuilder sb = convert2StringHelper(parallelPileup, Double.NaN);
 		return sb.toString();		
 	}
 	

@@ -2,7 +2,7 @@ package jacusa.io.format;
 
 import jacusa.JACUSA;
 import jacusa.pileup.ParallelPileup;
-import jacusa.result.Result;
+import jacusa.pileup.Result;
 
 import java.util.Calendar;
 

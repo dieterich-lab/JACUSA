@@ -5,6 +5,7 @@ import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
+import jacusa.pileup.Result;
 import jacusa.util.MathUtil;
 
 import java.util.Arrays;
@@ -87,9 +88,18 @@ public final class WeightedMethodOfMomentsStatistic implements StatisticCalculat
 		return density;
 	}
 	
+	@Override
+	public void addStatistic(Result result) {
+		final double statistic = getStatistic(result.getParellelPileup());
+		if (! filter(statistic)) {
+			result.setStatistic(statistic);
+		}
+	}
+	
+	@Override
 	public double getStatistic(final ParallelPileup parallelPileup) {
-		//final int bases[] = {0, 1, 2, 3};
-		final int bases[] = parallelPileup.getPooledPileup().getAlleles();
+		final int bases[] = {0, 1, 2, 3};
+		//final int bases[] = result.getPooledPileup().getAlleles();
 
 		// first sample(s)
 		double density1 = getDensity(bases, parallelPileup.getPileups1());

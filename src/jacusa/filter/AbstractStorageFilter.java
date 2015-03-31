@@ -1,7 +1,7 @@
 package jacusa.filter;
 
+import jacusa.pileup.Result;
 import jacusa.pileup.iterator.AbstractWindowIterator;
-import jacusa.result.Result;
 import jacusa.util.Location;
 
 public abstract class AbstractStorageFilter<T> {

@@ -2,9 +2,9 @@ package jacusa.pileup.worker;
 
 import jacusa.JACUSA;
 import jacusa.pileup.ParallelPileup;
+import jacusa.pileup.Result;
 import jacusa.pileup.dispatcher.AbstractWorkerDispatcher;
 import jacusa.pileup.iterator.AbstractWindowIterator;
-import jacusa.result.Result;
 import jacusa.util.Coordinate;
 import jacusa.util.Location;
 
@@ -61,32 +61,27 @@ public abstract class AbstractWorker extends Thread {
 			switch (status) {
 
 			case READY:
-				synchronized (workerDispatcher) {
-					final int size = workerDispatcher.getThreadIds().size(); 
-					if (size > 0) {
-						try {
-							bw.write("##\n");
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-					workerDispatcher.getThreadIds().add(getThreadId());
-				}
-
 				synchronized (this) {
+					
 					status = STATUS.BUSY;
 					parallelPileupIterator = buildIterator(coordinate);
 					processParallelPileupIterator(parallelPileupIterator);
 					status = STATUS.INIT;
 				}
-
-				
 			break;
 				
 			case INIT:
 				Coordinate coordinate = null;
 				synchronized (workerDispatcher) {
 					if (workerDispatcher.hasNext()) {
+						if (maxThreads > 0 && workerDispatcher.getThreadIds().size() > 0) {
+							try {
+								bw.write("##\n");
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+						workerDispatcher.getThreadIds().add(getThreadId());
 						coordinate = workerDispatcher.next();
 					}
 				}
@@ -218,6 +213,10 @@ public abstract class AbstractWorker extends Thread {
 
 	public STATUS getStatus() {
 		return status;
+	}
+	
+	public int getMaxThreads() {
+		return maxThreads;
 	}
 	
 	public void setStatus(STATUS status) {

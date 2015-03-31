@@ -7,6 +7,7 @@ import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
+import jacusa.pileup.Result;
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 
@@ -39,6 +40,14 @@ public abstract class AbstractLRStatistic implements StatisticCalculator {
 	protected abstract int getCoverage2(final ParallelPileup parallelPileup);
 	protected abstract int getCoverageP(final ParallelPileup parallelPileup);
 	
+	@Override
+	public void addStatistic(Result result) {
+		final double statistic = getStatistic(result.getParellelPileup());
+		if (! filter(statistic)) {
+			result.setStatistic(statistic);
+		}
+	}
+			
 	@Override
 	public double getStatistic(final ParallelPileup parallelPileup) {
 		final int baseIs[] = {0, 1, 2, 3};

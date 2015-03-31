@@ -1,17 +1,16 @@
-package jacusa.result;
+package jacusa.pileup;
 
 
 import java.util.HashMap;
 import java.util.Map;
-
-import jacusa.pileup.ParallelPileup;
 
 public class Result {
 
 	private ParallelPileup parallelPileup;
 	private double statistic;
 	private Map<String, Object> data;
-	private StringBuilder sb;
+	private StringBuilder filterInfo;
+	private StringBuilder info;
 	
 	public Result() {
 		parallelPileup = null;
@@ -55,18 +54,27 @@ public class Result {
 
 	
 	public void addFilterInfo(String info) {
-		if (sb == null) {
-			sb = new StringBuilder();
+		if (filterInfo == null) {
+			filterInfo = new StringBuilder();
 		} else {
-			sb.append(":");
+			filterInfo.append(":");
 		}
 
-		sb.append(info);
+		filterInfo.append(info);
 	}
 
+	public void addInfo(String s) {
+		if (info == null) {
+			info = new StringBuilder();
+		} else {
+			info.append(":");
+		}
+
+		info.append(s);
+	}
 	
 	public String getFilterInfo() {
-		return sb.toString();
+		return filterInfo.toString();
 	}
 	
 }
