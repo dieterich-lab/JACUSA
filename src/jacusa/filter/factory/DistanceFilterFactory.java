@@ -15,11 +15,11 @@ public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 
 	private static int DISTANCE = 5;
 	private static double MIN_RATIO = 0.5;
-	private static int MIN_COUNT = 2; // TODO
+	private static int MIN_COUNT = 2;
 
 	private int distance;
 	private double minRatio;
-	private int minCount; // TODO
+	private int minCount;
 	
 	private AbstractParameters parameters;
 	

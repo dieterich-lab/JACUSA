@@ -10,6 +10,7 @@ import jacusa.pileup.Pileup;
 import jacusa.pileup.Result;
 import jacusa.util.MathUtil;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 import org.apache.commons.math3.special.Gamma;
@@ -20,24 +21,26 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 
 	// options for paremeters estimation
 	protected int maxIterations = 100;
-	protected double epsilon = 0.01; // TODO make smaller
+	protected double epsilon = 0.001;
 
 	protected final StatisticParameters parameters;
 	protected final BaseConfig baseConfig;
 	protected Phred2Prob phred2Prob;
 
 	protected boolean onlyObservedBases;
+	protected boolean showAlpha;
 
 	protected double[] alpha1;
 	protected double[] alpha2;
 	protected double[] alphaP;
 	
 	public AbstractDirMultStatistic(final BaseConfig baseConfig, final StatisticParameters parameters) {
-		this.parameters = parameters;
-		final int n = baseConfig.getBaseLength();
-		this.baseConfig = baseConfig;
-		phred2Prob = Phred2Prob.getInstance(n);
-		onlyObservedBases = false;
+		this.parameters 	= parameters;
+		final int n 		= baseConfig.getBaseLength();
+		this.baseConfig 	= baseConfig;
+		phred2Prob 			= Phred2Prob.getInstance(n);
+		onlyObservedBases 	= false;
+		showAlpha			= false;
 	}
 
 	protected abstract void populate(final Pileup[] pileups, final int[] baseIs, double[] alpha, double[] pileupCoverages, double[][] pileupMatrix);
@@ -46,27 +49,30 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 	public synchronized void addStatistic(Result result) {
 		final double statistic = getStatistic(result.getParellelPileup());
 		result.setStatistic(statistic);
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("alpha1=");
-		sb.append(Double.toString(alpha1[0]));
-		for (int i = 1; i < alpha1.length; ++i) {
-			sb.append(",");
-			sb.append(Double.toString(alpha1[i]));
+
+		if (showAlpha) {
+			DecimalFormat df = new DecimalFormat("0.00"); 
+			StringBuilder sb = new StringBuilder();
+			sb.append("alpha1=");
+			sb.append(df.format(alpha1[0]));
+			for (int i = 1; i < alpha1.length; ++i) {
+				sb.append("|");
+				sb.append(df.format(alpha1[i]));
+			}
+			sb.append(";alpha2=");
+			sb.append(df.format(alpha2[0]));
+			for (int i = 1; i < alpha2.length; ++i) {
+				sb.append("|");
+				sb.append(df.format(alpha2[i]));
+			}
+			sb.append(";alphaP=");
+			sb.append(df.format(alphaP[0]));
+			for (int i = 1; i < alphaP.length; ++i) {
+				sb.append("|");
+				sb.append(df.format(alphaP[i]));
+			}
+			result.addInfo(sb.toString());
 		}
-		sb.append(";alpha2=");
-		sb.append(Double.toString(alpha2[0]));
-		for (int i = 1; i < alpha2.length; ++i) {
-			sb.append(",");
-			sb.append(Double.toString(alpha2[i]));
-		}
-		sb.append(";alphaP=");
-		sb.append(Double.toString(alphaP[0]));
-		for (int i = 1; i < alphaP.length; ++i) {
-			sb.append(",");
-			sb.append(Double.toString(alphaP[i]));
-		}
-		result.addInfo(sb.toString());
 	}
 	
 	@Override
@@ -91,14 +97,23 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		populate(parallelPileup.getPileups1(), baseIs, alpha1, pileupCoverages1, pileupMatrix1);
 		populate(parallelPileup.getPileups2(), baseIs, alpha2, pileupCoverages2, pileupMatrix2);
 		populate(parallelPileup.getPileupsP(), baseIs, alphaP, pileupCoveragesP, pileupMatrixP);
-		
+
+		/*
 		if (parallelPileup.getN1() == 1) {
-			// System.arraycopy(alphaP, 0, alpha1, 0, alphaP.length);
+			System.arraycopy(alphaP, 0, alpha1, 0, alphaP.length);
 		}
-		
+
 		if (parallelPileup.getN2() == 1) {
-			// System.arraycopy(alphaP, 0, alpha2, 0, alphaP.length);
+			System.arraycopy(alphaP, 0, alpha2, 0, alphaP.length);
 		}
+		*/
+
+		// print alphas
+		/*
+		printAlpha(alpha1);
+		printAlpha(alpha2);
+		printAlpha(alphaP);
+		*/
 
 		double p = -1.0;
 		try {
@@ -113,13 +128,29 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			System.out.println(parallelPileup.getContig());
 			System.out.println(parallelPileup.getStart());
 			System.out.println(parallelPileup.prettyPrint());
+			
+			populate(parallelPileup.getPileups1(), baseIs, alpha1, pileupCoverages1, pileupMatrix1);
+			populate(parallelPileup.getPileups2(), baseIs, alpha2, pileupCoverages2, pileupMatrix2);
+			populate(parallelPileup.getPileupsP(), baseIs, alphaP, pileupCoveragesP, pileupMatrixP);
+			if (parallelPileup.getN1() == 1) {
+				System.arraycopy(alphaP, 0, alpha1, 0, alphaP.length);
+			}
+
+			if (parallelPileup.getN2() == 1) {
+				System.arraycopy(alphaP, 0, alpha2, 0, alphaP.length);
+			}
+			
+			maximizeLogLikelihood(baseIs, alpha1, pileupCoverages1, pileupMatrix1);
+			maximizeLogLikelihood(baseIs, alpha2, pileupCoverages2, pileupMatrix2);
+			maximizeLogLikelihood(baseIs, alphaP, pileupCoveragesP, pileupMatrixP);
+			
 			return Double.MAX_VALUE;
 		}
 
 		return p;
 	}
 
-	/* TODO remove 
+	// Debug function
 	protected void printAlpha(double[] alphas) {
 		StringBuilder sb = new StringBuilder();
 		for (double alpha : alphas) {
@@ -128,7 +159,6 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		}
 		System.out.println(sb.toString());
 	}
-	*/
 	
 	// estimate alpha and returns loglik
 	protected double maximizeLogLikelihood(int[] baseIs, double[] alphaOld, double coverages[], double[][] matrix) {
@@ -226,6 +256,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 				sb4.append("\t" + alphaNew[baseI]);
 				*/
 			}
+
 			/*
 			System.out.println(iteration + "=====");
 			System.out.println(sb3.toString());
@@ -302,6 +333,8 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 				maxIterations = Integer.parseInt(value);
 			} else if(key.equals("onlyObserved")) {
 				onlyObservedBases = true;
+			} else if(key.equals("showAlpha")) {
+				showAlpha = true;
 			} else {
 				throw new IllegalArgumentException("Invalid argument " + key + " IN: " + line);
 			}

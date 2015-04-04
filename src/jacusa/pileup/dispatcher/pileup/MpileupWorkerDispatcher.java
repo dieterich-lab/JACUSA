@@ -17,7 +17,8 @@ public class MpileupWorkerDispatcher extends AbstractWorkerDispatcher<MpileupWor
 				coordinateProvider, 
 				parameters.getMaxThreads(), 
 				parameters.getOutput(), 
-				parameters.getFormat()
+				parameters.getFormat(),
+				parameters.isSeparate()
 		);
 		this.parameters = parameters;
 	}

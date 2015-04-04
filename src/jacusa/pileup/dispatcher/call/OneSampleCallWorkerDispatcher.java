@@ -14,18 +14,12 @@ public class OneSampleCallWorkerDispatcher extends AbstractCallWorkerDispatcher<
 		super(coordinateProvider, 
 			  parameters.getMaxThreads(),
 			  parameters.getOutput(), 
-			  parameters.getFormat()
+			  parameters.getFormat(),
+			  parameters.isSeparate()
 		);
 		
 		this.parameters = parameters;
 	}
-
-	/* TODO move to result
-	@Override
-	protected String getHeader() {
-		return getFormat().getHeader(new DefaultParallelPileup(parameters.getSample1().getPathnames().length, 0));
-	}
-	*/
 
 	@Override
 	protected OneSampleCallWorker buildNextWorker() {

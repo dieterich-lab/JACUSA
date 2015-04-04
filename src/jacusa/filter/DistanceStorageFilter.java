@@ -17,7 +17,6 @@ public class DistanceStorageFilter extends AbstractWindowStorageFilter {
 		super(c);
 
 		countFilter = new RatioCountFilter(minRatio, baseConfig, filterConfig);
-		// TODO use minCount
 	}
 
 	@Override

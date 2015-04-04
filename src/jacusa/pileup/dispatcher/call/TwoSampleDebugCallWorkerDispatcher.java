@@ -29,7 +29,8 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 		super(	coordinateProvider, 
 				parameters.getMaxThreads(), 
 				parameters.getOutput(), 
-				parameters.getFormat()
+				parameters.getFormat(),
+				parameters.isSeparate()
 		);
 		
 		this.parameters = parameters;

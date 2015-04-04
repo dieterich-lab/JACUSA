@@ -69,6 +69,9 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 		// (2) second sample  infos
 		addSampleHeader(sb, '2', replicates2);
 
+		sb.append(getSEP());
+		sb.append("info");
+		
 		// add filtering info
 		if (filterConfig.hasFiters()) {
 			sb.append(getSEP());
@@ -125,6 +128,15 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 		// (2) second pileups
 		addPileups(sb, parallelPileup.getPileups2());
 
+		sb.append(getSEP());
+		sb.append(result.getInfo());
+		
+		// add filtering info
+		if (filterConfig.hasFiters()) {
+			sb.append(getSEP());
+			sb.append(result.getFilterInfo());
+		}
+		
 		return sb.toString();		
 	}
 	

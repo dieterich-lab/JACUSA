@@ -17,33 +17,27 @@ public class Result {
 		statistic = Double.NaN;
 		data = new HashMap<String, Object>(10);
 	}
-
 	
 	public void setParellelPileup(ParallelPileup parallelPileup) {
 		this.parallelPileup = parallelPileup;
 	}
-
 	
 	public ParallelPileup getParellelPileup() {
 		return parallelPileup;
 	}
 
-	
 	public void setStatistic(double statistic) {
 		this.statistic = statistic;
 	}
-
 	
 	public double getStatistic() {
 		return statistic;
 	}
 
-	
 	public void setObject(String name, Object object) {
 		data.put(name, object);
 	}
 
-	
 	public Object getObject(String name) {
 		if (! data.containsKey(name)) {
 			return null;
@@ -72,9 +66,17 @@ public class Result {
 
 		info.append(s);
 	}
+
+	public String getInfo() {
+		return info == null ? "*" : info.toString();
+	}
 	
 	public String getFilterInfo() {
-		return filterInfo.toString();
+		return filterInfo == null ? "*" : filterInfo.toString();
+	}
+
+	public boolean hasFilterInfo() {
+		return filterInfo == null;
 	}
 	
 }

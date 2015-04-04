@@ -15,11 +15,11 @@ import jacusa.pileup.sample.PermutateParallelPileup;
 import jacusa.util.Location;
 import jacusa.util.WindowCoordinates;
 
-// TODO finish
-@Deprecated
 public class FDRFilterFactory extends AbstractFilterFactory<Void> {
 
 	private double fdr = 0.1;
+	private int n = 100;
+
 	private StatisticParameters parameters;
 
 	public FDRFilterFactory(final StatisticParameters parameters) {
@@ -29,7 +29,26 @@ public class FDRFilterFactory extends AbstractFilterFactory<Void> {
 
 	@Override
 	public void processCLI(final String line) throws IllegalArgumentException {
-		// TODO
+		String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
+
+		for (int i = 1; i < s.length; ++i) {
+			// key=value
+			String[] kv = s[i].split("=");
+			String key = kv[0];
+			String value = new String();
+			if (kv.length == 2) {
+				value = kv[1];
+			}
+
+			// set value
+			if (key.equals("n")) {
+				n = Integer.parseInt(value);
+			} else if(key.equals("fdr")) {
+				fdr = Double.parseDouble(value);
+			} else {
+				throw new IllegalArgumentException("Invalid argument " + key + " IN: " + line);
+			}
+		}
 	}
 
 	@Override
@@ -43,14 +62,11 @@ public class FDRFilterFactory extends AbstractFilterFactory<Void> {
 	}
 
 	private class FDRFilter extends AbstractStorageFilter<Void> {
-
-		private int n;
 		private PermutateParallelPileup ppp;
 		private StatisticCalculator calculator;
 		
 		public FDRFilter(final char c) {
 			super(c);
-			n = 100;
 			ppp = new PermutateBases();
 			calculator = parameters.getStatisticCalculator();
 		}
@@ -58,15 +74,13 @@ public class FDRFilterFactory extends AbstractFilterFactory<Void> {
 		@Override
 		public boolean filter(final Result result, final Location location,	final AbstractWindowIterator windowIterator) {
 			final ParallelPileup parallelPileup = result.getParellelPileup();
-			double observedStat = calculator.getStatistic(parallelPileup); 
-			System.out.println(parallelPileup.prettyPrint());
+			double observedStat = result.getStatistic(); 
 
 			int c = 0;
 			for (int i = 0; i < n; ++i) {
 				ParallelPileup permutated = ppp.permutate(parallelPileup);
-				permutated.getPooledPileup();
+				// permutated.getPooledPileup();
 				double permutatedStat = calculator.getStatistic(permutated);
-				System.out.println(permutated.prettyPrint());
 				if (permutatedStat <= observedStat) {
 					++c;
 				}
@@ -74,7 +88,7 @@ public class FDRFilterFactory extends AbstractFilterFactory<Void> {
 
 			double eFdr = (double)c / (double)n;
 
-			result.addFilterInfo("FDR=" + Double.toString(eFdr));
+			result.addInfo("FDR=" + Double.toString(eFdr));
 
 			return eFdr <= fdr;
 		}

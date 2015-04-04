@@ -15,6 +15,8 @@ import org.apache.commons.math3.special.Gamma;
 
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 
+// TODO
+@Deprecated 
 public class DirichletStatistic implements StatisticCalculator {
 
 	// options for parameters estimation
@@ -22,7 +24,7 @@ public class DirichletStatistic implements StatisticCalculator {
 	private double epsilon = 0.001;
 	
 	@SuppressWarnings("unused")
-	private double estimatedError = 0.01; // TODO make use of error prob
+	private double estimatedError = 0.01;
 
 	private final StatisticParameters parameters;
 	private final BaseConfig baseConfig;

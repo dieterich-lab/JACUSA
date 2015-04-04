@@ -46,13 +46,14 @@ public abstract class AbstractCountFilter {
 			return ret;
 		}
 
+		// TODO sort variant by occurrence
 		// A | AG
 		if (variantBasesIs.length >= 1) {
 			return variantBasesIs;
 		}
 
-		// AG | AG, AGC |AGC
-		// TODO sort variant by occurrence
+
+		// sample1: AG | AG AND sample2: AGC |AGC
 		// return allelesIs;
 		return new int[0];
 	}

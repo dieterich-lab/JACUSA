@@ -12,6 +12,7 @@ import jacusa.filter.storage.bias.AlignmentBiasFilterStorage;
 import jacusa.filter.storage.bias.BaseCount;
 import jacusa.util.WindowCoordinates;
 
+@Deprecated
 public class AlignmentBiasFilterFactory extends AbstractFilterFactory<BaseCount> {
 
 	private static int TARGET_DISTANCE = 100;

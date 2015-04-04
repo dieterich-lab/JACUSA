@@ -12,6 +12,12 @@ public class Coordinate {
 		end = -1;
 	}
 
+	public Coordinate(Coordinate coordinate) {
+		sequenceName = new String(coordinate.sequenceName);
+		start 		= coordinate.start;
+		end 		= coordinate.end;
+	}
+	
 	public Coordinate(String sequenceName, int start, int end) {
 		this.sequenceName = sequenceName;
 		this.start = start;

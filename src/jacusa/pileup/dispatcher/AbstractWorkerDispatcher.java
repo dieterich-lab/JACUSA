@@ -1,6 +1,7 @@
 package jacusa.pileup.dispatcher;
 
 import jacusa.io.Output;
+import jacusa.io.OutputWriter;
 import jacusa.io.format.AbstractOutputFormat;
 import jacusa.pileup.worker.AbstractWorker;
 import jacusa.util.Coordinate;
@@ -8,18 +9,21 @@ import jacusa.util.coordinateprovider.CoordinateProvider;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 
-	private CoordinateProvider coordinateProvider;
-	private int maxThreads;
-	private Output output;
-	private AbstractOutputFormat format;
+	private final CoordinateProvider coordinateProvider;
+	private final int maxThreads;
+	private final Output output;
+
+	private final AbstractOutputFormat format;
+	private final boolean separate;
 
 	private final List<T> workerContainer;
 	private final List<T> runningWorkers;
@@ -31,12 +35,14 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 			final CoordinateProvider coordinateProvider, 
 			final int maxThreads, 
 			final Output output, 
-			final AbstractOutputFormat format) {
+			final AbstractOutputFormat format,
+			final boolean separate) {
 		this.coordinateProvider = coordinateProvider;
 		this.maxThreads 		= maxThreads;
 		this.output 			= output;
 		this.format				= format;
-
+		this.separate			= separate;
+		
 		workerContainer 		= new ArrayList<T>(maxThreads);
 		runningWorkers			= new ArrayList<T>(maxThreads);
 		comparisons 			= 0;
@@ -136,14 +142,29 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 	}
 	
 	protected void writeOutput() {
+		Output filteredOutput = null;
+		if (separate) {
+			final String filename = output.getInfo().concat(".filtered");
+			final File file = new File(filename);
+			try {
+				filteredOutput = new OutputWriter(file);
+				filteredOutput.write(format.getHeader());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 		BufferedReader[] brs = new BufferedReader[maxThreads];
 		for (int threadId = 0; threadId < maxThreads; ++threadId) {
 			String filename = output.getInfo() + "_" + threadId + "_tmp.gz";
 			final File file = new File(filename); 
 			try {
-				brs[threadId] = new BufferedReader(new FileReader(file));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+				brs[threadId] = new BufferedReader(
+						new InputStreamReader(
+								new GZIPInputStream(
+										new FileInputStream(file), 10000)));
+			} catch (IOException e) {
+					e.printStackTrace();
 			}
 		}
 
@@ -152,7 +173,14 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 			try {
 				String line;
 				while((line = br.readLine()) != null && ! line.startsWith("##")) {
-					output.write(line);
+					final int i = line.length() - 1;
+					final char c = line.charAt(i);
+					if (separate == false || c == 'T') {
+						output.write(line.substring(0, i));
+					} else {
+						filteredOutput.write(line.substring(0, i));
+					}
+					
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -161,7 +189,6 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 		
 		for (BufferedReader br : brs) {
 			try {
-				
 				br.close();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -175,6 +202,10 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 		
 		try {
 			output.close();
+			if (filteredOutput != null) {
+				filteredOutput.close();
+			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

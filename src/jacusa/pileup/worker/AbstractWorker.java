@@ -8,10 +8,10 @@ import jacusa.pileup.iterator.AbstractWindowIterator;
 import jacusa.util.Coordinate;
 import jacusa.util.Location;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.zip.GZIPOutputStream;
 
 import net.sf.samtools.SAMFileReader;
 
@@ -30,7 +30,7 @@ public abstract class AbstractWorker extends Thread {
 	private STATUS status;
 	protected int comparisons;
 
-	private BufferedWriter bw;
+	private GZIPOutputStream zip;
 	
 	public AbstractWorker(
 			AbstractWorkerDispatcher<? extends AbstractWorker> workerDispatcher,
@@ -44,9 +44,8 @@ public abstract class AbstractWorker extends Thread {
 		comparisons 			= 0;
 		
 		String filename = workerDispatcher.getOutput().getInfo() + "_" + threadId + "_tmp.gz";
-		final File file = new File(filename);
 		try {
-			bw = new BufferedWriter(new FileWriter(file));
+			zip = new GZIPOutputStream(new FileOutputStream(filename), 10000);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -72,7 +71,7 @@ public abstract class AbstractWorker extends Thread {
 						if (workerDispatcher.hasNext()) {
 							if (maxThreads > 0 && workerDispatcher.getThreadIds().size() > 0) {
 								try {
-									bw.write("##\n");
+									zip.write("##\n".getBytes());
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
@@ -111,7 +110,7 @@ public abstract class AbstractWorker extends Thread {
 		}
 		
 		try {
-			bw.close();
+			zip.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -195,7 +194,12 @@ public abstract class AbstractWorker extends Thread {
 
 			final String line = workerDispatcher.getFormat().convert2String(result);
 			try {
-				bw.write(line + "\n");
+				char c = 'F';
+				if (result.hasFilterInfo()) {
+					c = 'T';
+				}
+				final String s = new String(line + c + "\n"); 
+				zip.write(s.getBytes());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

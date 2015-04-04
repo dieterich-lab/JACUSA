@@ -12,6 +12,7 @@ import jacusa.util.Coordinate;
 import jacusa.util.SimpleTimer;
 import jacusa.util.coordinateprovider.BedCoordinateProvider;
 import jacusa.util.coordinateprovider.CoordinateProvider;
+import jacusa.util.coordinateprovider.ThreadedCoordinateProvider;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -205,6 +206,10 @@ public class JACUSA {
 			coordinateProvider = methodFactory.getCoordinateProvider();
 		} else {
 			coordinateProvider = new BedCoordinateProvider(parameters.getBedPathname());
+		}
+		
+		if (parameters.getMaxThreads() > 1) {
+			coordinateProvider = new ThreadedCoordinateProvider(coordinateProvider);
 		}
 
 		// prolog

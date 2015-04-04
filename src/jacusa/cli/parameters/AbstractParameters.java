@@ -24,12 +24,14 @@ public abstract class AbstractParameters implements hasSampleA {
 	// chosen method
 	private AbstractMethodFactory methodFactory;
 
-	private SampleParameters sampleA;
+	private SampleParameters sample1;
 
 	private Output output;
 	private AbstractOutputFormat format;
 	private FilterConfig filterConfig;
 
+	private boolean separate;
+	
 	// debug flag
 	private boolean debug;
 
@@ -40,10 +42,12 @@ public abstract class AbstractParameters implements hasSampleA {
 		maxThreads	= 1;
 		
 		bedPathname	= new String();
-		sampleA		= new SampleParameters();
+		sample1		= new SampleParameters();
 		
 		output		= new OutputPrinter();
 		filterConfig= new FilterConfig();
+		
+		separate	= false;
 		
 		debug		= false;
 	}
@@ -78,10 +82,10 @@ public abstract class AbstractParameters implements hasSampleA {
 	}
 
 	/**
-	 * @return the sampleA
+	 * @return the sample1
 	 */
 	public SampleParameters getSample1() {
-		return sampleA;
+		return sample1;
 	}
 	
 	/**
@@ -165,4 +169,18 @@ public abstract class AbstractParameters implements hasSampleA {
 		this.debug = debug;
 	}
 
+	/**
+	 * @return the debug
+	 */
+	public boolean isSeparate() {
+		return separate;
+	}
+
+	/**
+	 * @param debug the debug to set
+	 */
+	public void setSeparate(boolean separate) {
+		this.separate = separate;
+	}
+	
 }

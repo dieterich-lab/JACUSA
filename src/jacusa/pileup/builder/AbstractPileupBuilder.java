@@ -50,7 +50,7 @@ public abstract class AbstractPileupBuilder {
 			final SampleParameters sampleParameters,
 			final AbstractParameters parameters) {
 
-		// FIXME move to start of program DIRTY hack
+		// check if coordinates are fine
 		final int sequenceLength = SAMFileReader.getFileHeader().getSequence(coordinate.getSequenceName()).getSequenceLength();
 		if (coordinate.getEnd() > sequenceLength) {
 			Coordinate samHeader = new Coordinate(coordinate.getSequenceName(), 1, sequenceLength);

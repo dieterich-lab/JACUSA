@@ -16,7 +16,8 @@ public class TwoSampleCallWorkerDispatcher extends AbstractCallWorkerDispatcher<
 		super(coordinateProvider, 
 			 parameters.getMaxThreads(),
 			 parameters.getOutput(),
-			 parameters.getFormat()
+			 parameters.getFormat(),
+			 parameters.isSeparate()
 		);
 		
 		this.parameters = parameters;
@@ -29,15 +30,5 @@ public class TwoSampleCallWorkerDispatcher extends AbstractCallWorkerDispatcher<
 				this.getWorkerContainer().size(),
 				parameters);
 	}
-
-	/* TODO move to result
-	@Override
-	protected String getHeader() {
-		int replicates1 = parameters.getSample1().getPathnames().length;
-		int replicates2 = parameters.getSample2().getPathnames().length;
-
-		return getFormat().getHeader(new DefaultParallelPileup(replicates1, replicates2));
-	}
-	*/
 
 }

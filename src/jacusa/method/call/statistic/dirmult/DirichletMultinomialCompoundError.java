@@ -28,9 +28,11 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 				" (DirMult-CE:epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>)";
 	}
 
+	@Override
 	protected void populate(final Pileup[] pileups, final int[] baseIs, double[] alpha, double[] pileupCoverages, double[][] pileupMatrix) {
 		// init
-		Arrays.fill(alpha, 0.0);
+		Arrays.fill(alpha, 1d / (double)baseIs.length);
+		// Arrays.fill(alpha, 1d);
 		Arrays.fill(pileupCoverages, 0.0);
 		for (int i = 0; i < pileupMatrix.length; ++i) {
 			Arrays.fill(pileupMatrix[i], 0.0);
@@ -58,11 +60,10 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 
 			pileupCoverages[pileupI] = MathUtil.sum(pileupMatrix[pileupI]);
 		}
-		
-		if (pileups.length >= 1) {
-			for (int baseI : baseIs) {
-				alpha[baseI] = 1d / (double)baseIs.length;
-			}
+
+		if (pileups.length == 1) {
+			
+			
 			return;
 		}
 		
@@ -85,6 +86,9 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 		}
 		for (int baseI : baseIs) {
 			variance[baseI] /= (double)(pileups.length - 1);
+			if (variance[baseI] < 0.001) {
+				variance[baseI] = 0.001;
+			}
 		}
 		
 		// Ronning 1989 to set Method Of Moments
@@ -96,14 +100,9 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 				if (baseI == baseI2) {
 					continue;
 				}
-				// ignore zero variance
-				if (variance[baseI] != 0d) {
-					alphaNullTmp *= mean[baseI] * (1d - mean[baseI]) / variance[baseI] - 1d;
-				} else {
-					k--;
-				}
+				alphaNullTmp *= mean[baseI] * (1d - mean[baseI]) / variance[baseI] - 1d;
 			}
-			if (alphaNullTmp > 0) {
+			if (alphaNullTmp > 0 && k >= 2) {
 				alphaNullTmp = Math.pow(alphaNullTmp, 1d / (double)(k - 1));
 				alphaNull = Math.min(alphaNull, alphaNullTmp);
 			}

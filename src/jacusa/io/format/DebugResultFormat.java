@@ -6,7 +6,7 @@ import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.Result;
 
-// CHANGED
+@Deprecated
 public class DebugResultFormat extends AbstractOutputFormat {
 
 	public static final char CHAR = 'X';

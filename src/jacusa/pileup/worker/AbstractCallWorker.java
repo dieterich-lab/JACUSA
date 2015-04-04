@@ -40,15 +40,12 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 		Result result = new Result();
 		result.setParellelPileup(parallelPileup);
 		statisticCalculator.addStatistic(result);
-		
+
 		if (result.getStatistic() > threshold) {
 			return null;
 		}
 
-		if (! filterConfig.hasFiters()) {
-			// no filters
-			result.setObject("filter", "*");
-		} else {
+		if (filterConfig.hasFiters()) {
 			// apply each filter
 			for (AbstractFilterFactory<?> filterFactory : filterConfig.getFactories()) {
 				AbstractStorageFilter<?> storageFilter = filterFactory.createStorageFilter();

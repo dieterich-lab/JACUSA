@@ -13,9 +13,10 @@ public abstract class AbstractCallWorkerDispatcher<T extends AbstractCallWorker>
 	public AbstractCallWorkerDispatcher(
 			final CoordinateProvider coordinateProvider, 
 			final int maxThreads,
-			Output output,
-			AbstractOutputFormat format) throws IOException {
-		super(coordinateProvider, maxThreads, output, format);
+			final Output output,
+			final AbstractOutputFormat format,
+			final boolean separate) throws IOException {
+		super(coordinateProvider, maxThreads, output, format, separate);
 	}
 
 }

@@ -129,10 +129,12 @@ public class DefaultOutputFormat extends AbstractOutputFormat {
 		return sb.toString();		
 	}
 
-	// TODO what to do with this?
-	public String convert2String(final ParallelPileup parallelPileup, final double value, final String filterInfo) {
-		final StringBuilder sb = convert2StringHelper(parallelPileup);
-	
+	// TODO finalize
+	@Deprecated
+	public void addExtraInfo(final Result result) {
+		final ParallelPileup parallelPileup = result.getParellelPileup();
+		final StringBuilder sb = new StringBuilder();
+
 		// meanA
 		sb.append(SEP);
 		double[] meanA = phred2Prob.getPileupsMeanProb(baseConfig.getBasesI(), parallelPileup.getPileups1());
@@ -167,16 +169,6 @@ public class DefaultOutputFormat extends AbstractOutputFormat {
 		// varAB
 		double[] varianceP = phred2Prob.getPileupsVarianceProb(baseConfig.getBasesI(), meanB, parallelPileup.getPileupsP());
 		sb.append(StringCollapse.collapse(varianceP, ","));
-		
-		// add unfiltered value
-		sb.append(SEP);
-		sb.append(value);
-
-		// add filter info
-		sb.append(SEP);
-		sb.append(filterInfo);
-		
-		return sb.toString();
 	}
 	
 	/*

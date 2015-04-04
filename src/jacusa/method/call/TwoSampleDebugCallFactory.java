@@ -19,7 +19,7 @@ import jacusa.filter.factory.OutlierFilterFactory;
 import jacusa.filter.factory.ZeroCountFilterFactory;
 import jacusa.io.format.AbstractOutputFormat;
 import jacusa.io.format.BED6ResultFormat;
-import jacusa.io.format.DebugResultFormat;
+//import jacusa.io.format.DebugResultFormat;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomial;
@@ -143,7 +143,7 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 		int n1 = parameters.getSample1().getPathnames().length;
 		int n2 = parameters.getSample2().getPathnames().length;
 		
-		AbstractOutputFormat resultFormat = new DebugResultFormat(n1, n2, parameters.getBaseConfig());
+		AbstractOutputFormat resultFormat = new BED6ResultFormat(n1, n2, parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;

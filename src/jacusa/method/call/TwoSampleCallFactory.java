@@ -6,6 +6,7 @@ import jacusa.cli.options.BaseConfigOption;
 import jacusa.cli.options.BedCoordinatesOption;
 import jacusa.cli.options.DebugOption;
 import jacusa.cli.options.FilterConfigOption;
+import jacusa.cli.options.FilterModusOption;
 import jacusa.cli.options.FormatOption;
 import jacusa.cli.options.HelpOption;
 import jacusa.cli.options.MaxDepthOption;
@@ -37,6 +38,7 @@ import jacusa.cli.parameters.TwoSampleCallParameters;
 import jacusa.filter.factory.AbstractFilterFactory;
 //import jacusa.filter.factory.BASQBiasFilterFactory;
 import jacusa.filter.factory.DistanceFilterFactory;
+import jacusa.filter.factory.FDRFilterFactory;
 import jacusa.filter.factory.HomopolymerFilterFactory;
 import jacusa.filter.factory.HomozygousFilterFactory;
 import jacusa.filter.factory.INDEL_DistanceFilterFactory;
@@ -48,11 +50,11 @@ import jacusa.filter.factory.ReadPositionDistanceFilterFactory;
 import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
 //import jacusa.filter.factory.ZeroCountFilterFactory;
 //import jacusa.filter.factory.MAPQBiasFilterFactory;
-import jacusa.filter.factory.ReadPositionalBiasFilterFactory;
+//import jacusa.filter.factory.ReadPositionalBiasFilterFactory;
 import jacusa.filter.factory.RareEventFilterFactory;
 import jacusa.io.format.AbstractOutputFormat;
 import jacusa.io.format.BED6ResultFormat;
-import jacusa.io.format.DebugResultFormat;
+//import jacusa.io.format.DebugResultFormat;
 import jacusa.io.format.DefaultOutputFormat;
 import jacusa.io.format.PileupResultFormat;
 import jacusa.io.format.VCF_ResultFormat;
@@ -65,9 +67,9 @@ import jacusa.method.AbstractMethodFactory;
 //import jacusa.method.call.statistic.DirichletMOMsStatistic;
 import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomial;
-import jacusa.method.call.statistic.dirmult.DirichletMultinomialPooledError;
+//import jacusa.method.call.statistic.dirmult.DirichletMultinomialPooledError;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialCompoundError;
-import jacusa.method.call.statistic.dirmult.DirichletMultinomialEstimatedError;
+//import jacusa.method.call.statistic.dirmult.DirichletMultinomialEstimatedError;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialRobustCompoundError;
 //import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
 //import jacusa.method.call.statistic.lr.LR_SPEC_Statistic;
@@ -150,6 +152,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 			acOptions.add(new StatisticCalculatorOption(parameters.getStatisticParameters(), getStatistics()));
 		}
 
+		acOptions.add(new FilterModusOption(parameters));
 		acOptions.add(new BaseConfigOption(parameters));
 		acOptions.add(new FilterConfigOption(parameters, getFilterFactories()));
 		
@@ -178,28 +181,21 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		//statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
 		
-		// TODO removed for inhouse release
 		//statistic = new LR_SPEC_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
 	
-		// TODO removed for inhouse release
 		//statistic = new LR_SENS_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
 
-		// TODO removed for inhouse release
 		//statistic = new DirichletBayesStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
 		
-		// TODO removed for inhouse release
 		//statistic = new DirichletMOMsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
 
-		/*
-		statistic = new WeightedMethodOfMomentsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
-		*/
+		//statistic = new WeightedMethodOfMomentsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		//statistics.put(statistic.getName(), statistic);
 
-		// TODO removed for inhouse release
 		//statistic = new DirichletStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
 
@@ -209,8 +205,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		statistic = new DirichletMultinomial(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
-		statistic = new DirichletMultinomialPooledError(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
+		//statistic = new DirichletMultinomialPooledError(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		//statistics.put(statistic.getName(), statistic);
 
 		statistic = new DirichletMultinomialCompoundError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
@@ -218,8 +214,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		statistic = new DirichletMultinomialRobustCompoundError	(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 		
-		statistic = new DirichletMultinomialEstimatedError(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
+		//statistic = new DirichletMultinomialEstimatedError(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		//statistics.put(statistic.getName(), statistic);
 		
 		return statistics;
 	}
@@ -228,7 +224,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		Map<Character, AbstractFilterFactory<?>> abstractPileupFilters = new HashMap<Character, AbstractFilterFactory<?>>();
 
 		AbstractFilterFactory<?>[] filterFactories = new AbstractFilterFactory[] {
-				new ReadPositionalBiasFilterFactory(parameters),
+//				new ReadPositionalBiasFilterFactory(parameters),
 //				new BASQBiasFilterFactory(parameters),
 //				new MAPQBiasFilterFactory(parameters),
 //				new OutlierFilterFactory(parameters.getStatisticParameters()),
@@ -242,8 +238,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 				new HomopolymerFilterFactory(parameters),
 				new RareEventFilterFactory(parameters),
 				new MinDifferenceFilterFactory(parameters),
-				new OutlierFilterFactory(parameters.getStatisticParameters())
-//				new FDRFilterFactory(parameters.getStatisticParameters()),
+				new OutlierFilterFactory(parameters.getStatisticParameters()),
+				new FDRFilterFactory(parameters.getStatisticParameters()),
 		};
 		for (AbstractFilterFactory<?> filterFactory : filterFactories) {
 			abstractPileupFilters.put(filterFactory.getC(), filterFactory);
@@ -270,8 +266,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 				n1, n2, parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
-		resultFormat = new DebugResultFormat(n1, n2, parameters.getBaseConfig());
-		resultFormats.put(resultFormat.getC(), resultFormat);
+		// resultFormat = new DebugResultFormat(n1, n2, parameters.getBaseConfig());
+		// resultFormats.put(resultFormat.getC(), resultFormat);
 
 		resultFormat = new VCF_ResultFormat(
 				parameters.getSample1().getPathnames(), 
