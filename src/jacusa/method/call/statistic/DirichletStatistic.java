@@ -208,30 +208,35 @@ public class DirichletStatistic implements StatisticCalculator {
 		return Gamma.trigamma(x);
 	}
 	
-	public void processCLI(String line) {
+	public boolean processCLI(String line) {
 		String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
+		boolean r = false;
 		// format -u Dir:epsilon:maxIterations:estimatedError
 		for (int i = 1; i < s.length; ++i) {
-			
 
 			switch(i) {
 
 			case 1:
 				epsilon = Double.parseDouble(s[i]);
+				r = true;
 				break;
 
 			case 2:
 				maxIterations = Integer.parseInt(s[i]);
+				r = true;
 				break;
 
 			case 3:
 				estimatedError = Double.parseDouble(s[i]);
+				r = true;
 				break;
 				
 			default:
 				throw new IllegalArgumentException("Invalid argument " + line);
 			}
 		}
+
+		return r;
 	}
 
 }

@@ -1,5 +1,6 @@
 package jacusa.method.call.statistic.lr;
 
+
 import jacusa.cli.parameters.StatisticParameters;
 import jacusa.estimate.coverage.CoverageEstimateParameters;
 import jacusa.method.call.statistic.StatisticCalculator;
@@ -57,18 +58,18 @@ public abstract class AbstractLRStatistic implements StatisticCalculator {
 		int coverage2 = getCoverage2(parallelPileup);
 		int coverageP = getCoverageP(parallelPileup);
 
-		final double[][] probs1 = estimateParameters.estimateProbs(baseIs, parallelPileup.getPileups1());
+		final double[][] probs1 = estimateParameters.probabilityMatrix(baseIs, parallelPileup.getPileups1());
 		final double[] alpha1 = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileups1(), coverage1);
 		final DirichletDist dirichlet1 = new DirichletDist(alpha1);
 		final double density11 = getDensity(dirichlet1, probs1);
 
-		final double[][] probs2 = estimateParameters.estimateProbs(baseIs, parallelPileup.getPileups2());
+		final double[][] probs2 = estimateParameters.probabilityMatrix(baseIs, parallelPileup.getPileups2());
 		final double[] alpha2 = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileups2(), coverage2);
 		final DirichletDist dirichlet2 = new DirichletDist(alpha2);
 		final double density22 = getDensity(dirichlet2, probs2);
 
 		final Pileup[] pileupsP = parallelPileup.getPileupsP();
-		final double[][] probsP = estimateParameters.estimateProbs(baseIs, pileupsP);
+		final double[][] probsP = estimateParameters.probabilityMatrix(baseIs, pileupsP);
 		final double[] alphaP = estimateParameters.estimateAlpha(baseIs, parallelPileup.getPileupsP(), coverageP);
 		final DirichletDist dirichletP = new DirichletDist(alphaP);
 		final double densityP = getDensity(dirichletP, probsP);

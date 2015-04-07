@@ -14,9 +14,9 @@ public class DirichletMultinomial extends AbstractDirMultStatistic {
 		super(baseConfig, parameters);
 	}
 
-	protected void populate(final Pileup[] pileups, final int[] baseIs, double[] alpha, double[] pileupCoverages, double[][] pileupMatrix) {
+	@Override
+	protected void populate(final Pileup[] pileups, final int[] baseIs, double[] pileupCoverages, double[][] pileupMatrix) {
 		// init
-		Arrays.fill(alpha, 0.0);
 		Arrays.fill(pileupCoverages, 0.0);
 		for (int i = 0; i < pileupMatrix.length; ++i) {
 			Arrays.fill(pileupMatrix[i], 0.0);
@@ -26,14 +26,7 @@ public class DirichletMultinomial extends AbstractDirMultStatistic {
 			Pileup pileup = pileups[pileupI];
 			pileupMatrix[pileupI] = phred2Prob.colSumProb(baseIs, pileup);
 
-			for (int baseI : baseIs) {
-				alpha[baseI] += pileupMatrix[pileupI][baseI]; // make better
-			}
-
 			pileupCoverages[pileupI] = MathUtil.sum(pileupMatrix[pileupI]);
-		}
-		for (int baseI : baseIs) {
-			alpha[baseI] = alpha[baseI] / (double)pileups.length;
 		}
 	}
 

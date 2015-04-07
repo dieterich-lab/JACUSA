@@ -136,8 +136,8 @@ public final class WeightedMethodOfMomentsStatistic implements StatisticCalculat
 	}
 
 	@Override
-	public void processCLI(String line) {
-		// nothing to be done
+	public boolean processCLI(String line) {
+		return false;
 	}
 	
 }

@@ -25,9 +25,8 @@ public class DirichletMultinomialPooledError extends AbstractDirMultStatistic {
 	}
 
 	@Override
-	protected void populate(Pileup[] pileups, int[] baseIs, double[] alpha,	double[] pileupCoverages, double[][] pileupMatrix) {
+	protected void populate(Pileup[] pileups, int[] baseIs, double[] pileupCoverages, double[][] pileupMatrix) {
 		// init
-		Arrays.fill(alpha, 0.0);
 		Arrays.fill(pileupCoverages, 0.0);
 		for (int i = 0; i < pileupMatrix.length; ++i) {
 			Arrays.fill(pileupMatrix[i], 0.0);
@@ -43,14 +42,9 @@ public class DirichletMultinomialPooledError extends AbstractDirMultStatistic {
 				if (pooledError[baseI] > 0.0) {
 					pileupMatrix[pileupI][baseI] += pooledError[baseI] / (double)pileups.length * (double)pileup.getCoverage();
 				}
-
-				alpha[baseI] += pileupMatrix[pileupI][baseI]; // make better
 			}
 
 			pileupCoverages[pileupI] = MathUtil.sum(pileupMatrix[pileupI]);
-		}
-		for (int baseI : baseIs) {
-			alpha[baseI] = alpha[baseI] / (double)pileups.length;
 		}
 	}
 	

@@ -19,6 +19,6 @@ public interface StatisticCalculator {
 	public String getDescription();
 
 	// process command line
-	public void processCLI(final String line);
+	public boolean processCLI(final String line);
 
 }

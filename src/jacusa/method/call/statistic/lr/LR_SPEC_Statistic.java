@@ -52,8 +52,8 @@ public final class LR_SPEC_Statistic extends AbstractLRStatistic {
 	}
 
 	@Override
-	public void processCLI(String line) {
-		// nothing to be done
+	public boolean processCLI(String line) {
+		return false;
 	}
 	
 }

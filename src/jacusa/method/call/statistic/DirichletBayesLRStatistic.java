@@ -46,17 +46,17 @@ public class DirichletBayesLRStatistic implements StatisticCalculator {
 
 		// first sample
 		// probability matrix for all pileups in sampleA (bases in column, pileups in rows)
-		final double[][] probs1 = estimateParameters.estimateProbs(baseIs, parallelPileup.getPileups1());
+		final double[][] probs1 = estimateParameters.probabilityMatrix(baseIs, parallelPileup.getPileups1());
 		final DirichletDist dirichlet1 = getDirichlet(baseIs, parallelPileup.getPileups1());
 		final double density1 = getDensity(baseIs, probs1, dirichlet1);
 
 		// second sample - see above
-		final double[][] probs2 = estimateParameters.estimateProbs(baseIs, parallelPileup.getPileups2());
+		final double[][] probs2 = estimateParameters.probabilityMatrix(baseIs, parallelPileup.getPileups2());
 		final DirichletDist dirichlet2 = getDirichlet(baseIs, parallelPileup.getPileups2());
 		final double density2 = getDensity(baseIs, probs2, dirichlet2);
 
 		// null model - distributions are the same
-		final double[][] probsP = estimateParameters.estimateProbs(baseIs, parallelPileup.getPileupsP());
+		final double[][] probsP = estimateParameters.probabilityMatrix(baseIs, parallelPileup.getPileupsP());
 		final DirichletDist dirichletP = getDirichlet(baseIs, parallelPileup.getPileupsP());
 		final double densityP = getDensity(baseIs, probsP, dirichletP);
 
@@ -110,8 +110,8 @@ public class DirichletBayesLRStatistic implements StatisticCalculator {
 	}
 
 	@Override
-	public void processCLI(String line) {
-		// nothing to be done
+	public boolean processCLI(String line) {
+		return false;
 	}
 	
 }

@@ -28,8 +28,6 @@ public abstract class AbstractEstimateParameters {
 	}
 
 	public abstract double[] estimateAlpha(int[] baseIs, Pileup[] pileups);
-	public abstract double[] estimateExpectedProb(int[] baseIs, Pileup[] pileups);
-	public abstract double[][] estimateProbs(int[] baseIs, Pileup[] pileups);
-	// abstract double[] estimateVariance(int[] baseIs, Pileup[] pileups);
+	public abstract double[][] probabilityMatrix(int[] baseIs, Pileup[] pileups);
 
 }

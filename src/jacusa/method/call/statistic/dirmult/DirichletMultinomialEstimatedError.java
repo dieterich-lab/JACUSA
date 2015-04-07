@@ -29,9 +29,8 @@ public class DirichletMultinomialEstimatedError extends AbstractDirMultStatistic
 				" (DirMult-EE:epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>)";
 	}
 
-	protected void populate(final Pileup[] pileups, final int[] baseIs, double[] alpha, double[] pileupCoverages, double[][] pileupMatrix) {
+	protected void populate(final Pileup[] pileups, final int[] baseIs, double[] pileupCoverages, double[][] pileupMatrix) {
 		// init
-		Arrays.fill(alpha, 0.0);
 		Arrays.fill(pileupCoverages, 0.0);
 		for (int i = 0; i < pileupMatrix.length; ++i) {
 			Arrays.fill(pileupMatrix[i], 0.0);
@@ -54,14 +53,6 @@ public class DirichletMultinomialEstimatedError extends AbstractDirMultStatistic
 
 			pileupCoverages[pileupI] = MathUtil.sum(pileupMatrix[pileupI]);
 		}
-		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
-			for (int baseI : baseIs) {
-				alpha[baseI] += pileupMatrix[pileupI][baseI];
-			}
-		}
-		for (int baseI : baseIs) {
-			alpha[baseI] = alpha[baseI] / (double)pileups.length;
-		}
 	}
 
 	@Override
@@ -71,9 +62,10 @@ public class DirichletMultinomialEstimatedError extends AbstractDirMultStatistic
 
 	// format -u DirMult:epsilon=<epsilon>:maxIterations=<maxIterions>:estimatedError=<estimatedError>
 	@Override
-	public void processCLI(String line) {
-		String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
+	public boolean processCLI(String line) {
+		boolean r = super.processCLI(line);
 
+		String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
 		for (int i = 1; i < s.length; ++i) {
 			// key=value
 			String[] kv = s[i].split("=");
@@ -84,18 +76,15 @@ public class DirichletMultinomialEstimatedError extends AbstractDirMultStatistic
 			}
 
 			// set value
-			if (key.equals("epsilon")) {
-				epsilon = Double.parseDouble(value);
-			} else if (key.equals("maxIterations")) {
-				maxIterations = Integer.parseInt(value);
-			} else if (key.equals("estimatedError")) {
+			if (key.equals("estimatedError")) {
 				estimatedError = Double.parseDouble(value);
-			} else if(key.equals("onlyObserved")) {
-				onlyObservedBases = true;
-			} else {
+				r = true;
+			} else if (!r){
 				throw new IllegalArgumentException("Invalid argument " + key + " IN: " + line);
 			}
 		}
+
+		return r;
 	}
 
 }

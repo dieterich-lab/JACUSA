@@ -43,29 +43,8 @@ public class CoverageEstimateParameters extends AbstractCoverageEstimateParamete
 
 		return alpha;
 	}
-
-	@Override
-	public double[] estimateExpectedProb(int[] baseIs, Pileup[] pileups) {
-		double[] expectedValue = new double[baseIs.length];
 	
-		int replicates = pileups.length;
-		double[][] probs = estimateProbs(baseIs, pileups);
-		for (int pileupI = 0; pileupI < replicates; ++pileupI) {
-			for (int baseI : baseIs) {
-				expectedValue[baseI] += probs[pileupI][baseI];
-			}
-		}
-		if (replicates > 1) {
-			for (int baseI : baseIs) {
-				expectedValue[baseI] /= (double)replicates;
-			}
-		}
-
-		return expectedValue;
-	}
-
-	@Override
-	public double[][] estimateProbs(int[] baseIs, Pileup[] pileups) {
+	public double[][] probabilityMatrix(int[] baseIs, Pileup[] pileups) {
 		final double[][] probs = new double[pileups.length][baseIs.length];
 
 		for(int pileupI = 0; pileupI < pileups.length; ++pileupI) {
@@ -73,8 +52,8 @@ public class CoverageEstimateParameters extends AbstractCoverageEstimateParamete
 			probs[pileupI] = phred2Prob.colMeanProb(baseIs, pileups[pileupI]);
 		}
 
-		return probs;
-	}
+		return probs;		
+	};
 
 	public int getMeanCoverage(Pileup[] pileups) {
 		if (pileups.length == 1) { 

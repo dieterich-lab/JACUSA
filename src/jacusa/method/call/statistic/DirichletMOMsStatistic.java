@@ -161,8 +161,8 @@ public final class DirichletMOMsStatistic implements StatisticCalculator {
 	}
 
 	@Override
-	public void processCLI(String line) {
-		// nothong to be done here
+	public boolean processCLI(String line) {
+		return false;
 	}
 
 }
