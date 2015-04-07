@@ -31,15 +31,13 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 	@Override
 	protected void populate(final Pileup[] pileups, final int[] baseIs, double[] alpha, double[] pileupCoverages, double[][] pileupMatrix) {
 		// init
-		Arrays.fill(alpha, 1d / (double)baseIs.length);
-		// Arrays.fill(alpha, 1d);
+		Arrays.fill(alpha, 0d);
 		Arrays.fill(pileupCoverages, 0.0);
 		for (int i = 0; i < pileupMatrix.length; ++i) {
 			Arrays.fill(pileupMatrix[i], 0.0);
 		}
 
 		double[][] pileupProportionMatrix = new double[pileups.length][baseIs.length];
-
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			Pileup pileup = pileups[pileupI];
 			double[] pileupCount = phred2Prob.colSumCount(baseIs, pileup);
@@ -62,8 +60,14 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 		}
 
 		if (pileups.length == 1) {
-			
-			
+			for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
+				for (int baseI : baseIs) {
+					alpha[baseI] += pileupMatrix[pileupI][baseI];
+				}
+			}
+			for (int baseI : baseIs) {
+				alpha[baseI] = alpha[baseI] / (double)pileups.length;
+			}
 			return;
 		}
 		

@@ -1,7 +1,6 @@
 package jacusa.cli.parameters;
 
 import jacusa.cli.options.sample.filter.samtag.SamTagFilter;
-import jacusa.estimate.AbstractEstimateParameters;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.builder.PileupBuilderFactory;
 import jacusa.pileup.builder.UndirectedPileupBuilderFactory;
@@ -32,9 +31,6 @@ public class SampleParameters {
 	// properties for BAM files
 	private BaseConfig baseConfig;
 	private PileupBuilderFactory pileupBuilderFactory;
-
-	// how to estimate parameters
-	private AbstractEstimateParameters estimateParameters;
 
 	public SampleParameters() {
 		maxDepth 		= -1;
@@ -182,14 +178,6 @@ public class SampleParameters {
 
 	public void setBaseConfig(BaseConfig baseConfig) {
 		this.baseConfig = baseConfig;
-	}
-
-	public AbstractEstimateParameters getEstimateParameters() {
-		return estimateParameters;
-	}
-
-	public void setEstimateParameters(AbstractEstimateParameters estimateParameters) {
-		this.estimateParameters = estimateParameters;
 	}
 	
 }
