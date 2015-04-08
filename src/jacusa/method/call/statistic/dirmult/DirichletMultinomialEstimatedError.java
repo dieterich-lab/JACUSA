@@ -25,8 +25,8 @@ public class DirichletMultinomialEstimatedError extends AbstractDirMultStatistic
 
 	@Override
 	public String getDescription() {
-		return "Dirichlet-Multinomial (phred score IGNORED) estiamted error used = " + estimatedError + 
-				" (DirMult-EE:epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>)";
+		return "(phred score IGNORED) Estimated Err. {" + estimatedError + "}"; 
+				//" (DirMult-EE:epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>)";
 	}
 
 	protected void populate(final Pileup[] pileups, final int[] baseIs, double[] pileupCoverages, double[][] pileupMatrix) {

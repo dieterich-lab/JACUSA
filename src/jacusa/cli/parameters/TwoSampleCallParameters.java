@@ -2,7 +2,7 @@ package jacusa.cli.parameters;
 
 import jacusa.io.format.AbstractOutputFormat;
 import jacusa.io.format.DefaultOutputFormat;
-import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
+import jacusa.method.call.statistic.dirmult.DirichletMultinomialCompoundError;
 
 public class TwoSampleCallParameters extends AbstractParameters implements hasSampleB, hasStatisticCalculator {
 	private SampleParameters sampleB;
@@ -13,7 +13,7 @@ public class TwoSampleCallParameters extends AbstractParameters implements hasSa
 
 		sampleB				= new SampleParameters();
 		statisticParameters = new StatisticParameters();
-		statisticParameters.setStatisticCalculator(new LR_SENS_Statistic(getBaseConfig(), statisticParameters));
+		statisticParameters.setStatisticCalculator(new DirichletMultinomialCompoundError(getBaseConfig(), statisticParameters));
 
 		super.setFormat(new DefaultOutputFormat(0, 0, getBaseConfig(), getFilterConfig()));
 	}

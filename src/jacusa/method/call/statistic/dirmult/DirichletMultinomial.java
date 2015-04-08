@@ -42,7 +42,7 @@ public class DirichletMultinomial extends AbstractDirMultStatistic {
 
 	@Override
 	public String getDescription() {
-		return "Dirichlet-Multinomial - Only Phred score (DirMult:epsilon=<epsilon>:maxIterations=<maxIterations>)";
+		return "Dirichlet-Multinomial - Only Phred score";
 	}
 
 }

@@ -8,7 +8,6 @@ public class StatisticParameters {
 	private StatisticCalculator statisticCalculator;
 	private double threshold;
 	
-	
 	public StatisticParameters() {
 		threshold = 0.3;
 	}

@@ -13,7 +13,7 @@ public class StatisticFilterOption  extends AbstractACOption {
 	public StatisticFilterOption(StatisticParameters parameters) {
 		this.parameters = parameters;
 		opt = "T";
-		longOpt = "stat";
+		longOpt = "threshold";
 	}
 
 	@SuppressWarnings("static-access")

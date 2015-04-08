@@ -38,7 +38,7 @@ public class StatisticCalculatorOption extends AbstractACOption {
 				sb.append("< >");
 			}
 			sb.append(" " + name);
-			sb.append(": ");
+			sb.append(" : ");
 			sb.append(statistic.getDescription());
 			sb.append("\n");
 		}

@@ -7,6 +7,7 @@ import jacusa.pileup.DefaultPileup;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 
+// TODO
 public class DirichletMultinomialRobustCompoundError extends DirichletMultinomialCompoundError {
 
 	public DirichletMultinomialRobustCompoundError(final BaseConfig baseConfig, final StatisticParameters parameters) {
@@ -20,8 +21,8 @@ public class DirichletMultinomialRobustCompoundError extends DirichletMultinomia
 
 	@Override
 	public String getDescription() {
-		return "Dirichlet-Multinomial-Robust with compound error: (estimated error + phred score) ; estimated error = " + estimatedError + 
-				" (DirMult-CE:epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>)";
+		return "Robust Compound Err.";  
+				//"Options: epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>";
 	}
 
 	@Override

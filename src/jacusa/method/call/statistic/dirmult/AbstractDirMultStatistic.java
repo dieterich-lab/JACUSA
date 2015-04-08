@@ -7,6 +7,7 @@ import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.BayesAlphaInit;
+import jacusa.method.call.statistic.dirmult.initalpha.CombinedAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.ConstantAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.MeanAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.RonningAlphaInit;
@@ -173,6 +174,8 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 				AbstractAlphaInit alphaInit = null;
 				if (initAlphaClass.equals("bayes")) {
 					alphaInit = new BayesAlphaInit();
+				} else if (initAlphaClass.equals("combined")) {
+					alphaInit = new CombinedAlphaInit();
 				} else if (initAlphaClass.equals("constant")) {
 					double constant = -1d;
 					for (String v : value.split(Character.toString(','))) {

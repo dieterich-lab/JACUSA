@@ -21,7 +21,7 @@ public class DirichletMultinomialPooledError extends AbstractDirMultStatistic {
 
 	@Override
 	public String getDescription() {
-		return "Dirichlet-Multinomial - PooledError (DirMult-PE:epsilon=<epsilon>:maxIterations=<maxIterations>)";
+		return "Pooled Err.";
 	}
 
 	@Override

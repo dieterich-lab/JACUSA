@@ -24,8 +24,8 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 
 	@Override
 	public String getDescription() {
-		return "Dirichlet-Multinomial with compound error: (estimated error + phred score) ; estimated error = " + estimatedError + 
-				" (DirMult-CE:epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>)";
+		return "Compound Err. (estimated err.{" + estimatedError + "} + phred score)";  
+				//" (DirMult-CE:epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>)";
 	}
 
 	@Override
