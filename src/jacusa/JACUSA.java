@@ -209,7 +209,7 @@ public class JACUSA {
 		}
 		
 		if (parameters.getMaxThreads() > 1) {
-			coordinateProvider = new ThreadedCoordinateProvider(coordinateProvider);
+			coordinateProvider = new ThreadedCoordinateProvider(coordinateProvider, parameters.getThreadWindowSize());
 		}
 
 		// prolog

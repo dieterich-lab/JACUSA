@@ -13,6 +13,7 @@ public abstract class AbstractParameters implements hasSampleA {
 	
 	// cache related
 	private int windowSize;
+	private int threadWindowSize;
 
 	private BaseConfig baseConfig;
 
@@ -36,7 +37,8 @@ public abstract class AbstractParameters implements hasSampleA {
 	private boolean debug;
 
 	public AbstractParameters() {
-		windowSize 	= 10000;
+		windowSize 			= 10000;
+		threadWindowSize	= 10 * windowSize;
 		baseConfig	= new BaseConfig(BaseConfig.VALID);
 
 		maxThreads	= 1;
@@ -107,12 +109,26 @@ public abstract class AbstractParameters implements hasSampleA {
 	}
 
 	/**
+	 * @return the threadWindowSize
+	 */
+	public int getThreadWindowSize() {
+		return threadWindowSize;
+	}
+	
+	/**
 	 * @param windowSize the windowSize to set
 	 */
 	public void setWindowSize(int windowSize) {
 		this.windowSize = windowSize;
 	}
 
+	/**
+	 * @param threadWindowSize the threadWindowSize to set
+	 */
+	public void setThreadWindowSize(int threadWindowSize) {
+		this.threadWindowSize = threadWindowSize;
+	}
+	
 	/**
 	 * @return the maxThreads
 	 */

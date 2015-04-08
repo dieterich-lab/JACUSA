@@ -16,6 +16,7 @@ import jacusa.cli.options.MinCoverageOption;
 import jacusa.cli.options.MinMAPQOption;
 import jacusa.cli.options.SAMPathnameArg;
 import jacusa.cli.options.ResultFileOption;
+import jacusa.cli.options.ThreadWindowSizeOption;
 import jacusa.cli.options.VersionOption;
 import jacusa.cli.options.WindowSizeOption;
 import jacusa.cli.options.pileupbuilder.TwoSamplePileupBuilderOption;
@@ -113,6 +114,7 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 		acOptions.add(new BaseConfigOption(parameters));
 		acOptions.add(new FilterConfigOption(parameters, getFilterFactories()));
 		acOptions.add(new WindowSizeOption(parameters));
+		acOptions.add(new ThreadWindowSizeOption(parameters));
 
 		acOptions.add(new MaxThreadOption(parameters));
 		acOptions.add(new DebugOption(parameters));

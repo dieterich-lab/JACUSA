@@ -18,6 +18,7 @@ import jacusa.cli.options.SAMPathnameArg;
 import jacusa.cli.options.ResultFileOption;
 import jacusa.cli.options.StatisticCalculatorOption;
 import jacusa.cli.options.StatisticFilterOption;
+import jacusa.cli.options.ThreadWindowSizeOption;
 import jacusa.cli.options.VersionOption;
 import jacusa.cli.options.WindowSizeOption;
 import jacusa.cli.options.pileupbuilder.TwoSamplePileupBuilderOption;
@@ -144,6 +145,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 
 		acOptions.add(new MaxThreadOption(parameters));
 		acOptions.add(new WindowSizeOption(parameters));
+		acOptions.add(new ThreadWindowSizeOption(parameters));
 
 		if (getStatistics().size() == 1 ) {
 			String[] a = getStatistics().keySet().toArray(new String[1]);
