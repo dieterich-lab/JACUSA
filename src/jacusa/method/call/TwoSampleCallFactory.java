@@ -62,6 +62,7 @@ import jacusa.io.format.VCF_ResultFormat;
 //import jacusa.io.format.result.DebugResultFormat;
 //import jacusa.io.format.result.VCF_ResultFormat;
 import jacusa.method.AbstractMethodFactory;
+import jacusa.method.call.statistic.ACCUSA2Statistic;
 //import jacusa.method.call.statistic.ACCUSA2Statistic;
 //import jacusa.method.call.statistic.DirichletBayesStatistic;
 //import jacusa.method.call.statistic.DirichletStatistic;
@@ -72,6 +73,8 @@ import jacusa.method.call.statistic.dirmult.DirichletMultinomial;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialCompoundError;
 //import jacusa.method.call.statistic.dirmult.DirichletMultinomialEstimatedError;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialRobustCompoundError;
+import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
+import jacusa.method.call.statistic.lr.LR_SPEC_Statistic;
 //import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
 //import jacusa.method.call.statistic.lr.LR_SPEC_Statistic;
 import jacusa.pileup.dispatcher.call.TwoSampleCallWorkerDispatcher;
@@ -179,15 +182,14 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 
 		StatisticCalculator statistic = null;
 
-		// TODO removed for inhouse release
-		//statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		//statistics.put(statistic.getName(), statistic);
+		statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistics.put(statistic.getName(), statistic);
 		
-		//statistic = new LR_SPEC_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		//statistics.put(statistic.getName(), statistic);
+		statistic = new LR_SPEC_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistics.put(statistic.getName(), statistic);
 	
-		//statistic = new LR_SENS_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		//statistics.put(statistic.getName(), statistic);
+		statistic = new LR_SENS_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistics.put(statistic.getName(), statistic);
 
 		//statistic = new DirichletBayesStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);

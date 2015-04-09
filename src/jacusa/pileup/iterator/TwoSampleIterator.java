@@ -52,7 +52,7 @@ public class TwoSampleIterator extends AbstractTwoSampleIterator {
 				
 				parallelPileup.setContig(coordinate.getSequenceName());
 				parallelPileup.setStart(location.genomicPosition);
-				parallelPileup.setEnd(parallelPileup.getStart()); // FIXME working in all 	
+				parallelPileup.setEnd(parallelPileup.getStart());
 
 				parallelPileup.setStrand(location.strand);
 				parallelPileup.setPileups1(getPileups(location, pileupBuilders1));

@@ -7,9 +7,8 @@ import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.Result;
 import jacusa.pileup.DefaultPileup.STRAND;
-import jacusa.util.StringCollapse;
+// import jacusa.util.StringCollapse;
 
-// CHANGED
 public class DefaultOutputFormat extends AbstractOutputFormat {
 
 	public static final char CHAR = 'D';
@@ -19,7 +18,7 @@ public class DefaultOutputFormat extends AbstractOutputFormat {
 	public static final char SEP 	= '\t';
 	public static final char SEP2 	= ',';
 
-	private BaseConfig baseConfig;
+	//private BaseConfig baseConfig;
 	private FilterConfig filterConfig;
 	public Phred2Prob phred2Prob;
 
@@ -36,7 +35,7 @@ public class DefaultOutputFormat extends AbstractOutputFormat {
 		this.replicates1 = replicates1;
 		this.replicates2 = replicates2;
 		
-		this.baseConfig = baseConfig;
+		// this.baseConfig = baseConfig;
 		this.filterConfig = filterConfig;
 		
 		phred2Prob = Phred2Prob.getInstance(baseConfig.getBaseLength());
@@ -129,7 +128,7 @@ public class DefaultOutputFormat extends AbstractOutputFormat {
 		return sb.toString();		
 	}
 
-	// TODO finalize
+	/*
 	@Deprecated
 	public void addExtraInfo(final Result result) {
 		final ParallelPileup parallelPileup = result.getParellelPileup();
@@ -170,6 +169,7 @@ public class DefaultOutputFormat extends AbstractOutputFormat {
 		double[] varianceP = phred2Prob.getPileupsVarianceProb(baseConfig.getBasesI(), meanB, parallelPileup.getPileupsP());
 		sb.append(StringCollapse.collapse(varianceP, ","));
 	}
+	*/
 	
 	/*
 	 * Helper function

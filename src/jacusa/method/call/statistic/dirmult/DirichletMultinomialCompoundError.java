@@ -36,7 +36,6 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 			Arrays.fill(pileupMatrix[i], 0.0);
 		}
 
-		double[][] pileupProportionMatrix = new double[pileups.length][baseIs.length];
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			Pileup pileup = pileups[pileupI];
 			double[] pileupCount = phred2Prob.colSumCount(baseIs, pileup);
@@ -44,12 +43,10 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 
 			for (int baseI : baseIs) {
 				pileupMatrix[pileupI][baseI] += pileupCount[baseI];
-				pileupProportionMatrix[pileupI][baseI] = pileupMatrix[pileupI][baseI];
 				if (pileupCount[baseI] > 0.0) {
 					for (int baseI2 : baseIs) {
 						if (baseI != baseI2) {
 							pileupMatrix[pileupI][baseI2] += (pileupError[baseI2] + estimatedError) * (double)pileupCount[baseI] / (double)(baseIs.length - 1);
-							pileupProportionMatrix[pileupI][baseI2] = pileupMatrix[pileupI][baseI2];
 						}
 					}
 				}
@@ -84,7 +81,7 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 				estimatedError = Double.parseDouble(value);
 				r = true;
 			} else if (!r){
-				throw new IllegalArgumentException("Invalid argument " + key + " IN: " + line);
+				throw new IllegalArgumentException("Invalid argument " + key + " in line: " + line);
 			}
 		}
 		

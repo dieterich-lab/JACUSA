@@ -18,15 +18,14 @@ public class CombinedAlphaInit extends AbstractAlphaInit {
 			final int[] baseIs, 
 			final Pileup[] pileups,
 			final double[][] pileupMatrix, 
-			final double[] pileupCoverages,
-			final double[][] pileupProportionMatrix) {
+			final double[] pileupCoverages) {
 
 		switch (pileups.length) {
 		case 1:
-			return bayes.init(baseIs, pileups, pileupMatrix, pileupCoverages, pileupProportionMatrix);
+			return bayes.init(baseIs, pileups, pileupMatrix, pileupCoverages);
 
 		default:
-			return ronning.init(baseIs, pileups, pileupMatrix, pileupCoverages, pileupProportionMatrix);
+			return ronning.init(baseIs, pileups, pileupMatrix, pileupCoverages);
 		}
 
 	}

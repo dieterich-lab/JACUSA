@@ -79,7 +79,7 @@ public class DirichletStatistic implements StatisticCalculator {
 
 	@Override
 	public String getDescription() {
-		return "Dirichlet - Only Phred score";
+		return "Only Phred score";
 	}
 
 

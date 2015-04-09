@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 // posterior estimation
 // p(p|D) ~ D(n + alpha)
-// FIXME
+// use for zero replicate
 public class BayesEstimateParameters extends AbstractEstimateParameters {
 
 	private final double initialAlphaNull;
@@ -37,7 +37,6 @@ public class BayesEstimateParameters extends AbstractEstimateParameters {
 		return alpha;
 	}
 
-	// FIXME
 	@Override
 	public double[][] probabilityMatrix(int[] baseIs, Pileup[] pileups) {
 		final double[][] probs = new double[pileups.length][baseIs.length];

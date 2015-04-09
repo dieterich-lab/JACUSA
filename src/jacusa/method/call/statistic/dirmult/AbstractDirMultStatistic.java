@@ -47,7 +47,11 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		estimateAlpha		= new MinkaEstimateParameters();
 	}
 
-	protected abstract void populate(final Pileup[] pileups, final int[] baseIs, double[] pileupCoverages, double[][] pileupMatrix);
+	protected abstract void populate(
+			final Pileup[] pileups, 
+			final int[] baseIs, 
+			double[] pileupCoverages, 
+			double[][] pileupMatrix);
 
 	@Override
 	public synchronized void addStatistic(Result result) {
@@ -60,7 +64,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			sb.append("alpha1=");
 			sb.append(df.format(alpha1[0]));
 			for (int i = 1; i < alpha1.length; ++i) {
-				sb.append("|");
+				sb.append(":");
 				sb.append(df.format(alpha1[i]));
 			}
 			sb.append(";alpha2=");
@@ -88,8 +92,8 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 
 		alpha1 = new double[baseN];
 		double[] pileupCoverages1 = new double[parallelPileup.getN1()];
-		double[][] pileupMatrix1 = new double[parallelPileup.getN1()][baseN];
-
+		double[][] pileupMatrix1  = new double[parallelPileup.getN1()][baseN];
+		
 		alpha2 = new double[baseN];
 		double[] pileupCoverages2 = new double[parallelPileup.getN2()];
 		double[][] pileupMatrix2 = new double[parallelPileup.getN2()][baseN];
@@ -102,6 +106,10 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		populate(parallelPileup.getPileups2(), baseIs, pileupCoverages2, pileupMatrix2);
 		populate(parallelPileup.getPileupsP(), baseIs, pileupCoveragesP, pileupMatrixP);
 
+		alpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1(), pileupMatrix1, pileupCoverages1);
+		alpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2(), pileupMatrix2, pileupCoverages2);
+		alphaP = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileupsP(), pileupMatrixP, pileupCoveragesP);
+		
 		double p = -1.0;
 		try {
 			// estimate alphas
@@ -118,8 +126,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			System.out.println(parallelPileup.getStart());
 			System.out.println(parallelPileup.prettyPrint());
 
-			// TODO try to change init of alpha
-			return Double.MAX_VALUE;
+			return -1.0;
 		}
 
 		return p;
@@ -197,10 +204,12 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 					alphaInit = new MeanAlphaInit();
 				} else if (initAlphaClass.equals("Ronning")) {
 					alphaInit = new RonningAlphaInit();
+				} else {
+					throw new IllegalArgumentException("Unknown initAlpha: " + value);
 				}
 
 				estimateAlpha.setAlphaInit(alphaInit);
-				
+				r = true;
 			}
 		}
 

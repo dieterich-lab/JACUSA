@@ -10,10 +10,17 @@ public class MeanAlphaInit extends AbstractAlphaInit {
 	
 	@Override
 	public double[] init(int[] baseIs, Pileup[] pileups,
-			double[][] pileupMatrix, double[] pileupCoverages,
-			double[][] pileupProportionMatrix) {
+			double[][] pileupMatrix, double[] pileupCoverages) {
 		final double[] alpha = new double[baseIs.length];
 		final double[] mean = new double[baseIs.length];
+		
+		double[][] pileupProportionMatrix = new double[pileups.length][baseIs.length];
+		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
+			for (int baseI : baseIs) {
+				pileupProportionMatrix[pileupI][baseI] = pileupMatrix[pileupI][baseI] / pileupCoverages[pileupI];
+			}
+		}
+		
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI : baseIs) {
 				pileupProportionMatrix[pileupI][baseI] /= pileupCoverages[pileupI];

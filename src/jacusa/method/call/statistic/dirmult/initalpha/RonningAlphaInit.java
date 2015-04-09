@@ -15,8 +15,15 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 			final int[] baseIs, 
 			final Pileup[] pileups,
 			final double[][] pileupMatrix, 
-			final double[] pileupCoverages,
-			final double[][] pileupProportionMatrix) {
+			final double[] pileupCoverages
+			) {
+		
+		final double[][] pileupProportionMatrix = new double[pileups.length][baseIs.length];
+		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
+			for (int baseI : baseIs) {
+				pileupProportionMatrix[pileupI][baseI] = pileupMatrix[pileupI][baseI] / pileupCoverages[pileupI];
+			}
+		}
 		
 		// init
 		double[] alpha = new double[baseIs.length];

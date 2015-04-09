@@ -13,6 +13,7 @@ import jacusa.util.Location;
 import net.sf.samtools.SAMFileReader;
 
 // Initial version
+
 public class TwoSampleWindowIterator extends AbstractTwoSampleIterator {
 
 	private List<Pileup> pileups1;
@@ -69,7 +70,6 @@ public class TwoSampleWindowIterator extends AbstractTwoSampleIterator {
 					}
 				}
 				*/
-
 				// check that we have a variant position
 				parallelPileup.setPileups1(getPileups(location, pileupBuilders1));
 				parallelPileup.setPileups2(getPileups(location, pileupBuilders2));

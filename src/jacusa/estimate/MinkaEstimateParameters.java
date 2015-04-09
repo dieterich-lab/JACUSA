@@ -3,7 +3,7 @@ package jacusa.estimate;
 import java.util.Arrays;
 
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
-import jacusa.method.call.statistic.dirmult.initalpha.RonningAlphaInit;
+import jacusa.method.call.statistic.dirmult.initalpha.CombinedAlphaInit;
 import jacusa.util.MathUtil;
 
 import org.apache.commons.math3.special.Gamma;
@@ -17,7 +17,7 @@ public class MinkaEstimateParameters {
 	private double epsilon; 
 	
 	public MinkaEstimateParameters() {
-		alphaInit = new RonningAlphaInit();
+		alphaInit = new CombinedAlphaInit();
 		maxIterations = 100;
 		epsilon = 0.001;
 	}
