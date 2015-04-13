@@ -63,7 +63,7 @@ public class TwoSampleWindowCallFactory extends AbstractMethodFactory {
 	private static TwoSampleWindowCallWorkerDispatcher instance;
 
 	public TwoSampleWindowCallFactory() {
-		super("window-2", "Call variants in windows - two samples");
+		super("window", "Call variants in windows for two samples");
 		parameters = new TwoSampleCallParameters();
 	}
 
