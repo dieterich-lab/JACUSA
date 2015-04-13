@@ -104,16 +104,17 @@ public abstract class AbstractWorker extends Thread {
 				break;
 			}
 		}
-		
-		synchronized (workerDispatcher) {
-			workerDispatcher.notify();
-		}
-		
+
 		try {
 			zip.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		synchronized (workerDispatcher) {
+			workerDispatcher.notify();
+		}
+
 	}
 
 	public int getThreadId() {

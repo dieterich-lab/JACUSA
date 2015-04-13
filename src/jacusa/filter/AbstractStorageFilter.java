@@ -12,11 +12,6 @@ public abstract class AbstractStorageFilter<T> {
 		this.c = c;
 	}
 	
-	public abstract boolean filter(
-			final Result result, 
-			final Location location, 
-			final AbstractWindowIterator windowIterator);
-	
 	public final char getC() {
 		return c;
 	}
@@ -28,6 +23,27 @@ public abstract class AbstractStorageFilter<T> {
 		T data = (T)filterContainer.get(filterI).getContainer();
 
 		return data;
+	}
+
+	protected abstract boolean filter(
+			final Result result, 
+			final Location location, 
+			final AbstractWindowIterator windowIterator);
+	
+	public boolean applyFilter(
+			final Result result, 
+			final Location location, 
+			final AbstractWindowIterator windowIterator) {
+		if (filter(result, location, windowIterator)) {
+			addFilterInfo(result);
+			return true;
+		}
+		
+		return false;
+	}
+
+	public void addFilterInfo(Result result) {
+		result.addFilterInfo(Character.toString(getC()));
 	}
 
 }

@@ -40,7 +40,7 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 		Result result = new Result();
 		result.setParellelPileup(parallelPileup);
 		statisticCalculator.addStatistic(result);
-
+		
 		if (result.getStatistic() > threshold) {
 			return null;
 		}
@@ -49,7 +49,7 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 			// apply each filter
 			for (AbstractFilterFactory<?> filterFactory : filterConfig.getFactories()) {
 				AbstractStorageFilter<?> storageFilter = filterFactory.createStorageFilter();
-				storageFilter.filter(result, location, parallelPileupIterator);
+				storageFilter.applyFilter(result, location, parallelPileupIterator);
 			}
 		}
 

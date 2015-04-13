@@ -175,7 +175,7 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 				while((line = br.readLine()) != null && ! line.startsWith("##")) {
 					final int i = line.length() - 1;
 					final char c = line.charAt(i);
-					if (separate == false || c == 'T') {
+					if (separate == false || c == 'F') {
 						output.write(line.substring(0, i));
 					} else {
 						filteredOutput.write(line.substring(0, i));

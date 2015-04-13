@@ -2,6 +2,8 @@ package jacusa.pileup.worker;
 
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.cli.parameters.TwoSamplePileupParameters;
+import jacusa.filter.AbstractStorageFilter;
+import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Result;
 import jacusa.pileup.dispatcher.pileup.MpileupWorkerDispatcher;
@@ -44,7 +46,15 @@ public class MpileupWorker extends AbstractWorker {
 	protected Result processParallelPileup(ParallelPileup parallelPileup, final Location location, final AbstractWindowIterator parallelPileupIterator) {
 		Result result = new Result();
 		result.setParellelPileup(parallelPileup);
-		
+
+		if (parameters.getFilterConfig().hasFiters()) {
+			// apply each filter
+			for (AbstractFilterFactory<?> filterFactory : parameters.getFilterConfig().getFactories()) {
+				AbstractStorageFilter<?> storageFilter = filterFactory.createStorageFilter();
+				storageFilter.applyFilter(result, location, parallelPileupIterator);
+			}
+		}
+
 		return result;
 	}
 

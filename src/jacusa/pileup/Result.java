@@ -76,7 +76,7 @@ public class Result {
 	}
 
 	public boolean hasFilterInfo() {
-		return filterInfo == null;
+		return filterInfo != null;
 	}
-	
+
 }

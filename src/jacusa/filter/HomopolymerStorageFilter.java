@@ -20,12 +20,12 @@ public class HomopolymerStorageFilter extends AbstractWindowStorageFilter {
 	}
 
 	@Override
-	public boolean filter(final Result result, final Location location, final AbstractWindowIterator windowIterator) {
+	protected boolean filter(final Result result, final Location location, final AbstractWindowIterator windowIterator) {
 		final ParallelPileup parallelPileup = result.getParellelPileup();
 		Counts[] counts1 = getCounts(location, windowIterator.getFilterContainers4Replicates1(location));
 		Counts[] counts2 = getCounts(location, windowIterator.getFilterContainers4Replicates2(location));
 
-	final int[] variantBaseIs = countFilter.getVariantBaseIs(parallelPileup);
+		final int[] variantBaseIs = countFilter.getVariantBaseIs(parallelPileup);
 		if (variantBaseIs.length == 0) {
 			return false;
 		}
