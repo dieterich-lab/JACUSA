@@ -1,5 +1,6 @@
 package jacusa.filter;
 
+
 import jacusa.pileup.Counts;
 import jacusa.pileup.DefaultPileup.STRAND;
 import jacusa.pileup.builder.WindowCache;
@@ -26,7 +27,7 @@ public abstract class AbstractWindowStorageFilter extends AbstractStorageFilter<
 			final WindowCache windowCache = getData(filterContainer);
 			final int windowPosition = filterContainer.getWindowCoordinates().convert2WindowPosition(location.genomicPosition);
 
-			counts[i] = new Counts(windowCache.getBaseI(windowPosition), windowCache.getQual(windowPosition));
+			counts[i] = windowCache.getCounts(windowPosition);
 			if (invert) {
 				counts[i].invertCounts();
 			}

@@ -1,11 +1,11 @@
 package jacusa.pileup.builder;
 
-import jacusa.phred2prob.Phred2Prob;
-import jacusa.util.WindowCoordinates;
-
 import java.util.Arrays;
 
-// TODO similar to base count -> try to merge or reuse code
+import jacusa.phred2prob.Phred2Prob;
+import jacusa.pileup.Counts;
+import jacusa.util.WindowCoordinates;
+
 public class WindowCache {
 
 	private WindowCoordinates windowCoordinates;
@@ -15,55 +15,103 @@ public class WindowCache {
 	private int[][] baseCount;
 	private int[][][] qualCount;
 
+	private int[][] minQual;
+	
+	private int[] alleleCount;
+	private int[] alleleMask;
+
+	private int windowSize;
+
 	public WindowCache(final WindowCoordinates windowCoordinates, final int baseLength) {
 		this.windowCoordinates 	= windowCoordinates;
 		this.baseLength 		= baseLength;
 
-		final int windowSize	= windowCoordinates.getWindowSize();
-		coverage 				= new int[windowSize];
-		baseCount 				= new int[windowSize][baseLength];
-		qualCount 				= new int[windowSize][baseLength][Phred2Prob.MAX_Q];
+		windowSize	= windowCoordinates.getWindowSize();
+		coverage = new int[windowSize];
+		baseCount = new int[windowSize][baseLength];
+		qualCount = new int[windowSize][baseLength][Phred2Prob.MAX_Q];
+
+		minQual	= new int[windowSize][baseLength];;
+		
+		alleleCount = new int[windowSize];
+		alleleMask = new int[windowSize];
 	}
 
 	public void clear() {
 		Arrays.fill(coverage, 0);
-		for (int windowI = 0; windowI < windowCoordinates.getWindowSize(); windowI++) {
-			Arrays.fill(baseCount[windowI], 0);
-
+		for (int windowPositionI = 0; windowPositionI < windowSize; ++windowPositionI) {
+			Arrays.fill(baseCount[windowPositionI], 0);
 			for (int baseI = 0; baseI < baseLength; ++baseI) {
-				Arrays.fill(qualCount[windowI][baseI], 0);
+				Arrays.fill(qualCount[windowPositionI][baseI], 0);
 			}
+			Arrays.fill(minQual[windowPositionI], 20);
+		}
+
+		Arrays.fill(alleleCount, 0);
+		Arrays.fill(alleleMask, 0);
+	}
+
+	public void addHighQualityBaseCall(final int windowPosition, final int baseI, int qualI) {
+		// make sure we don't exceed...
+		Math.min(Phred2Prob.MAX_Q - 1, qualI);
+		++coverage[windowPosition];
+		++baseCount[windowPosition][baseI];
+		++qualCount[windowPosition][baseI][qualI];
+
+		int r = 2 << baseI;
+		int t = alleleMask[windowPosition] & r;
+		if (t == 0) {
+			alleleMask[windowPosition] += r;
+			++alleleCount[windowPosition];
 		}
 	}
 
-	public void add(final int windowPosition, final int baseI, int qual) {
-		coverage[windowPosition]++;
-		baseCount[windowPosition][baseI]++;
-		// make sure we don't exceed...
-		Math.min(Phred2Prob.MAX_Q - 1, qual);
-		qualCount[windowPosition][baseI][qual]++;
+	// only count for alleles
+	public void addLowQualityBaseCall(final int windowPosition, final int baseI, final int qualI) {
+		int r = 2 << baseI;
+		int t = alleleMask[windowPosition] & r;
+		if (t == 0) {
+			alleleMask[windowPosition] += r;
+			++alleleCount[windowPosition];
+		}
+		minQual[windowPosition][baseI] = Math.min(minQual[windowPosition][baseI], qualI);
 	}
 
 	public int getCoverage(final int windowPosition) {
 		return coverage[windowPosition];
 	}
 
-	public int[] getBaseCount(final int windowPosition) {
-		return baseCount[windowPosition];
+	public int getAlleleCount(final int windowPosition) {
+		return alleleCount[windowPosition];
+	}
+
+	public int getAlleleMask(final int windowPosition) {
+		return alleleMask[windowPosition];
 	}
 	
-	public int[][] getQualCount(final int windowPosition) {
-		return qualCount[windowPosition];
+	public int[] getAlleles(int windowPosition) {
+		int alleles[] = new int[getAlleleCount(windowPosition)];
+		int mask = getAlleleMask(windowPosition);
+		
+		int i = 0;
+		for (int baseI = 0; baseI < baseLength; ++baseI) {
+			if ((mask & 2 << baseI) > 0) {
+				alleles[i] = baseI;
+				++i;
+			}
+		}
+		
+		return alleles;
+	}
+	
+	public int getBaseLength() {
+		return baseLength;
 	}
 
-	public int[] getBaseI(final int windowPosition) {
-		return baseCount[windowPosition];
+	public Counts getCounts(final int windowPosition) {
+		return new Counts(baseCount[windowPosition], qualCount[windowPosition], minQual[windowPosition]);
 	}
-
-	public int[][] getQual(final int windowPosition) {
-		return qualCount[windowPosition];
-	}
-
+	
 	public WindowCoordinates getWindowCoordinates() {
 		return windowCoordinates;
 	}

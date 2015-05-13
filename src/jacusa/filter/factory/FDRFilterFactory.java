@@ -1,5 +1,6 @@
 package jacusa.filter.factory;
 
+
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.cli.parameters.StatisticParameters;
 
@@ -15,6 +16,7 @@ import jacusa.pileup.sample.PermutateParallelPileup;
 import jacusa.util.Location;
 import jacusa.util.WindowCoordinates;
 
+@Deprecated
 public class FDRFilterFactory extends AbstractFilterFactory<Void> {
 
 	private double fdr = 0.1;

@@ -203,7 +203,7 @@ public final class DefaultParallelPileup implements ParallelPileup {
 	@Override
 	public Pileup getPooledPileup1() {
 		if(pileup1 == null && pileups1[0] != null) {
-			pileup1 = new DefaultPileup(pileups1[0].getContig(), pileups1[0].getPosition(), pileups1[0].getStrand(), pileups1[0].getCounts().getBaseCount().length);
+			pileup1 = new DefaultPileup(pileups1[0].getContig(), pileups1[0].getPosition(), pileups1[0].getStrand(), pileups1[0].getCounts().getBaseLength());
 			for(int i = 0; i < pileups1.length; ++i) {
 				pileup1.addPileup(pileups1[i]);
 			}
@@ -214,7 +214,7 @@ public final class DefaultParallelPileup implements ParallelPileup {
 	@Override
 	public Pileup getPooledPileup2() {
 		if(pileup2 == null && pileups2[0] != null) {
-			pileup2 = new DefaultPileup(pileups2[0].getContig(), pileups2[0].getPosition(), pileups2[0].getStrand(), pileups2[0].getCounts().getBaseCount().length);
+			pileup2 = new DefaultPileup(pileups2[0].getContig(), pileups2[0].getPosition(), pileups2[0].getStrand(), pileups2[0].getCounts().getBaseLength());
 			for(int i = 0; i < pileups2.length; ++i) {
 				pileup2.addPileup(pileups2[i]);
 			}
@@ -225,7 +225,7 @@ public final class DefaultParallelPileup implements ParallelPileup {
 	@Override
 	public Pileup getPooledPileup() {
 		if(pileupP == null && getPooledPileup1() != null) {
-			pileupP = new DefaultPileup(getPooledPileup1().getCounts().getBaseCount().length);
+			pileupP = new DefaultPileup(getPooledPileup1().getCounts().getBaseLength());
 			pileupP.setContig(getPooledPileup1().getContig());
 			pileupP.setPosition(getPooledPileup1().getPosition());
 
@@ -305,16 +305,17 @@ public final class DefaultParallelPileup implements ParallelPileup {
 		sb.append(sample);
 		sb.append('\t');
 		boolean flag = false;
-		for (int count : pileup.getCounts().getBaseCount()) {
+		for (int baseI = 0; baseI < pileup.getCounts().getBaseLength(); ++baseI) {
 			if (flag) {
 				sb.append('\t');
 			}
 			flag = true;
-			sb.append(count);
+			sb.append(pileup.getCounts().getBaseCount(baseI));
 		}
 		sb.append('|');
 		flag = false;
-		for (int count : pileup.getCounts().getBaseCount()) {
+		for (int baseI = 0; baseI < pileup.getCounts().getBaseLength(); ++baseI) {
+			int count = pileup.getCounts().getBaseCount(baseI);
 			if (flag) {
 				sb.append('\t');
 			}

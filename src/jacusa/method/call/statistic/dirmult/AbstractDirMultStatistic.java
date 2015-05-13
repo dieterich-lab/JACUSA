@@ -53,6 +53,13 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			double[] pileupCoverages, 
 			double[][] pileupMatrix);
 
+	protected abstract void populate(
+			final Pileup pileup, 
+			final int[] baseIs, 
+			double[] pileupCoverage,
+			double[] pileupErrorVector,
+			double[] pileupVector);
+	
 	@Override
 	public synchronized void addStatistic(Result result) {
 		final double statistic = getStatistic(result.getParellelPileup());
@@ -88,7 +95,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		final int baseIs[] = getBaseIs(parallelPileup);
 		int baseN = baseConfig.getBaseLength();
 
-		ChiSquareDist dist = new ChiSquareDist(baseN);
+		ChiSquareDist dist = new ChiSquareDist(baseN - 1); // TODO
 
 		alpha1 = new double[baseN];
 		double[] pileupCoverages1 = new double[parallelPileup.getN1()];
@@ -102,14 +109,25 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		double[] pileupCoveragesP = new double[parallelPileup.getN()];
 		double[][] pileupMatrixP = new double[parallelPileup.getN()][baseN];
 
-		populate(parallelPileup.getPileups1(), baseIs, pileupCoverages1, pileupMatrix1);
-		populate(parallelPileup.getPileups2(), baseIs, pileupCoverages2, pileupMatrix2);
+		if (parallelPileup.getPileups1().length == 1) {
+			double[] pileupErrorVector1 = new double[baseN];
+			populate(parallelPileup.getPileups1()[0], baseIs, pileupCoverages1, pileupErrorVector1, pileupMatrix1[0]);
+			alpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1()[0], pileupMatrix1[0], pileupErrorVector1, pileupCoverages1[0]);
+		} else {
+			populate(parallelPileup.getPileups1(), baseIs, pileupCoverages1, pileupMatrix1);
+			alpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1(), pileupMatrix1, pileupCoverages1);
+		}
+		if (parallelPileup.getPileups2().length == 1) {
+			double[] pileupErrorVector2 = new double[baseN];
+			populate(parallelPileup.getPileups2()[0], baseIs, pileupCoverages2, pileupErrorVector2, pileupMatrix2[0]);
+			alpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2()[0], pileupMatrix2[0], pileupErrorVector2, pileupCoverages2[0]);
+		} else {
+			populate(parallelPileup.getPileups2(), baseIs, pileupCoverages2, pileupMatrix2);
+			alpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2(), pileupMatrix2, pileupCoverages2);
+		}
 		populate(parallelPileup.getPileupsP(), baseIs, pileupCoveragesP, pileupMatrixP);
-
-		alpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1(), pileupMatrix1, pileupCoverages1);
-		alpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2(), pileupMatrix2, pileupCoverages2);
 		alphaP = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileupsP(), pileupMatrixP, pileupCoveragesP);
-		
+
 		double p = -1.0;
 		try {
 			// estimate alphas

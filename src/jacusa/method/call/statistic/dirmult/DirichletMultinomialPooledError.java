@@ -49,6 +49,15 @@ public class DirichletMultinomialPooledError extends AbstractDirMultStatistic {
 	}
 	
 	@Override
+	protected void populate(Pileup pileup, 
+			int[] baseIs, 
+			double[] pileupCoverage,
+			double[] pileupErrorVector, 
+			double[] pileupVector) {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
 	public StatisticCalculator newInstance() {
 		return new DirichletMultinomialPooledError(baseConfig, parameters);
 	}

@@ -144,8 +144,8 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 				new INDEL_DistanceFilterFactory(parameters),
 				new ReadPositionDistanceFilterFactory(parameters),
 				new SpliceSiteDistanceFilterFactory(parameters),
-				new HomozygousFilterFactory(),
-				new MaxAlleleCountFilterFactors(),
+				new HomozygousFilterFactory(parameters),
+				new MaxAlleleCountFilterFactors(parameters),
 				new HomopolymerFilterFactory(parameters),
 				new RareEventFilterFactory(parameters),
 				new MinDifferenceFilterFactory(parameters)

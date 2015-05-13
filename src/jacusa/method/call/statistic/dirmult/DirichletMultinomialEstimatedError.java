@@ -56,6 +56,30 @@ public class DirichletMultinomialEstimatedError extends AbstractDirMultStatistic
 	}
 
 	@Override
+	protected void populate(final Pileup pileup, final int[] baseIs, double[] pileupCoverage, double[] pileupErrorVector, double[] pileupMatrix) {
+		// init
+		pileupCoverage[0] = 0.0;
+		Arrays.fill(pileupMatrix, 0.0);
+
+		double[] pileupCount = phred2Prob.colSumCount(baseIs, pileup);
+		pileupErrorVector = phred2Prob.colMeanErrorProb(baseIs, pileup);
+
+		for (int baseI : baseIs) {
+			pileupMatrix[baseI] += pileupCount[baseI];
+			if (pileupCount[baseI] > 0.0) {
+				for (int baseI2 : baseIs) {
+					if (baseI != baseI2) {
+						double error = (pileupErrorVector[baseI2]) * (double)pileupCount[baseI] / (double)(baseIs.length - 1);
+						pileupMatrix[baseI2] += error;
+						pileupErrorVector[baseI2] = error;
+					}
+				}
+			}
+		}
+		pileupCoverage[0] = MathUtil.sum(pileupMatrix);
+	}
+	
+	@Override
 	public StatisticCalculator newInstance() {
 		return new DirichletMultinomialEstimatedError(baseConfig, parameters);
 	}

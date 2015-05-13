@@ -16,7 +16,9 @@ import jacusa.pileup.iterator.variant.Variant;
 import jacusa.util.Coordinate;
 import jacusa.util.Location;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
@@ -130,6 +132,38 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 		return pileups;
 	}
 
+	public abstract int getAlleleCount(Location location);
+	public abstract int getAlleleCount1(Location location);
+	public abstract int getAlleleCount2(Location location);
+	protected int getAlleleCount(Location location, AbstractPileupBuilder[] pileupBuilders) {
+		int replicates = pileupBuilders.length;
+		int alleleCount = 0;
+
+		int windowPosition = pileupBuilders[0].getWindowCoordinates().convert2WindowPosition(location.genomicPosition);
+		int mask = 0;
+		for (int i = 0; i < replicates; ++i) {
+			int t = mask & pileupBuilders[i].getWindowCache(location.strand).getAlleleMask(windowPosition);
+			if (t > 0) {
+				++alleleCount;
+			}
+			mask += t;
+		}
+
+		return alleleCount;		
+	}
+	
+	protected Set<Integer> getAlleles(Location location, AbstractPileupBuilder[] pileupBuilders) {
+		Set<Integer> alleles = new HashSet<Integer>(4);
+		int replicates = pileupBuilders.length;
+		int windowPosition = pileupBuilders[0].getWindowCoordinates().convert2WindowPosition(location.genomicPosition);
+		for (int i = 0; i < replicates; ++i) {
+			for (int baseI : pileupBuilders[i].getWindowCache(location.strand).getAlleles(windowPosition)) {
+				alleles.add(baseI);
+			}
+		}
+		return alleles;
+	}
+
 	protected FilterContainer[] getFilterCaches4Replicates(Location location, AbstractPileupBuilder[] pileupBuilders) {
 		int replicates = pileupBuilders.length;
 		FilterContainer[] filterContainers = new FilterContainer[replicates];
@@ -198,7 +232,7 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 	public ParallelPileup getParallelPileup() {
 		return parallelPileup;
 	}
-
+	
 	@Override
 	public void remove() {
 		// not needed

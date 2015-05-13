@@ -30,6 +30,7 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		return filterContainer;
 	}
 
+	@Override
 	public Pileup getPileup(int windowPosition, STRAND strand) {
 		Pileup pileup = new DefaultPileup(
 				windowCoordinates.getContig(), 
@@ -37,8 +38,7 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 				strand, baseConfig.getBaseLength());
 
 		// set base and qual info from cache
-		pileup.getCounts().setBaseCount(windowCache.getBaseCount(windowPosition));
-		pileup.getCounts().setQualCount(windowCache.getQualCount(windowPosition));
+		pileup.setCounts(windowCache.getCounts(windowPosition));
 
 		// and complement if needed
 		if (strand == STRAND.REVERSE) {
@@ -51,12 +51,23 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 	@Override
 	public void clearCache() {
 		windowCache.clear();
+
 		filterContainer.clear();
 	}
 
 	@Override
-	protected void add2WindowCache(int windowPosition, int baseI, int qual, STRAND strand) {
-		windowCache.add(windowPosition, baseI, qual);
+	protected void addHighQualityBaseCall(int windowPosition, int baseI, int qualI, STRAND strand) {
+		windowCache.addHighQualityBaseCall(windowPosition, baseI, qualI);
+	}
+	
+	@Override
+	protected void addLowQualityBaseCall(int windowPosition, int baseI, int qualI, STRAND strand) {
+		windowCache.addLowQualityBaseCall(windowPosition, baseI, qualI);
+	}
+
+	@Override
+	public WindowCache getWindowCache(STRAND strand) {
+		return windowCache;
 	}
 
 	/**

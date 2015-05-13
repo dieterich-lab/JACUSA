@@ -33,10 +33,12 @@ public abstract class AbstractPileupBuilder {
 
 	protected BaseConfig baseConfig;
 	protected SampleParameters sampleParameters;
+	protected AbstractParameters parameters;
 	
 	protected boolean isCached;
 
 	protected WindowCache windowCache;
+	
 	protected FilterContainer filterContainer;
 	protected int[] byte2int;
 	protected STRAND strand;
@@ -70,10 +72,11 @@ public abstract class AbstractPileupBuilder {
 
 		baseConfig				= parameters.getBaseConfig();
 		this.sampleParameters	= sampleParameters;
+		this.parameters			= parameters;
 
 		isCached				= false;
 
-		windowCache 			= new WindowCache(windowCoordinates, baseConfig.getBaseLength());
+		windowCache				= new WindowCache(windowCoordinates, baseConfig.getBaseLength());
 		filterContainer			= parameters.getFilterConfig().createFilterContainer(windowCoordinates, strand, sampleParameters);
 		byte2int 				= parameters.getBaseConfig().getByte2Int();
 		this.strand				= strand;
@@ -83,7 +86,7 @@ public abstract class AbstractPileupBuilder {
 			distance = Math.max(filter.getDistance(), distance);
 		}
 	}
-
+	
 	/**
 	 * 
 	 * @param targetPosition
@@ -235,14 +238,18 @@ public abstract class AbstractPileupBuilder {
 
 	// Reset all caches in windows
 	public abstract void clearCache();
-	protected abstract void add2WindowCache(int windowPosition, int base, int qual, STRAND strand);
+	protected abstract void addHighQualityBaseCall(int windowPosition, int base, int qual, STRAND strand);
+	protected abstract void addLowQualityBaseCall(int windowPosition, int base, int qual, STRAND strand);
 
 	// strand dependent methods
 	public abstract boolean isCovered(int windowPosition, STRAND strand);
 	public abstract int getCoverage(int windowPosition, STRAND strand);
 	public abstract Pileup getPileup(int windowPosition, STRAND strand);
-	public abstract FilterContainer getFilterContainer(int windowPosition, STRAND strand);
+	public abstract WindowCache getWindowCache(STRAND strand);
 
+	public abstract FilterContainer getFilterContainer(int windowPosition, STRAND strand);
+	
+	
 	/*
 	 * process CIGAR string methods
 	 */
@@ -404,46 +411,54 @@ public abstract class AbstractPileupBuilder {
 
 		for (int offset = 0; offset < cigarElement.getLength(); ++offset) {
 			final int baseI = byte2int[record.getReadBases()[readPosition + offset]];
+			int qualI = record.getBaseQualities()[readPosition + offset];
 
-			int qual = record.getBaseQualities()[readPosition + offset];
+			if (baseI == -1) {
+				continue;
+			}
 
-			if (baseI >= 0 && qual >= sampleParameters.getMinBASQ()) {
-				// speedup: if orientation == 1 the remaining part of the read will be outside of the windowCache
-				// ignore the overhanging part of the read until it overlaps with the window cache
-				windowPosition = windowCoordinates.convert2WindowPosition(genomicPosition + offset);
-
-				int orientation = windowCoordinates.getOrientation(genomicPosition + offset);
-				
-				switch (orientation) {
-				case 1:
-					if ((genomicPosition + offset) - windowCoordinates.getGenomicWindowEnd() <= distance) {
+			// speedup: if orientation == 1 the remaining part of the read will be outside of the windowCache
+			// ignore the overhanging part of the read until it overlaps with the window cache
+			windowPosition = windowCoordinates.convert2WindowPosition(genomicPosition + offset);
+			int orientation = windowCoordinates.getOrientation(genomicPosition + offset);
+			
+			switch (orientation) {
+			case 1:
+				if ((genomicPosition + offset) - windowCoordinates.getGenomicWindowEnd() <= distance) {
+					if (qualI >= sampleParameters.getMinBASQ()) {
 						for (AbstractFilterStorage<?> filter : filterContainer.get(CigarOperator.M)) {
-							filter.processAlignmentMatch(windowPosition, readPosition + offset, genomicPosition + offset, cigarElement, record, baseI, qual);
-						}						
-					} else {
-						return;
-					}
-					break;
-				case -1: // speedup jump to covered position
-					if (windowCoordinates.getGenomicWindowStart() - (genomicPosition + offset) > distance) {
-						offset += windowCoordinates.getGenomicWindowStart() - (genomicPosition + offset) - distance - 1;
-					} else {
-						for (AbstractFilterStorage<?> filter : filterContainer.get(CigarOperator.M)) {
-							filter.processAlignmentMatch(windowPosition, readPosition + offset, genomicPosition + offset, cigarElement, record, baseI, qual);
+							filter.processAlignmentMatch(windowPosition, readPosition + offset, genomicPosition + offset, cigarElement, record, baseI, qualI);
 						}
 					}
-					break;
-				case 0:
-					if (windowPosition >= 0) {
-						add2WindowCache(windowPosition, baseI, qual, strand);
-	
+				} else {
+					return;
+				}
+				break;
+			case -1: // speedup jump to covered position
+				if (windowCoordinates.getGenomicWindowStart() - (genomicPosition + offset) > distance) {
+					offset += windowCoordinates.getGenomicWindowStart() - (genomicPosition + offset) - distance - 1;
+				} else {
+					if (qualI >= sampleParameters.getMinBASQ()) {
+						for (AbstractFilterStorage<?> filter : filterContainer.get(CigarOperator.M)) {
+							filter.processAlignmentMatch(windowPosition, readPosition + offset, genomicPosition + offset, cigarElement, record, baseI, qualI);
+						}
+					}
+				}
+				break;
+			case 0:
+				if (windowPosition >= 0) {
+					if (qualI >= sampleParameters.getMinBASQ()) {
+						addHighQualityBaseCall(windowPosition, baseI, qualI, strand);
+
 						// process any alignmentMatch specific filters
 						for (AbstractFilterStorage<?> filter : filterContainer.get(CigarOperator.M)) {
-							filter.processAlignmentMatch(windowPosition, readPosition + offset, genomicPosition + offset, cigarElement, record, baseI, qual);
+							filter.processAlignmentMatch(windowPosition, readPosition + offset, genomicPosition + offset, cigarElement, record, baseI, qualI);
 						}
+					} else if (parameters.collectLowQualityBaseCalls()) { 
+						addLowQualityBaseCall(windowPosition, baseI, qualI, strand);
 					}
-					break;
 				}
+				break;
 			}
 		}
 	}

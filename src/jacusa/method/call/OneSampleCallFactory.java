@@ -53,6 +53,7 @@ import org.apache.commons.cli.ParseException;
 
 import net.sf.samtools.SAMSequenceRecord;
 
+@Deprecated
 public class OneSampleCallFactory extends AbstractMethodFactory {
 
 	private OneSampleCallParameters parameters = new OneSampleCallParameters();
@@ -131,8 +132,8 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 
 		AbstractFilterFactory<?>[] filters = new AbstractFilterFactory[] {
 				new DistanceFilterFactory(parameters),
-				new HomozygousFilterFactory(),
-				new MaxAlleleCountFilterFactors(),
+				new HomozygousFilterFactory(parameters),
+				new MaxAlleleCountFilterFactors(parameters),
 				new HomopolymerFilterFactory(parameters),
 				new RareEventFilterFactory(parameters),
 		};

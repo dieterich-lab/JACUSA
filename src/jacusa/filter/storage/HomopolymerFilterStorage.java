@@ -82,7 +82,7 @@ public class HomopolymerFilterStorage extends AbstractWindowFilterStorage {
 		if (coveredReadLength >= minLength) {
 			for (int i = 0; i < bases.size(); ++i) {
 				if (windowPositionStart + i >= 0 && windowPositionStart + i < windowSize) {
-					windowCache.add(windowPositionStart + i, bases.get(i), quals.get(i));
+					windowCache.addHighQualityBaseCall(windowPositionStart + i, bases.get(i), quals.get(i));
 				} else {
 					return;
 				}

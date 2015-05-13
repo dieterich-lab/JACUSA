@@ -24,10 +24,13 @@ public class ReadPositionDistanceFilterFactory extends AbstractFilterFactory<Win
 	private AbstractParameters parameters;
 
 	private static Set<CigarOperator> cigarOperator = new HashSet<CigarOperator>();
+	static {
+		cigarOperator.add(CigarOperator.M);
+	}
 
 	public ReadPositionDistanceFilterFactory(AbstractParameters parameters) {
 		super(
-				'F', 
+				'B', 
 				"Filter distance to Read Start/End. Default: " + DISTANCE + ":" + MIN_RATIO + ":" + MIN_COUNT +" (F:distance:min_ratio:min_count)", 
 				true,
 				cigarOperator);
@@ -45,7 +48,6 @@ public class ReadPositionDistanceFilterFactory extends AbstractFilterFactory<Win
 
 		final String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
 
-		// format F:distance:minRatio:minCount
 		for (int i = 1; i < s.length; ++i) {
 			switch(i) {
 			case 1:
@@ -64,6 +66,7 @@ public class ReadPositionDistanceFilterFactory extends AbstractFilterFactory<Win
 				this.minRatio = minRatio;
 				break;
 			
+			/*
 			case 3:
 				final int minCount = Integer.valueOf(s[i]);
 				if (minCount < 0) {
@@ -71,7 +74,8 @@ public class ReadPositionDistanceFilterFactory extends AbstractFilterFactory<Win
 				}
 				this.minCount = minCount;
 				break;
-				
+			*/
+
 			default:
 				throw new IllegalArgumentException("Invalid argument: " + line);
 			}

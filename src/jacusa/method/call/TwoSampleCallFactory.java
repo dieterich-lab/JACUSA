@@ -1,5 +1,6 @@
 package jacusa.method.call;
 
+
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
 import jacusa.cli.options.BaseConfigOption;
@@ -29,23 +30,21 @@ import jacusa.cli.options.sample.MinMAPQSampleOption;
 import jacusa.cli.options.sample.filter.FilterFlagOption;
 import jacusa.cli.options.sample.filter.FilterNHsamTagOption;
 import jacusa.cli.options.sample.filter.FilterNMsamTagOption;
-//import jacusa.cli.options.sample.filter.FilterFlagOption;
-//import jacusa.cli.options.sample.filter.FilterNHsamTagOption;
-//import jacusa.cli.options.sample.filter.FilterNMsamTagOption;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.cli.parameters.TwoSampleCallParameters;
 import jacusa.filter.factory.AbstractFilterFactory;
+//import jacusa.filter.factory.AssumeAlleleCountFilterFactors;
 //import jacusa.filter.factory.BASQBiasFilterFactory;
 import jacusa.filter.factory.DistanceFilterFactory;
-import jacusa.filter.factory.FDRFilterFactory;
+//import jacusa.filter.factory.FDRFilterFactory;
 import jacusa.filter.factory.HomopolymerFilterFactory;
 import jacusa.filter.factory.HomozygousFilterFactory;
 import jacusa.filter.factory.INDEL_DistanceFilterFactory;
 import jacusa.filter.factory.MaxAlleleCountFilterFactors;
 import jacusa.filter.factory.MinDifferenceFilterFactory;
-import jacusa.filter.factory.OutlierFilterFactory;
+//import jacusa.filter.factory.OutlierFilterFactory;
 //import jacusa.filter.factory.OutlierFilterFactory;
 import jacusa.filter.factory.ReadPositionDistanceFilterFactory;
 import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
@@ -68,13 +67,13 @@ import jacusa.method.call.statistic.ACCUSA2Statistic;
 //import jacusa.method.call.statistic.DirichletStatistic;
 //import jacusa.method.call.statistic.DirichletMOMsStatistic;
 import jacusa.method.call.statistic.StatisticCalculator;
-import jacusa.method.call.statistic.dirmult.DirichletMultinomial;
+//import jacusa.method.call.statistic.dirmult.DirichletMultinomial;
 //import jacusa.method.call.statistic.dirmult.DirichletMultinomialPooledError;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialCompoundError;
 //import jacusa.method.call.statistic.dirmult.DirichletMultinomialEstimatedError;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialRobustCompoundError;
-import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
-import jacusa.method.call.statistic.lr.LR_SPEC_Statistic;
+//import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
+//import jacusa.method.call.statistic.lr.LR_SPEC_Statistic;
 //import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
 //import jacusa.method.call.statistic.lr.LR_SPEC_Statistic;
 import jacusa.pileup.dispatcher.call.TwoSampleCallWorkerDispatcher;
@@ -185,11 +184,11 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 		
-		statistic = new LR_SPEC_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
+		// RC statistic = new LR_SPEC_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		// RC statistics.put(statistic.getName(), statistic);
 	
-		statistic = new LR_SENS_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
+		// RC statistic = new LR_SENS_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		// RC statistics.put(statistic.getName(), statistic);
 
 		//statistic = new DirichletBayesStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
@@ -206,8 +205,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		//statistic = new DirichletBayesLRStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
 
-		statistic = new DirichletMultinomial(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
+		// RC statistic = new DirichletMultinomial(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		// RC statistics.put(statistic.getName(), statistic);
 
 		//statistic = new DirichletMultinomialPooledError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
@@ -237,13 +236,14 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 				new INDEL_DistanceFilterFactory(parameters),
 				new ReadPositionDistanceFilterFactory(parameters),
 				new SpliceSiteDistanceFilterFactory(parameters),
-				new HomozygousFilterFactory(),
-				new MaxAlleleCountFilterFactors(),
+				new HomozygousFilterFactory(parameters),
+				new MaxAlleleCountFilterFactors(parameters),
+				// RC new AssumeAlleleCountFilterFactors(),
 				new HomopolymerFilterFactory(parameters),
 				new RareEventFilterFactory(parameters),
 				new MinDifferenceFilterFactory(parameters),
-				new OutlierFilterFactory(parameters.getStatisticParameters()),
-				new FDRFilterFactory(parameters.getStatisticParameters()),
+				// RC new OutlierFilterFactory(parameters.getStatisticParameters()),
+				// RC new FDRFilterFactory(parameters.getStatisticParameters()),
 		};
 		for (AbstractFilterFactory<?> filterFactory : filterFactories) {
 			abstractPileupFilters.put(filterFactory.getC(), filterFactory);

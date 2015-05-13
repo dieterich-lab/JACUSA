@@ -37,4 +37,22 @@ public class TwoSampleDebugIterator extends AbstractWindowIterator {
 		return null;
 	}
 
+	@Override
+	public int getAlleleCount(Location location) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	@Override
+	public int getAlleleCount1(Location location) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	@Override
+	public int getAlleleCount2(Location location) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
 }

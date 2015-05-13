@@ -8,6 +8,7 @@ import jacusa.pileup.Pileup;
 
 import java.util.Random;
 
+@Deprecated
 public class PermutateParallelPileupQualWithoutReplacement implements PermutateParallelPileup{
 
 	private Random random = new Random(0);  
@@ -36,16 +37,16 @@ public class PermutateParallelPileupQualWithoutReplacement implements PermutateP
 
 		for(int j = 0; j < pileups.length; ++j) {
 			Pileup pileup = pileups[j];
-			permutated[j] = new DefaultPileup(pileup.getCounts().getBaseCount().length);
+			permutated[j] = new DefaultPileup(pileup.getCounts().getBaseLength());
 			// copy base count
-			for(int k = 0; k < pileup.getCounts().getBaseCount().length; ++k) {
-				permutated[j].getCounts().getBaseCount()[k] = pileup.getCounts().getBaseCount()[k];
+			for(int k = 0; k < pileup.getCounts().getBaseLength(); ++k) {
+				// FIXME permutated[j].getCounts().getBaseCount()[k] = pileup.getCounts().getBaseCount()[k];
 			}
 
 			for(int base : permutated[j].getAlleles()) {
 				for(int i = 0; i < permutated[j].getCounts().getBaseCount(base); ++i) {
 					byte qual = sampleQual(coverage[0], quals);
-					permutated[j].getCounts().getQualCount()[base][qual]++;
+					// FIXME permutated[j].getCounts().getQualCount()[base][qual]++;
 					quals[qual]--;
 					coverage[0]--;
 				}
@@ -57,9 +58,11 @@ public class PermutateParallelPileupQualWithoutReplacement implements PermutateP
 	private int[] collapseQualCount(Pileup pileup) {
 		int[] quals = new int[Phred2Prob.MAX_Q];
 		for(int i = 0; i < Phred2Prob.MAX_Q; ++i) {
+			/*
 			for(int base : pileup.getAlleles()) {
-				quals[i] += pileup.getCounts().getQualCount()[base][i];
+				// FIXME quals[i] += pileup.getCounts().getQualCount()[base][i];
 			}
+			*/
 		}
 
 		return quals;

@@ -153,7 +153,7 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 			int baseI = baseConfig.getBaseI((byte)b);
 			int count = 0;
 			if (baseI >= 0) {
-				count = pileup.getCounts().getBaseCount()[baseI];
+				count = pileup.getCounts().getBaseCount(baseI);
 			}
 			sb.append(count);
 			++i;
@@ -162,7 +162,7 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 				baseI = baseConfig.getBaseI((byte)b);
 				count = 0;
 				if (baseI >= 0) {
-					count = pileup.getCounts().getBaseCount()[baseI];
+					count = pileup.getCounts().getBaseCount(baseI);
 				}
 				sb.append(SEP2);
 				sb.append(count);

@@ -1,6 +1,5 @@
 package jacusa.pileup.iterator;
 
-
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.FilterContainer;
@@ -73,5 +72,5 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 	public FilterContainer[] getFilterContainers4Replicates2(Location location) {
 		return getFilterCaches4Replicates(location, pileupBuilders2);
 	}
-	
+
 }

@@ -55,6 +55,30 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 			pileupCoverages[pileupI] = MathUtil.sum(pileupMatrix[pileupI]);
 		}
 	}
+
+	@Override
+	protected void populate(final Pileup pileup, final int[] baseIs, double[] pileupCoverage, double[] pileupErrorVector, double[] pileupMatrix) {
+		// init
+		pileupCoverage[0] = 0.0;
+		Arrays.fill(pileupMatrix, 0.0);
+
+		double[] pileupCount = phred2Prob.colSumCount(baseIs, pileup);
+		double[] pileupError = phred2Prob.colMeanErrorProb(baseIs, pileup);
+
+		for (int baseI : baseIs) {
+			pileupMatrix[baseI] += pileupCount[baseI];
+			if (pileupCount[baseI] > 0.0) {
+				for (int baseI2 : baseIs) {
+					if (baseI != baseI2) {
+						double combinedError = (pileupError[baseI2] + estimatedError) * (double)pileupCount[baseI] / (double)(baseIs.length - 1);
+						pileupMatrix[baseI2] += combinedError;
+						pileupErrorVector[baseI2] = combinedError;
+					}
+				}
+			}
+		}
+		pileupCoverage[0] = MathUtil.sum(pileupMatrix);
+	}
 	
 	@Override
 	public DirichletMultinomialCompoundError newInstance() {

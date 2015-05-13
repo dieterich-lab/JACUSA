@@ -42,16 +42,13 @@ public class ACCUSA2Statistic implements StatisticCalculator {
 	@Override
 	public void addStatistic(Result result) {
 		final double statistic = getStatistic(result.getParellelPileup());
-		if (! filter(statistic)) {
-			result.setStatistic(statistic);
-		}
+		result.setStatistic(statistic);
 	}
 	
 	@Override
 	public double getStatistic(final ParallelPileup parallelPileup) {
 		// use all bases for calculation
 		final int baseIs[] = baseConfig.getBasesI();
-		// use only observed bases per parallelPileup
 
 		// first sample
 		// probability matrix for all pileups in sampleA (bases in column, pileups in rows)

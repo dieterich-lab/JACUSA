@@ -1,12 +1,13 @@
 package jacusa;
 
+
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.TwoSampleCallFactory;
-import jacusa.method.call.TwoSampleDebugCallFactory;
+//import jacusa.method.call.TwoSampleDebugCallFactory;
 import jacusa.method.pileup.TwoSamplePileupFactory;
-import jacusa.method.window.TwoSampleWindowCallFactory;
+//import jacusa.method.window.TwoSampleWindowCallFactory;
 import jacusa.pileup.dispatcher.AbstractWorkerDispatcher;
 import jacusa.pileup.worker.AbstractWorker;
 import jacusa.util.Coordinate;
@@ -34,7 +35,7 @@ public class JACUSA {
 	// timer used for all time measurements
 	private static SimpleTimer timer;
 	public static final String NAME = "jacusa";
-	public static final String VERSION = "1.0-BETA";
+	public static final String VERSION = "1.0-RC1";
 
 	// command line interface
 	private CLI cli;
@@ -49,11 +50,11 @@ public class JACUSA {
 		Map<String, AbstractMethodFactory> methodFactories = new TreeMap<String, AbstractMethodFactory>();
 
 		AbstractMethodFactory[] factories = new AbstractMethodFactory[] {
-			// new OneSampleCallFactory(), 
+			// RC new OneSampleCallFactory(), 
 			new TwoSampleCallFactory(),
 			new TwoSamplePileupFactory(),
-			new TwoSampleWindowCallFactory(),
-			new TwoSampleDebugCallFactory()
+			// RC new TwoSampleWindowCallFactory(),
+			// RC new TwoSampleDebugCallFactory()
 		};
 		for (AbstractMethodFactory factory : factories) {
 			methodFactories.put(factory.getName(), factory);

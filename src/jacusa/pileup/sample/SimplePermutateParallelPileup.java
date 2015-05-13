@@ -7,7 +7,7 @@ import jacusa.pileup.Pileup;
 
 import java.util.Random;
 
-
+@Deprecated
 public class SimplePermutateParallelPileup {
 
 	private Random random = new Random(0);  

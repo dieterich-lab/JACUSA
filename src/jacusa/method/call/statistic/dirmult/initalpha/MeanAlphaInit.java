@@ -5,7 +5,7 @@ import jacusa.pileup.Pileup;
 public class MeanAlphaInit extends AbstractAlphaInit {
 
 	public MeanAlphaInit() {
-		super("mean", "alpha = mean(pileups)");
+		super("mean", "alpha = mean * n * p * q");
 	}
 	
 	@Override
@@ -13,7 +13,7 @@ public class MeanAlphaInit extends AbstractAlphaInit {
 			double[][] pileupMatrix, double[] pileupCoverages) {
 		final double[] alpha = new double[baseIs.length];
 		final double[] mean = new double[baseIs.length];
-		
+
 		double[][] pileupProportionMatrix = new double[pileups.length][baseIs.length];
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI : baseIs) {
@@ -35,4 +35,13 @@ public class MeanAlphaInit extends AbstractAlphaInit {
 		return alpha;
 	}
 
+	@Override
+	public double[] init(int[] baseIs, 
+			Pileup pileup, 
+			double[] pileupVector,
+			double[] pileupErrorVector, 
+			double pileupCoverage) {
+		return init(baseIs, new Pileup[]{pileup}, new double[][]{pileupVector}, new double[]{pileupCoverage});
+	}
+	
 }

@@ -51,7 +51,7 @@ public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<
 		}
 
 		if (windowPosition >= 0 && windowPosition < windowSize && ! visited[windowPosition]) {
-			windowCache.add(windowPosition, baseI, qual);
+			windowCache.addHighQualityBaseCall(windowPosition, baseI, qual);
 			visited[windowPosition] = true;
 		}
 	}
@@ -97,7 +97,7 @@ public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<
 				byte qual = record.getBaseQualities()[readPosition + i];
 				// int genomicPosition = windowCache.getWindowCoordinates().getGenomicPosition(windowPosition + i);
 				if (qual >= sampleParameters.getMinBASQ()) {
-					windowCache.add(windowPosition + i, baseI, qual);
+					windowCache.addHighQualityBaseCall(windowPosition + i, baseI, qual);
 					visited[windowPosition + i] = true;
 				}
 			}

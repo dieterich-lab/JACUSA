@@ -9,6 +9,7 @@ import jacusa.pileup.iterator.variant.VariantParallelPileup;
 import jacusa.util.Coordinate;
 import net.sf.samtools.SAMFileReader;
 
+@Deprecated
 public class OneSampleCallWorker extends AbstractCallWorker {
 
 	private SAMFileReader[] readers1;

@@ -104,7 +104,7 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 					break;
 				}
 				try {
-					this.wait();
+					this.wait(60 * 1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

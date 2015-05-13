@@ -7,6 +7,7 @@ import jacusa.pileup.Pileup;
 
 import java.util.Random;
 
+@Deprecated
 public class PermutateBases implements PermutateParallelPileup {
 
 	private Random random = new Random(0);  
@@ -41,7 +42,7 @@ public class PermutateBases implements PermutateParallelPileup {
 
 		for (int j = 0; j < permutated.length; ++j) {
 			// Pileup pileup = new DefaultPileup(pooled.getCounts().getBaseCount().length);
-			permutated[j] = new DefaultPileup(pooled.getCounts().getBaseCount().length);
+			permutated[j] = new DefaultPileup(pooled.getCounts().getBaseLength());
 
 			for (int i = 0; i < coverages[j]; ++i) {
 				int baseI = sampleBaseI(pooled);
@@ -71,7 +72,7 @@ public class PermutateBases implements PermutateParallelPileup {
 	private byte sampleQual(int baseI, Pileup pooled) {
 		final int r = random.nextInt(pooled.getCounts().getBaseCount(baseI));
 
-		int[] qualCount = pooled.getCounts().getQualCount()[baseI];
+		int[] qualCount = pooled.getCounts().getQualCount(baseI);
 		int count = 0;
 		for (int i = 0; i < qualCount.length; ++i) {
 			if (r >= count && r < count + qualCount[i]) {

@@ -1,6 +1,5 @@
 package jacusa.pileup.iterator;
 
-
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.FilterContainer;
@@ -12,6 +11,7 @@ import jacusa.util.Coordinate;
 import jacusa.util.Location;
 import net.sf.samtools.SAMFileReader;
 
+@Deprecated
 public abstract class AbstractOneSampleIterator extends AbstractWindowIterator {
 
 	protected SampleParameters sample;
@@ -71,5 +71,5 @@ public abstract class AbstractOneSampleIterator extends AbstractWindowIterator {
 	public FilterContainer[] getFilterContainers4Replicates2(Location location) {
 		return null; 
 	}
-
+	
 }

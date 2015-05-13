@@ -73,11 +73,11 @@ public class VarianceOutlierFilter extends OutlierStorageFilter {
 	}
 
 	private double[] mean(Pileup pooled, Pileup[] pileups) {
-		double[] mean = new double[pooled.getCounts().getBaseCount().length];
+		double[] mean = new double[pooled.getCounts().getBaseLength()];
 		Arrays.fill(mean, 0.0);
 		int n = pileups.length;
 		
-		for (int i = 0; i < pooled.getCounts().getBaseCount().length; ++i) {
+		for (int i = 0; i < pooled.getCounts().getBaseLength(); ++i) {
 			mean[i] = (double)pooled.getCounts().getBaseCount(i) / (double)n;
 		}
 
@@ -86,16 +86,16 @@ public class VarianceOutlierFilter extends OutlierStorageFilter {
 
 	private double[] variance(Pileup pooled, Pileup[] pileups) {
 		double[] mean = mean(pooled, pileups);
-		double[] variance = new double[pooled.getCounts().getBaseCount().length];
+		double[] variance = new double[pooled.getCounts().getBaseLength()];
 		Arrays.fill(mean, 0.0);
 		int n = pileups.length;
 
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
-			for (int baseI = 0; baseI < pooled.getCounts().getBaseCount().length; ++baseI) {
+			for (int baseI = 0; baseI < pooled.getCounts().getBaseLength(); ++baseI) {
 				variance[baseI] += Math.pow(mean[baseI] - (double)pileups[pileupI].getCounts().getBaseCount(baseI), 2.0);
 			}
 		}
-		for (int baseI = 0; baseI < pooled.getCounts().getBaseCount().length; ++baseI) {
+		for (int baseI = 0; baseI < pooled.getCounts().getBaseLength(); ++baseI) {
 			variance[baseI] /= (double)(n - 1);
 		}
 

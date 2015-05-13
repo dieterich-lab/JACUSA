@@ -26,4 +26,10 @@ public abstract class AbstractAlphaInit {
 			final double[][] pileupMatrix,
 			final double[] pileupCoverages);
 
+	public abstract double[] init(
+			final int[] baseIs, 
+			final Pileup pileup,
+			final double[] pileupVector,
+			final double[] pileupErrorVector,
+			final double pileupCoverage);
 }

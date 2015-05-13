@@ -26,7 +26,7 @@ public class DefaultPileup implements Pileup {
 		strand		= STRAND.UNKNOWN;
 		refBase		= 'N';
 
-		counts 		= new Counts(baseLength, 0);
+		counts 		= new Counts(baseLength);
 	}
 
 	public DefaultPileup(final String contig, final int position, final STRAND strand, final int baseLength) {
@@ -50,6 +50,10 @@ public class DefaultPileup implements Pileup {
 		return counts;
 	}
 
+	public void setCounts(Counts counts) {
+		this.counts = counts;
+	}
+	
 	@Override
 	public void addPileup(final Pileup pileup) {
 		counts.addCounts(pileup.getCounts());
@@ -57,12 +61,7 @@ public class DefaultPileup implements Pileup {
 
 	@Override
 	public void substractPileup(final Pileup pileup) {
-		for (int baseI : pileup.getCounts().getBaseCount()) {
-			counts.getBaseCount()[baseI] -= pileup.getCounts().getBaseCount()[baseI];
-			for (int qualI = counts.getMinQualI(); qualI < pileup.getCounts().getQualCount()[baseI].length; ++qualI) {
-				counts.getQualCount()[baseI][qualI] -= pileup.getCounts().getQualCount()[baseI][qualI];
-			}
-		}
+		counts.substract(pileup.getCounts());
 	}
 
 	@Override
@@ -87,22 +86,18 @@ public class DefaultPileup implements Pileup {
 	
 	@Override
 	public int getCoverage() {
-		int sum = 0;
-		for (int count : counts.getBaseCount()) {
-			sum += count;
-		}
-		return sum;
+		return counts.getCoverage();
 	}
 
 	@Override
 	public int[] getAlleles() {
 		// make this allele
-		int[] alleles = new int[counts.getBaseCount().length];
+		int[] alleles = new int[counts.getBaseLength()];
 		int n = 0;
 	
-		for (int i = 0; i < counts.getBaseCount().length; ++i) {
-			if (counts.getBaseCount()[i] > 0) {
-				alleles[n] = i;
+		for (int baseI = 0; baseI < counts.getBaseLength(); ++baseI) {
+			if (counts.getBaseCount(baseI) > 0) {
+				alleles[n] = baseI;
 				++n;
 			}
 		}

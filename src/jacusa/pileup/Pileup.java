@@ -21,7 +21,8 @@ public interface Pileup {
 	 void setStrand(STRAND strand);
 
 	 Counts getCounts();
-
+	 void setCounts(Counts count);
+	 
 	 void invertStrand();
 	 Pileup invertBaseCount();
 

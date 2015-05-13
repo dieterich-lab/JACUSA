@@ -19,13 +19,13 @@ public class MinCountFilter extends AbstractCountFilter {
 
 	@Override
 	protected boolean filter(int variantBaseI, ParallelPileup parallelPileup, Counts[] counts1, Counts[] counts2) {
-		int count = parallelPileup.getPooledPileup().getCounts().getBaseCount()[variantBaseI];
+		int count = parallelPileup.getPooledPileup().getCounts().getBaseCount(variantBaseI);
 		if (count == 0) {
 			return false;
 		}
 
 		ParallelPileup filtered = applyFilter(variantBaseI, parallelPileup, counts1, counts2);
-		int filteredCount = filtered.getPooledPileup().getCounts().getBaseCount()[variantBaseI];
+		int filteredCount = filtered.getPooledPileup().getCounts().getBaseCount(variantBaseI);
 
 		return count - filteredCount >= minCount;
 	}

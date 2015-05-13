@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.CombinedAlphaInit;
+import jacusa.method.call.statistic.dirmult.initalpha.RonningAlphaInit;
 import jacusa.util.MathUtil;
 
 import org.apache.commons.math3.special.Gamma;
@@ -18,16 +19,17 @@ public class MinkaEstimateParameters {
 	
 	public MinkaEstimateParameters() {
 		alphaInit = new CombinedAlphaInit();
+		// alphaInit = new RonningAlphaInit();
 		maxIterations = 100;
 		epsilon = 0.001;
 	}
-	
+
 	public MinkaEstimateParameters(
 			final AbstractAlphaInit initialAlpha, 
 			final int maxIterations, 
 			final double epsilon) {
 		this.alphaInit = initialAlpha;
-		
+
 		this.maxIterations = maxIterations;
 		this.epsilon = epsilon;
 	}
@@ -104,41 +106,13 @@ public class MinkaEstimateParameters {
 
 			loglikOld = getLogLikelihood(alphaOld, baseIs, coverages, matrix);
 			
-			/*
-			StringBuilder sb1 = new StringBuilder();
-			sb1.append("g");
-			StringBuilder sb2 = new StringBuilder();
-			sb2.append("Q");
-			StringBuilder sb3 = new StringBuilder();
-			sb3.append("a1");
-			StringBuilder sb4 = new StringBuilder();
-			sb4.append("a2");
-			*/
-			
 			// update alphaNew
 			for (int baseI : baseIs) {
 				alphaNew[baseI] = alphaOld[baseI] - (gradient[baseI] - b) / Q[baseI];
 				if (alphaNew[baseI] < 0.0) {
 					alphaNew[baseI] = 0.001;
 				}
-				
-				/*
-				sb1.append("\t" + gradient[baseI]);
-				sb2.append("\t" + Q[baseI]);
-				sb3.append("\t" + alphaOld[baseI]);
-				sb4.append("\t" + alphaNew[baseI]);
-				*/
 			}
-
-			/*
-			System.out.println(iteration + "=====");
-			System.out.println(sb3.toString());
-			System.out.println(sb4.toString());
-			System.out.println(sb1.toString());
-			System.out.println("b\t" + b);
-			System.out.println(sb2.toString());
-			System.out.println("=====");
-			*/
 
 			loglikNew = getLogLikelihood(alphaNew, baseIs, coverages, matrix);
 

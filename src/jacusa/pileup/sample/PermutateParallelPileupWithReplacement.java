@@ -1,16 +1,16 @@
 package jacusa.pileup.sample;
 
-
 import jacusa.pileup.DefaultParallelPileup;
 import jacusa.pileup.DefaultPileup;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 
-import java.util.Random;
+// import java.util.Random;
 
+@Deprecated
 public class PermutateParallelPileupWithReplacement implements PermutateParallelPileup {
 
-	private Random random = new Random(0);  
+	// private Random random = new Random(0);  
 
 	@Override
 	public ParallelPileup permutate(ParallelPileup parallelPileup) {
@@ -32,7 +32,7 @@ public class PermutateParallelPileupWithReplacement implements PermutateParallel
 
 		for(int j = 0; j < pileups.length; ++j) {
 			Pileup pileup = pileups[j];
-			permutated[j] = new DefaultPileup(pileup.getCounts().getBaseCount().length); 
+			// FIXME permutated[j] = new DefaultPileup(pileup.getCounts().getBaseCount().length); 
 
 			for(int i = 0; i < pileup.getCoverage(); ++i) {
 				int base = sampleBase(pooled);
@@ -46,27 +46,33 @@ public class PermutateParallelPileupWithReplacement implements PermutateParallel
 	}
 
 	private int sampleBase(final Pileup pileup) {
+		/*
 		final int r = random.nextInt(pileup.getCoverage());
 		int count = 0;
+		// FIXME
 		for(int base = 0; base < pileup.getCounts().getBaseCount().length; ++base) {
 			if(r >= count && r < count + pileup.getCounts().getBaseCount()[base]) {
 				return base;
 			}
 			count += pileup.getCounts().getBaseCount()[base];
 		}
+		*/
 
 		return -1;
 	}
 
 	private byte sampleQual(final int base, final Pileup pileup) {
+		/*
 		final int r = random.nextInt(pileup.getCounts().getBaseCount(base));
 		int count = 0;
+		 FIXME
 		for(int i = 0; i < pileup.getCounts().getQualCount()[base].length; ++i) {
 			if(r >= count && r < count + pileup.getCounts().getQualCount()[base][i]) {
 				return (byte)(i);
 			}
 			count += pileup.getCounts().getQualCount()[base][i];
 		}
+		*/
 
 		return -1;
 	}

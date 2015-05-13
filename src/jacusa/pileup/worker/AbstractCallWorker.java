@@ -14,7 +14,7 @@ import jacusa.util.Location;
 
 public abstract class AbstractCallWorker extends AbstractWorker {
 
-	private final double threshold; 
+
 	private final StatisticCalculator statisticCalculator;
 	private final FilterConfig filterConfig;
 	
@@ -26,7 +26,6 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 		super(workerDispatcher, threadId, parameters.getMaxThreads());
 		
 		this.statisticCalculator = statisticParameters.getStatisticCalculator();
-		threshold = statisticParameters.getThreshold();
 		this.filterConfig = parameters.getFilterConfig();
 	}
 
@@ -41,7 +40,7 @@ public abstract class AbstractCallWorker extends AbstractWorker {
 		result.setParellelPileup(parallelPileup);
 		statisticCalculator.addStatistic(result);
 		
-		if (result.getStatistic() > threshold) {
+		if (statisticCalculator.filter(result.getStatistic())) {
 			return null;
 		}
 

@@ -6,6 +6,8 @@ import jacusa.pileup.Pileup;
 
 public class RonningAlphaInit extends AbstractAlphaInit {
 
+	final private double minVariance = 0.00001;
+	
 	public RonningAlphaInit() {
 		super("Roning", "See Ronning 1989");
 	}
@@ -30,6 +32,7 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 		Arrays.fill(alpha, 0d);
 
 		double[] mean = new double[baseIs.length];
+		Arrays.fill(mean, 0d);
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI : baseIs) {
 				mean[baseI] += pileupProportionMatrix[pileupI][baseI];
@@ -40,21 +43,21 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 		}
 		
 		double[] variance = new double[baseIs.length];
+		Arrays.fill(variance, 0d);
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI : baseIs) {
 				variance[baseI] += Math.pow(pileupProportionMatrix[pileupI][baseI] - mean[baseI], 2d);
-			}
-		}
-		for (int baseI : baseIs) {
-			variance[baseI] /= (double)(pileups.length - 1);
-			if (variance[baseI] < 0.001) {
-				variance[baseI] = 0.001;
 			}
 		}
 
 		// Ronning 1989 to set Method Of Moments
 		double alphaNull = Double.MAX_VALUE;
 		for (int baseI : baseIs) {
+			variance[baseI] /= (double)(pileups.length - 1);
+			if (variance[baseI] < minVariance) {
+				variance[baseI] = minVariance;
+			}
+			
 			int k = baseIs.length;
 			double alphaNullTmp = 1.0;
 			for (int baseI2 : baseIs) {
@@ -76,4 +79,57 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 		return alpha;
 	}
 
+	@Override
+	// FIXME this is wrong
+	public double[] init(
+			final int[] baseIs, 
+			final Pileup pileup,
+			final double[] pileupVector,
+			final double[] pileupErrorVector,
+			final double pileupCoverage
+			) {
+
+		final double[] pileupProportionVector = new double[baseIs.length];
+		for (int baseI : baseIs) {
+			pileupProportionVector[baseI] = pileupVector[baseI] / pileupCoverage;
+		}
+		
+		// init
+		double[] alpha = new double[baseIs.length];
+		Arrays.fill(alpha, 0d);
+
+		double[] variance = new double[baseIs.length];
+		Arrays.fill(variance, 0d);
+		for (int baseI : baseIs) {
+			variance[baseI] = pileupErrorVector[baseI] * (1d - pileupErrorVector[baseI]);
+		}
+
+		// Ronning 1989 to set Method Of Moments
+		double alphaNull = Double.MAX_VALUE;
+		for (int baseI : baseIs) {
+			if (variance[baseI] < minVariance) {
+				variance[baseI] = minVariance;
+			}
+			
+			int k = baseIs.length;
+			double alphaNullTmp = 1.0;
+			for (int baseI2 : baseIs) {
+				if (baseI == baseI2) {
+					continue;
+				}
+				alphaNullTmp *= pileupProportionVector[baseI] * (1d - pileupProportionVector[baseI]) / variance[baseI] - 1d;
+			}
+			if (alphaNullTmp > 0 && k >= 2) {
+				alphaNullTmp = Math.pow(alphaNullTmp, 1d / (double)(k - 1));
+				alphaNull = Math.min(alphaNull, alphaNullTmp);
+			}
+		}
+
+		for (int baseI : baseIs) {
+			alpha[baseI] = pileupProportionVector[baseI] * alphaNull;
+		}
+		
+		return alpha;
+	}
+	
 }

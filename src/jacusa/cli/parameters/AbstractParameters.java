@@ -36,22 +36,25 @@ public abstract class AbstractParameters implements hasSampleA {
 	// debug flag
 	private boolean debug;
 
+	private boolean collectLQBCs;
+	
 	public AbstractParameters() {
 		windowSize 			= 10000;
 		threadWindowSize	= 10 * windowSize;
-		baseConfig	= new BaseConfig(BaseConfig.VALID);
+		baseConfig		= new BaseConfig(BaseConfig.VALID);
 
-		maxThreads	= 1;
+		maxThreads		= 1;
 		
-		bedPathname	= new String();
-		sample1		= new SampleParameters();
+		bedPathname		= new String();
+		sample1			= new SampleParameters();
 		
-		output		= new OutputPrinter();
-		filterConfig= new FilterConfig();
+		output			= new OutputPrinter();
+		filterConfig	= new FilterConfig();
 		
-		separate	= false;
+		separate		= false;
 		
-		debug		= false;
+		debug			= false;
+		collectLQBCs	= false;
 	}
 
 	public AbstractOutputFormat getFormat() {
@@ -197,6 +200,14 @@ public abstract class AbstractParameters implements hasSampleA {
 	 */
 	public void setSeparate(boolean separate) {
 		this.separate = separate;
+	}
+
+	public void collectLowQualityBaseCalls(boolean collectLQBCs) {
+		this.collectLQBCs = collectLQBCs;
+	}
+
+	public boolean collectLowQualityBaseCalls() {
+		return collectLQBCs;
 	}
 	
 }

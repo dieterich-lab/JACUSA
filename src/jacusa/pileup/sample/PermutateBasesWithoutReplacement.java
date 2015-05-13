@@ -1,42 +1,44 @@
 package jacusa.pileup.sample;
 
-import jacusa.phred2prob.Phred2Prob;
+
+// import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.DefaultParallelPileup;
-import jacusa.pileup.DefaultPileup;
+// import jacusa.pileup.DefaultPileup;
 import jacusa.pileup.ParallelPileup;
-import jacusa.pileup.Pileup;
+// import jacusa.pileup.Pileup;
 
-import java.util.Random;
+// import java.util.Random;
 
+@Deprecated
 public class PermutateBasesWithoutReplacement implements PermutateParallelPileup {
 
-	private Random random = new Random(0);  
+	// private Random random = new Random(0);  
 
 	public ParallelPileup permutate(ParallelPileup parallelPileup) {
 		// containter for permutated parallel pileup
 		final ParallelPileup permutated = new DefaultParallelPileup(parallelPileup.getN1(), parallelPileup.getN2());
 
-		// 
-		Pileup pooled = new DefaultPileup(parallelPileup.getPooledPileup());
-		int[] alleles = pooled.getAlleles();
-		int[] baseCount = pooled.getCounts().getBaseCount();
-		int[] pooledCoverage = {pooled.getCoverage()};
+		// FIXME Pileup pooled = new DefaultPileup(parallelPileup.getPooledPileup());
+		// FIXME int[] alleles = pooled.getAlleles();
+		// FIXME int[] baseCount = pooled.getCounts().getBaseCount();
+		// FIXME int[] pooledCoverage = {pooled.getCoverage()};
 		
-		final DefaultPileup[] permutated1 = permuatePileup(pooledCoverage, alleles, baseCount, parallelPileup.getPileups1());
-		permutated.setPileups1(permutated1);
+		// FIXME final DefaultPileup[] permutated1 = permuatePileup(pooledCoverage, alleles, baseCount, parallelPileup.getPileups1());
+		// FIXME permutated.setPileups1(permutated1);
 
-		final DefaultPileup[] permutated2 = permuatePileup(pooledCoverage, alleles, baseCount, parallelPileup.getPileups2());
-		permutated.setPileups2(permutated2);
+		// FIXME final DefaultPileup[] permutated2 = permuatePileup(pooledCoverage, alleles, baseCount, parallelPileup.getPileups2());
+		// FIXME permutated.setPileups2(permutated2);
 
 		return permutated;
 	}
 
+	/*
 	private DefaultPileup[] permuatePileup(int[] pooledCoverage, int[] alleles, int[] baseCount, Pileup[] pileups) {
 		DefaultPileup[] permutated = new DefaultPileup[pileups.length];
 
 		for(int j = 0; j < pileups.length; ++j) {
 			Pileup pileup = pileups[j];
-			permutated[j] = new DefaultPileup(pileup.getCounts().getBaseCount().length);
+			// FIXME permutated[j] = new DefaultPileup(pileup.getCounts().getBaseCount().length);
 			
 			int[] quals = collapseQualCount(pileup);
 			for(int coverage = pileup.getCoverage(); coverage > 0; --coverage) {
@@ -48,12 +50,12 @@ public class PermutateBasesWithoutReplacement implements PermutateParallelPileup
 		}
 		return permutated;
 	}
-	
+		
 	private int[] collapseQualCount(Pileup pileup) {
 		int[] quals = new int[Phred2Prob.MAX_Q];
 		for(int i = 0; i < Phred2Prob.MAX_Q; ++i) {
 			for(int base : pileup.getAlleles()) {
-				quals[i] += pileup.getCounts().getQualCount()[base][i];
+				// FIXME quals[i] += pileup.getCounts().getQualCount()[base][i];
 			}
 		}
 
@@ -102,5 +104,6 @@ public class PermutateBasesWithoutReplacement implements PermutateParallelPileup
 
 		return -1;
 	}
+	*/
 
 }

@@ -8,6 +8,7 @@ import jacusa.util.MathUtil;
 
 import java.util.Arrays;
 
+// TODO test
 public class DirichletMultinomial extends AbstractDirMultStatistic {
 
 	public DirichletMultinomial(final BaseConfig baseConfig, final StatisticParameters parameters) {
@@ -30,6 +31,12 @@ public class DirichletMultinomial extends AbstractDirMultStatistic {
 		}
 	}
 
+	@Override
+	protected void populate(Pileup pileup, int[] baseIs, double[] pileupCoverage,
+			double[] pileupErrorVector, double[] pileupVector) {
+		// TODO Auto-generated method stub
+	}
+	
 	@Override
 	public StatisticCalculator newInstance() {
 		return new DirichletMultinomial(baseConfig, parameters);

@@ -43,11 +43,6 @@ public class DirichletMultinomialRobustCompoundError extends DirichletMultinomia
 			}
 		}
 		if (variantBaseIs.length == 0) {
-			/*
-			double unpooled = super.getStatistic(parallelPileup);
-			double pooled = super.getStatistic(DefaultParallelPileup.Pool(parallelPileup));
-			return Math.max(unpooled, pooled);
-			*/
 			return super.getStatistic(parallelPileup);
 		}
 
@@ -60,19 +55,9 @@ public class DirichletMultinomialRobustCompoundError extends DirichletMultinomia
 			pp.setPileups2(flat(pp.getPileups2(), variantBaseIs, targetBaseI));
 		}
 		if (pp == null) {
-			/*
-			double unpooled = super.getStatistic(parallelPileup);
-			double pooled = super.getStatistic(DefaultParallelPileup.Pool(parallelPileup));
-			return Math.max(unpooled, pooled);
-			*/
 			return super.getStatistic(parallelPileup);
 		}
 
-		/*
-		double unpooled = super.getStatistic(pp);
-		double pooled = super.getStatistic(DefaultParallelPileup.Pool(pp));
-		return Math.max(unpooled, pooled);
-		*/
 		return super.getStatistic(pp);
 	}
 
@@ -80,17 +65,10 @@ public class DirichletMultinomialRobustCompoundError extends DirichletMultinomia
 		Pileup[] ret = new Pileup[pileups.length];
 		for (int i = 0; i < pileups.length; ++i) {
 			ret[i] = new DefaultPileup(pileups[i]);
-			
+
 			for (int variantI : variantBaseIs) {
-				// base
-				ret[i].getCounts().getBaseCount()[baseI] += ret[i].getCounts().getBaseCount()[variantI];
-				ret[i].getCounts().getBaseCount()[variantI] = 0;
-				
-				// qual
-				for (int qualI = ret[i].getCounts().getMinQualI(); qualI < ret[i].getCounts().getQualCount()[variantI].length; ++qualI) {
-					ret[i].getCounts().getQualCount()[baseI][qualI] += ret[i].getCounts().getQualCount()[variantI][qualI];
-					ret[i].getCounts().getQualCount()[variantI][qualI] = 0;
-				}
+				ret[i].getCounts().add(baseI, pileups[i].getCounts());
+				ret[i].getCounts().substract(variantI, pileups[i].getCounts());
 			}
 		}
 		return ret;

@@ -127,11 +127,11 @@ public class DebugResultFormat extends AbstractOutputFormat {
 		for (Pileup pileup : pileups) {
 			sb.append(SEP);
 			int baseI = 0;
-			sb.append(pileup.getCounts().getBaseCount()[baseI]);
+			sb.append(pileup.getCounts().getBaseCount(baseI));
 			baseI++;
-			for (; baseI < pileup.getCounts().getBaseCount().length ; ++baseI) {
+			for (; baseI < pileup.getCounts().getBaseLength() ; ++baseI) {
 				sb.append(SEP2);
-				sb.append(pileup.getCounts().getBaseCount()[baseI]);
+				sb.append(pileup.getCounts().getBaseCount(baseI));
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 package jacusa.pileup.iterator;
 
+
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.pileup.DefaultPileup.STRAND;
@@ -10,6 +11,7 @@ import jacusa.util.Location;
 import net.sf.samtools.SAMFileReader;
 
 // FIXME use AbstractLocationAdvancer
+@Deprecated
 public class OneSampleIterator extends AbstractOneSampleIterator {
 
 	public OneSampleIterator(
@@ -63,4 +65,22 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 		}
 	}
 
+	@Override
+	public int getAlleleCount(Location location) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	@Override
+	public int getAlleleCount1(Location location) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	@Override
+	public int getAlleleCount2(Location location) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
 }

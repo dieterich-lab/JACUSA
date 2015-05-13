@@ -19,6 +19,7 @@ import net.sf.samtools.SAMRecord;
 public class DirectedPileupBuilder extends AbstractPileupBuilder {
 
 	private WindowCache[] windowCaches;
+
 	private FilterContainer[] filterContainers;
 	private int[][] byte2intAr;
 	
@@ -40,7 +41,7 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 		windowCaches	= new WindowCache[2];
 		windowCaches[0] = new WindowCache(windowCoordinates, baseConfig.getBaseLength());
 		windowCaches[1] = windowCache;
-
+		
 		filterContainers = new FilterContainer[2];
 		filterContainers[0] = parameters.getFilterConfig().createFilterContainer(windowCoordinates, STRAND.REVERSE, sampleParameters);
 		filterContainers[1] = filterContainer;
@@ -56,6 +57,7 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 		for (WindowCache windowCache : windowCaches) {
 			windowCache.clear();
 		}
+		
 		for (FilterContainer filterContainer : filterContainers) {
 			filterContainer.clear();
 		}
@@ -85,24 +87,35 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 		WindowCache windowCache = windowCaches[i];
 
 		// copy base and qual info from cache
-		pileup.getCounts().setBaseCount(windowCache.getBaseCount(windowPosition));
-		pileup.getCounts().setQualCount(windowCache.getQualCount(windowPosition));
+		pileup.setCounts(windowCache.getCounts(windowPosition));
 
 		// for DirectedPileupBuilder the basesCounts in the pileup are already inverted (when on the reverse strand) 
 		return pileup;
 	}
 
 	@Override
+	public WindowCache getWindowCache(STRAND strand) {
+		int i = strand.integer() - 1;
+		return windowCaches[i];
+	}
+	
+	@Override
 	public boolean isCovered(int windowPosition, STRAND strand) {
 		return getCoverage(windowPosition, strand) >= sampleParameters.getMinCoverage();
 	}
 
 	@Override
-	protected void add2WindowCache(int windowPosition, int baseI, int qual, STRAND strand) {
+	protected void addHighQualityBaseCall(int windowPosition, int baseI, int qual, STRAND strand) {
 		int i = strand.integer() - 1;
-		windowCaches[i].add(windowPosition, baseI, qual);
+		windowCaches[i].addHighQualityBaseCall(windowPosition, baseI, qual);
 	}
 
+	@Override
+	protected void addLowQualityBaseCall(int windowPosition, int baseI, int qual, STRAND strand) {
+		int i = strand.integer() - 1;
+		windowCaches[i].addLowQualityBaseCall(windowPosition, baseI, qual);
+	}
+	
 	protected void processRecord(SAMRecord record) {
 		if (record.getReadNegativeStrandFlag()) {
 			strand = STRAND.REVERSE;
