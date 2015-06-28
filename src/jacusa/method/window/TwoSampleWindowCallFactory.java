@@ -127,9 +127,9 @@ public class TwoSampleWindowCallFactory extends AbstractMethodFactory {
 	}
 
 	@Override
-	public TwoSampleWindowCallWorkerDispatcher getInstance(CoordinateProvider coordinateProvider) throws IOException {
+	public TwoSampleWindowCallWorkerDispatcher getInstance(int n1, int n2, CoordinateProvider coordinateProvider) throws IOException {
 		if(instance == null) {
-			instance = new TwoSampleWindowCallWorkerDispatcher(coordinateProvider, parameters);
+			instance = new TwoSampleWindowCallWorkerDispatcher(n1, n2, coordinateProvider, parameters);
 		}
 		return instance;
 	}
@@ -157,7 +157,7 @@ public class TwoSampleWindowCallFactory extends AbstractMethodFactory {
 	public Map<Character, AbstractOutputFormat> getResultFormats() {
 		Map<Character, AbstractOutputFormat> resultFormats = new HashMap<Character, AbstractOutputFormat>();
 
-		AbstractOutputFormat resultFormat = new BEDWindowResultFormat(1, 1, parameters.getBaseConfig(), parameters.getFilterConfig());
+		AbstractOutputFormat resultFormat = new BEDWindowResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;

@@ -91,9 +91,9 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 	}
 
 	@Override
-	public TwoSampleDebugCallWorkerDispatcher getInstance(CoordinateProvider coordinateProvider) throws IOException {
+	public TwoSampleDebugCallWorkerDispatcher getInstance(int n1, int n2, CoordinateProvider coordinateProvider) throws IOException {
 		if(instance == null) {
-			instance = new TwoSampleDebugCallWorkerDispatcher(coordinateProvider, parameters);
+			instance = new TwoSampleDebugCallWorkerDispatcher(n1, n2, coordinateProvider, parameters);
 		}
 
 		return instance;
@@ -140,10 +140,7 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 	public Map<Character, AbstractOutputFormat> getResultFormats() {
 		Map<Character, AbstractOutputFormat> resultFormats = new HashMap<Character, AbstractOutputFormat>();
 
-		int n1 = parameters.getSample1().getPathnames().length;
-		int n2 = parameters.getSample2().getPathnames().length;
-		
-		AbstractOutputFormat resultFormat = new BED6ResultFormat(n1, n2, parameters.getBaseConfig(), parameters.getFilterConfig());
+		AbstractOutputFormat resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;

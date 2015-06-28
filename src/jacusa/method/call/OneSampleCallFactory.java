@@ -103,9 +103,9 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 	}
 
 	@Override
-	public OneSampleCallWorkerDispatcher getInstance(CoordinateProvider coordinateProvider) throws IOException {
+	public OneSampleCallWorkerDispatcher getInstance(int n1, int n2, CoordinateProvider coordinateProvider) throws IOException {
 		if(instance == null) {
-			instance = new OneSampleCallWorkerDispatcher(coordinateProvider, parameters);
+			instance = new OneSampleCallWorkerDispatcher(n1, n2, coordinateProvider, parameters);
 		}
 		return instance;
 	}
@@ -147,10 +147,7 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 	public Map<Character, AbstractOutputFormat> getFormats() {
 		Map<Character, AbstractOutputFormat> resultFormats = new HashMap<Character, AbstractOutputFormat>();
 
-		int n = parameters.getSample1().getPathnames().length;
-		
-		AbstractOutputFormat resultFormat = new DefaultOutputFormat(
-				n, 0, parameters.getBaseConfig(), parameters.getFilterConfig());
+		AbstractOutputFormat resultFormat = new DefaultOutputFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;

@@ -16,26 +16,18 @@ public class BEDWindowResultFormat extends AbstractOutputFormat {
 	public static final char SEP 	= '\t';
 	public static final char SEP2 	= ',';
 
-	private int replicates1;
-	private int replicates2;
-	
 	public Phred2Prob phred2Prob;
 
 	public BEDWindowResultFormat(
-			final int replicates1, 
-			final int replicates2, 
 			final BaseConfig baseConfig, 
 			final FilterConfig filterConfig) {
 		super(CHAR, "BED like window output");
 
-		this.replicates1 = replicates1;
-		this.replicates2 = replicates2;
-		
 		phred2Prob = Phred2Prob.getInstance(baseConfig.getBaseLength());
 	}
 
 	@Override
-	public String getHeader() {
+	public String getHeader(int replicates1, int replicates2) {
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append(COMMENT);

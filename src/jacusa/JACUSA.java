@@ -3,6 +3,7 @@ package jacusa;
 
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
+import jacusa.cli.parameters.hasSampleB;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.TwoSampleCallFactory;
 //import jacusa.method.call.TwoSampleDebugCallFactory;
@@ -216,8 +217,13 @@ public class JACUSA {
 
 		// prolog
 		jacusa.printProlog(args);
+		int n1 = parameters.getSample1().getPathnames().length;
+		int n2 = 0;
+		if (parameters instanceof hasSampleB) {
+			n2 = ((hasSampleB)parameters).getSample2().getPathnames().length;
+		}
 		// main
-		AbstractWorkerDispatcher<? extends AbstractWorker> workerDispatcher = methodFactory.getInstance(coordinateProvider);
+		AbstractWorkerDispatcher<? extends AbstractWorker> workerDispatcher = methodFactory.getInstance(n1, n2, coordinateProvider);
 		int comparisons = workerDispatcher.run();
 		// epilog
 		jacusa.printEpilog(comparisons);

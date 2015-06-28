@@ -19,21 +19,15 @@ public class DebugResultFormat extends AbstractOutputFormat {
 	private BaseConfig baseConfig;
 	public Phred2Prob phred2Prob;
 
-	private int replicates1;
-	private int replicates2;
-	
-	public DebugResultFormat(final int replicates1, final int replicates2, final BaseConfig baseConfig) {
+	public DebugResultFormat(final BaseConfig baseConfig) {
 		super(CHAR, "Debug BED like output");
 		this.baseConfig = baseConfig;
-
-		this.replicates1 = replicates1;
-		this.replicates2 = replicates2;
 
 		phred2Prob = Phred2Prob.getInstance(this.baseConfig.getBases().length);
 	}
 
 	@Override
-	public String getHeader() {
+	public String getHeader(int replicates1, int replicates2) {
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append(COMMENT);

@@ -21,19 +21,11 @@ public class DefaultOutputFormat extends AbstractOutputFormat {
 	//private BaseConfig baseConfig;
 	private FilterConfig filterConfig;
 	public Phred2Prob phred2Prob;
-
-	private int replicates1;
-	private int replicates2;
 	
 	public DefaultOutputFormat(
-			final int replicates1,
-			final int replicates2, 
 			final BaseConfig baseConfig, 
 			final FilterConfig filterConfig) {
 		super(CHAR, "ACCUSA2 default output");
-		
-		this.replicates1 = replicates1;
-		this.replicates2 = replicates2;
 		
 		// this.baseConfig = baseConfig;
 		this.filterConfig = filterConfig;
@@ -42,7 +34,7 @@ public class DefaultOutputFormat extends AbstractOutputFormat {
 	}
 
 	@Override
-	public String getHeader() {
+	public String getHeader(int replicates1, int replicates2) {
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append(COMMENT);

@@ -6,21 +6,17 @@ import jacusa.pileup.Result;
 
 import java.util.Calendar;
 
+// FIXME
 public class VCF_ResultFormat extends AbstractOutputFormat {
 
 	public static final char CHAR = 'V';
 
-	private String[] pathnames1;
-	private String[] pathnames2;
-
-	public VCF_ResultFormat(final String[] pathnames1, final String[] pathnames2) {
+	public VCF_ResultFormat() {
 		super(CHAR, "VCF output");
-		this.pathnames1 = pathnames1;
-		this.pathnames2 = pathnames2;
 	}
 	
 	@Override
-	public String getHeader() {
+	public String getHeader(int replicates1, int replicates2) {
 		StringBuilder sb = new StringBuilder();
 		
 		sb.append(getCOMMENT());
@@ -58,7 +54,7 @@ public class VCF_ResultFormat extends AbstractOutputFormat {
 		for (int i = 1; i < cols.length; ++i) {
 			sb.append(getSEP());
 			sb.append(cols[i]);
-		}
+		}/*
 		for (String pathname : pathnames1)  {
 			sb.append(getSEP());
 			sb.append(pathname);
@@ -66,7 +62,7 @@ public class VCF_ResultFormat extends AbstractOutputFormat {
 		for (String pathname : pathnames2)  {
 			sb.append(getSEP());
 			sb.append(pathname);
-		}
+		}*/
 		sb.append('\n');
 
 		return sb.toString();

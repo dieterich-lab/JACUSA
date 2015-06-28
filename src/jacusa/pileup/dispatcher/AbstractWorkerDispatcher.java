@@ -31,12 +31,20 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 	private Integer comparisons;
 	private List<Integer> threadIds;
 	
+	private int n1;
+	private int n2;
+	
 	public AbstractWorkerDispatcher(
+			final int n1,
+			final int n2,
 			final CoordinateProvider coordinateProvider, 
 			final int maxThreads, 
 			final Output output, 
 			final AbstractOutputFormat format,
 			final boolean separate) {
+		this.n1 = n1;
+		this.n2 = n2;
+		
 		this.coordinateProvider = coordinateProvider;
 		this.maxThreads 		= maxThreads;
 		this.output 			= output;
@@ -62,7 +70,7 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 	public final int run() {
 		// write Header
 		try {
-			String header = format.getHeader();
+			String header = format.getHeader(n1, n2);
 			if (header != null) {
 				output.write(header);
 			}
@@ -148,7 +156,7 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 			final File file = new File(filename);
 			try {
 				filteredOutput = new OutputWriter(file);
-				filteredOutput.write(format.getHeader());
+				filteredOutput.write(format.getHeader(n1, n2));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

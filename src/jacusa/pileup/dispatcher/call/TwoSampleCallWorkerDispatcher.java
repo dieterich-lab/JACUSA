@@ -11,13 +11,18 @@ public class TwoSampleCallWorkerDispatcher extends AbstractCallWorkerDispatcher<
 	private TwoSampleCallParameters parameters;
 	
 	public TwoSampleCallWorkerDispatcher(
+			final int n1,
+			final int n2,
 			final CoordinateProvider coordinateProvider,
 			final TwoSampleCallParameters parameters) throws IOException {
-		super(coordinateProvider, 
-			 parameters.getMaxThreads(),
-			 parameters.getOutput(),
-			 parameters.getFormat(),
-			 parameters.isSeparate()
+		super(
+				n1,
+				n2,
+				coordinateProvider, 
+				parameters.getMaxThreads(),
+				parameters.getOutput(),
+				parameters.getFormat(),
+				parameters.isSeparate()
 		);
 		
 		this.parameters = parameters;

@@ -1,6 +1,6 @@
 package jacusa.method.call.statistic;
 
-
+import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 import jacusa.cli.parameters.StatisticParameters;
 import jacusa.estimate.BayesEstimateParameters;
 import jacusa.phred2prob.Phred2Prob;
@@ -8,7 +8,6 @@ import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.Result;
-import umontreal.iro.lecuyer.probdistmulti.DirichletDist;
 
 /**
  * 

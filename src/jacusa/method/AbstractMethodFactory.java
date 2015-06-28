@@ -38,7 +38,7 @@ public abstract class AbstractMethodFactory {
 	public abstract AbstractParameters getParameters();
 
 	public abstract void initACOptions();
-	public abstract AbstractWorkerDispatcher<? extends AbstractWorker> getInstance(CoordinateProvider coordinateProvider) throws IOException; 
+	public abstract AbstractWorkerDispatcher<? extends AbstractWorker> getInstance(int n1, int n2, CoordinateProvider coordinateProvider) throws IOException; 
 
 	
 	public Set<AbstractACOption> getACOptions() {

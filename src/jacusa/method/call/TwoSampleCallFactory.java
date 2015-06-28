@@ -1,7 +1,6 @@
 package jacusa.method.call;
 
 
-
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
 import jacusa.cli.options.BaseConfigOption;
@@ -170,9 +169,9 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 	}
 
 	@Override
-	public TwoSampleCallWorkerDispatcher getInstance(CoordinateProvider coordinateProvider) throws IOException {
+	public TwoSampleCallWorkerDispatcher getInstance(int n1, int n2, CoordinateProvider coordinateProvider) throws IOException {
 		if(instance == null) {
-			instance = new TwoSampleCallWorkerDispatcher(coordinateProvider, parameters);
+			instance = new TwoSampleCallWorkerDispatcher(n1, n2, coordinateProvider, parameters);
 		}
 		return instance;
 	}
@@ -215,7 +214,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		statistic = new DirichletMultinomialCompoundError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
-		statistic = new DirichletMultinomialRobustCompoundError (parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistic = new DirichletMultinomialRobustCompoundError	(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 		
 		//statistic = new DirichletMultinomialEstimatedError(parameters.getBaseConfig(), parameters.getStatisticParameters());
@@ -256,27 +255,19 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 	public Map<Character, AbstractOutputFormat> getResultFormats() {
 		Map<Character, AbstractOutputFormat> resultFormats = new HashMap<Character, AbstractOutputFormat>();
 
-		int n1 = parameters.getSample1().getPathnames().length;
-		int n2 = parameters.getSample2().getPathnames().length;
-		
-		AbstractOutputFormat resultFormat = new DefaultOutputFormat(
-				n1, n2, parameters.getBaseConfig(), parameters.getFilterConfig());
+		AbstractOutputFormat resultFormat = new DefaultOutputFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
-		resultFormat = new PileupResultFormat(
-				n1, n2, parameters.getBaseConfig(), parameters.getFilterConfig());
+		resultFormat = new PileupResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 		
-		resultFormat = new BED6ResultFormat(
-				n1, n2, parameters.getBaseConfig(), parameters.getFilterConfig());
+		resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		// resultFormat = new DebugResultFormat(n1, n2, parameters.getBaseConfig());
 		// resultFormats.put(resultFormat.getC(), resultFormat);
 
-		resultFormat = new VCF_ResultFormat(
-				parameters.getSample1().getPathnames(), 
-				parameters.getSample2().getPathnames());
+		resultFormat = new VCF_ResultFormat();
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;

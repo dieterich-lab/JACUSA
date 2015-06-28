@@ -15,7 +15,7 @@ public class TwoSampleCallParameters extends AbstractParameters implements hasSa
 		statisticParameters = new StatisticParameters();
 		statisticParameters.setStatisticCalculator(new DirichletMultinomialCompoundError(getBaseConfig(), statisticParameters));
 
-		super.setFormat(new DefaultOutputFormat(0, 0, getBaseConfig(), getFilterConfig()));
+		super.setFormat(new DefaultOutputFormat(getBaseConfig(), getFilterConfig()));
 	}
 
 	@Override

@@ -11,12 +11,14 @@ public class OneSampleCallWorkerDispatcher extends AbstractCallWorkerDispatcher<
 
 	private OneSampleCallParameters parameters;
 	
-	public OneSampleCallWorkerDispatcher(CoordinateProvider coordinateProvider,	OneSampleCallParameters parameters) throws IOException {
-		super(coordinateProvider, 
-			  parameters.getMaxThreads(),
-			  parameters.getOutput(), 
-			  parameters.getFormat(),
-			  parameters.isSeparate()
+	public OneSampleCallWorkerDispatcher(int n1, int n2, CoordinateProvider coordinateProvider,	OneSampleCallParameters parameters) throws IOException {
+		super(	n1,
+				n2,
+				coordinateProvider, 
+				parameters.getMaxThreads(),
+				parameters.getOutput(), 
+				parameters.getFormat(),
+				parameters.isSeparate()
 		);
 		
 		this.parameters = parameters;

@@ -7,24 +7,17 @@ import jacusa.pileup.Result;
 
 public class PileupResultFormat extends AbstractOutputFormat {
 
-	private int replicates1;
-	private int replicates2;
-	
 	private PileupFormat pileupFormat; 
 	
 	public PileupResultFormat(
-			final int replicates1, 
-			final int replicates2, 
 			final BaseConfig baseConfig, 
 			final FilterConfig fitlerConfig) {
 		super('A', "pileup like ACCUSA result format");
 		
-		this.replicates1 = replicates1;
-		this.replicates2 = replicates2;
 		pileupFormat = new PileupFormat(baseConfig);
 	}
 	
-	public String getHeader() {
+	public String getHeader(int replicates1, int replicates2) {
 		final StringBuilder sb = new StringBuilder();
 		sb.append(getCOMMENT());
 

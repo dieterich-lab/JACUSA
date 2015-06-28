@@ -25,8 +25,10 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 	private TwoSampleCallParameters parameters;
 	private Map<String, ParallelPileup> coord2parallelPileup; 
 	
-	public TwoSampleDebugCallWorkerDispatcher(CoordinateProvider coordinateProvider, TwoSampleCallParameters parameters) throws IOException {
-		super(	coordinateProvider, 
+	public TwoSampleDebugCallWorkerDispatcher(int n1, int n2, CoordinateProvider coordinateProvider, TwoSampleCallParameters parameters) throws IOException {
+		super(	n1,
+				n2,
+				coordinateProvider, 
 				parameters.getMaxThreads(), 
 				parameters.getOutput(), 
 				parameters.getFormat(),
