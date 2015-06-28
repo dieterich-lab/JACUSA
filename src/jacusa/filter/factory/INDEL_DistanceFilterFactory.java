@@ -26,6 +26,7 @@ public class INDEL_DistanceFilterFactory extends AbstractFilterFactory<WindowCac
 	private static Set<CigarOperator> cigarOperator = new HashSet<CigarOperator>();
 	static {
 		cigarOperator.add(CigarOperator.I);
+		cigarOperator.add(CigarOperator.D);
 	}
 	
 	public INDEL_DistanceFilterFactory(AbstractParameters parameters) {

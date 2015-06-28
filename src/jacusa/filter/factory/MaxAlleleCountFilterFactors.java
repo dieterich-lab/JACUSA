@@ -4,6 +4,7 @@ import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.AbstractStorageFilter;
 import jacusa.filter.storage.DummyFilterFillCache;
+import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Result;
 import jacusa.pileup.iterator.AbstractWindowIterator;
 import jacusa.util.Location;
@@ -14,6 +15,7 @@ public class MaxAlleleCountFilterFactors extends AbstractFilterFactory<Void> {
 	private static int ALLELE_COUNT = 2;
 	private int alleleCount;
 	private AbstractParameters parameters;
+	private boolean strict;
 	
 	public MaxAlleleCountFilterFactors(AbstractParameters parameters) {
 		super(
@@ -21,6 +23,7 @@ public class MaxAlleleCountFilterFactors extends AbstractFilterFactory<Void> {
 				"Max allowed alleles per parallel pileup. Default: "+ ALLELE_COUNT);
 		alleleCount = ALLELE_COUNT;
 		this.parameters = parameters;
+		strict = parameters.collectLowQualityBaseCalls();
 	}
 	
 	@Override
@@ -32,6 +35,9 @@ public class MaxAlleleCountFilterFactors extends AbstractFilterFactory<Void> {
 
 	@Override
 	public AbstractStorageFilter<Void> createStorageFilter() {
+		if (strict) {
+			return new MaxAlleleStrictFilter(getC());
+		}
 		return new MaxAlleleFilter(getC());
 	}
 
@@ -57,7 +63,8 @@ public class MaxAlleleCountFilterFactors extends AbstractFilterFactory<Void> {
 				if (! s[i].equals("strict")) {
 					throw new IllegalArgumentException("Did you mean strict? " + line);
 				}
-				parameters.collectLowQualityBaseCalls();
+				parameters.collectLowQualityBaseCalls(true);
+				strict = true;
 				break;
 			default:
 				throw new IllegalArgumentException("Invalid argument: " + line);
@@ -66,8 +73,20 @@ public class MaxAlleleCountFilterFactors extends AbstractFilterFactory<Void> {
 	}
 	
 	private class MaxAlleleFilter extends AbstractStorageFilter<Void> {
-		
 		public MaxAlleleFilter(final char c) {
+			super(c);
+		}
+		
+		@Override
+		public boolean filter(final Result result, final Location location, final AbstractWindowIterator windowIterator) {
+			final ParallelPileup parallelPileup = result.getParellelPileup();
+			return parallelPileup.getPooledPileup().getAlleles().length > alleleCount;
+		}
+	}
+	
+	private class MaxAlleleStrictFilter extends AbstractStorageFilter<Void> {
+		
+		public MaxAlleleStrictFilter(final char c) {
 			super(c);
 		}
 		

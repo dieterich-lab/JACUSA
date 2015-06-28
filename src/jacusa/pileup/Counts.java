@@ -103,6 +103,16 @@ public class Counts implements Cloneable {
 			}
 		}
 	}
+
+	public void add(final int baseI, final int baseI2, final Counts counts) {
+		baseCount[baseI] += counts.baseCount[baseI2];
+
+		for (int qualI = counts.minQual[baseI2]; qualI < Phred2Prob.MAX_Q ; ++qualI) {
+			if (counts.base2qual[baseI2][qualI] > 0) {
+				base2qual[baseI][qualI] += counts.base2qual[baseI2][qualI];
+			}
+		}
+	}
 	
 	public void substract(final int baseI, final Counts counts) {
 		baseCount[baseI] -= counts.baseCount[baseI];
@@ -114,6 +124,16 @@ public class Counts implements Cloneable {
 		}
 	}
 
+	public void substract(final int baseI, final int baseI2, final Counts counts) {
+		baseCount[baseI] -= counts.baseCount[baseI2];
+
+		for (int qualI = counts.minQual[baseI2]; qualI < Phred2Prob.MAX_Q ; ++qualI) {
+			if (counts.base2qual[baseI2][qualI] > 0) {
+				base2qual[baseI][qualI] -= counts.base2qual[baseI2][qualI];
+			}
+		}
+	}
+	
 	public void substract(final Counts counts) {
 		for (int baseI = 0; baseI < counts.baseCount.length; ++baseI) {
 			if (baseCount[baseI] > 0) {

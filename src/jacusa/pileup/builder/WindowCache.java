@@ -92,7 +92,7 @@ public class WindowCache {
 	public int[] getAlleles(int windowPosition) {
 		int alleles[] = new int[getAlleleCount(windowPosition)];
 		int mask = getAlleleMask(windowPosition);
-		
+
 		int i = 0;
 		for (int baseI = 0; baseI < baseLength; ++baseI) {
 			if ((mask & 2 << baseI) > 0) {

@@ -136,20 +136,7 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 	public abstract int getAlleleCount1(Location location);
 	public abstract int getAlleleCount2(Location location);
 	protected int getAlleleCount(Location location, AbstractPileupBuilder[] pileupBuilders) {
-		int replicates = pileupBuilders.length;
-		int alleleCount = 0;
-
-		int windowPosition = pileupBuilders[0].getWindowCoordinates().convert2WindowPosition(location.genomicPosition);
-		int mask = 0;
-		for (int i = 0; i < replicates; ++i) {
-			int t = mask & pileupBuilders[i].getWindowCache(location.strand).getAlleleMask(windowPosition);
-			if (t > 0) {
-				++alleleCount;
-			}
-			mask += t;
-		}
-
-		return alleleCount;		
+		return getAlleles(location, pileupBuilders).size();		
 	}
 	
 	protected Set<Integer> getAlleles(Location location, AbstractPileupBuilder[] pileupBuilders) {

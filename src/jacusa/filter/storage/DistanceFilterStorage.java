@@ -49,15 +49,6 @@ public class DistanceFilterStorage extends AbstractWindowFilterStorage {
 		// note: alignmentBlock.getReadStart() is 1-indexed
 		addRegion(windowPosition, distance + 1, alignmentBlock.getReadStart() - 1 + alignmentBlock.getLength() - 1 - distance, record);
 	}
-	
-	/*
-	@Override
-	public void processAlignmentMatch(int windowPosition, int readPosition, int genomicPosition, final CigarElement cigarElement, SAMRecord record, int baseI, int qual) {
-		if (readPosition < distance || record.getReadLength() - readPosition <= distance) {
-			addBaseUnique(windowPosition, baseI, qual, record);
-		}
-	}
-	*/
 
 	// process IN
 	@Override

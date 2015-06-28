@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.CombinedAlphaInit;
-import jacusa.method.call.statistic.dirmult.initalpha.RonningAlphaInit;
 import jacusa.util.MathUtil;
 
 import org.apache.commons.math3.special.Gamma;
@@ -16,10 +15,11 @@ public class MinkaEstimateParameters {
 	// options for paremeters estimation
 	private int maxIterations;
 	private double epsilon; 
+
+	private int iterations;
 	
 	public MinkaEstimateParameters() {
 		alphaInit = new CombinedAlphaInit();
-		// alphaInit = new RonningAlphaInit();
 		maxIterations = 100;
 		epsilon = 0.001;
 	}
@@ -34,10 +34,15 @@ public class MinkaEstimateParameters {
 		this.epsilon = epsilon;
 	}
 
+	public int getIterations() {
+		return iterations;
+	}
+	
 	// estimate alpha and returns loglik
 	public double maximizeLogLikelihood(int[] baseIs, double[] alphaOld, double coverages[], double[][] matrix) {
 		// optim "bounds"
-		int iteration = 0;
+		iterations = 0;
+		
 		boolean converged = false;
 
 		// final int baseN = baseConfig.getBases().length;
@@ -63,7 +68,7 @@ public class MinkaEstimateParameters {
 		int pileupN = coverages.length;
 		
 		// maximize
-		while (iteration < maxIterations && ! converged) {
+		while (iterations < maxIterations && ! converged) {
 			// pre-compute
 			summedAlphaOld = MathUtil.sum(alphaOld);
 			digammaSummedAlphaOld = digamma(summedAlphaOld);
@@ -123,7 +128,7 @@ public class MinkaEstimateParameters {
 			}
 			// update value
 			System.arraycopy(alphaNew, 0, alphaOld, 0, alphaNew.length);
-			iteration++;
+			iterations++;
 		}
 
 		return loglikNew;

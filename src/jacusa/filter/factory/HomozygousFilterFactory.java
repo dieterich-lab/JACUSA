@@ -5,6 +5,7 @@ import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.AbstractStorageFilter;
 import jacusa.filter.storage.DummyFilterFillCache;
+import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Result;
 import jacusa.pileup.iterator.AbstractWindowIterator;
 import jacusa.util.Location;
@@ -14,11 +15,13 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 
 	private int sample;
 	private AbstractParameters parameters;
+	private boolean strict;
 	
 	public HomozygousFilterFactory(AbstractParameters parameters) {
 		super('H', "Filter non-homozygous pileup/BAM (1 or 2). Default: none");
 		sample = 0;
-		this.parameters = parameters; 
+		this.parameters = parameters;
+		strict = parameters.collectLowQualityBaseCalls();
 	}
 
 	@Override
@@ -35,7 +38,6 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 				final int sample = Integer.parseInt(s[1]);
 				if (sample == 1 || sample == 2) {
 					setSample(sample);
-					return;
 				}
 				break;
 
@@ -44,14 +46,13 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 					throw new IllegalArgumentException("Did you mean strict? " + line);
 				}
 				parameters.collectLowQualityBaseCalls(true);
+				strict = true;
 				break;
 
 			default:
 				throw new IllegalArgumentException("Invalid argument: " + line);
 			}
 		}
-
-		throw new IllegalArgumentException("Invalid argument " + sample);
 	}
 
 	@Override
@@ -71,13 +72,16 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 
 	@Override
 	public AbstractStorageFilter<Void> createStorageFilter() {
-		// switch 
+		if (strict) {
+			return new HomozygousStrictFilter(getC());
+		}
+		
 		return new HomozygousFilter(getC());
 	}
 
-	private class HomozygousFilter extends AbstractStorageFilter<Void> {
+	private class HomozygousStrictFilter extends AbstractStorageFilter<Void> {
 
-		public HomozygousFilter(final char c) {
+		public HomozygousStrictFilter(final char c) {
 			super(c);
 		}
 
@@ -107,4 +111,39 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 		}
 
 	}
+	
+	private class HomozygousFilter extends AbstractStorageFilter<Void> {
+
+		public HomozygousFilter(final char c) {
+			super(c);
+		}
+
+		@Override
+		public boolean filter(final Result result, final Location location,	final AbstractWindowIterator windowIterator) {
+			int alleles = 0;
+			final ParallelPileup parallelPileup = result.getParellelPileup();
+	
+			switch (sample) {
+	
+			case 1:
+				alleles = parallelPileup.getPooledPileup1().getAlleles().length;
+				break;
+	
+			case 2:
+				alleles = parallelPileup.getPooledPileup2().getAlleles().length;
+				break;
+	
+			default:
+				throw new IllegalArgumentException("Unsupported sample!");
+			}
+	
+			if (alleles > 1) {
+				return true;
+			}
+	
+			return false;
+		}
+
+	}
+	
 }

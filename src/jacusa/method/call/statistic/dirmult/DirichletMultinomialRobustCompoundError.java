@@ -33,12 +33,12 @@ public class DirichletMultinomialRobustCompoundError extends DirichletMultinomia
 		int aP = alleles.length;
 
 		int[] variantBaseIs = parallelPileup.getVariantBaseIs();
-		int targetBaseI = -1;
+		int commonBaseI = -1;
 		for (int baseI : alleles) {
 			int count1 = parallelPileup.getPooledPileup1().getCounts().getBaseCount(baseI);
 			int count2 = parallelPileup.getPooledPileup2().getCounts().getBaseCount(baseI);
 			if (count1 > 0 && count2  > 0) {
-				targetBaseI = baseI;
+				commonBaseI = baseI;
 				break;
 			}
 		}
@@ -49,27 +49,28 @@ public class DirichletMultinomialRobustCompoundError extends DirichletMultinomia
 		ParallelPileup pp = null;
 		if (a1 > 1 && a2 == 1 && aP == 2) {
 			pp = new DefaultParallelPileup(parallelPileup.getPileups1(), parallelPileup.getPileups1());
-			pp.setPileups1(flat(pp.getPileups1(), variantBaseIs, targetBaseI));
+			pp.setPileups1(flat(pp.getPileups1(), variantBaseIs, commonBaseI));
 		} else if (a2 > 1 && a1 == 1 && aP == 2) {
 			pp = new DefaultParallelPileup(parallelPileup.getPileups2(), parallelPileup.getPileups2());
-			pp.setPileups2(flat(pp.getPileups2(), variantBaseIs, targetBaseI));
+			pp.setPileups2(flat(pp.getPileups2(), variantBaseIs, commonBaseI));
 		}
 		if (pp == null) {
 			return super.getStatistic(parallelPileup);
 		}
-
+		
 		return super.getStatistic(pp);
 	}
 
-	private Pileup[] flat(Pileup[] pileups, int[] variantBaseIs, int baseI) {
+	private Pileup[] flat(Pileup[] pileups, int[] variantBaseIs, int commonBaseI) {
 		Pileup[] ret = new Pileup[pileups.length];
 		for (int i = 0; i < pileups.length; ++i) {
 			ret[i] = new DefaultPileup(pileups[i]);
 
-			for (int variantI : variantBaseIs) {
-				ret[i].getCounts().add(baseI, pileups[i].getCounts());
-				ret[i].getCounts().substract(variantI, pileups[i].getCounts());
+			for (int variantBaseI : variantBaseIs) {
+				ret[i].getCounts().add(commonBaseI, variantBaseI, pileups[i].getCounts());
+				ret[i].getCounts().substract(variantBaseI, variantBaseI, pileups[i].getCounts());
 			}
+			
 		}
 		return ret;
 	}

@@ -80,7 +80,6 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 	}
 
 	@Override
-	// FIXME this is wrong
 	public double[] init(
 			final int[] baseIs, 
 			final Pileup pileup,
@@ -88,48 +87,8 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 			final double[] pileupErrorVector,
 			final double pileupCoverage
 			) {
-
-		final double[] pileupProportionVector = new double[baseIs.length];
-		for (int baseI : baseIs) {
-			pileupProportionVector[baseI] = pileupVector[baseI] / pileupCoverage;
-		}
-		
-		// init
-		double[] alpha = new double[baseIs.length];
-		Arrays.fill(alpha, 0d);
-
-		double[] variance = new double[baseIs.length];
-		Arrays.fill(variance, 0d);
-		for (int baseI : baseIs) {
-			variance[baseI] = pileupErrorVector[baseI] * (1d - pileupErrorVector[baseI]);
-		}
-
-		// Ronning 1989 to set Method Of Moments
-		double alphaNull = Double.MAX_VALUE;
-		for (int baseI : baseIs) {
-			if (variance[baseI] < minVariance) {
-				variance[baseI] = minVariance;
-			}
-			
-			int k = baseIs.length;
-			double alphaNullTmp = 1.0;
-			for (int baseI2 : baseIs) {
-				if (baseI == baseI2) {
-					continue;
-				}
-				alphaNullTmp *= pileupProportionVector[baseI] * (1d - pileupProportionVector[baseI]) / variance[baseI] - 1d;
-			}
-			if (alphaNullTmp > 0 && k >= 2) {
-				alphaNullTmp = Math.pow(alphaNullTmp, 1d / (double)(k - 1));
-				alphaNull = Math.min(alphaNull, alphaNullTmp);
-			}
-		}
-
-		for (int baseI : baseIs) {
-			alpha[baseI] = pileupProportionVector[baseI] * alphaNull;
-		}
-		
-		return alpha;
+		// TODO
+		return null;
 	}
 	
 }

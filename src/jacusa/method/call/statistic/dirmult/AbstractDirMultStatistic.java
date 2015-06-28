@@ -34,6 +34,17 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 	protected double[] alpha2;
 	protected double[] alphaP;
 
+	protected double[] initAlpha1;
+	protected double[] initAlpha2;
+	protected double[] initAlphaP;
+	
+	protected int iterations1;
+	protected int iterations2;
+	protected int iterationsP;
+	protected double logLikelihood1;
+	protected double logLikelihood2;
+	protected double logLikelihoodP;
+	
 	protected MinkaEstimateParameters estimateAlpha;
 
 	public AbstractDirMultStatistic(final BaseConfig baseConfig, final StatisticParameters parameters) {
@@ -77,15 +88,54 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			sb.append(";alpha2=");
 			sb.append(df.format(alpha2[0]));
 			for (int i = 1; i < alpha2.length; ++i) {
-				sb.append("|");
+				sb.append(":");
 				sb.append(df.format(alpha2[i]));
 			}
 			sb.append(";alphaP=");
 			sb.append(df.format(alphaP[0]));
 			for (int i = 1; i < alphaP.length; ++i) {
-				sb.append("|");
+				sb.append(":");
 				sb.append(df.format(alphaP[i]));
 			}
+
+			sb.append(";initAlpha1=");
+			sb.append(df.format(initAlpha1[0]));
+			for (int i = 1; i < initAlpha1.length; ++i) {
+				sb.append(":");
+				sb.append(df.format(alpha1[i]));
+			}
+			sb.append(";initAlpha2=");
+			sb.append(df.format(initAlpha2[0]));
+			for (int i = 1; i < initAlpha2.length; ++i) {
+				sb.append(":");
+				sb.append(df.format(initAlpha2[i]));
+			}
+			sb.append(";initAlphaP=");
+			sb.append(df.format(initAlphaP[0]));
+			for (int i = 1; i < initAlphaP.length; ++i) {
+				sb.append(":");
+				sb.append(df.format(initAlphaP[i]));
+			}
+			
+			sb.append(";");
+			sb.append("logLikelihood1=");
+			sb.append(logLikelihood1);
+			sb.append(";");
+			sb.append("logLikelihood2=");
+			sb.append(logLikelihood2);
+			sb.append(";");
+			sb.append("logLikelihoodP=");
+			sb.append(logLikelihoodP);
+			sb.append(";");
+			sb.append("iterations1=");
+			sb.append(iterations1);
+			sb.append(";");
+			sb.append("iterations2=");
+			sb.append(iterations2);
+			sb.append(";");
+			sb.append("iterationsP=");
+			sb.append(iterationsP);
+			
 			result.addInfo(sb.toString());
 		}
 	}
@@ -112,29 +162,36 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		if (parallelPileup.getPileups1().length == 1) {
 			double[] pileupErrorVector1 = new double[baseN];
 			populate(parallelPileup.getPileups1()[0], baseIs, pileupCoverages1, pileupErrorVector1, pileupMatrix1[0]);
-			alpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1()[0], pileupMatrix1[0], pileupErrorVector1, pileupCoverages1[0]);
+			initAlpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1()[0], pileupMatrix1[0], pileupErrorVector1, pileupCoverages1[0]);
 		} else {
 			populate(parallelPileup.getPileups1(), baseIs, pileupCoverages1, pileupMatrix1);
-			alpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1(), pileupMatrix1, pileupCoverages1);
+			initAlpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1(), pileupMatrix1, pileupCoverages1);
 		}
+		alpha1 = initAlpha1;
 		if (parallelPileup.getPileups2().length == 1) {
 			double[] pileupErrorVector2 = new double[baseN];
 			populate(parallelPileup.getPileups2()[0], baseIs, pileupCoverages2, pileupErrorVector2, pileupMatrix2[0]);
-			alpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2()[0], pileupMatrix2[0], pileupErrorVector2, pileupCoverages2[0]);
+			initAlpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2()[0], pileupMatrix2[0], pileupErrorVector2, pileupCoverages2[0]);
 		} else {
 			populate(parallelPileup.getPileups2(), baseIs, pileupCoverages2, pileupMatrix2);
-			alpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2(), pileupMatrix2, pileupCoverages2);
+			initAlpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2(), pileupMatrix2, pileupCoverages2);
 		}
+		alpha2 = initAlpha2;
 		populate(parallelPileup.getPileupsP(), baseIs, pileupCoveragesP, pileupMatrixP);
-		alphaP = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileupsP(), pileupMatrixP, pileupCoveragesP);
-
+		initAlphaP = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileupsP(), pileupMatrixP, pileupCoveragesP);
+		alphaP = initAlphaP;
 		double p = -1.0;
 		try {
 			// estimate alphas
-			double logLikelihood1 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha1, pileupCoverages1, pileupMatrix1);
-			double logLikelihood2 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha2, pileupCoverages2, pileupMatrix2);
-			double logLikelihoodP = estimateAlpha.maximizeLogLikelihood(baseIs, alphaP, pileupCoveragesP, pileupMatrixP);
-
+			
+			
+			
+			logLikelihood1 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha1, pileupCoverages1, pileupMatrix1);
+			iterations1 = estimateAlpha.getIterations();
+			logLikelihood2 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha2, pileupCoverages2, pileupMatrix2);
+			iterations2 = estimateAlpha.getIterations();
+			logLikelihoodP = estimateAlpha.maximizeLogLikelihood(baseIs, alphaP, pileupCoveragesP, pileupMatrixP);
+			iterationsP = estimateAlpha.getIterations();
 			// LRT
 			double z = -2 * (logLikelihoodP - (logLikelihood1 + logLikelihood2));
 			p = 1 - dist.cdf(z);
