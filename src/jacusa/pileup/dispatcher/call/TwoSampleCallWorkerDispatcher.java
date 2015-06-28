@@ -11,13 +11,13 @@ public class TwoSampleCallWorkerDispatcher extends AbstractCallWorkerDispatcher<
 	private TwoSampleCallParameters parameters;
 	
 	public TwoSampleCallWorkerDispatcher(
-			final int n1,
-			final int n2,
+			String[] pathnames1, 
+			String[] pathnames2,
 			final CoordinateProvider coordinateProvider,
 			final TwoSampleCallParameters parameters) throws IOException {
 		super(
-				n1,
-				n2,
+				pathnames1,
+				pathnames2,
 				coordinateProvider, 
 				parameters.getMaxThreads(),
 				parameters.getOutput(),

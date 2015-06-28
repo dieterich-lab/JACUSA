@@ -27,7 +27,7 @@ public class DebugResultFormat extends AbstractOutputFormat {
 	}
 
 	@Override
-	public String getHeader(int replicates1, int replicates2) {
+	public String getHeader(String[] pathnames1, String[] pathnames2) {
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append(COMMENT);
@@ -51,10 +51,10 @@ public class DebugResultFormat extends AbstractOutputFormat {
 		sb.append(getSEP());
 		
 		// (1) first sample  infos
-		addSampleHeader(sb, '1', replicates1);
+		addSampleHeader(sb, '1', pathnames1.length);
 		sb.append(getSEP());
 		// (2) second sample  infos
-		addSampleHeader(sb, '2', replicates2);
+		addSampleHeader(sb, '2', pathnames2.length);
 		
 		return sb.toString();
 	}

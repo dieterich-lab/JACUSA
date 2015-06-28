@@ -11,9 +11,9 @@ public class OneSampleCallWorkerDispatcher extends AbstractCallWorkerDispatcher<
 
 	private OneSampleCallParameters parameters;
 	
-	public OneSampleCallWorkerDispatcher(int n1, int n2, CoordinateProvider coordinateProvider,	OneSampleCallParameters parameters) throws IOException {
-		super(	n1,
-				n2,
+	public OneSampleCallWorkerDispatcher(String[] pathnames1, String[] pathnames2, CoordinateProvider coordinateProvider,	OneSampleCallParameters parameters) throws IOException {
+		super(	pathnames1,
+				pathnames2,
 				coordinateProvider, 
 				parameters.getMaxThreads(),
 				parameters.getOutput(), 

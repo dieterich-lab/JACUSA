@@ -217,13 +217,14 @@ public class JACUSA {
 
 		// prolog
 		jacusa.printProlog(args);
-		int n1 = parameters.getSample1().getPathnames().length;
-		int n2 = 0;
+		String[] pathnames1 = parameters.getSample1().getPathnames();
+		String[] pathnames2 = new String[0];
 		if (parameters instanceof hasSampleB) {
-			n2 = ((hasSampleB)parameters).getSample2().getPathnames().length;
+			pathnames2 = ((hasSampleB)parameters).getSample2().getPathnames();
 		}
+		
 		// main
-		AbstractWorkerDispatcher<? extends AbstractWorker> workerDispatcher = methodFactory.getInstance(n1, n2, coordinateProvider);
+		AbstractWorkerDispatcher<? extends AbstractWorker> workerDispatcher = methodFactory.getInstance(pathnames1, pathnames2, coordinateProvider);
 		int comparisons = workerDispatcher.run();
 		// epilog
 		jacusa.printEpilog(comparisons);

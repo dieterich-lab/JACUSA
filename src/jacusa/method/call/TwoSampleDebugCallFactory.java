@@ -91,9 +91,9 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 	}
 
 	@Override
-	public TwoSampleDebugCallWorkerDispatcher getInstance(int n1, int n2, CoordinateProvider coordinateProvider) throws IOException {
+	public TwoSampleDebugCallWorkerDispatcher getInstance(String[] pathnames1, String[] pathnames2, CoordinateProvider coordinateProvider) throws IOException {
 		if(instance == null) {
-			instance = new TwoSampleDebugCallWorkerDispatcher(n1, n2, coordinateProvider, parameters);
+			instance = new TwoSampleDebugCallWorkerDispatcher(pathnames1, pathnames2, coordinateProvider, parameters);
 		}
 
 		return instance;

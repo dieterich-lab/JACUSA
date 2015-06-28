@@ -21,7 +21,7 @@ public abstract class AbstractOutputFormat {
 	}
 
 	// Header is empty by default
-	public String getHeader(int replicates1, int replicates2) {
+	public String getHeader(String[] pathnames1, String[] pathnames2) {
 		return null;
 	}
 

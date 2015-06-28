@@ -11,13 +11,13 @@ public class MpileupWorkerDispatcher extends AbstractWorkerDispatcher<MpileupWor
 	private final TwoSamplePileupParameters parameters;
 	
 	public MpileupWorkerDispatcher(
-			final int n1,
-			final int n2,
+			String[] pathnames1, 
+			String[] pathnames2,
 			final CoordinateProvider coordinateProvider, 
 			final TwoSamplePileupParameters parameters) {
 		super(
-				n1,
-				n2,
+				pathnames1,
+				pathnames2,
 				coordinateProvider, 
 				parameters.getMaxThreads(), 
 				parameters.getOutput(), 

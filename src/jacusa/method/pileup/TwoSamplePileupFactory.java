@@ -159,9 +159,9 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 	}
 	
 	@Override
-	public MpileupWorkerDispatcher getInstance(int n1, int n2, CoordinateProvider coordinateProvider) {
+	public MpileupWorkerDispatcher getInstance(String[] pathnames1, String[] pathnames2, CoordinateProvider coordinateProvider) {
 		if(instance == null) {
-			instance = new MpileupWorkerDispatcher(n1, n2, coordinateProvider, parameters);
+			instance = new MpileupWorkerDispatcher(pathnames1, pathnames2, coordinateProvider, parameters);
 		}
 
 		return instance;

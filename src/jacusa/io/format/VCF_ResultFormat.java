@@ -16,7 +16,7 @@ public class VCF_ResultFormat extends AbstractOutputFormat {
 	}
 	
 	@Override
-	public String getHeader(int replicates1, int replicates2) {
+	public String getHeader(String[] pathnames1, String[] pathnames2) {
 		StringBuilder sb = new StringBuilder();
 		
 		sb.append(getCOMMENT());

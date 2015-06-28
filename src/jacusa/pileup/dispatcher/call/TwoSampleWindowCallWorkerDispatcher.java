@@ -10,9 +10,9 @@ public class TwoSampleWindowCallWorkerDispatcher extends AbstractCallWorkerDispa
 
 	private TwoSampleCallParameters parameters;
 
-	public TwoSampleWindowCallWorkerDispatcher(int n1, int n2, CoordinateProvider coordinateProvider, TwoSampleCallParameters parameters) throws IOException {
-		super(	n1,
-				n2,
+	public TwoSampleWindowCallWorkerDispatcher(String[] pathnames1, String[] pathnames2, CoordinateProvider coordinateProvider, TwoSampleCallParameters parameters) throws IOException {
+		super(	pathnames1,
+				pathnames2,
 				coordinateProvider, 
 				parameters.getMaxThreads(), 
 				parameters.getOutput(), 

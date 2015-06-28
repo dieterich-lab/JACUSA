@@ -103,9 +103,9 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 	}
 
 	@Override
-	public OneSampleCallWorkerDispatcher getInstance(int n1, int n2, CoordinateProvider coordinateProvider) throws IOException {
+	public OneSampleCallWorkerDispatcher getInstance(String[] pathnames1, String[] pathnames2, CoordinateProvider coordinateProvider) throws IOException {
 		if(instance == null) {
-			instance = new OneSampleCallWorkerDispatcher(n1, n2, coordinateProvider, parameters);
+			instance = new OneSampleCallWorkerDispatcher(pathnames1, pathnames2, coordinateProvider, parameters);
 		}
 		return instance;
 	}

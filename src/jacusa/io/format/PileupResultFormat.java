@@ -17,7 +17,7 @@ public class PileupResultFormat extends AbstractOutputFormat {
 		pileupFormat = new PileupFormat(baseConfig);
 	}
 	
-	public String getHeader(int replicates1, int replicates2) {
+	public String getHeader(String[] pathnames1, String[] pathnames2) {
 		final StringBuilder sb = new StringBuilder();
 		sb.append(getCOMMENT());
 
@@ -27,7 +27,7 @@ public class PileupResultFormat extends AbstractOutputFormat {
 		sb.append("position");
 
 		// (1) first sample infos
-		for (int i = 0; i < replicates1; ++i) {
+		for (int i = 0; i < pathnames1.length; ++i) {
 			sb.append(getSEP());
 			sb.append("strand1");
 			sb.append(i + 1);
@@ -39,7 +39,7 @@ public class PileupResultFormat extends AbstractOutputFormat {
 			sb.append(i + 1);
 		}		
 		// (2) second sample infos
-		for (int i = 0; i < replicates2; ++i) {
+		for (int i = 0; i < pathnames2.length; ++i) {
 			sb.append(getSEP());
 			sb.append("strand2");
 			sb.append(i + 1);
