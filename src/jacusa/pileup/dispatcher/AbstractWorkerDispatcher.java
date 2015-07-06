@@ -165,12 +165,12 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 		BufferedReader[] brs = new BufferedReader[maxThreads];
 		for (int threadId = 0; threadId < maxThreads; ++threadId) {
 			String filename = output.getInfo() + "_" + threadId + "_tmp.gz";
-			final File file = new File(filename); 
+			final File file = new File(filename);
+
 			try {
-				brs[threadId] = new BufferedReader(
-						new InputStreamReader(
-								new GZIPInputStream(
-										new FileInputStream(file), 10000)));
+				FileInputStream fileInputStream = new FileInputStream(file);
+				GZIPInputStream gzip = new GZIPInputStream(fileInputStream);
+				brs[threadId] = new BufferedReader(new InputStreamReader(gzip));
 			} catch (IOException e) {
 					e.printStackTrace();
 			}

@@ -79,7 +79,7 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 		}
 		pileupCoverage[0] = MathUtil.sum(pileupMatrix);
 	}
-	
+
 	@Override
 	public DirichletMultinomialCompoundError newInstance() {
 		return new DirichletMultinomialCompoundError(baseConfig, parameters);

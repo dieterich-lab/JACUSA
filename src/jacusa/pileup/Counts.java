@@ -86,6 +86,11 @@ public class Counts implements Cloneable {
 		return baseCount[base];
 	}
 
+	// TODO
+	public int setBaseCount(final int base, final int count) {
+		return baseCount[base] = count;
+	}
+	
 	public void addCounts(final Counts counts) {
 		for (int baseI = 0; baseI < counts.baseCount.length; ++baseI) {
 			if (counts.baseCount[baseI] > 0) {

@@ -228,6 +228,7 @@ public final class DefaultParallelPileup implements ParallelPileup {
 			pileupP = new DefaultPileup(getPooledPileup1().getCounts().getBaseLength());
 			pileupP.setContig(getPooledPileup1().getContig());
 			pileupP.setPosition(getPooledPileup1().getPosition());
+			pileupP.setRefBase(getPooledPileup1().getRefBase());
 
 			pileupP.addPileup(getPooledPileup1());
 			pileupP.addPileup(getPooledPileup2());

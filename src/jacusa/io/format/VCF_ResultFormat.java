@@ -1,18 +1,20 @@
 package jacusa.io.format;
 
 import jacusa.JACUSA;
+import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Result;
 
 import java.util.Calendar;
 
-// FIXME
 public class VCF_ResultFormat extends AbstractOutputFormat {
 
+	private BaseConfig baseConfig;
 	public static final char CHAR = 'V';
 
-	public VCF_ResultFormat() {
+	public VCF_ResultFormat(final BaseConfig baseConfig) {
 		super(CHAR, "VCF output");
+		this.baseConfig = baseConfig;
 	}
 	
 	@Override
@@ -54,7 +56,7 @@ public class VCF_ResultFormat extends AbstractOutputFormat {
 		for (int i = 1; i < cols.length; ++i) {
 			sb.append(getSEP());
 			sb.append(cols[i]);
-		}/*
+		}
 		for (String pathname : pathnames1)  {
 			sb.append(getSEP());
 			sb.append(pathname);
@@ -62,8 +64,7 @@ public class VCF_ResultFormat extends AbstractOutputFormat {
 		for (String pathname : pathnames2)  {
 			sb.append(getSEP());
 			sb.append(pathname);
-		}*/
-		sb.append('\n');
+		}
 
 		return sb.toString();
 	}
@@ -72,7 +73,17 @@ public class VCF_ResultFormat extends AbstractOutputFormat {
 	public String convert2String(Result result) {
 		final StringBuilder sb = new StringBuilder();
 		final ParallelPileup parallelPileup = result.getParellelPileup();
-		final String filterInfo = (String)result.getObject("filterInfo");
+		String filterInfo = (String)result.getObject("filterInfo");
+		if (filterInfo == null || filterInfo.length() == 0) {
+			filterInfo = "*";
+		}
+
+		StringBuilder sb2 = new StringBuilder();
+		for (int allelI : parallelPileup.getPooledPileup().getAlleles()) {
+			if (parallelPileup.getPooledPileup().getRefBase() != baseConfig.getBases()[allelI]) {
+				sb2.append(baseConfig.getBases()[allelI]);
+			}
+		}
 		
 		String[] cols = {
 				// contig
@@ -84,7 +95,7 @@ public class VCF_ResultFormat extends AbstractOutputFormat {
 				// REF
 				Character.toString(parallelPileup.getPooledPileup().getRefBase()),
 				// ALT
-				Character.toString(getEMPTY()),
+				sb2.toString(),
 				// QUAL
 				Character.toString(getEMPTY()),
 				// FILTER
@@ -101,17 +112,14 @@ public class VCF_ResultFormat extends AbstractOutputFormat {
 			sb.append(cols[i]);
 		}
 
-		for (int i = 0; i < parallelPileup.getN(); ++i) {
+		for (int i = 0; i < parallelPileup.getN1(); ++i) {
 			sb.append(getSEP());
-			if (i < parallelPileup.getN1()) {
-				sb.append(parallelPileup.getPileups1()[i].getCoverage());
-				
-			} else {
-				sb.append(parallelPileup.getPileups2()[i].getCoverage());
-			}
+			sb.append(parallelPileup.getPileups1()[i].getCoverage());
 		}
-		sb.append('\n');
-		
+		for (int i = 0; i < parallelPileup.getN2(); ++i) {
+			sb.append(getSEP());
+			sb.append(parallelPileup.getPileups2()[i].getCoverage());
+		}
 		return sb.toString();
 	}
 

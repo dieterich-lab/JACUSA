@@ -145,7 +145,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		final int baseIs[] = getBaseIs(parallelPileup);
 		int baseN = baseConfig.getBaseLength();
 
-		ChiSquareDist dist = new ChiSquareDist(baseN - 1); // TODO
+		ChiSquareDist dist = new ChiSquareDist(baseN - 1);
 
 		alpha1 = new double[baseN];
 		double[] pileupCoverages1 = new double[parallelPileup.getN1()];
@@ -183,9 +183,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		double p = -1.0;
 		try {
 			// estimate alphas
-			
-			
-			
+
 			logLikelihood1 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha1, pileupCoverages1, pileupMatrix1);
 			iterations1 = estimateAlpha.getIterations();
 			logLikelihood2 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha2, pileupCoverages2, pileupMatrix2);

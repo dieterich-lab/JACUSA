@@ -267,7 +267,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		// resultFormat = new DebugResultFormat(n1, n2, parameters.getBaseConfig());
 		// resultFormats.put(resultFormat.getC(), resultFormat);
 
-		resultFormat = new VCF_ResultFormat();
+		resultFormat = new VCF_ResultFormat(parameters.getBaseConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;

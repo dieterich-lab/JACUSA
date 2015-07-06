@@ -1,5 +1,6 @@
 package jacusa.pileup.dispatcher.call;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -113,7 +114,7 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 	}
 	
 	private Pileup[] getPileup(String sequenceName, int end, STRAND strand, List<Integer> replicateIndex, String cols[]) {
-		// byte qual = 40;
+		byte qual = 40;
 		Pileup[] pileups = new DefaultPileup[replicateIndex.size()];
 		for (int i = 0; i < replicateIndex.size(); ++i) {
 			pileups[i] = new DefaultPileup(sequenceName, end, strand, 4);
@@ -121,13 +122,9 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 			for (int j = 0; j < bases.length; ++j) {
 				int count = Integer.parseInt(bases[j]);
 				if (count > 0) {
-					
 					// FIXME
-					throw new RuntimeException("FIXME");
-					/*
-					pileups[i].getCounts().getBaseCount()[j] = count;
-					pileups[i].getCounts().getQualCount()[j][qual] = count;
-					*/
+					pileups[i].getCounts().setBaseCount(j, count);
+					pileups[i].getCounts().getQualCount(j)[qual] = count;
 				}
 			}
 		}
