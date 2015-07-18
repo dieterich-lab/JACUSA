@@ -29,7 +29,8 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 
 	protected boolean onlyObservedBases;
 	protected boolean showAlpha;
-
+	protected boolean calcPValue;
+	
 	protected double[] alpha1;
 	protected double[] alpha2;
 	protected double[] alphaP;
@@ -102,7 +103,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			sb.append(df.format(initAlpha1[0]));
 			for (int i = 1; i < initAlpha1.length; ++i) {
 				sb.append(":");
-				sb.append(df.format(alpha1[i]));
+				sb.append(df.format(initAlpha1[i]));
 			}
 			sb.append(";initAlpha2=");
 			sb.append(df.format(initAlpha2[0]));
@@ -167,7 +168,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			populate(parallelPileup.getPileups1(), baseIs, pileupCoverages1, pileupMatrix1);
 			initAlpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1(), pileupMatrix1, pileupCoverages1);
 		}
-		alpha1 = initAlpha1;
+		System.arraycopy(initAlpha1, 0, alpha1, 0, baseN);
 		if (parallelPileup.getPileups2().length == 1) {
 			double[] pileupErrorVector2 = new double[baseN];
 			populate(parallelPileup.getPileups2()[0], baseIs, pileupCoverages2, pileupErrorVector2, pileupMatrix2[0]);
@@ -176,11 +177,12 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			populate(parallelPileup.getPileups2(), baseIs, pileupCoverages2, pileupMatrix2);
 			initAlpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2(), pileupMatrix2, pileupCoverages2);
 		}
-		alpha2 = initAlpha2;
+		System.arraycopy(initAlpha2, 0, alpha2, 0, baseN);
 		populate(parallelPileup.getPileupsP(), baseIs, pileupCoveragesP, pileupMatrixP);
 		initAlphaP = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileupsP(), pileupMatrixP, pileupCoveragesP);
-		alphaP = initAlphaP;
-		double p = -1.0;
+		System.arraycopy(initAlphaP, 0, alphaP, 0, baseN);
+		
+		double stat = Double.NaN;
 		try {
 			// estimate alphas
 
@@ -190,19 +192,23 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			iterations2 = estimateAlpha.getIterations();
 			logLikelihoodP = estimateAlpha.maximizeLogLikelihood(baseIs, alphaP, pileupCoveragesP, pileupMatrixP);
 			iterationsP = estimateAlpha.getIterations();
-			// LRT
-			double z = -2 * (logLikelihoodP - (logLikelihood1 + logLikelihood2));
-			p = 1 - dist.cdf(z);
+
+			if (calcPValue) {
+				stat = -2 * (logLikelihoodP - (logLikelihood1 + logLikelihood2));
+				stat = 1 - dist.cdf(stat);
+			} else {
+				stat = (logLikelihood1 + logLikelihood2) - logLikelihoodP;
+			}
 		} catch (StackOverflowError e) {
 			System.out.println("Warning: Numerical Stability");
 			System.out.println(parallelPileup.getContig());
 			System.out.println(parallelPileup.getStart());
 			System.out.println(parallelPileup.prettyPrint());
 
-			return -1.0;
+			return stat;
 		}
 
-		return p;
+		return stat;
 	}
 
 	// Debug function
@@ -217,7 +223,14 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 
 	@Override
 	public boolean filter(double value) {
-		return parameters.getThreshold() < value;
+		if (calcPValue) {
+			return parameters.getThreshold() < value;
+		}
+		if (parameters.getThreshold() == Double.NaN) {
+			return false;
+		}
+		
+		return value < parameters.getThreshold();
 	}
 
 	// format -u DirMult:epsilon=<epsilon>:maxIterations=<maxIterions>:onlyObserved
@@ -245,6 +258,8 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			} else if(key.equals("onlyObserved")) {
 				onlyObservedBases = true;
 				r = true;
+			} else if(key.equals("calculateP-value")) {
+				calcPValue = true;
 			} else if(key.equals("showAlpha")) {
 				showAlpha = true;
 				r = true;

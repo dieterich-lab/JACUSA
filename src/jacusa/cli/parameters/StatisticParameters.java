@@ -9,7 +9,7 @@ public class StatisticParameters {
 	private double threshold;
 	
 	public StatisticParameters() {
-		threshold = 0.3;
+		threshold = Double.NaN;
 	}
 
 	public StatisticParameters(final StatisticCalculator statisticCalculator) {

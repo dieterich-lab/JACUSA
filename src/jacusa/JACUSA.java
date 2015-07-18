@@ -1,11 +1,11 @@
 package jacusa;
 
-
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.cli.parameters.hasSampleB;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.TwoSampleCallFactory;
+import jacusa.method.call.TwoSampleDebugCallFactory;
 //import jacusa.method.call.TwoSampleDebugCallFactory;
 import jacusa.method.pileup.TwoSamplePileupFactory;
 //import jacusa.method.window.TwoSampleWindowCallFactory;
@@ -36,7 +36,7 @@ public class JACUSA {
 	// timer used for all time measurements
 	private static SimpleTimer timer;
 	public static final String NAME = "jacusa";
-	public static final String VERSION = "1.0-RC2-2";
+	public static final String VERSION = "1.0-RC4";
 
 	// command line interface
 	private CLI cli;
@@ -55,7 +55,7 @@ public class JACUSA {
 			new TwoSampleCallFactory(),
 			new TwoSamplePileupFactory(),
 			// RC new TwoSampleWindowCallFactory(),
-			// RC new TwoSampleDebugCallFactory()
+			new TwoSampleDebugCallFactory()
 		};
 		for (AbstractMethodFactory factory : factories) {
 			methodFactories.put(factory.getName(), factory);

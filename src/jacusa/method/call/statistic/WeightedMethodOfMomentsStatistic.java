@@ -122,6 +122,10 @@ public final class WeightedMethodOfMomentsStatistic implements StatisticCalculat
 
 	@Override
 	public boolean filter(double value) {
+		if (parameters.getThreshold() == Double.NaN) {
+			return false;
+		}
+		
 		return parameters.getThreshold() < value;
 	}
 

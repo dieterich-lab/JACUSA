@@ -6,8 +6,8 @@ import jacusa.pileup.Pileup;
 
 public class RonningAlphaInit extends AbstractAlphaInit {
 
-	final private double minVariance = 0.00001;
-	
+	final private double minVariance = Math.pow(10, -6);
+
 	public RonningAlphaInit() {
 		super("Roning", "See Ronning 1989");
 	}
@@ -19,7 +19,7 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 			final double[][] pileupMatrix, 
 			final double[] pileupCoverages
 			) {
-		
+
 		final double[][] pileupProportionMatrix = new double[pileups.length][baseIs.length];
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI : baseIs) {
@@ -51,31 +51,38 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 		}
 
 		// Ronning 1989 to set Method Of Moments
-		double alphaNull = Double.MAX_VALUE;
-		for (int baseI : baseIs) {
-			variance[baseI] /= (double)(pileups.length - 1);
-			if (variance[baseI] < minVariance) {
+		double[] tmp = new double[baseIs.length];
+		for (int i = 0; i < baseIs.length; ++i) {
+			int baseI = baseIs[i];
+			if (pileups.length - 1 == 0) {
 				variance[baseI] = minVariance;
-			}
-			
-			int k = baseIs.length;
-			double alphaNullTmp = 1.0;
-			for (int baseI2 : baseIs) {
-				if (baseI == baseI2) {
-					continue;
+			} else {
+				variance[baseI] /= (double)(pileups.length - 1);
+				if (variance[baseI] < minVariance) {
+					variance[baseI] = minVariance;
 				}
-				alphaNullTmp *= mean[baseI] * (1d - mean[baseI]) / variance[baseI] - 1d;
 			}
-			if (alphaNullTmp > 0 && k >= 2) {
-				alphaNullTmp = Math.pow(alphaNullTmp, 1d / (double)(k - 1));
-				alphaNull = Math.min(alphaNull, alphaNullTmp);
+
+			double v = mean[baseI] * (1d - mean[baseI]) / variance[baseI] - 1d;
+			if (v > 0) {
+				tmp[i] = Math.log(v);
+			} else {
+				tmp[i] = 0.0;
 			}
 		}
+		Arrays.sort(tmp);
+		double alphaNull = 0.0; 
+		for (int i = 0; i < baseIs.length -1; ++i) {
+			alphaNull += tmp[i];
+		}
+		
+		alphaNull /= (double)(baseIs.length - 1);
+		alphaNull = Math.exp(alphaNull);
 
 		for (int baseI : baseIs) {
 			alpha[baseI] = mean[baseI] * alphaNull;
 		}
-		
+
 		return alpha;
 	}
 

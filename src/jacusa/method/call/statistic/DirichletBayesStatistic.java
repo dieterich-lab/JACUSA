@@ -95,6 +95,10 @@ public class DirichletBayesStatistic implements StatisticCalculator {
 
 	@Override
 	public boolean filter(double value) {
+		if (parameters.getThreshold() == Double.NaN) {
+			return false;
+		}
+		
 		return parameters.getThreshold() < 0;
 	}
 
