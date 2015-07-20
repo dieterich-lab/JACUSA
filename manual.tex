@@ -1,0 +1,66 @@
+\documentclass[10pt, a4paper]{article}
+
+\usepackage{todonotes}
+\usepackage{hyperref}
+
+\begin{document}
+
+\section{Introduction}
+
+\section{Download}
+JACUSA v1.0 can be downloaded from \todo{Add JACUSA.jar}\href{http://}{here}
+\subsection{Installation}
+JACUSA does not need any configuration and should run out of the box depending on a correct configured Java environment (see ''Prerequisites``) 
+
+\subsection{Sample data}
+\todo{C. elegans}
+\todo{Homo Sapiens}
+
+\section{Requirements}
+JACUSA has been developed and tested with Java 1.7. 
+If you encounter any Java related problems please consider to change to the Java 1.7.
+
+\section{Input}
+\subsection{Alignment files}
+Jacusa works on sorted and index BAM files that are produced by virtually all mappers for short read sequencing.
+It is important that your BAM files are coordinate sorted and index. 
+Check the manuals for SAMtools and/or picard tools how to use this tools to convert your alignment files to valid Jacusa input BAM.  
+
+\begin{description}
+\item[SAM $\rightarrow BAM$] \begin{verbatim} samtools view -Sb mapping.sam > mapping.bam \end{verbatim}
+\item[sort BAM] \begin{verbatim} samtools sort mapping.bam mapping.sorted \end{verbatim} 
+\item[index BAM] \begin{verbatim} samtools index mapping.sorted.bam \end{verbatim}
+\end{description}
+
+\subsection{Traverse BED file}
+Variant detection can be limited to specific regions of the genome or transcriptome. 
+Provide a minimalistic BED-like to restrict the search to this regions or sites. Remaining regions of the BAM files will not be considered.  
+In the following sample traverse file the search is confined to a 100nt region on the contig 1 staring at 1,000 and a single site on contig 2 at coordinates 10,000:  
+\begin{table}
+  \begin{tabular}{lll}
+    contig name & begin & end \\
+    1 & 1000 & 1100 \\
+    2 & 10000 & 10000
+  \end{tabular}
+\end{table}
+Many singular sites will slow down Jacusa. 
+If possible, try to merge nearby sites into contiguous regions and extract specific sites from Jacusa output with bedtools intersect.
+
+\section{Output}
+Log
+pipe
+gzipped Tmp files in
+Output formats:
+\begin{itemize}
+  \item Default
+  \item VCF
+\end{itemize}
+
+\section{Usage}
+\todo{continue}
+
+\section{Used libraries}
+picard tools
+\todo{continue}
+
+\end{document}
