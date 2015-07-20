@@ -6,8 +6,8 @@ import jacusa.pileup.Pileup;
 
 public class RonningAlphaInit extends AbstractAlphaInit {
 
-	final private double minVariance = Math.pow(10, -6);
-
+	final private double minVariance = 0.00001;
+	
 	public RonningAlphaInit() {
 		super("Roning", "See Ronning 1989");
 	}
@@ -19,7 +19,7 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 			final double[][] pileupMatrix, 
 			final double[] pileupCoverages
 			) {
-
+		
 		final double[][] pileupProportionMatrix = new double[pileups.length][baseIs.length];
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI : baseIs) {
@@ -65,20 +65,26 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 
 			double v = mean[baseI] * (1d - mean[baseI]) / variance[baseI] - 1d;
 			if (v > 0) {
-				tmp[i] = Math.log(v);
+				tmp[i] = v;
 			} else {
 				tmp[i] = 0.0;
 			}
 		}
-		Arrays.sort(tmp);
-		double alphaNull = 0.0; 
-		for (int i = 0; i < baseIs.length -1; ++i) {
-			alphaNull += tmp[i];
-		}
 		
-		alphaNull /= (double)(baseIs.length - 1);
-		alphaNull = Math.exp(alphaNull);
+		Arrays.sort(tmp);
+		// Ronning 1989 to set Method Of Moments
+		double alphaNull = 0.0;
+		for (int i = 0; i < baseIs.length - 1; ++i) {
+			if (tmp[i] > 0.0) {
+				if (alphaNull == 0.0) {
+					alphaNull = tmp[i];
+				} else {
+					alphaNull *= tmp[i];
+				}
+			}
+		}
 
+		alphaNull = Math.pow(alphaNull, 1d / (double)(baseIs.length - 1));
 		for (int baseI : baseIs) {
 			alpha[baseI] = mean[baseI] * alphaNull;
 		}
