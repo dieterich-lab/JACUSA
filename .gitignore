@@ -1,2 +1,7 @@
 /bin
 /manual/
+/manual.aux
+/manual.dvi
+/manual.log
+/manual.out
+/manual.toc
