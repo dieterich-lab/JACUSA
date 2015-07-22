@@ -13,7 +13,7 @@ public class VCF_ResultFormat extends AbstractOutputFormat {
 	public static final char CHAR = 'V';
 
 	public VCF_ResultFormat(final BaseConfig baseConfig) {
-		super(CHAR, "VCF output");
+		super(CHAR, "VCF");
 		this.baseConfig = baseConfig;
 	}
 	

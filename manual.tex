@@ -1,12 +1,15 @@
-\documentclass[12pt, a4paper]{article}
+\documentclass[10pt, a4paper]{article}
 
 % include stuff
+\usepackage[utf8]{inputenc}
 \usepackage{todonotes}
 \usepackage{hyperref}
 \usepackage{amssymb}
+\usepackage[T1]{fontenc}
+
 
 % document related
-\title{JACUSA manual \\ Verision 1.0}
+\title{JACUSA manual \\ Version 1.0}
 \author{Michael Piechotta \\ michael.piechotta@age.mpg.de}
 \date{July 20, 2015} 
 
@@ -102,21 +105,33 @@ of the BAM files will not be considered.
 In the following example traverse file, the search is confined to a 100nt region on contig 1
 staring at 1,000 and a single site on contig 2 at coordinates 10,000:
 \begin{table}
-  \begin{tabular}{lll}
-    contig name & begin & end \\
-    1 & 1000 & 1100 \\
-    2 & 10000 & 10000
-  \end{tabular}
+\centering
+\caption{Example of BED-like traverse file}
+\label{tb:traverse_file}
+\begin{tabular}{lll}
+\textbf{contig} & \textbf{start} & \textbf{end} \\
+\hline
+1 & 1000 & 1100 \\
+2 & 10000 & 10000 \\
+\multicolumn{3}{c}{}
+\end{tabular}
 \end{table}
 HINT: Many individual sites will slow down JACUSA. If possible, try to merge nearby sites into
 contiguous regions and extract specific sites from JACUSA output with
 bedtools\footnote{\href{http://bedtools.readthedocs.org/en/latest/}{bedtools}} intersect:
 \begin{description}
-\item[merge sites] \begin{verbatim} bedtools merge -d 500 singular_sites.bed > contigous_regions.bed
+\item[merge sites] \begin{verbatim} 
+
+bedtools merge -d 500 singular_sites.bed > contigous_regions.bed
 \end{verbatim}
-\item[run JACUSA] \begin{verbatim} java -jar JACUSA.jar call-2 -b contigous_regions.bed -o
-JACUSA.out mapping_1.sorted.bam mapping_2.sorted.bam \end{verbatim}
-\item[extract sites] \begin{verbatim} bedtools intersect -wa -a JACUSA.out -b singular_sites.bed
+\item[run JACUSA] \begin{verbatim} 
+
+java -jar JACUSA.jar call-2 -b contigous_regions.bed -o
+JACUSA.out mapping_1.sorted.bam mapping_2.sorted.bam
+\end{verbatim}
+\item[extract sites] \begin{verbatim}
+
+bedtools intersect -wa -a JACUSA.out -b singular_sites.bed
 \end{verbatim}
 \end{description}
 %--------------------------------------------------------------------------------------------------
@@ -137,12 +152,12 @@ BED6\footnote{\href{http://genome.ucsc.edu/FAQ/FAQformat.html\#format1}{BED file
 additional JACUSA specific columns. The actual number of columns depends on number of provided BAM
 files.
 \begin{table}
-\caption{Detailed explanation of columns for the default file format}
+\caption{JACUSA default output format}
 \begin{tabular}{cccccc|cccc}
 contig & start & end & name & score & strand & bases11 & bases22 & info & filter\_info \\
 \hline
 1 & 100 & 101 & variant & $8.07\ldots$ & - & 0,0,0,6 & 0,6,0,0 & * & * \\	
-\multicolumn{6}{c}{\ldots} & \multicolumn{4}{c}{\ldots}
+\multicolumn{6}{c|}{\ldots} & \multicolumn{4}{c}{\ldots}
 \end{tabular}
 \end{table}
 \begin{description}
@@ -174,11 +189,14 @@ java -jarJACUSA.jar
     pileup  SAMtools like mpileup for two samples
 \end{verbatim}
 \subsection{Call variant - two samples}
+{\small
 \begin{verbatim}
 usage: jacusa.jar [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...]
-\end{verbatim}
+\end{verbatim}}
 \begin{table}
-\begin{tabular}{lr}
+\centering
+{\small
+\begin{tabular}{p{.4\textwidth}p{.6\textwidth}}
  -a,--pileup-filter <PILEUP-FILTER>             & chain of PILEUP-FILTER to apply to pileups: \\
                                                 & D | Filter distance to Read Start/End, Intron, and INDEL position. Default: 5:0.5 (D:distance:min\_ratio) \\
                                                 & S | Filter distance to Splice Site. Default: 6:0.5 (S:distance:min\_ratio) \\
@@ -217,15 +235,15 @@ usage: jacusa.jar [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...
  -q1,--min-basq1 <MIN-BASQ1>                    & filter 1 positions with base quality < MIN-BASQ1. Default: 20 \\
  -q2,--min-basq2 <MIN-BASQ2>                    & filter 2 positions with base quality < MIN-BASQ2. Default: 20 \\
  -r,--result-file <RESULT-FILE>                 & results are written to RESULT-FILE or STDOUT if empty \\
- -s,--separate                                  & Put feature-filtered results in to a separate file (append suffix: RESULT-FILE.filtered)\\
+ -s,--separate                                  & Put feature-filtered results in to a separate file (= RESULT-FILE.filtered)\\
  -T,--threshold <THRESHOLD>                     & Filter positions dependening on test-statistic THRESHOLD default: DO NOT FILTER \\
  -u,--modus <MODUS>                             & Choose between different modes: \\
                                                 & <*> DirMult-CE : Compound Err. (estimated err.{0.01} + phred score) \\
                                                 & < > DirMult-RCE : Robust Compound Err. \\
  -v,--version                                   & Print version information. \\
  -W,--thread-window-size <THREAD-WINDOW-SIZE>   & size of the window used per thread. Default: 100000 \\
- -w,--window-size <WINDOW-SIZE>                 & size of the window used for caching. Make sure this is greater than the read size. Default: 10000 \\
-\end{tabular}
+ -w,--window-size <WINDOW-SIZE>                 & size of the window used for caching. Make sure this is greater than the read size. Default: 10000
+\end{tabular}}
 \end{table}
 \subsection{SAMtools like mpileup for two samples}
 See ``Call variant - two samples'' for details.
@@ -235,12 +253,12 @@ Use the following command line to identify RNA-DNA differences in BAM files that
 \begin{verbatim}
 java -jar call-2 -o JACUSA.out -s -a H:1 gDNA.bam cDNA.bam
 \end{verbatim}
-The option ``-a H:1'' ensures that potential polymorphisms in gDNA will eliminate site as artefact in orider to discriminate from RNA editing sites. The number
+Option ``-a H:1'' ensures that potential polymorphisms in gDNA will eliminate site as artefact in orider to discriminate from RNA editing sites. The number
 determines which sample has to be homomorph - in this case: gDNA.bam.
 %--------------------------------------------------------------------------------------------------
 \section{Used libraries}
 picard tools
-\todo{continue}
+\todo{complete list}
 %--------------------------------------------------------------------------------------------------
 \end{document}
 %--------------------------------------------------------------------------------------------------

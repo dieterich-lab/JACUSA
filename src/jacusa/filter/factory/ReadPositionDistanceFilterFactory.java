@@ -31,7 +31,8 @@ public class ReadPositionDistanceFilterFactory extends AbstractFilterFactory<Win
 	public ReadPositionDistanceFilterFactory(AbstractParameters parameters) {
 		super(
 				'B', 
-				"Filter distance to Read Start/End. Default: " + DISTANCE + ":" + MIN_RATIO + ":" + MIN_COUNT +" (F:distance:min_ratio:min_count)", 
+				//"Filter distance to Read Start/End. Default: " + DISTANCE + ":" + MIN_RATIO + ":" + MIN_COUNT +" (F:distance:min_ratio:min_count)",
+				"Filter distance to Read Start/End. Default: " + DISTANCE + ":" + MIN_RATIO + " (F:distance:min_ratio)",
 				true,
 				cigarOperator);
 		this.parameters = parameters;

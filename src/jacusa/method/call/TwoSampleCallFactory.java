@@ -1,11 +1,10 @@
 package jacusa.method.call;
 
-
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
 import jacusa.cli.options.BaseConfigOption;
 import jacusa.cli.options.BedCoordinatesOption;
-import jacusa.cli.options.DebugOption;
+//import jacusa.cli.options.DebugOption;
 import jacusa.cli.options.FilterConfigOption;
 import jacusa.cli.options.FilterModusOption;
 import jacusa.cli.options.FormatOption;
@@ -55,13 +54,13 @@ import jacusa.filter.factory.RareEventFilterFactory;
 import jacusa.io.format.AbstractOutputFormat;
 import jacusa.io.format.BED6ResultFormat;
 //import jacusa.io.format.DebugResultFormat;
-import jacusa.io.format.DefaultOutputFormat;
-import jacusa.io.format.PileupResultFormat;
+//import jacusa.io.format.DefaultOutputFormat;
+//import jacusa.io.format.PileupResultFormat;
 import jacusa.io.format.VCF_ResultFormat;
 //import jacusa.io.format.result.DebugResultFormat;
 //import jacusa.io.format.result.VCF_ResultFormat;
 import jacusa.method.AbstractMethodFactory;
-import jacusa.method.call.statistic.ACCUSA2Statistic;
+// import jacusa.method.call.statistic.ACCUSA2Statistic;
 //import jacusa.method.call.statistic.ACCUSA2Statistic;
 //import jacusa.method.call.statistic.DirichletBayesStatistic;
 //import jacusa.method.call.statistic.DirichletStatistic;
@@ -163,7 +162,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new StatisticFilterOption(parameters.getStatisticParameters()));
 
 		// 
-		acOptions.add(new DebugOption(parameters));
+		// acOptions.add(new DebugOption(parameters));
 		acOptions.add(new HelpOption(CLI.getSingleton()));
 		acOptions.add(new VersionOption(CLI.getSingleton()));
 	}
@@ -181,8 +180,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 
 		StatisticCalculator statistic = null;
 
-		statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
+		// statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		// statistics.put(statistic.getName(), statistic);
 		
 		// RC statistic = new LR_SPEC_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		// RC statistics.put(statistic.getName(), statistic);
@@ -255,11 +254,13 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 	public Map<Character, AbstractOutputFormat> getResultFormats() {
 		Map<Character, AbstractOutputFormat> resultFormats = new HashMap<Character, AbstractOutputFormat>();
 
-		AbstractOutputFormat resultFormat = new DefaultOutputFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
-		resultFormats.put(resultFormat.getC(), resultFormat);
+		AbstractOutputFormat resultFormat = null;
+		
+		//AbstractOutputFormat resultFormat = new DefaultOutputFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		//resultFormats.put(resultFormat.getC(), resultFormat);
 
-		resultFormat = new PileupResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
-		resultFormats.put(resultFormat.getC(), resultFormat);
+		// resultFormat = new PileupResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		// resultFormats.put(resultFormat.getC(), resultFormat);
 		
 		resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);

@@ -29,7 +29,8 @@ public class SpliceSiteDistanceFilterFactory extends AbstractFilterFactory<Windo
 	}
 	
 	public SpliceSiteDistanceFilterFactory(AbstractParameters parameters) {
-		super('S', "Filter distance to Splice Site. Default: " + DISTANCE + ":" + MIN_RATIO + ":" + MIN_COUNT +" (S:distance:min_ratio:min_count)", cigarOperator);
+		//super('S', "Filter distance to Splice Site. Default: " + DISTANCE + ":" + MIN_RATIO + ":" + MIN_COUNT +" (S:distance:min_ratio:min_count)", cigarOperator);
+		super('S', "Filter distance to Splice Site. Default: " + DISTANCE + ":" + MIN_RATIO + " (S:distance:min_ratio)", cigarOperator);
 		this.parameters = parameters;
 		distance = DISTANCE;
 		minRatio = MIN_RATIO;

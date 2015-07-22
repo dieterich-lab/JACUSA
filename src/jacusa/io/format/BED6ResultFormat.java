@@ -23,7 +23,7 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 	public BED6ResultFormat(
 			final BaseConfig baseConfig, 
 			final FilterConfig filterConfig) {
-		super(CHAR, "BED like output");
+		super(CHAR, "Default");
 		
 		this.baseConfig = baseConfig;
 		this.filterConfig = filterConfig;

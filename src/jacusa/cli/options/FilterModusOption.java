@@ -30,7 +30,7 @@ public class FilterModusOption extends AbstractACOption {
 		return OptionBuilder.withLongOpt(longOpt)
 				.withArgName(longOpt.toUpperCase())
 				.hasArg(false)
-		        .withDescription("Put pileup-filtered results in to a separate file")
+		        .withDescription("Put feature-filtered results in to a separate file (= RESULT-FILE.filtered)")
 		        .create(opt);
 	}
 

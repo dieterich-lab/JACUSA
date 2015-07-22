@@ -1,11 +1,10 @@
 package jacusa.method.pileup;
 
-
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
 import jacusa.cli.options.BaseConfigOption;
 import jacusa.cli.options.BedCoordinatesOption;
-import jacusa.cli.options.DebugOption;
+//import jacusa.cli.options.DebugOption;
 import jacusa.cli.options.FilterConfigOption;
 import jacusa.cli.options.FormatOption;
 import jacusa.cli.options.HelpOption;
@@ -117,7 +116,7 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 		acOptions.add(new ThreadWindowSizeOption(parameters));
 
 		acOptions.add(new MaxThreadOption(parameters));
-		acOptions.add(new DebugOption(parameters));
+		// acOptions.add(new DebugOption(parameters));
 		acOptions.add(new HelpOption(CLI.getSingleton()));
 		acOptions.add(new VersionOption(CLI.getSingleton()));
 	}
