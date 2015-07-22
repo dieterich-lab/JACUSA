@@ -47,14 +47,14 @@ editing sites via comparing genomic and transcriptomic sequencing reads. In this
 have been only imputed to the cDNA BAM file. The cDNA VS cDNA data setup can be interpreted as
 representing allele specific expression of single variants or differential RNA editing. In this
 setup, variants with pairwise different base frequency have been imputed into both cDNA BAM files.
-Additionally, to make the identication of variants more challeging SNPs with pairwise similar base
+Additionally, to make the identification of variants more challenging SNPs with pairwise similar base
 frequencies have been included to both BAM files. This sites should not be identified as true
 positive sites.
 gDNA data has been simulate with
 art\footnote{\href{http://www.niehs.nih.gov/research/resources/software/biostatistics/art/}{art}}
 and cDNA reads have been simulated with
 flux\footnote{\href{http://sammeth.net/confluence/display/SIM/Home}{flux simulator}}. Read
-simulations have been restricted to the corresponding first chromosome of the respecitve species.
+simulations have been restricted to the corresponding first chromosome of the respecitive species.
 Sample data is available for \textit{C. elegans} ce10 and \textit{Homo sapien} hg19. Each archive
 consists of:
 \begin{description}
@@ -84,7 +84,7 @@ Available data sample, organized by data type and species:
 %--------------------------------------------------------------------------------------------------
 \section{Input}
 \subsection{Alignment files}
-JACUSA needs sorted and indexed BAM files. BAM is a standerized file format for
+JACUSA needs sorted and indexed BAM files. BAM is a standardized file format for
 efficient storage of alignments. Check the manuals for
 \footnote{\href{http://samtools.sourceforge.net/}{SAMtools/BCFtools}} and/or
 \footnote{\href{http://broadinstitute.github.io/picard/}{picard tools}} for how to use the
@@ -137,10 +137,10 @@ bedtools intersect -wa -a JACUSA.out -b singular_sites.bed
 %--------------------------------------------------------------------------------------------------
 \section{Output}
 JACUSA writes its output to a user defined file or a pipe. When using multiple threads, JACUSA will
-create a gzipped temporary file for each allocated thread. Choosen command line parameters
+create a gzipped temporary file for each allocated thread. Chosen command line parameters
 and current genomic position are printed to the command prompt. Furthermore, depending on
 the provided command line parameters, JACUSA will generate a file with site that have been
-identifed as potential artefacts when ``-s" is provided. Currently, JACUSA supports the following
+identified as potential artefacts when ``-s" is provided. Currently, JACUSA supports the following
 output formats, controlled by ``-f'':
 \begin{itemize}
   \item Default (JACUSA output)
@@ -168,9 +168,9 @@ compatibility
 variant. Higher number indicate a higher likelihood for a variant
 \item[strand] Possbile values are: ``.'', ``+'', and ``-'' which correspond to ``unstranded'',
 ``positive strand'', and ``negative strand''. If strand is != ``.'', then the following base columns
-will be indicating base counts according to the strand - inverted base count if on the ``negavtive
+will be indicating base counts according to the strand - inverted base count if on the ``negative
 strand''
-\item[basesIJ] The number of base columns depends on the number of BAM files. In basesIF: $I$
+\item[basesIJ] The number of base columns depends on the number of BAM files. In basesIJ: $I$
 corresponds to sample and $J$ to the respective replicate. Numbers indicate the base count of the
 following base vector: $(A, C, G, T)$
 \item[info] Additional info for this specific site. Currently, details about the parameter
@@ -236,7 +236,7 @@ usage: jacusa.jar [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...
  -q2,--min-basq2 <MIN-BASQ2>                    & filter 2 positions with base quality < MIN-BASQ2. Default: 20 \\
  -r,--result-file <RESULT-FILE>                 & results are written to RESULT-FILE or STDOUT if empty \\
  -s,--separate                                  & Put feature-filtered results in to a separate file (= RESULT-FILE.filtered)\\
- -T,--threshold <THRESHOLD>                     & Filter positions dependening on test-statistic THRESHOLD default: DO NOT FILTER \\
+ -T,--threshold <THRESHOLD>                     & Filter positions depending on test-statistic THRESHOLD default: DO NOT FILTER \\
  -u,--modus <MODUS>                             & Choose between different modes: \\
                                                 & <*> DirMult-CE : Compound Err. (estimated err.{0.01} + phred score) \\
                                                 & < > DirMult-RCE : Robust Compound Err. \\
@@ -248,12 +248,12 @@ usage: jacusa.jar [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...
 \subsection{SAMtools like mpileup for two samples}
 See ``Call variant - two samples'' for details.
 %--------------------------------------------------------------------------------------------------
-\section{Idenifition of RNA editing sites}
+\section{Identification of RNA editing sites}
 Use the following command line to identify RNA-DNA differences in BAM files that might give rise to RNA editing sites:
 \begin{verbatim}
 java -jar call-2 -o JACUSA.out -s -a H:1 gDNA.bam cDNA.bam
 \end{verbatim}
-Option ``-a H:1'' ensures that potential polymorphisms in gDNA will eliminate site as artefact in orider to discriminate from RNA editing sites. The number
+Option ``-a H:1'' ensures that potential polymorphisms in gDNA will eliminate site as artefact in order to discriminate from RNA editing sites. The number
 determines which sample has to be homomorph - in this case: gDNA.bam.
 %--------------------------------------------------------------------------------------------------
 \section{Used libraries}
