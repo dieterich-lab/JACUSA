@@ -6,12 +6,12 @@ import jacusa.pileup.Pileup;
 
 public class RonningAlphaInit extends AbstractAlphaInit {
 
-	final private double minVariance = 0.00001;
+	final private double minVariance = 0.00000001;
 	
 	public RonningAlphaInit() {
 		super("Roning", "See Ronning 1989");
 	}
-	
+
 	@Override
 	public double[] init(
 			final int[] baseIs, 
@@ -20,7 +20,9 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 			final double[] pileupCoverages
 			) {
 		
-		final double[][] pileupProportionMatrix = new double[pileups.length][baseIs.length];
+		int n = pileupMatrix[0].length;
+		
+		final double[][] pileupProportionMatrix = new double[pileups.length][n];
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI : baseIs) {
 				pileupProportionMatrix[pileupI][baseI] = pileupMatrix[pileupI][baseI] / pileupCoverages[pileupI];
@@ -28,10 +30,10 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 		}
 		
 		// init
-		double[] alpha = new double[baseIs.length];
+		double[] alpha = new double[n];
 		Arrays.fill(alpha, 0d);
 
-		double[] mean = new double[baseIs.length];
+		double[] mean = new double[n];
 		Arrays.fill(mean, 0d);
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI : baseIs) {
@@ -42,7 +44,7 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 			mean[baseI] /= (double)(pileups.length);
 		}
 		
-		double[] variance = new double[baseIs.length];
+		double[] variance = new double[n];
 		Arrays.fill(variance, 0d);
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI : baseIs) {
@@ -89,6 +91,7 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 			alpha[baseI] = mean[baseI] * alphaNull;
 		}
 
+//		Arrays.fill(alpha, 0.0001);
 		return alpha;
 	}
 

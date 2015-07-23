@@ -46,7 +46,7 @@ public class MinkaEstimateParameters {
 		boolean converged = false;
 
 		// final int baseN = baseConfig.getBases().length;
-		final int baseN = baseIs.length;
+		final int baseN = alphaOld.length;
 		
 		// init alpha new
 		double[] alphaNew = new double[baseN];
