@@ -6,12 +6,21 @@ import jacusa.pileup.Pileup;
 
 public class RonningAlphaInit extends AbstractAlphaInit {
 
-	final private double minVariance = 0.00000001;
+	private double minVariance;
 	
 	public RonningAlphaInit() {
-		super("Roning", "See Ronning 1989");
+		this(Math.pow(10, -5));
 	}
 
+	public RonningAlphaInit(double minVariance) {
+		super("Roning", "See Ronning 1989");
+		this.minVariance = minVariance;
+	}
+
+	void setMinVariance(double minVariacnce) {
+		this.minVariance = minVariacnce;
+	}
+	
 	@Override
 	public double[] init(
 			final int[] baseIs, 
@@ -76,22 +85,25 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 		Arrays.sort(tmp);
 		// Ronning 1989 to set Method Of Moments
 		double alphaNull = 0.0;
+		int j = 0;
 		for (int i = 0; i < baseIs.length - 1; ++i) {
 			if (tmp[i] > 0.0) {
 				if (alphaNull == 0.0) {
 					alphaNull = tmp[i];
+					++j;
 				} else {
 					alphaNull *= tmp[i];
+					++j;
 				}
 			}
 		}
 
-		alphaNull = Math.pow(alphaNull, 1d / (double)(baseIs.length - 1));
+		//alphaNull = Math.pow(alphaNull, 1d / (double)(baseIs.length - 1));
+		alphaNull = Math.pow(alphaNull, 1d / (double)(j));
 		for (int baseI : baseIs) {
 			alpha[baseI] = mean[baseI] * alphaNull;
 		}
-
-//		Arrays.fill(alpha, 0.0001);
+		
 		return alpha;
 	}
 
@@ -103,8 +115,12 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 			final double[] pileupErrorVector,
 			final double pileupCoverage
 			) {
+		// FIXME
+		int n = pileupVector.length;
+		double[] alpha = new double[n];
+		Arrays.fill(alpha, 0.0001);
 		// TODO
 		return null;
 	}
-	
+
 }

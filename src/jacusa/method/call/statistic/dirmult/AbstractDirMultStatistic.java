@@ -141,6 +141,35 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		}
 	}
 	
+	public double[] getAlpha1() {
+		return alpha1;
+	}
+	public double[] getAlpha2() {
+		return alpha2;
+	}
+	public double[] getAlphaP() {
+		return alphaP;
+	}
+	public double[] getInitAlpha1() {
+		return initAlpha1;
+	}
+	public double[] getInitAlpha2() {
+		return initAlpha2;
+	}
+	public double[] getInitAlphaP() {
+		return initAlphaP;
+	}
+	public double getLogLikelihood1() {
+		return logLikelihood1;
+	}
+	public double getLogLikelihood2() {
+		return logLikelihood2;
+	}
+	public double getLogLikelihoodP() {
+		return logLikelihoodP;
+	}
+	
+	
 	@Override
 	public double getStatistic(final ParallelPileup parallelPileup) {
 		final int baseIs[] = getBaseIs(parallelPileup);
@@ -203,8 +232,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			System.out.println("Warning: Numerical Stability");
 			System.out.println(parallelPileup.getContig());
 			System.out.println(parallelPileup.getStart());
-			System.out.println(parallelPileup.prettyPrint());
-
+			// System.out.println(parallelPileup.prettyPrint());
 			return stat;
 		}
 
@@ -310,6 +338,11 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		}
 
 		return baseConfig.getBasesI();
+	}
+
+	
+	public MinkaEstimateParameters getEstimateAlpha() {
+		return  this.estimateAlpha;
 	}
 
 }

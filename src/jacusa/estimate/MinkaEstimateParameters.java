@@ -1,5 +1,6 @@
 package jacusa.estimate;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
@@ -115,7 +116,14 @@ public class MinkaEstimateParameters {
 			for (int baseI : baseIs) {
 				alphaNew[baseI] = alphaOld[baseI] - (gradient[baseI] - b) / Q[baseI];
 				if (alphaNew[baseI] < 0.0) {
-					alphaNew[baseI] = 0.001;
+					double min = Double.MAX_VALUE;
+					for (int pileupI = 0; pileupI < pileupN; ++pileupI) {
+						for (int baseI2 : baseIs) {
+							min = Math.min(min, matrix[pileupI][baseI2]);
+						}
+					}
+					Arrays.fill(alphaNew, min);
+					break;
 				}
 			}
 
@@ -133,6 +141,18 @@ public class MinkaEstimateParameters {
 
 		return loglikNew;
 	}
+	
+	public static String printAlpha(double a[]) {
+		DecimalFormat df = new DecimalFormat("0.0000"); 
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(df.format(a[0]));
+		for (int i = 1; i < a.length; ++i) {
+			sb.append("  ");
+			sb.append(df.format(a[i]));
+		}
+	return sb.toString();
+}
 	
 	// calculate likelihood
 	protected double getLogLikelihood(

@@ -111,5 +111,9 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 		
 		return r;
 	}
-
+	
+	public void setEstimatedError(double estimatedError) {
+		this.estimatedError = estimatedError;
+	}
+	
 }

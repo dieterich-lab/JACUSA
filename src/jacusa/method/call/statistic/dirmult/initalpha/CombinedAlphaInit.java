@@ -32,7 +32,5 @@ public class CombinedAlphaInit extends AbstractAlphaInit {
 			double pileupCoverage) {
 		return bayes.init(baseIs, pileup, pileupVector, pileupErrorVector, pileupCoverage);
 	}
-	
-		
 		
 }
