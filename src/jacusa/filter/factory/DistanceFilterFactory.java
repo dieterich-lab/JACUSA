@@ -15,7 +15,6 @@ public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 
 	private static int DISTANCE = 5;
 	private static double MIN_RATIO = 0.5;
-	private static int MIN_COUNT = 2;
 
 	private int distance;
 	private double minRatio;
@@ -40,7 +39,6 @@ public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 		this.parameters = parameters;
 		distance = DISTANCE;
 		minRatio = MIN_RATIO;
-		minCount = MIN_COUNT;
 	}
 
 	@Override
@@ -69,16 +67,6 @@ public class DistanceFilterFactory extends AbstractFilterFactory<WindowCache> {
 				}
 				this.minRatio = minRatio;
 				break;
-
-			/* TODO
-			case 3:
-				final int minCount = Integer.valueOf(s[i]);
-				if (minCount < 0) {
-					throw new IllegalArgumentException("Invalid minCount " + line);
-				}
-				this.minCount = minCount;
-				break;
-			*/
 
 			default:
 				throw new IllegalArgumentException("Invalid argument: " + line);

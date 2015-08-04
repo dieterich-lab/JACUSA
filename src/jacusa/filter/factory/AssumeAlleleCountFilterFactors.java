@@ -85,8 +85,6 @@ public class AssumeAlleleCountFilterFactors extends AbstractFilterFactory<Void> 
 			if (prunedParallelPileup.getPooledPileup().getAlleles().length > alleleCount) {
 				return true;
 			}
-
-			// TODO recalculate statistic and add info
 			
 			return false;
 		}
@@ -95,18 +93,18 @@ public class AssumeAlleleCountFilterFactors extends AbstractFilterFactory<Void> 
 			Pileup[] copy = new Pileup[pileups.length];
 			for (int i = 0; i < pileups.length; ++i) {
 				// sort by base count
-				// FIXME int[] bc = pileups[i].getCounts().getBaseCount();
-				// FIXME BaseCountComparator bcc = new BaseCountComparator(bc);
-				// FIXME Integer[] index = bcc.createIndexArray();
-				// FIXME Arrays.sort(index, bcc);
+				// int[] bc = pileups[i].getCounts().getBaseCount();
+				// BaseCountComparator bcc = new BaseCountComparator(bc);
+				// 
+				// Arrays.sort(index, bcc);
 
 				// adjust base count and qual count 
 				copy[i] = new DefaultPileup(pileups[i]);
 				// copy[i].getCounts().reset();
 				for (int j = 0; j < targetAlleleCount; ++j) {
-					// FIXME int b = index[j];
+					// int b = index[j];
 
-					/* FIXME copy[i].getCounts().getBaseCount()[b] = pileups[i].getCounts().getBaseCount()[b];
+					/* copy[i].getCounts().getBaseCount()[b] = pileups[i].getCounts().getBaseCount()[b];
 					System.arraycopy(
 							pileups[i].getCounts().getQualCount()[b], 
 							0, 
@@ -120,7 +118,7 @@ public class AssumeAlleleCountFilterFactors extends AbstractFilterFactory<Void> 
 			return copy;
 		}
 
-		/* // FIXME 
+		/*
 		private class BaseCountComparator implements Comparator<Integer> {
 		    private final int[] a;
 

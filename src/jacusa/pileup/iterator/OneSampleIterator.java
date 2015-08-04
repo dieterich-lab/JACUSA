@@ -10,7 +10,7 @@ import jacusa.util.Coordinate;
 import jacusa.util.Location;
 import net.sf.samtools.SAMFileReader;
 
-// FIXME use AbstractLocationAdvancer
+// TODO use AbstractLocationAdvancer
 @Deprecated
 public class OneSampleIterator extends AbstractOneSampleIterator {
 

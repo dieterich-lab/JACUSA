@@ -4,33 +4,33 @@ import jacusa.pileup.Pileup;
 
 public class CombinedAlphaInit extends AbstractAlphaInit {
 
-	private BayesAlphaInit bayes;
-	private RonningAlphaInit ronning;
+	private AbstractAlphaInit A;
+	private AbstractAlphaInit B;
 	
-	public CombinedAlphaInit() {
-		super("combined", "Bayes + Ronning");
-		bayes = new BayesAlphaInit();
-		ronning = new RonningAlphaInit();
+	public CombinedAlphaInit(AbstractAlphaInit A, AbstractAlphaInit B) {
+		super("combined", "A + B");
+		this.A = A;
+		this.B = B;
 	}
 	
 	@Override
 	public double[] init(
-			final int[] baseIs, 
+			final int[] baseIs,
 			final Pileup[] pileups,
 			final double[][] pileupMatrix, 
 			final double[] pileupCoverages) {
 
-		return ronning.init(baseIs, pileups, pileupMatrix, pileupCoverages);
-
+		return A.init(baseIs, pileups, pileupMatrix, pileupCoverages);
 	}
 
 	@Override
-	public double[] init(int[] baseIs, 
-			Pileup pileup, 
-			double[] pileupVector,
-			double[] pileupErrorVector, 
-			double pileupCoverage) {
-		return bayes.init(baseIs, pileup, pileupVector, pileupErrorVector, pileupCoverage);
+	public double[] init(
+			final int[] baseIs, 
+			final Pileup pileup, 
+			final double[] pileupVector,
+			final double[] pileupErrorVector, 
+			final double pileupCoverage) {
+		return B.init(baseIs, pileup, pileupVector, pileupErrorVector, pileupCoverage);
 	}
 		
 }

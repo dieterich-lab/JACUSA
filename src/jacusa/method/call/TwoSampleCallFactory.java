@@ -60,6 +60,7 @@ import jacusa.io.format.VCF_ResultFormat;
 //import jacusa.io.format.result.DebugResultFormat;
 //import jacusa.io.format.result.VCF_ResultFormat;
 import jacusa.method.AbstractMethodFactory;
+import jacusa.method.call.statistic.ACCUSA2Statistic;
 // import jacusa.method.call.statistic.ACCUSA2Statistic;
 //import jacusa.method.call.statistic.ACCUSA2Statistic;
 //import jacusa.method.call.statistic.DirichletBayesStatistic;
@@ -180,8 +181,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 
 		StatisticCalculator statistic = null;
 
-		// statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		// statistics.put(statistic.getName(), statistic);
+		statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistics.put(statistic.getName(), statistic);
 		
 		// RC statistic = new LR_SPEC_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		// RC statistics.put(statistic.getName(), statistic);

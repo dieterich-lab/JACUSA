@@ -9,7 +9,7 @@ import jacusa.util.Location;
 public class TwoSampleDebugIterator extends AbstractWindowIterator {
 
 	private boolean hasNext;
-	
+
 	public TwoSampleDebugIterator(ParallelPileup parallelPileup, TwoSampleCallParameters parameters) {
 		super(new Coordinate("TODO", 1, 1), null, parameters);
 		this.parallelPileup = parallelPileup;

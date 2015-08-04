@@ -1,13 +1,11 @@
 package jacusa.method.call.statistic.dirmult;
 
-
 import jacusa.cli.parameters.StatisticParameters;
 import jacusa.estimate.MinkaEstimateParameters;
 import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.BayesAlphaInit;
-import jacusa.method.call.statistic.dirmult.initalpha.CombinedAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.ConstantAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.MeanAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.RonningAlphaInit;
@@ -71,7 +69,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			double[] pileupCoverage,
 			double[] pileupErrorVector,
 			double[] pileupVector);
-	
+
 	@Override
 	public synchronized void addStatistic(Result result) {
 		final double statistic = getStatistic(result.getParellelPileup());
@@ -180,7 +178,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		alpha1 = new double[baseN];
 		double[] pileupCoverages1 = new double[parallelPileup.getN1()];
 		double[][] pileupMatrix1  = new double[parallelPileup.getN1()][baseN];
-		
+
 		alpha2 = new double[baseN];
 		double[] pileupCoverages2 = new double[parallelPileup.getN2()];
 		double[][] pileupMatrix2 = new double[parallelPileup.getN2()][baseN];
@@ -190,7 +188,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		double[][] pileupMatrixP = new double[parallelPileup.getN()][baseN];
 
 		if (parallelPileup.getPileups1().length == 1) {
-			double[] pileupErrorVector1 = new double[baseN];
+			final double[] pileupErrorVector1 = new double[baseN];
 			populate(parallelPileup.getPileups1()[0], baseIs, pileupCoverages1, pileupErrorVector1, pileupMatrix1[0]);
 			initAlpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1()[0], pileupMatrix1[0], pileupErrorVector1, pileupCoverages1[0]);
 		} else {
@@ -199,7 +197,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		}
 		System.arraycopy(initAlpha1, 0, alpha1, 0, baseN);
 		if (parallelPileup.getPileups2().length == 1) {
-			double[] pileupErrorVector2 = new double[baseN];
+			final double[] pileupErrorVector2 = new double[baseN];
 			populate(parallelPileup.getPileups2()[0], baseIs, pileupCoverages2, pileupErrorVector2, pileupMatrix2[0]);
 			initAlpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2()[0], pileupMatrix2[0], pileupErrorVector2, pileupCoverages2[0]);
 		} else {
@@ -210,7 +208,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		populate(parallelPileup.getPileupsP(), baseIs, pileupCoveragesP, pileupMatrixP);
 		initAlphaP = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileupsP(), pileupMatrixP, pileupCoveragesP);
 		System.arraycopy(initAlphaP, 0, alphaP, 0, baseN);
-		
+
 		double stat = Double.NaN;
 		try {
 			// estimate alphas
@@ -298,7 +296,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 				if (initAlphaClass.equals("bayes")) {
 					alphaInit = new BayesAlphaInit();
 				} else if (initAlphaClass.equals("combined")) {
-					alphaInit = new CombinedAlphaInit();
+					// TODO make A,B alphaInit = new CombinedAlphaInit(A, B);
 				} else if (initAlphaClass.equals("constant")) {
 					double constant = -1d;
 					for (String v : value.split(Character.toString(','))) {
@@ -345,4 +343,43 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		return  this.estimateAlpha;
 	}
 
+	public String printPileups(Pileup[] pileups) {
+		StringBuilder sb = new StringBuilder();
+		
+		// output sample: Ax,Cx,Gx,Tx
+		for (Pileup pileup : pileups) {
+			sb.append("\t");
+
+			int i = 0;
+			char b = BaseConfig.VALID[i];
+			int baseI = baseConfig.getBaseI((byte)b);
+			int count = 0;
+			if (baseI >= 0) {
+				count = pileup.getCounts().getBaseCount(baseI);
+			}
+			sb.append(count);
+			++i;
+			for (; i < BaseConfig.VALID.length; ++i) {
+				b = BaseConfig.VALID[i];
+				baseI = baseConfig.getBaseI((byte)b);
+				count = 0;
+				if (baseI >= 0) {
+					count = pileup.getCounts().getBaseCount(baseI);
+				}
+				sb.append(",");
+				sb.append(count);
+			}
+		}
+		
+		return sb.toString();
+	}
+
+	public void setShowAlpha(boolean showAlpha) {
+		this.showAlpha = showAlpha;
+	}
+
+	public void setOnlyObservedBases(boolean onlyObservedBases) {
+		this.onlyObservedBases = onlyObservedBases;
+	}
+	
 }

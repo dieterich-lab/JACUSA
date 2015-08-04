@@ -29,7 +29,7 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 	}
 
 	@Override
-	protected void populate(final Pileup[] pileups, final int[] baseIs, double[] pileupCoverages, double[][] pileupMatrix) {
+	public void populate(final Pileup[] pileups, final int[] baseIs, double[] pileupCoverages, double[][] pileupMatrix) {
 		// init
 		Arrays.fill(pileupCoverages, 0.0);
 		for (int i = 0; i < pileupMatrix.length; ++i) {
@@ -38,15 +38,18 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			Pileup pileup = pileups[pileupI];
+
 			double[] pileupCount = phred2Prob.colSumCount(baseIs, pileup);
 			double[] pileupError = phred2Prob.colMeanErrorProb(baseIs, pileup);
 
 			for (int baseI : baseIs) {
-				pileupMatrix[pileupI][baseI] += pileupCount[baseI];
 				if (pileupCount[baseI] > 0.0) {
+					pileupMatrix[pileupI][baseI] += pileupCount[baseI];
 					for (int baseI2 : baseIs) {
 						if (baseI != baseI2) {
-							pileupMatrix[pileupI][baseI2] += (pileupError[baseI2] + estimatedError) * (double)pileupCount[baseI] / (double)(baseIs.length - 1);
+							pileupMatrix[pileupI][baseI2] += (pileupError[baseI] + estimatedError) * (double)pileupCount[baseI] / (double)(baseIs.length - 1);
+						} else {
+							// pileupMatrix[pileupI][baseI2] -= (estimatedError) * (double)pileupCount[baseI];
 						}
 					}
 				}
@@ -66,8 +69,8 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 		double[] pileupError = phred2Prob.colMeanErrorProb(baseIs, pileup);
 
 		for (int baseI : baseIs) {
-			pileupMatrix[baseI] += pileupCount[baseI];
 			if (pileupCount[baseI] > 0.0) {
+				pileupMatrix[baseI] += pileupCount[baseI];
 				for (int baseI2 : baseIs) {
 					if (baseI != baseI2) {
 						double combinedError = (pileupError[baseI2] + estimatedError) * (double)pileupCount[baseI] / (double)(baseIs.length - 1);
@@ -77,6 +80,7 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 				}
 			}
 		}
+
 		pileupCoverage[0] = MathUtil.sum(pileupMatrix);
 	}
 

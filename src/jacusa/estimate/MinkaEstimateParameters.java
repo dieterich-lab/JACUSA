@@ -1,10 +1,11 @@
 package jacusa.estimate;
 
-import java.text.DecimalFormat;
 import java.util.Arrays;
 
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
+import jacusa.method.call.statistic.dirmult.initalpha.BayesAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.CombinedAlphaInit;
+import jacusa.method.call.statistic.dirmult.initalpha.WeirMoMAlphaInit;
 import jacusa.util.MathUtil;
 
 import org.apache.commons.math3.special.Gamma;
@@ -20,7 +21,7 @@ public class MinkaEstimateParameters {
 	private int iterations;
 	
 	public MinkaEstimateParameters() {
-		alphaInit = new CombinedAlphaInit();
+		alphaInit = new CombinedAlphaInit(new WeirMoMAlphaInit(), new BayesAlphaInit());
 		maxIterations = 100;
 		epsilon = 0.001;
 	}
@@ -63,11 +64,11 @@ public class MinkaEstimateParameters {
 		double digammaSummedAlphaOld;
 		double trigammaSummedAlphaOld;
 		// log-likelihood
-		double loglikOld = Double.NEGATIVE_INFINITY;;
+		double loglikOld = Double.NEGATIVE_INFINITY;
 		double loglikNew = Double.NEGATIVE_INFINITY;
 
 		int pileupN = coverages.length;
-		
+
 		// maximize
 		while (iterations < maxIterations && ! converged) {
 			// pre-compute
@@ -83,11 +84,12 @@ public class MinkaEstimateParameters {
 				gradient[baseI] = 0.0;
 				Q[baseI] = 0.0;
 
+				// System.out.println("baseI: " + baseI);
 				for (int pileupI = 0; pileupI < pileupN; ++pileupI) {
 					// calculate gradient
 					gradient[baseI] += digammaSummedAlphaOld;
 					gradient[baseI] -= digamma(coverages[pileupI] + summedAlphaOld);
-
+					// 
 					gradient[baseI] += digamma(matrix[pileupI][baseI] + alphaOld[baseI]);
 					gradient[baseI] -= digamma(alphaOld[baseI]);
 
@@ -112,21 +114,35 @@ public class MinkaEstimateParameters {
 
 			loglikOld = getLogLikelihood(alphaOld, baseIs, coverages, matrix);
 			
-			// update alphaNew
+			// try update alphaNew
+			boolean admissible = true; 		
 			for (int baseI : baseIs) {
 				alphaNew[baseI] = alphaOld[baseI] - (gradient[baseI] - b) / Q[baseI];
+
 				if (alphaNew[baseI] < 0.0) {
-					double min = Double.MAX_VALUE;
-					for (int pileupI = 0; pileupI < pileupN; ++pileupI) {
-						for (int baseI2 : baseIs) {
-							min = Math.min(min, matrix[pileupI][baseI2]);
+					System.err.println("Reset! " + iterations);
+					admissible = false;
+				}
+			}
+			// check if alpha negative
+			if (! admissible) {
+				// try newton backtracking
+				alphaNew = backtracking(alphaOld, baseIs, gradient, b, Q);
+				if (alphaNew == null) {
+					alphaNew = new double[baseN];
+
+					// if backtracking did not work use Ronning1989 -> min_k X_ik 
+					for (int baseI : baseIs) {		
+						double min = Double.MAX_VALUE;
+						for (int pileupI = 0; pileupI < pileupN; ++pileupI) {
+							min = Math.min(min, matrix[pileupI][baseI] / coverages[pileupI]);
 						}
+						alphaNew[baseI] = min;
 					}
-					Arrays.fill(alphaNew, min);
-					break;
 				}
 			}
 
+			// calculate log-likelihood for new alpha(s)
 			loglikNew = getLogLikelihood(alphaNew, baseIs, coverages, matrix);
 
 			// check if converged
@@ -137,22 +153,51 @@ public class MinkaEstimateParameters {
 			// update value
 			System.arraycopy(alphaNew, 0, alphaOld, 0, alphaNew.length);
 			iterations++;
+
+			/*
+			System.out.print("iter: " + iterations + "\t=>\t");
+			System.out.println(printAlpha(alphaNew));
+			*/
 		}
 
 		return loglikNew;
 	}
-	
-	public static String printAlpha(double a[]) {
-		DecimalFormat df = new DecimalFormat("0.0000"); 
-		StringBuilder sb = new StringBuilder();
 
-		sb.append(df.format(a[0]));
-		for (int i = 1; i < a.length; ++i) {
-			sb.append("  ");
-			sb.append(df.format(a[i]));
+	private  double[] backtracking(
+			final double[] alpha, 
+			final int[] baseIs, 
+			final double[] gradient, 
+			final double b, 
+			final double[] Q) {
+		double[] alphaNew = new double[alpha.length];
+
+		// try smaller newton steps
+		double lamba = 1.0;
+		// decrease by
+		double offset = 0.01;
+
+		while (lamba >= 0.0) {
+			lamba = lamba - offset;
+
+			boolean admissible = true;
+			// adjust alpha with smaller newton step
+			for (int baseI : baseIs) {
+				alphaNew[baseI] = alpha[baseI] - lamba * (gradient[baseI] - b) / Q[baseI];
+				// check if admissible
+				if (alphaNew[baseI] < 0.0) {
+					admissible = false;
+					break;
+				}
+			}
+
+			if (admissible) {
+				return alphaNew;
+			}
 		}
-	return sb.toString();
-}
+
+		// could not find alpha(s)
+		return null;
+	}
 	
 	// calculate likelihood
 	protected double getLogLikelihood(

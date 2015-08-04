@@ -30,7 +30,7 @@ public class AlignmentBiasFilterFactory extends AbstractFilterFactory<BaseCount>
 
 	@Override
 	public void processCLI(final String line) throws IllegalArgumentException {
-		/* FIXME
+		/* 
 		if (line.length() == 1) {
 			throw new IllegalArgumentException("Invalid argument " + line);
 		}

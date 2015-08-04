@@ -22,7 +22,7 @@ public class StatisticFilterOption  extends AbstractACOption {
 		return OptionBuilder.withLongOpt(longOpt)
 			.withArgName(longOpt.toUpperCase())
 			.hasArg(true)
-	        .withDescription("Filter positions based on test-statistic " + longOpt.toUpperCase() + "\n default: DO NOT FILTER") // FIXME
+	        .withDescription("Filter positions based on test-statistic " + longOpt.toUpperCase() + "\n default: DO NOT FILTER")
 	        .create(opt);
 	}
 

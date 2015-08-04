@@ -1,6 +1,5 @@
 package jacusa.method.window;
 
-
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
 import jacusa.cli.options.BaseConfigOption;
@@ -18,7 +17,6 @@ import jacusa.cli.options.ResultFileOption;
 import jacusa.cli.options.StatisticCalculatorOption;
 import jacusa.cli.options.StatisticFilterOption;
 import jacusa.cli.options.VersionOption;
-// import jacusa.cli.options.pileupbuilder.TwoSamplePileupBuilderOption;
 import jacusa.cli.options.sample.MaxDepthSampleOption;
 import jacusa.cli.options.sample.MinBASQSampleOption;
 import jacusa.cli.options.sample.MinCoverageSampleOption;
@@ -35,8 +33,6 @@ import jacusa.io.format.BED6ResultFormat;
 import jacusa.io.format.BEDWindowResultFormat;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.statistic.StatisticCalculator;
-import jacusa.method.call.statistic.dirmult.DirichletMultinomial;
-import jacusa.method.call.statistic.dirmult.DirichletMultinomialPooledError;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialCompoundError;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialEstimatedError;
 import jacusa.pileup.dispatcher.call.TwoSampleWindowCallWorkerDispatcher;
@@ -56,6 +52,7 @@ import org.apache.commons.cli.ParseException;
 
 import net.sf.samtools.SAMSequenceRecord;
 
+@Deprecated
 public class TwoSampleWindowCallFactory extends AbstractMethodFactory {
 
 	private TwoSampleCallParameters parameters;
@@ -138,12 +135,6 @@ public class TwoSampleWindowCallFactory extends AbstractMethodFactory {
 		Map<String, StatisticCalculator> statistics = new TreeMap<String, StatisticCalculator>();
 
 		StatisticCalculator statistic = null;
-
-		statistic = new DirichletMultinomial(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
-
-		statistic = new DirichletMultinomialPooledError(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
 
 		statistic = new DirichletMultinomialCompoundError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);

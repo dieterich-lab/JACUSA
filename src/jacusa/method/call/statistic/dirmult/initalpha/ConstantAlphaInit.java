@@ -15,7 +15,7 @@ public class ConstantAlphaInit extends AbstractAlphaInit {
 	
 	@Override
 	public double[] init(
-			final int[] baseIs, 
+			final int[] baseIs,
 			final Pileup[] pileups,
 			final double[][] pileupMatrix, 
 			final double[] pileupCoverages) {
@@ -25,11 +25,12 @@ public class ConstantAlphaInit extends AbstractAlphaInit {
 	}
 
 	@Override
-	public double[] init(int[] baseIs, 
-			Pileup pileup, 
-			double[] pileupVector,
-			double[] pileupErrorVector, 
-			double pileupCoverage) {
+	public double[] init(
+			final int[] baseIs,
+			final Pileup pileup, 
+			final double[] pileupVector,
+			final double[] pileupErrorVector,
+			final double pileupCoverage) {
 		final double[] alpha = new double[baseIs.length];
 		Arrays.fill(alpha, constant);
 		return alpha;

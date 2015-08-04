@@ -86,7 +86,6 @@ public class Counts implements Cloneable {
 		return baseCount[base];
 	}
 
-	// TODO
 	public int setBaseCount(final int base, final int count) {
 		return baseCount[base] = count;
 	}

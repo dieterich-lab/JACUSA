@@ -9,8 +9,11 @@ public class MeanAlphaInit extends AbstractAlphaInit {
 	}
 	
 	@Override
-	public double[] init(int[] baseIs, Pileup[] pileups,
-			double[][] pileupMatrix, double[] pileupCoverages) {
+	public double[] init(
+			final int[] baseIs,
+			final Pileup[] pileups,
+			final double[][] pileupMatrix, 
+			final double[] pileupCoverages) {
 		final double[] alpha = new double[baseIs.length];
 		final double[] mean = new double[baseIs.length];
 
@@ -36,11 +39,12 @@ public class MeanAlphaInit extends AbstractAlphaInit {
 	}
 
 	@Override
-	public double[] init(int[] baseIs, 
-			Pileup pileup, 
-			double[] pileupVector,
-			double[] pileupErrorVector, 
-			double pileupCoverage) {
+	public double[] init(
+			final int[] baseIs,
+			final Pileup pileup, 
+			final double[] pileupVector,
+			final double[] pileupErrorVector,
+			final double pileupCoverage) {
 		return init(baseIs, new Pileup[]{pileup}, new double[][]{pileupVector}, new double[]{pileupCoverage});
 	}
 	

@@ -19,13 +19,9 @@ import jacusa.filter.factory.OutlierFilterFactory;
 import jacusa.filter.factory.ZeroCountFilterFactory;
 import jacusa.io.format.AbstractOutputFormat;
 import jacusa.io.format.BED6ResultFormat;
-//import jacusa.io.format.DebugResultFormat;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.statistic.StatisticCalculator;
-import jacusa.method.call.statistic.dirmult.DirichletMultinomial;
-import jacusa.method.call.statistic.dirmult.DirichletMultinomialPooledError;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialCompoundError;
-import jacusa.method.call.statistic.dirmult.DirichletMultinomialEstimatedError;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialRobustCompoundError;
 import jacusa.pileup.dispatcher.call.TwoSampleDebugCallWorkerDispatcher;
 import jacusa.util.coordinateprovider.BedCoordinateProvider;
@@ -41,6 +37,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+@Deprecated
 public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 
 	private TwoSampleCallParameters parameters;
@@ -65,8 +62,8 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 			initSampleACOptions(sampleI, sample1);
 			initSampleACOptions(sampleI, sample2);
 		}
-		// global settings
 
+		// global settings
 		acOptions.add(new ResultFileOption(parameters));
 		if (getResultFormats().size() == 1 ) {
 			Character[] a = getResultFormats().keySet().toArray(new Character[1]);
@@ -119,19 +116,10 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 
 		StatisticCalculator statistic = null;
 
-		statistic = new DirichletMultinomial(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
-
-		statistic = new DirichletMultinomialPooledError(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
-
 		statistic = new DirichletMultinomialCompoundError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
 		statistic = new DirichletMultinomialRobustCompoundError(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
-		
-		statistic = new DirichletMultinomialEstimatedError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 		
 		return statistics;

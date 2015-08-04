@@ -122,7 +122,6 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 			for (int j = 0; j < bases.length; ++j) {
 				int count = Integer.parseInt(bases[j]);
 				if (count > 0) {
-					// FIXME
 					pileups[i].getCounts().setBaseCount(j, count);
 					pileups[i].getCounts().getQualCount(j)[qual] = count;
 				}

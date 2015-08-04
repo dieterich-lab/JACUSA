@@ -4,7 +4,6 @@ import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
 import jacusa.cli.options.BaseConfigOption;
 import jacusa.cli.options.BedCoordinatesOption;
-//import jacusa.cli.options.DebugOption;
 import jacusa.cli.options.FilterConfigOption;
 import jacusa.cli.options.FormatOption;
 import jacusa.cli.options.HelpOption;
@@ -32,7 +31,6 @@ import jacusa.filter.factory.RareEventFilterFactory;
 import jacusa.io.format.AbstractOutputFormat;
 import jacusa.io.format.DefaultOutputFormat;
 import jacusa.method.AbstractMethodFactory;
-import jacusa.method.call.statistic.DirichletMOMsStatistic;
 import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
 import jacusa.method.call.statistic.lr.LR_SPEC_Statistic;
@@ -119,9 +117,6 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 		statistics.put(statistic.getName(), statistic);
 
 		statistic = new LR_SENS_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
-
-		statistic = new DirichletMOMsStatistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
 		return statistics;

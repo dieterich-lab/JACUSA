@@ -7,7 +7,6 @@ import jacusa.pileup.DefaultPileup;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 
-// TODO
 public class DirichletMultinomialRobustCompoundError extends DirichletMultinomialCompoundError {
 
 	public DirichletMultinomialRobustCompoundError(final BaseConfig baseConfig, final StatisticParameters parameters) {
@@ -61,6 +60,7 @@ public class DirichletMultinomialRobustCompoundError extends DirichletMultinomia
 		return super.getStatistic(pp);
 	}
 
+	
 	private Pileup[] flat(Pileup[] pileups, int[] variantBaseIs, int commonBaseI) {
 		Pileup[] ret = new Pileup[pileups.length];
 		for (int i = 0; i < pileups.length; ++i) {

@@ -34,7 +34,6 @@ public class TwoSampleDebugCallWorker extends AbstractCallWorker {
 
 	@Override
 	protected TwoSampleDebugIterator buildIterator(Coordinate coordinate) {
-		// FIXME reader
 		coordinate.setStart(coordinate.getStart() - 1);
 		return new TwoSampleDebugIterator(coord2parallelPileup.get(coordinate.toString()), parameters);
 	}
