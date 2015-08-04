@@ -35,26 +35,80 @@ public abstract class AbstractMethodFactory {
 		acOptions = new HashSet<AbstractACOption>();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public abstract AbstractParameters getParameters();
 
+	/**
+	 * 
+	 */
 	public abstract void initACOptions();
-	public abstract AbstractWorkerDispatcher<? extends AbstractWorker> getInstance(String[] pathnames1, String[] pathnames2, CoordinateProvider coordinateProvider) throws IOException; 
 
-	
+	/**
+	 * 
+	 * @param pathnames1
+	 * @param pathnames2
+	 * @param coordinateProvider
+	 * @return
+	 * @throws IOException
+	 */
+	public abstract AbstractWorkerDispatcher<? extends AbstractWorker> getInstance(
+			String[] pathnames1, 
+			String[] pathnames2, 
+			CoordinateProvider coordinateProvider) throws IOException; 
+
+	/**
+	 * 
+	 * @return
+	 */
 	public Set<AbstractACOption> getACOptions() {
 		return acOptions;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getName() {
 		return name;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getDescription() {
 		return desc;
 	}
 	
+	/**
+	 * 
+	 * @param options
+	 */
+	public abstract void printUsage();
+
+	/**
+	 * 
+	 * @throws Exception
+	 */
 	public abstract void initCoordinateProvider() throws Exception;
-	
+
+	/**
+	 * 
+	 * @param args
+	 * @return
+	 * @throws Exception
+	 */
+	public abstract boolean parseArgs(String[] args) throws Exception;
+
+	/**
+	 * 
+	 * @param pathnames
+	 * @return
+	 * @throws Exception
+	 */
 	protected List<SAMSequenceRecord> getSAMSequenceRecords(String[] pathnames) throws Exception {
 		JACUSA.printLog("Computing overlap between sequence records.");
 
@@ -66,11 +120,13 @@ public abstract class AbstractMethodFactory {
 		return records;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public CoordinateProvider getCoordinateProvider() {
 		return coordinateProvider;
 	}
-
-	public abstract boolean parseArgs(String[] args) throws Exception;
 	
 	/**
 	 * 
@@ -98,6 +154,12 @@ public abstract class AbstractMethodFactory {
 		return records;
 	}
 
+	/**
+	 * 
+	 * @param targetSequenceNames
+	 * @param pathnames
+	 * @return
+	 */
 	private boolean isValid(Set<String> targetSequenceNames, String[] pathnames) {
 		Set<String> sequenceNames = new HashSet<String>();
 		for(String pathname : pathnames) {
@@ -115,11 +177,5 @@ public abstract class AbstractMethodFactory {
 
 		return true;
 	}
-	
-	/**
-	 * 
-	 * @param options
-	 */
-	public abstract void printUsage();
 	
 }

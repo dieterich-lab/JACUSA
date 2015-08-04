@@ -67,7 +67,7 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 		return coordinateProvider.hasNext();
 	}
 
-	public final int run() {
+	public int run() {
 		// write Header
 		try {
 			String header = format.getHeader(pathnames1, pathnames2);
@@ -136,7 +136,7 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 	public void addComparisons(int comparisons) {
 		this.comparisons += comparisons;
 	}
-	
+
 	public AbstractOutputFormat getFormat() {
 		return format;
 	}

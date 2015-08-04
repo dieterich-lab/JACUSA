@@ -1,22 +1,17 @@
 package jacusa.method.call;
 
+
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
-import jacusa.cli.options.FilterConfigOption;
 import jacusa.cli.options.FormatOption;
 import jacusa.cli.options.HelpOption;
 import jacusa.cli.options.PathnameArg;
 import jacusa.cli.options.ResultFileOption;
 import jacusa.cli.options.StatisticCalculatorOption;
 import jacusa.cli.options.StatisticFilterOption;
-import jacusa.cli.options.sample.MaxDepthSampleOption;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
-import jacusa.cli.parameters.SampleParameters;
 import jacusa.cli.parameters.TwoSampleCallParameters;
-import jacusa.filter.factory.AbstractFilterFactory;
-import jacusa.filter.factory.OutlierFilterFactory;
-import jacusa.filter.factory.ZeroCountFilterFactory;
 import jacusa.io.format.AbstractOutputFormat;
 import jacusa.io.format.BED6ResultFormat;
 import jacusa.method.AbstractMethodFactory;
@@ -37,7 +32,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-@Deprecated
 public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 
 	private TwoSampleCallParameters parameters;
@@ -49,20 +43,8 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 		parameters = new TwoSampleCallParameters();
 	}
 
-	protected void initSampleACOptions(int sample, SampleParameters sampleParameters) {
-		acOptions.add(new MaxDepthSampleOption(sample, sampleParameters));
-	}
-	
+	@Override
 	public void initACOptions() {
-		// sample specific setting
-		SampleParameters sample1 = parameters.getSample1();
-		SampleParameters sample2 = parameters.getSample2();
-
-		for (int sampleI = 1; sampleI <= 2; ++sampleI) {
-			initSampleACOptions(sampleI, sample1);
-			initSampleACOptions(sampleI, sample2);
-		}
-
 		// global settings
 		acOptions.add(new ResultFileOption(parameters));
 		if (getResultFormats().size() == 1 ) {
@@ -81,9 +63,7 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 		}
 
 		acOptions.add(new StatisticFilterOption(parameters.getStatisticParameters()));
-		acOptions.add(new FilterConfigOption(parameters, getFilterFactories()));
 
-		// 
 		acOptions.add(new HelpOption(CLI.getSingleton()));
 	}
 
@@ -96,22 +76,7 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 		return instance;
 	}
 
-	public Map<Character, AbstractFilterFactory<?>> getFilterFactories() {
-		Map<Character, AbstractFilterFactory<?>> abstractPileupFilters = new HashMap<Character, AbstractFilterFactory<?>>();
-
-		AbstractFilterFactory<?>[] filterFactories = new AbstractFilterFactory[] {
-				new ZeroCountFilterFactory(parameters.getStatisticParameters()),
-				new OutlierFilterFactory(parameters.getStatisticParameters())
-		};
-		for (AbstractFilterFactory<?> filterFactory : filterFactories) {
-			abstractPileupFilters.put(filterFactory.getC(), filterFactory);
-		}
-
-		return abstractPileupFilters;
-	}
-
-	
-	public Map<String, StatisticCalculator> getStatistics() {
+	protected Map<String, StatisticCalculator> getStatistics() {
 		Map<String, StatisticCalculator> statistics = new TreeMap<String, StatisticCalculator>();
 
 		StatisticCalculator statistic = null;
@@ -170,5 +135,7 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 
 		formatter.printHelp(JACUSA.NAME + " [OPTIONS] input.txt", options);
 	}
+
 	
+
 }

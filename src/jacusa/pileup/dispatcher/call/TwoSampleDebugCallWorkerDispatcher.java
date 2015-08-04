@@ -1,31 +1,30 @@
 package jacusa.pileup.dispatcher.call;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import jacusa.cli.parameters.TwoSampleCallParameters;
+import jacusa.io.Output;
+import jacusa.io.format.AbstractOutputFormat;
+import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.pileup.DefaultParallelPileup;
 import jacusa.pileup.DefaultPileup;
+import jacusa.pileup.Result;
 import jacusa.pileup.DefaultPileup.STRAND;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
-import jacusa.pileup.worker.TwoSampleDebugCallWorker;
-import jacusa.util.Coordinate;
+import jacusa.pileup.worker.AbstractCallWorker;
 import jacusa.util.coordinateprovider.CoordinateProvider;
 
-public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispatcher<TwoSampleDebugCallWorker> {
+public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispatcher<AbstractCallWorker> {
 
 	private TwoSampleCallParameters parameters;
-	private Map<String, ParallelPileup> coord2parallelPileup; 
-	
+
 	public TwoSampleDebugCallWorkerDispatcher(String[] pathnames1, String[] pathnames2, CoordinateProvider coordinateProvider, TwoSampleCallParameters parameters) throws IOException {
 		super(	pathnames1,
 				pathnames2,
@@ -35,15 +34,18 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 				parameters.getFormat(),
 				parameters.isSeparate()
 		);
-		
+
 		this.parameters = parameters;
-		coord2parallelPileup = initCoord2parallelPileup(parameters.getSample1().getPathnames()[0]);
 	}
 
-	private Map<String, ParallelPileup> initCoord2parallelPileup(String pathname) {
-		Map<String, ParallelPileup> coord2parallelPileup = new HashMap<String, ParallelPileup>();
-		
-		File file = new File(pathname);
+	public int run() {
+		int comparisons = 0;
+
+		final StatisticCalculator sc = parameters.getStatisticParameters().getStatisticCalculator();
+		final Output output = parameters.getOutput();
+		final AbstractOutputFormat format = parameters.getFormat();
+
+		File file = new File(parameters.getSample1().getPathnames()[0]);
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			
@@ -92,27 +94,29 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 				Pileup[] pileups1 = getPileup(sequenceName, end, strand, replicateIndex1, cols);
 				Pileup[] pileups2 = getPileup(sequenceName, end, strand, replicateIndex2, cols);
 
-				// store parallelPileup at given coordinate
-				Coordinate coordinate = new Coordinate(sequenceName, start, end);
 				ParallelPileup parallelPileup = new DefaultParallelPileup(pileups1, pileups2);
 				parallelPileup.setContig(sequenceName);
 				parallelPileup.setStart(start);
 				parallelPileup.setEnd(end);
 				parallelPileup.setStrand(strand);
-				coord2parallelPileup.put(coordinate.toString(), parallelPileup);
+
+				Result result = new Result();
+				result.setParellelPileup(parallelPileup);
+
+				sc.addStatistic(result);
+
+				output.write(format.convert2String(result));
 			}
 			br.close();
+			output.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			return coord2parallelPileup;
 		} catch (IOException e) {
 			e.printStackTrace();
-			return coord2parallelPileup;
 		}
-
-		return coord2parallelPileup;
+		return comparisons; 
 	}
-	
+
 	private Pileup[] getPileup(String sequenceName, int end, STRAND strand, List<Integer> replicateIndex, String cols[]) {
 		byte qual = 40;
 		Pileup[] pileups = new DefaultPileup[replicateIndex.size()];
@@ -130,17 +134,10 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 		return pileups;
 	}
 
-	public Map<String, ParallelPileup> getCoord2parallelPileup() {
-		return coord2parallelPileup;
-	}
-
 	@Override
-	protected TwoSampleDebugCallWorker buildNextWorker() {
-		return new TwoSampleDebugCallWorker(
-				this,
-				this.getWorkerContainer().size(),
-				parameters
-		);
+	protected AbstractCallWorker buildNextWorker() {
+		// not needed
+		return null;
 	}
 
 }
