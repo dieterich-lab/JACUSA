@@ -10,17 +10,22 @@ public class WeirMoMAlphaInit extends AbstractAlphaInit {
 	public WeirMoMAlphaInit() {
 		super("WeirMoM", "WeirMoM");
 	}
-	
+
+	@Override
+	public AbstractAlphaInit newInstance(String line) {
+		return new WeirMoMAlphaInit();
+	}
+
 	@Override
 	public double[] init(
 			final int[] baseIs,
 			final Pileup[] pileups,
-			final double[][] pileupMatrix, 
-			final double[] pileupCoverages) {
+			final double[][] pileupMatrix) {
 		final double[] alpha = new double[BaseConfig.VALID.length];
 
 		int n = pileupMatrix[0].length;
-	
+		double[] pileupCoverages = getCoverages(baseIs, pileupMatrix);
+		
 		// calculate mean
 		double[] mean = new double[n];
 		Arrays.fill(mean, 0d);
@@ -87,8 +92,7 @@ public class WeirMoMAlphaInit extends AbstractAlphaInit {
 			final int[] baseIs,
 			final Pileup pileup, 
 			final double[] pileupVector,
-			final double[] pileupErrorVector,
-			final double pileupCoverage) {
+			final double[] pileupErrorVector) {
 		// this is not supported
 		return null;
 	}

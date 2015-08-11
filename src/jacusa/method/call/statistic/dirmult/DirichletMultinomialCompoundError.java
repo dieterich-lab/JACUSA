@@ -1,20 +1,20 @@
 package jacusa.method.call.statistic.dirmult;
 
 import jacusa.cli.parameters.StatisticParameters;
+import jacusa.estimate.MinkaEstimateDirMultParameters;
 import jacusa.filter.factory.AbstractFilterFactory;
+import jacusa.method.call.statistic.AbstractDirichletStatistic;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.Pileup;
-import jacusa.util.MathUtil;
 
-import java.util.Arrays;
-
-
-public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic {
+public class DirichletMultinomialCompoundError extends AbstractDirichletStatistic {
 
 	protected double estimatedError = 0.01;
+	protected double priorError = 0d;
 
 	public DirichletMultinomialCompoundError(final BaseConfig baseConfig, final StatisticParameters parameters) {
-		super(baseConfig, parameters);
+		// sorry for ugly, code call to super constructor must be first call
+		super(new MinkaEstimateDirMultParameters(), baseConfig, parameters);
 	}
 
 	@Override
@@ -25,50 +25,27 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 	@Override
 	public String getDescription() {
 		return "Compound Err. (estimated err.{" + estimatedError + "} + phred score)";  
-				//" (DirMult-CE:epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>)";
+		//" (DirMult-CE:epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>)";
 	}
 
 	@Override
-	public void populate(final Pileup[] pileups, final int[] baseIs, double[] pileupCoverages, double[][] pileupMatrix) {
-		// init
-		Arrays.fill(pileupCoverages, 0.0);
-		for (int i = 0; i < pileupMatrix.length; ++i) {
-			Arrays.fill(pileupMatrix[i], 0.0);
-		}
-
+	public void populate(final Pileup[] pileups, final int[] baseIs, double[][] pileupMatrix) {
+		double[] pileupErrorVector = new double[baseIs.length];
+		
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			Pileup pileup = pileups[pileupI];
-
-			double[] pileupCount = phred2Prob.colSumCount(baseIs, pileup);
-			double[] pileupError = phred2Prob.colMeanErrorProb(baseIs, pileup);
-
-			for (int baseI : baseIs) {
-				if (pileupCount[baseI] > 0.0) {
-					pileupMatrix[pileupI][baseI] += pileupCount[baseI];
-					for (int baseI2 : baseIs) {
-						if (baseI != baseI2) {
-							pileupMatrix[pileupI][baseI2] += (pileupError[baseI] + estimatedError) * (double)pileupCount[baseI] / (double)(baseIs.length - 1);
-						} else {
-							// pileupMatrix[pileupI][baseI2] -= (estimatedError) * (double)pileupCount[baseI];
-						}
-					}
-				}
-			}
-
-			pileupCoverages[pileupI] = MathUtil.sum(pileupMatrix[pileupI]);
+			populate(pileup, baseIs, pileupErrorVector, pileupMatrix[pileupI]);
 		}
 	}
 
 	@Override
-	protected void populate(final Pileup pileup, final int[] baseIs, double[] pileupCoverage, double[] pileupErrorVector, double[] pileupMatrix) {
-		// init
-		pileupCoverage[0] = 0.0;
-		Arrays.fill(pileupMatrix, 0.0);
-
+	protected void populate(final Pileup pileup, final int[] baseIs, double[] pileupErrorVector, double[] pileupMatrix) {
 		double[] pileupCount = phred2Prob.colSumCount(baseIs, pileup);
 		double[] pileupError = phred2Prob.colMeanErrorProb(baseIs, pileup);
 
 		for (int baseI : baseIs) {
+			pileupMatrix[baseI] += priorError;
+
 			if (pileupCount[baseI] > 0.0) {
 				pileupMatrix[baseI] += pileupCount[baseI];
 				for (int baseI2 : baseIs) {
@@ -76,12 +53,14 @@ public class DirichletMultinomialCompoundError extends AbstractDirMultStatistic 
 						double combinedError = (pileupError[baseI2] + estimatedError) * (double)pileupCount[baseI] / (double)(baseIs.length - 1);
 						pileupMatrix[baseI2] += combinedError;
 						pileupErrorVector[baseI2] = combinedError;
+					} else {
+						// pileupMatrix[pileupI][baseI2] -= (estimatedError) * (double)pileupCount[baseI];
 					}
 				}
+			} else {
+			
 			}
 		}
-
-		pileupCoverage[0] = MathUtil.sum(pileupMatrix);
 	}
 
 	@Override

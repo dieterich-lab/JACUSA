@@ -16,8 +16,8 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 	public static final char SEP 	= '\t';
 	public static final char SEP2 	= ',';
 	
-	private FilterConfig filterConfig;
-	private BaseConfig baseConfig;
+	protected FilterConfig filterConfig;
+	protected BaseConfig baseConfig;
 	public Phred2Prob phred2Prob;
 
 	public BED6ResultFormat(
@@ -73,7 +73,7 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 		return sb.toString();
 	}
 	
-	private void addSampleHeader(StringBuilder sb, char sample, int replicates) {
+	protected void addSampleHeader(StringBuilder sb, char sample, int replicates) {
 		sb.append("bases");
 		sb.append(sample);
 		sb.append(1);
@@ -135,7 +135,7 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 	/*
 	 * Helper function
 	 */
-	private void addPileups(StringBuilder sb, Pileup[] pileups) {
+	protected void addPileups(StringBuilder sb, Pileup[] pileups) {
 		// output sample: Ax,Cx,Gx,Tx
 		for (Pileup pileup : pileups) {
 			sb.append(SEP);

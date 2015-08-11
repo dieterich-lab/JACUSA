@@ -46,7 +46,6 @@ public abstract class AbstractCountFilter {
 			return ret;
 		}
 
-		// TODO sort variant by occurrence
 		// A | AG
 		if (variantBasesIs.length >= 1) {
 			return variantBasesIs;

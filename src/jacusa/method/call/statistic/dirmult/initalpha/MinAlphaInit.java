@@ -7,17 +7,23 @@ import jacusa.pileup.Pileup;
 public class MinAlphaInit extends AbstractAlphaInit {
 
 	public MinAlphaInit() {
-		super("mean", "alpha = mean * n * p * q");
+		super("minAlphaMean", "alpha = min_k mean(p)");
+	}
+
+	@Override
+	public AbstractAlphaInit newInstance(String line) {
+		return new MinAlphaInit();
 	}
 	
 	@Override
 	public double[] init(
 			final int[] baseIs,
 			final Pileup[] pileups,
-			final double[][] pileupMatrix, 
-			final double[] pileupCoverages) {
+			final double[][] pileupMatrix) {
 		final double[] alpha = new double[baseIs.length];
 		Arrays.fill(alpha, Double.MAX_VALUE);
+		
+		double[] pileupCoverages = getCoverages(baseIs, pileupMatrix);
 		
 		double[][] pileupProportionMatrix = new double[pileups.length][baseIs.length];
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
@@ -35,9 +41,8 @@ public class MinAlphaInit extends AbstractAlphaInit {
 			final int[] baseIs,
 			final Pileup pileup, 
 			final double[] pileupVector,
-			final double[] pileupErrorVector,
-			final double pileupCoverage) {
-		return init(baseIs, new Pileup[]{pileup}, new double[][]{pileupVector}, new double[]{pileupCoverage});
+			final double[] pileupErrorVector) {
+		return init(baseIs, new Pileup[]{pileup}, new double[][]{pileupVector});
 	}
 	
 }

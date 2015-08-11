@@ -7,16 +7,22 @@ public class MeanAlphaInit extends AbstractAlphaInit {
 	public MeanAlphaInit() {
 		super("mean", "alpha = mean * n * p * q");
 	}
+
+	@Override
+	public AbstractAlphaInit newInstance(String line) {
+		return new MeanAlphaInit();
+	}
 	
 	@Override
 	public double[] init(
 			final int[] baseIs,
 			final Pileup[] pileups,
-			final double[][] pileupMatrix, 
-			final double[] pileupCoverages) {
+			final double[][] pileupMatrix) {
 		final double[] alpha = new double[baseIs.length];
 		final double[] mean = new double[baseIs.length];
 
+		double[] pileupCoverages = getCoverages(baseIs, pileupMatrix);
+		
 		double[][] pileupProportionMatrix = new double[pileups.length][baseIs.length];
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI : baseIs) {
@@ -43,9 +49,8 @@ public class MeanAlphaInit extends AbstractAlphaInit {
 			final int[] baseIs,
 			final Pileup pileup, 
 			final double[] pileupVector,
-			final double[] pileupErrorVector,
-			final double pileupCoverage) {
-		return init(baseIs, new Pileup[]{pileup}, new double[][]{pileupVector}, new double[]{pileupCoverage});
+			final double[] pileupErrorVector) {
+		return init(baseIs, new Pileup[]{pileup}, new double[][]{pileupVector});
 	}
 	
 }

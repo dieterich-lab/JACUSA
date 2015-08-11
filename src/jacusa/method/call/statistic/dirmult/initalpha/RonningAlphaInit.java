@@ -12,7 +12,7 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 	private int maxAlphaNull;
 	
 	public RonningAlphaInit() {
-		this(Math.pow(10, -10), Integer.MAX_VALUE);
+		this(Math.pow(10, -6), Integer.MAX_VALUE);
 	}
 
 	public RonningAlphaInit(double minVariance, int maxAlphaNull) {
@@ -21,6 +21,11 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 		this.maxAlphaNull = maxAlphaNull;
 	}
 
+	@Override
+	public AbstractAlphaInit newInstance(String line) {
+		return new RonningAlphaInit(minVariance, maxAlphaNull);
+	}
+	
 	void setMinVariance(double minVariacnce) {
 		this.minVariance = minVariacnce;
 	}
@@ -29,13 +34,12 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 	public double[] init(
 			final int[] baseIs,
 			final Pileup[] pileups,
-			final double[][] pileupMatrix, 
-			final double[] pileupCoverages
-			) {
+			final double[][] pileupMatrix) {
 
 		// number of pileups
 		int n = pileupMatrix[0].length;
-
+		double[] pileupCoverages = getCoverages(baseIs, pileupMatrix);
+		
 		// calculate pileup proportion matrix
 		final double[][] pileupProportionMatrix = new double[pileups.length][n];
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
@@ -88,8 +92,6 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 				double v = mean[baseI] * (1d - mean[baseI]) / variance[baseI] - 1d;
 				if (v > 0) {
 					values[i] = v;
-				} else {
-					values[i] = 0.0;
 				}
 			}
 		}
@@ -110,6 +112,9 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 		if (alphaNull > maxAlphaNull) {
 			alphaNull = maxAlphaNull;
 		}
+		if (alphaNull == 0.0) {
+			alphaNull = 10d;
+		}
 
 		alphaNull = Math.pow(alphaNull, 1d / (double)(baseIs.length - 1));
 		for (int baseI : baseIs) {
@@ -124,9 +129,7 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 			final int[] baseIs,
 			final Pileup pileup,
 			final double[] pileupVector,
-			final double[] pileupErrorVector,
-			final double pileupCoverage
-			) {
+			final double[] pileupErrorVector) {
 		return null;
 	}
 

@@ -1,5 +1,8 @@
 package jacusa.util;
 
+import jacusa.pileup.DefaultPileup;
+import jacusa.pileup.Pileup;
+
 import java.text.DecimalFormat;
 
 public abstract class Util {
@@ -16,4 +19,18 @@ public abstract class Util {
 		return sb.toString();
 	}
 
+	public static Pileup[] flat(Pileup[] pileups, int[] variantBaseIs, int commonBaseI) {
+		Pileup[] ret = new Pileup[pileups.length];
+		for (int i = 0; i < pileups.length; ++i) {
+			ret[i] = new DefaultPileup(pileups[i]);
+
+			for (int variantBaseI : variantBaseIs) {
+				ret[i].getCounts().add(commonBaseI, variantBaseI, pileups[i].getCounts());
+				ret[i].getCounts().substract(variantBaseI, variantBaseI, pileups[i].getCounts());
+			}
+			
+		}
+		return ret;
+	}
+	
 }

@@ -5,7 +5,6 @@ import jacusa.pileup.BaseConfig;
 import jacusa.pileup.DefaultParallelPileup;
 import jacusa.pileup.DefaultPileup;
 import jacusa.pileup.ParallelPileup;
-import jacusa.pileup.Pileup;
 
 public class DirichletMultinomialRobustCompoundError extends DirichletMultinomialCompoundError {
 
@@ -48,31 +47,16 @@ public class DirichletMultinomialRobustCompoundError extends DirichletMultinomia
 		ParallelPileup pp = null;
 		if (a1 > 1 && a2 == 1 && aP == 2) {
 			pp = new DefaultParallelPileup(parallelPileup.getPileups1(), parallelPileup.getPileups1());
-			pp.setPileups1(flat(pp.getPileups1(), variantBaseIs, commonBaseI));
+			pp.setPileups1(DefaultPileup.flat(pp.getPileups1(), variantBaseIs, commonBaseI));
 		} else if (a2 > 1 && a1 == 1 && aP == 2) {
 			pp = new DefaultParallelPileup(parallelPileup.getPileups2(), parallelPileup.getPileups2());
-			pp.setPileups2(flat(pp.getPileups2(), variantBaseIs, commonBaseI));
+			pp.setPileups2(DefaultPileup.flat(pp.getPileups2(), variantBaseIs, commonBaseI));
 		}
 		if (pp == null) {
 			return super.getStatistic(parallelPileup);
 		}
 		
 		return super.getStatistic(pp);
-	}
-
-	
-	private Pileup[] flat(Pileup[] pileups, int[] variantBaseIs, int commonBaseI) {
-		Pileup[] ret = new Pileup[pileups.length];
-		for (int i = 0; i < pileups.length; ++i) {
-			ret[i] = new DefaultPileup(pileups[i]);
-
-			for (int variantBaseI : variantBaseIs) {
-				ret[i].getCounts().add(commonBaseI, variantBaseI, pileups[i].getCounts());
-				ret[i].getCounts().substract(variantBaseI, variantBaseI, pileups[i].getCounts());
-			}
-			
-		}
-		return ret;
 	}
 	
 }

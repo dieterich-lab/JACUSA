@@ -15,8 +15,6 @@ import jacusa.cli.options.StatisticFilterOption;
 import jacusa.cli.options.ThreadWindowSizeOption;
 import jacusa.cli.options.VersionOption;
 import jacusa.cli.options.WindowSizeOption;
-//import jacusa.cli.options.filter.FilterNHsamTagOption;
-//import jacusa.cli.options.filter.FilterNMsamTagOption;
 import jacusa.cli.options.pileupbuilder.OneSamplePileupBuilderOption;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
@@ -25,15 +23,19 @@ import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.filter.factory.DistanceFilterFactory;
 import jacusa.filter.factory.HomopolymerFilterFactory;
-import jacusa.filter.factory.HomozygousFilterFactory;
+import jacusa.filter.factory.INDEL_DistanceFilterFactory;
 import jacusa.filter.factory.MaxAlleleCountFilterFactors;
+import jacusa.filter.factory.MinDifferenceFilterFactory;
 import jacusa.filter.factory.RareEventFilterFactory;
+import jacusa.filter.factory.ReadPositionDistanceFilterFactory;
+import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
 import jacusa.io.format.AbstractOutputFormat;
-import jacusa.io.format.DefaultOutputFormat;
+import jacusa.io.format.BED6ResultFormat;
 import jacusa.method.AbstractMethodFactory;
+import jacusa.method.call.statistic.ACCUSA2Statistic;
 import jacusa.method.call.statistic.StatisticCalculator;
-import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
-import jacusa.method.call.statistic.lr.LR_SPEC_Statistic;
+import jacusa.method.call.statistic.dirmult.DirichletMultinomialCompoundError;
+import jacusa.method.call.statistic.dirmult.DirichletMultinomialRobustCompoundError;
 import jacusa.pileup.dispatcher.call.OneSampleCallWorkerDispatcher;
 import jacusa.util.coordinateprovider.CoordinateProvider;
 import jacusa.util.coordinateprovider.SAMCoordinateProvider;
@@ -51,7 +53,6 @@ import org.apache.commons.cli.ParseException;
 
 import net.sf.samtools.SAMSequenceRecord;
 
-@Deprecated
 public class OneSampleCallFactory extends AbstractMethodFactory {
 
 	private OneSampleCallParameters parameters = new OneSampleCallParameters();
@@ -113,10 +114,13 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 
 		StatisticCalculator statistic = null;
 
-		statistic = new LR_SPEC_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistics.put(statistic.getName(), statistic);
+		
+		statistic = new DirichletMultinomialCompoundError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
-		statistic = new LR_SENS_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistic = new DirichletMultinomialRobustCompoundError	(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
 		return statistics;
@@ -127,10 +131,13 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 
 		AbstractFilterFactory<?>[] filters = new AbstractFilterFactory[] {
 				new DistanceFilterFactory(parameters),
-				new HomozygousFilterFactory(parameters),
+				new INDEL_DistanceFilterFactory(parameters),
+				new ReadPositionDistanceFilterFactory(parameters),
+				new SpliceSiteDistanceFilterFactory(parameters),
 				new MaxAlleleCountFilterFactors(parameters),
 				new HomopolymerFilterFactory(parameters),
 				new RareEventFilterFactory(parameters),
+				new MinDifferenceFilterFactory(parameters),
 		};
 		for (AbstractFilterFactory<?> filter : filters) {
 			abstractPileupFilters.put(filter.getC(), filter);
@@ -142,7 +149,9 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 	public Map<Character, AbstractOutputFormat> getFormats() {
 		Map<Character, AbstractOutputFormat> resultFormats = new HashMap<Character, AbstractOutputFormat>();
 
-		AbstractOutputFormat resultFormat = new DefaultOutputFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		AbstractOutputFormat resultFormat = null;
+		
+		resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;

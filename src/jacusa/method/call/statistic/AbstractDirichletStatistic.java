@@ -1,14 +1,14 @@
-package jacusa.method.call.statistic.dirmult;
+package jacusa.method.call.statistic;
 
 import jacusa.cli.parameters.StatisticParameters;
 import jacusa.estimate.MinkaEstimateParameters;
 import jacusa.filter.factory.AbstractFilterFactory;
-import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
+import jacusa.method.call.statistic.dirmult.initalpha.AlphaInitFactory;
 import jacusa.method.call.statistic.dirmult.initalpha.BayesAlphaInit;
-import jacusa.method.call.statistic.dirmult.initalpha.ConstantAlphaInit;
-import jacusa.method.call.statistic.dirmult.initalpha.MeanAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.RonningAlphaInit;
+import jacusa.method.call.statistic.dirmult.initalpha.RonningBayesAlphaInit;
+import jacusa.method.call.statistic.dirmult.initalpha.WeirMoMAlphaInit;
 import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
@@ -16,10 +16,12 @@ import jacusa.pileup.Pileup;
 import jacusa.pileup.Result;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 
-public abstract class AbstractDirMultStatistic implements StatisticCalculator {
+public abstract class AbstractDirichletStatistic implements StatisticCalculator {
 
 	protected final StatisticParameters parameters;
 	protected final BaseConfig baseConfig;
@@ -44,9 +46,16 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 	protected double logLikelihood2;
 	protected double logLikelihoodP;
 	
+	protected boolean numericallyStable;
+	protected StringBuilder info1;
+	protected StringBuilder info2;
+	protected StringBuilder infoP;
+
 	protected MinkaEstimateParameters estimateAlpha;
 
-	public AbstractDirMultStatistic(final BaseConfig baseConfig, final StatisticParameters parameters) {
+	private AlphaInitFactory alphaInitFactory; 
+	
+	public AbstractDirichletStatistic(final MinkaEstimateParameters estimateAlpha, final BaseConfig baseConfig, final StatisticParameters parameters) {
 		this.parameters 	= parameters;
 		final int n 		= baseConfig.getBaseLength();
 		this.baseConfig 	= baseConfig;
@@ -54,19 +63,40 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		onlyObservedBases 	= false;
 		showAlpha			= false;
 
-		estimateAlpha		= new MinkaEstimateParameters();
+		this.estimateAlpha	= estimateAlpha;
+		
+		alphaInitFactory	= new AlphaInitFactory(getAlphaInits());
 	}
 
+	protected Map<String, AbstractAlphaInit> getAlphaInits() {
+		Map<String, AbstractAlphaInit> alphaInits = new HashMap<String, AbstractAlphaInit>();
+
+		AbstractAlphaInit alphaInit = new RonningAlphaInit();
+		alphaInits.put(alphaInit.getName(), alphaInit);
+
+		alphaInit = new BayesAlphaInit();
+		alphaInits.put(alphaInit.getName(), alphaInit);
+
+		alphaInit = new WeirMoMAlphaInit();
+		alphaInits.put(alphaInit.getName(), alphaInit);
+
+		alphaInit = new RonningBayesAlphaInit();
+		alphaInits.put(alphaInit.getName(), alphaInit);
+
+		alphaInit = new RonningBayesAlphaInit();
+		alphaInits.put(alphaInit.getName(), alphaInit);
+
+		return alphaInits;
+	}
+	
 	protected abstract void populate(
 			final Pileup[] pileups, 
 			final int[] baseIs, 
-			double[] pileupCoverages, 
 			double[][] pileupMatrix);
 
 	protected abstract void populate(
 			final Pileup pileup, 
 			final int[] baseIs, 
-			double[] pileupCoverage,
 			double[] pileupErrorVector,
 			double[] pileupVector);
 
@@ -75,9 +105,28 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 		final double statistic = getStatistic(result.getParellelPileup());
 		result.setStatistic(statistic);
 
+		StringBuilder sb = new StringBuilder();
+		if (! isNumericallyStable()) {
+			sb.append("NumericallyInstable;");
+		}
+		if (getInfo1().length() > 0) {
+			sb.append("1=");
+			sb.append(getInfo1().toString());
+			sb.append(";");
+		}
+		if (getInfo2().length() > 0) {
+			sb.append("2=");
+			sb.append(getInfo2().toString());
+			sb.append(";");
+		}
+		if (getInfoP().length() > 0) {
+			sb.append("P=");
+			sb.append(getInfoP().toString());
+			sb.append(";");
+		}
+
 		if (showAlpha) {
 			DecimalFormat df = new DecimalFormat("0.00"); 
-			StringBuilder sb = new StringBuilder();
 			sb.append("alpha1=");
 			sb.append(df.format(alpha1[0]));
 			for (int i = 1; i < alpha1.length; ++i) {
@@ -134,9 +183,9 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			sb.append(";");
 			sb.append("iterationsP=");
 			sb.append(iterationsP);
-			
-			result.addInfo(sb.toString());
+			sb.append(";");
 		}
+		result.addInfo(sb.toString());
 	}
 	
 	public double[] getAlpha1() {
@@ -166,7 +215,18 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 	public double getLogLikelihoodP() {
 		return logLikelihoodP;
 	}
-	
+	public StringBuilder getInfo1() {
+		return info1;
+	}
+	public StringBuilder getInfo2() {
+		return info2;
+	}
+	public StringBuilder getInfoP() {
+		return infoP;
+	}
+	public boolean isNumericallyStable() {
+		return numericallyStable;
+	}
 	
 	@Override
 	public double getStatistic(final ParallelPileup parallelPileup) {
@@ -175,49 +235,51 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 
 		ChiSquareDist dist = new ChiSquareDist(baseN - 1);
 
+		numericallyStable = true;
+		
 		alpha1 = new double[baseN];
-		double[] pileupCoverages1 = new double[parallelPileup.getN1()];
 		double[][] pileupMatrix1  = new double[parallelPileup.getN1()][baseN];
-
+		info1 = new StringBuilder();
+		
 		alpha2 = new double[baseN];
-		double[] pileupCoverages2 = new double[parallelPileup.getN2()];
 		double[][] pileupMatrix2 = new double[parallelPileup.getN2()][baseN];
+		info2 = new StringBuilder();
 
 		alphaP = new double[baseN];
-		double[] pileupCoveragesP = new double[parallelPileup.getN()];
 		double[][] pileupMatrixP = new double[parallelPileup.getN()][baseN];
+		infoP = new StringBuilder();
 
 		if (parallelPileup.getPileups1().length == 1) {
 			final double[] pileupErrorVector1 = new double[baseN];
-			populate(parallelPileup.getPileups1()[0], baseIs, pileupCoverages1, pileupErrorVector1, pileupMatrix1[0]);
-			initAlpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1()[0], pileupMatrix1[0], pileupErrorVector1, pileupCoverages1[0]);
+			populate(parallelPileup.getPileups1()[0], baseIs, pileupErrorVector1, pileupMatrix1[0]);
+			initAlpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1()[0], pileupMatrix1[0], pileupErrorVector1);
 		} else {
-			populate(parallelPileup.getPileups1(), baseIs, pileupCoverages1, pileupMatrix1);
-			initAlpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1(), pileupMatrix1, pileupCoverages1);
+			populate(parallelPileup.getPileups1(), baseIs, pileupMatrix1);
+			initAlpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1(), pileupMatrix1);
 		}
 		System.arraycopy(initAlpha1, 0, alpha1, 0, baseN);
 		if (parallelPileup.getPileups2().length == 1) {
 			final double[] pileupErrorVector2 = new double[baseN];
-			populate(parallelPileup.getPileups2()[0], baseIs, pileupCoverages2, pileupErrorVector2, pileupMatrix2[0]);
-			initAlpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2()[0], pileupMatrix2[0], pileupErrorVector2, pileupCoverages2[0]);
+			populate(parallelPileup.getPileups2()[0], baseIs, pileupErrorVector2, pileupMatrix2[0]);
+			initAlpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2()[0], pileupMatrix2[0], pileupErrorVector2);
 		} else {
-			populate(parallelPileup.getPileups2(), baseIs, pileupCoverages2, pileupMatrix2);
-			initAlpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2(), pileupMatrix2, pileupCoverages2);
+			populate(parallelPileup.getPileups2(), baseIs, pileupMatrix2);
+			initAlpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2(), pileupMatrix2);
 		}
 		System.arraycopy(initAlpha2, 0, alpha2, 0, baseN);
-		populate(parallelPileup.getPileupsP(), baseIs, pileupCoveragesP, pileupMatrixP);
-		initAlphaP = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileupsP(), pileupMatrixP, pileupCoveragesP);
+		populate(parallelPileup.getPileupsP(), baseIs, pileupMatrixP);
+		initAlphaP = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileupsP(), pileupMatrixP);
 		System.arraycopy(initAlphaP, 0, alphaP, 0, baseN);
 
 		double stat = Double.NaN;
 		try {
 			// estimate alphas
 
-			logLikelihood1 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha1, pileupCoverages1, pileupMatrix1);
+			logLikelihood1 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha1, pileupMatrix1, info1);
 			iterations1 = estimateAlpha.getIterations();
-			logLikelihood2 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha2, pileupCoverages2, pileupMatrix2);
+			logLikelihood2 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha2, pileupMatrix2, info2);
 			iterations2 = estimateAlpha.getIterations();
-			logLikelihoodP = estimateAlpha.maximizeLogLikelihood(baseIs, alphaP, pileupCoveragesP, pileupMatrixP);
+			logLikelihoodP = estimateAlpha.maximizeLogLikelihood(baseIs, alphaP, pileupMatrixP, infoP);
 			iterationsP = estimateAlpha.getIterations();
 
 			if (calcPValue) {
@@ -227,10 +289,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 				stat = (logLikelihood1 + logLikelihood2) - logLikelihoodP;
 			}
 		} catch (StackOverflowError e) {
-			System.out.println("Warning: Numerical Stability");
-			System.out.println(parallelPileup.getContig());
-			System.out.println(parallelPileup.getStart());
-			// System.out.println(parallelPileup.prettyPrint());
+			numericallyStable = false;
 			return stat;
 		}
 
@@ -289,39 +348,8 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 			} else if(key.equals("showAlpha")) {
 				showAlpha = true;
 				r = true;
-			} else if(key.equals("initAlpha")) {
-				// ugly
-				String initAlphaClass = value.split(Character.toString(','))[0];
-				AbstractAlphaInit alphaInit = null;
-				if (initAlphaClass.equals("bayes")) {
-					alphaInit = new BayesAlphaInit();
-				} else if (initAlphaClass.equals("combined")) {
-					// TODO make A,B alphaInit = new CombinedAlphaInit(A, B);
-				} else if (initAlphaClass.equals("constant")) {
-					double constant = -1d;
-					for (String v : value.split(Character.toString(','))) {
-						String[] kv2 = v.split("=");
-						String key2 = kv[0];
-						String value2 = new String();
-						if (kv2.length == 2) {
-							value2 = kv2[1];
-						}
-						if (key2.equals("value")) {
-							constant = Double.parseDouble(value2);
-						}
-					}
-					if (constant == -1d) {
-						throw new IllegalArgumentException(line + "\nConstant has to be > 0");
-					}
-					alphaInit = new ConstantAlphaInit(constant);
-				} else if (initAlphaClass.equals("mean")) {
-					alphaInit = new MeanAlphaInit();
-				} else if (initAlphaClass.equals("Ronning")) {
-					alphaInit = new RonningAlphaInit();
-				} else {
-					throw new IllegalArgumentException("Unknown initAlpha: " + value);
-				}
-
+			} else if(key.startsWith("initAlpha")) {
+				AbstractAlphaInit alphaInit = alphaInitFactory.processCLI(value);
 				estimateAlpha.setAlphaInit(alphaInit);
 				r = true;
 			}
@@ -340,7 +368,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 
 	
 	public MinkaEstimateParameters getEstimateAlpha() {
-		return  this.estimateAlpha;
+		return  estimateAlpha;
 	}
 
 	public String printPileups(Pileup[] pileups) {
@@ -370,7 +398,7 @@ public abstract class AbstractDirMultStatistic implements StatisticCalculator {
 				sb.append(count);
 			}
 		}
-		
+
 		return sb.toString();
 	}
 

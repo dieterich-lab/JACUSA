@@ -4,6 +4,7 @@ import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.cli.parameters.hasSampleB;
 import jacusa.method.AbstractMethodFactory;
+import jacusa.method.call.OneSampleCallFactory;
 import jacusa.method.call.TwoSampleCallFactory;
 import jacusa.method.call.TwoSampleDebugCallFactory;
 import jacusa.method.pileup.TwoSamplePileupFactory;
@@ -33,8 +34,8 @@ public class JACUSA {
 
 	// timer used for all time measurements
 	private static SimpleTimer timer;
-	public static final String NAME = "jacusa";
-	public static final String VERSION = "1.0-RC5-RONNING-FIX";
+	public static final String NAME = "jacusa.jar";
+	public static final String VERSION = "1.0-RC6";
 
 	// command line interface
 	private CLI cli;
@@ -49,10 +50,11 @@ public class JACUSA {
 		Map<String, AbstractMethodFactory> methodFactories = new TreeMap<String, AbstractMethodFactory>();
 
 		AbstractMethodFactory[] factories = new AbstractMethodFactory[] {
-			// RC new OneSampleCallFactory(), 
+			new OneSampleCallFactory(), 
 			new TwoSampleCallFactory(),
 			new TwoSamplePileupFactory(),
 			// RC new TwoSampleWindowCallFactory(),
+
 			new TwoSampleDebugCallFactory()
 		};
 		for (AbstractMethodFactory factory : factories) {
@@ -113,6 +115,12 @@ public class JACUSA {
 		return records;
 	}
 
+	/**
+	 * 
+	 * @param targetSequenceNames
+	 * @param pathnames
+	 * @return
+	 */
 	private boolean isValid(Set<String> targetSequenceNames, String[] pathnames) {
 		Set<String> sequenceNames = new HashSet<String>();
 		for (String pathname : pathnames) {
@@ -193,14 +201,16 @@ public class JACUSA {
 	public static void main(String[] args) throws Exception {
 		JACUSA jacusa = new JACUSA();
 		CLI cmd = jacusa.getCLI();
-
+		// parse CLI
 		if (! cmd.processArgs(args)) {
 			System.exit(1);
 		}
 
+		// instantiate chosen method
 		AbstractMethodFactory methodFactory = cmd.getMethodFactory();
 		AbstractParameters parameters = methodFactory.getParameters();
 
+		// process coordinate provider
 		CoordinateProvider coordinateProvider = null;
 		if (parameters.getBedPathname().isEmpty()) {
 			methodFactory.initCoordinateProvider();
@@ -217,6 +227,7 @@ public class JACUSA {
 			pathnames2 = ((hasSampleB)parameters).getSample2().getPathnames();
 		}
 
+		// wrap chosen coordinate provider 
 		if (parameters.getMaxThreads() > 1) {
 			coordinateProvider = new ThreadedCoordinateProvider(coordinateProvider, pathnames1, pathnames2, parameters.getThreadWindowSize());
 		}
@@ -224,6 +235,7 @@ public class JACUSA {
 		// main
 		AbstractWorkerDispatcher<? extends AbstractWorker> workerDispatcher = methodFactory.getInstance(pathnames1, pathnames2, coordinateProvider);
 		int comparisons = workerDispatcher.run();
+
 		// epilog
 		jacusa.printEpilog(comparisons);
 

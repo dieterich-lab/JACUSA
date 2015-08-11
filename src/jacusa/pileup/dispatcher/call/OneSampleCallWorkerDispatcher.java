@@ -6,7 +6,6 @@ import jacusa.util.coordinateprovider.CoordinateProvider;
 
 import java.io.IOException;
 
-@Deprecated
 public class OneSampleCallWorkerDispatcher extends AbstractCallWorkerDispatcher<OneSampleCallWorker> {
 
 	private OneSampleCallParameters parameters;

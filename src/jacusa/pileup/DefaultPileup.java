@@ -146,6 +146,20 @@ public class DefaultPileup implements Pileup {
 		complement.getCounts().invertCounts();
 		return complement;
 	}
+
+	public static Pileup[] flat(Pileup[] pileups, int[] variantBaseIs, int commonBaseI) {
+		Pileup[] ret = new Pileup[pileups.length];
+		for (int i = 0; i < pileups.length; ++i) {
+			ret[i] = new DefaultPileup(pileups[i]);
+
+			for (int variantBaseI : variantBaseIs) {
+				ret[i].getCounts().add(commonBaseI, variantBaseI, pileups[i].getCounts());
+				ret[i].getCounts().substract(variantBaseI, variantBaseI, pileups[i].getCounts());
+			}
+			
+		}
+		return ret;
+	}
 	
 	public enum STRAND {
 		FORWARD(BaseConfig.STRAND_FORWARD_CHAR),REVERSE(BaseConfig.STRAND_REVERSE_CHAR),UNKNOWN(BaseConfig.STRAND_UNKNOWN_CHAR);

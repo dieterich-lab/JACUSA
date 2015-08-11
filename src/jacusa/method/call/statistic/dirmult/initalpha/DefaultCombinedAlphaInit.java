@@ -2,12 +2,12 @@ package jacusa.method.call.statistic.dirmult.initalpha;
 
 import jacusa.pileup.Pileup;
 
-public class CombinedAlphaInit extends AbstractAlphaInit {
+public class DefaultCombinedAlphaInit extends AbstractAlphaInit {
 
 	private AbstractAlphaInit A;
 	private AbstractAlphaInit B;
 	
-	public CombinedAlphaInit(String name, AbstractAlphaInit A, AbstractAlphaInit B) {
+	public DefaultCombinedAlphaInit(String name, AbstractAlphaInit A, AbstractAlphaInit B) {
 		super(name, A.getName() + " + " + B.getName());
 		this.A = A;
 		this.B = B;
@@ -15,8 +15,18 @@ public class CombinedAlphaInit extends AbstractAlphaInit {
 
 	@Override
 	public AbstractAlphaInit newInstance(String line) {
-		
-		return new CombinedAlphaInit(getName(), A, B);
+		StringBuilder sb1 = new StringBuilder();
+		StringBuilder sb2 = new StringBuilder();
+
+		StringBuilder sb = sb1;
+		for (String s : line.split(",")) {
+			if (s.startsWith("initAlpha2")) {
+				sb = sb2;
+			}
+			sb.append(s);
+		}
+
+		return new DefaultCombinedAlphaInit(getName(), A.newInstance(sb1.toString()), B.newInstance(sb2.toString()));
 	}
 	
 	@Override
@@ -24,7 +34,6 @@ public class CombinedAlphaInit extends AbstractAlphaInit {
 			final int[] baseIs,
 			final Pileup[] pileups,
 			final double[][] pileupMatrix) {
-
 		return A.init(baseIs, pileups, pileupMatrix);
 	}
 
