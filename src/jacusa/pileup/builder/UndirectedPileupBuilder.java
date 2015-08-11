@@ -13,7 +13,7 @@ import jacusa.util.Coordinate;
 import net.sf.samtools.SAMFileReader;
 
 /**
- * @author michael
+ * @author Michael Piechotta
  *
  */
 public class UndirectedPileupBuilder extends AbstractPileupBuilder {

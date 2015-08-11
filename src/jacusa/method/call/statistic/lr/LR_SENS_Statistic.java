@@ -8,7 +8,7 @@ import jacusa.pileup.ParallelPileup;
 
 /**
  * 
- * @author michael
+ * @author Michael Piechotta
  * Calculation of the parameters are based upon DefaultStatistic.
  * Likelihood ratio test to test whether "two dirichlet distributions are similar"
  * Z = -2 ln( ( Dir(p,1) Dir(p,2) ) / ( Dir(1,1) Dir(2,2) ) )

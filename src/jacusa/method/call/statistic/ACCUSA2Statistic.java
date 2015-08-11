@@ -11,7 +11,7 @@ import jacusa.pileup.Result;
 
 /**
  * 
- * @author michael
+ * @author Michael Piechotta
  * 
  * Uses the matching coverage to calculate the test-statistic.
  * Tested if distributions are equal.

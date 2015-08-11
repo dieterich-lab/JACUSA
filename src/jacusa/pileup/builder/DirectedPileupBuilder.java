@@ -13,7 +13,7 @@ import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 
 /**
- * @author michael
+ * @author Michael Piechotta
  *
  */
 public class DirectedPileupBuilder extends AbstractPileupBuilder {
