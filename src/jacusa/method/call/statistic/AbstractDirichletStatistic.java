@@ -16,6 +16,7 @@ import jacusa.pileup.Pileup;
 import jacusa.pileup.Result;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,6 +56,8 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 	
 	protected MinkaEstimateParameters estimateAlpha;
 	
+	private DecimalFormat decimalFormat;
+	
 	public AbstractDirichletStatistic(final MinkaEstimateParameters estimateAlpha, final BaseConfig baseConfig, final StatisticParameters parameters) {
 		this.parameters 	= parameters;
 		final int n 		= baseConfig.getBaseLength();
@@ -66,6 +69,11 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		this.estimateAlpha	= estimateAlpha;
 		
 		alphaInitFactory	= new AlphaInitFactory(getAlphaInits());
+		
+		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
+		otherSymbols.setDecimalSeparator(',');
+		otherSymbols.setGroupingSeparator('.');
+		decimalFormat = new DecimalFormat("#.##", otherSymbols);
 	}
 
 	protected Map<String, AbstractAlphaInit> getAlphaInits() {
@@ -155,43 +163,42 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 
 		// append alpha/iterations/log-likelihood to info info field
 		if (showAlpha) {
-			DecimalFormat df = new DecimalFormat("0.00"); 
 			sb.append("alpha1=");
-			sb.append(df.format(alpha1[0]));
+			sb.append(decimalFormat.format(alpha1[0]));
 			for (int i = 1; i < alpha1.length; ++i) {
 				sb.append(":");
-				sb.append(df.format(alpha1[i]));
+				sb.append(decimalFormat.format(alpha1[i]));
 			}
 			sb.append(";alpha2=");
-			sb.append(df.format(alpha2[0]));
+			sb.append(decimalFormat.format(alpha2[0]));
 			for (int i = 1; i < alpha2.length; ++i) {
 				sb.append(":");
-				sb.append(df.format(alpha2[i]));
+				sb.append(decimalFormat.format(alpha2[i]));
 			}
 			sb.append(";alphaP=");
-			sb.append(df.format(alphaP[0]));
+			sb.append(decimalFormat.format(alphaP[0]));
 			for (int i = 1; i < alphaP.length; ++i) {
 				sb.append(":");
-				sb.append(df.format(alphaP[i]));
+				sb.append(decimalFormat.format(alphaP[i]));
 			}
 
 			sb.append(";initAlpha1=");
-			sb.append(df.format(initAlpha1[0]));
+			sb.append(decimalFormat.format(initAlpha1[0]));
 			for (int i = 1; i < initAlpha1.length; ++i) {
 				sb.append(":");
-				sb.append(df.format(initAlpha1[i]));
+				sb.append(decimalFormat.format(initAlpha1[i]));
 			}
 			sb.append(";initAlpha2=");
-			sb.append(df.format(initAlpha2[0]));
+			sb.append(decimalFormat.format(initAlpha2[0]));
 			for (int i = 1; i < initAlpha2.length; ++i) {
 				sb.append(":");
-				sb.append(df.format(initAlpha2[i]));
+				sb.append(decimalFormat.format(initAlpha2[i]));
 			}
 			sb.append(";initAlphaP=");
-			sb.append(df.format(initAlphaP[0]));
+			sb.append(decimalFormat.format(initAlphaP[0]));
 			for (int i = 1; i < initAlphaP.length; ++i) {
 				sb.append(":");
-				sb.append(df.format(initAlphaP[i]));
+				sb.append(decimalFormat.format(initAlphaP[i]));
 			}
 			
 			sb.append(";");

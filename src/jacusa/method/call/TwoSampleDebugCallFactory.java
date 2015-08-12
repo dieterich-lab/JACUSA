@@ -14,6 +14,7 @@ import jacusa.cli.parameters.CLI;
 import jacusa.cli.parameters.TwoSampleCallParameters;
 import jacusa.io.format.AbstractOutputFormat;
 import jacusa.io.format.BED6ResultFormat;
+import jacusa.io.format.VCF_ResultFormat;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.statistic.StatisticCalculator;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialCompoundError;
@@ -94,6 +95,9 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 		Map<Character, AbstractOutputFormat> resultFormats = new HashMap<Character, AbstractOutputFormat>();
 
 		AbstractOutputFormat resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		resultFormats.put(resultFormat.getC(), resultFormat);
+
+		resultFormat = new VCF_ResultFormat(parameters.getBaseConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;

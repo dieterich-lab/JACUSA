@@ -68,11 +68,11 @@ public class Result {
 	}
 
 	public String getInfo() {
-		return info == null ? "*" : info.toString();
+		return info == null || info.length() == 0 ? "*" : info.toString();
 	}
 	
 	public String getFilterInfo() {
-		return filterInfo == null ? "*" : filterInfo.toString();
+		return filterInfo == null || filterInfo.length() == 0 ? "*" : filterInfo.toString();
 	}
 
 	public boolean hasFilterInfo() {
