@@ -9,6 +9,11 @@ import jacusa.pileup.BaseConfig;
 import jacusa.pileup.Pileup;
 
 import java.util.Arrays;
+
+/**
+ * 
+ * @author Michael Piechotta
+ */
 public class DirichletCompoundError extends AbstractDirichletStatistic {
 
 	private double estimatedError = 0.01;
@@ -25,7 +30,7 @@ public class DirichletCompoundError extends AbstractDirichletStatistic {
 
 	@Override
 	public String getName() {
-		return "DirCE";
+		return "Dir-CE";
 	}
 
 	@Override
@@ -34,47 +39,47 @@ public class DirichletCompoundError extends AbstractDirichletStatistic {
 	}
 
 	@Override
-	public void populate(final Pileup[] pileups, final int[] baseIs, double[][] pileupMatrix) {
-		double[] pileupErrorVector = new double[baseIs.length];
-		
-		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
-			Pileup pileup = pileups[pileupI];
-
-			populate(pileup, baseIs, pileupErrorVector, pileupMatrix[pileupI]);
-		}
-	}
-
-	@Override
 	protected void populate(final Pileup pileup, final int[] baseIs, double[] pileupErrorVector, double[] pileupMatrix) {
+		// init pileup Matrix
 		Arrays.fill(pileupMatrix, 0.0);
 
+		// get total base counts
 		double[] pileupCount = phred2Prob.colSumCount(baseIs, pileup);
+		// get mean error probs. per base
 		double[] pileupError = phred2Prob.colMeanErrorProb(baseIs, pileup);
 
-		double sum = 0.0;
-		
+		double total = 0.0;
+
 		for (int baseI : baseIs) {
+			// add pseudo count (prior information) 
 			pileupMatrix[baseI] += priorError;
 
 			if (pileupCount[baseI] > 0.0) {
 				pileupMatrix[baseI] += pileupCount[baseI];
+				
 				for (int baseI2 : baseIs) {
+					// distribute errors / pseudocounts on uncalled bases 
 					if (baseI != baseI2) {
-						double combinedError = (pileupError[baseI2] + estimatedError) * (double)pileupCount[baseI] / (double)(baseIs.length - 1);
+						double combinedError = (pileupError[baseI2] + estimatedError) * 
+								(double)pileupCount[baseI] / (double)(baseIs.length - 1);
 						pileupMatrix[baseI2] += combinedError;
+						// keep track of total pseudocount per base
 						pileupErrorVector[baseI2] = combinedError;
 					} else {
-						
+						// "correct" base call
+						// nothing to be done, yet
 					}
 				}
 			} else {
-				
+				// base not observed
+				// nothing to be done, yet
 			}
-			sum += pileupMatrix[baseI];
+			total += pileupMatrix[baseI];
 		}
 
+		// normalize giving probability matrix
 		for (int baseI : baseIs) {
-			pileupMatrix[baseI] /= sum;
+			pileupMatrix[baseI] /= total;
 		}
 	}
 

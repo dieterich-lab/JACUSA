@@ -7,7 +7,7 @@ import jacusa.pileup.Pileup;
 public class BayesAlphaInit extends AbstractAlphaInit {
 
 	public BayesAlphaInit() {
-		super("bayes", "n + alpha");
+		super("bayes", "empirical bayes");
 	}
 
 	@Override

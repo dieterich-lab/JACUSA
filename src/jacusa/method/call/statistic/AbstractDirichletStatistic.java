@@ -8,7 +8,7 @@ import jacusa.method.call.statistic.dirmult.initalpha.AlphaInitFactory;
 import jacusa.method.call.statistic.dirmult.initalpha.BayesAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.RonningAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.RonningBayesAlphaInit;
-import jacusa.method.call.statistic.dirmult.initalpha.WeirMoMAlphaInit;
+import jacusa.method.call.statistic.dirmult.initalpha.WeirAlphaInit;
 import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
@@ -51,9 +51,9 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 	protected StringBuilder info2;
 	protected StringBuilder infoP;
 
+	private AlphaInitFactory alphaInitFactory;
+	
 	protected MinkaEstimateParameters estimateAlpha;
-
-	private AlphaInitFactory alphaInitFactory; 
 	
 	public AbstractDirichletStatistic(final MinkaEstimateParameters estimateAlpha, final BaseConfig baseConfig, final StatisticParameters parameters) {
 		this.parameters 	= parameters;
@@ -77,9 +77,15 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		alphaInit = new BayesAlphaInit();
 		alphaInits.put(alphaInit.getName(), alphaInit);
 
-		alphaInit = new WeirMoMAlphaInit();
+		alphaInit = new WeirAlphaInit();
 		alphaInits.put(alphaInit.getName(), alphaInit);
 
+		/* 
+		 * combined alpha init(s)
+		 * combined methods for 
+		 * - replicates > 1, and 
+		 * - no replicates
+		 */
 		alphaInit = new RonningBayesAlphaInit();
 		alphaInits.put(alphaInit.getName(), alphaInit);
 
@@ -89,11 +95,32 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		return alphaInits;
 	}
 	
-	protected abstract void populate(
+	/**
+	 * 
+	 * @param pileups
+	 * @param baseIs
+	 * @param pileupMatrix
+	 */
+	protected void populate(
 			final Pileup[] pileups, 
 			final int[] baseIs, 
-			double[][] pileupMatrix);
+			double[][] pileupMatrix) {
+		double[] pileupErrorVector = new double[baseIs.length];
+		
+		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
+			Pileup pileup = pileups[pileupI];
+	
+			populate(pileup, baseIs, pileupErrorVector, pileupMatrix[pileupI]);
+		}
+	}
 
+	/**
+	 * 
+	 * @param pileup
+	 * @param baseIs
+	 * @param pileupErrorVector
+	 * @param pileupVector
+	 */
 	protected abstract void populate(
 			final Pileup pileup, 
 			final int[] baseIs, 
@@ -105,6 +132,7 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		final double statistic = getStatistic(result.getParellelPileup());
 		result.setStatistic(statistic);
 
+		// append content to info field
 		StringBuilder sb = new StringBuilder();
 		if (! isNumericallyStable()) {
 			sb.append("NumericallyInstable;");
@@ -125,6 +153,7 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 			sb.append(";");
 		}
 
+		// append alpha/iterations/log-likelihood to info info field
 		if (showAlpha) {
 			DecimalFormat df = new DecimalFormat("0.00"); 
 			sb.append("alpha1=");
@@ -185,6 +214,8 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 			sb.append(iterationsP);
 			sb.append(";");
 		}
+
+		// append to info field
 		result.addInfo(sb.toString());
 	}
 	
@@ -230,34 +261,52 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 	
 	@Override
 	public double getStatistic(final ParallelPileup parallelPileup) {
+		// base index mask; can be ACGT or only observed bases in parallelPileup
 		final int baseIs[] = getBaseIs(parallelPileup);
+		// number of globally considered bases, normally 4 : ACGT
 		int baseN = baseConfig.getBaseLength();
 
-		ChiSquareDist dist = new ChiSquareDist(baseN - 1);
-
+		// flag to indicated numerical stability of parameter estimation
 		numericallyStable = true;
-		
+
+		// parameters for distribution
 		alpha1 = new double[baseN];
+		// container[# of pileups][baseN] for data to be modeled by distribution
 		double[][] pileupMatrix1  = new double[parallelPileup.getN1()][baseN];
+		// info container for sample 1
 		info1 = new StringBuilder();
 		
+		// the same for sample 2
 		alpha2 = new double[baseN];
 		double[][] pileupMatrix2 = new double[parallelPileup.getN2()][baseN];
 		info2 = new StringBuilder();
 
+		// the same for pooled sample 1, 2
 		alphaP = new double[baseN];
 		double[][] pileupMatrixP = new double[parallelPileup.getN()][baseN];
 		infoP = new StringBuilder();
-
+		
+		/* distinguish parameters estimation between 
+		 * - no replicates (pileup.length == 1),
+		 * - and replicates > 1 (pileup.length > 1)
+		 */ 
 		if (parallelPileup.getPileups1().length == 1) {
+			// container for pseudocounts
 			final double[] pileupErrorVector1 = new double[baseN];
+			// populate pileupMatrix with values to be modeled
 			populate(parallelPileup.getPileups1()[0], baseIs, pileupErrorVector1, pileupMatrix1[0]);
+			// perform an initial guess of alpha
 			initAlpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1()[0], pileupMatrix1[0], pileupErrorVector1);
 		} else {
+			// populate pileupMatrix with values to be modeled
 			populate(parallelPileup.getPileups1(), baseIs, pileupMatrix1);
+			// perform an initial guess of alpha
 			initAlpha1 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups1(), pileupMatrix1);
 		}
+		// store initial alpha guess
 		System.arraycopy(initAlpha1, 0, alpha1, 0, baseN);
+
+		// the same for sample 2
 		if (parallelPileup.getPileups2().length == 1) {
 			final double[] pileupErrorVector2 = new double[baseN];
 			populate(parallelPileup.getPileups2()[0], baseIs, pileupErrorVector2, pileupMatrix2[0]);
@@ -267,14 +316,16 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 			initAlpha2 = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileups2(), pileupMatrix2);
 		}
 		System.arraycopy(initAlpha2, 0, alpha2, 0, baseN);
+		
+		// the same for pooled sample (pileup.length > 1 always true)
 		populate(parallelPileup.getPileupsP(), baseIs, pileupMatrixP);
 		initAlphaP = estimateAlpha.getAlphaInit().init(baseIs, parallelPileup.getPileupsP(), pileupMatrixP);
 		System.arraycopy(initAlphaP, 0, alphaP, 0, baseN);
 
+		// container for test-statistic
 		double stat = Double.NaN;
 		try {
-			// estimate alphas
-
+			// estimate alphas, capture and info(s), and store log-likelihood
 			logLikelihood1 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha1, pileupMatrix1, info1);
 			iterations1 = estimateAlpha.getIterations();
 			logLikelihood2 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha2, pileupMatrix2, info2);
@@ -282,13 +333,16 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 			logLikelihoodP = estimateAlpha.maximizeLogLikelihood(baseIs, alphaP, pileupMatrixP, infoP);
 			iterationsP = estimateAlpha.getIterations();
 
+			// we want a value?
 			if (calcPValue) {
 				stat = -2 * (logLikelihoodP - (logLikelihood1 + logLikelihood2));
+				ChiSquareDist dist = new ChiSquareDist(baseIs.length - 1);
 				stat = 1 - dist.cdf(stat);
-			} else {
+			} else { // just the log-likelihood ratio
 				stat = (logLikelihood1 + logLikelihood2) - logLikelihoodP;
 			}
 		} catch (StackOverflowError e) {
+			// catch numerical instabilities and report
 			numericallyStable = false;
 			return stat;
 		}
@@ -296,7 +350,12 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		return stat;
 	}
 
-	// Debug function
+	/**
+	 * Pretty print alpha.
+	 * Debug function.
+	 * 
+	 * @param alphas
+	 */
 	protected void printAlpha(double[] alphas) {
 		StringBuilder sb = new StringBuilder();
 		for (double alpha : alphas) {
@@ -308,33 +367,41 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 
 	@Override
 	public boolean filter(double value) {
+		// if p-value interpret threshold as upper bound
 		if (calcPValue) {
 			return parameters.getThreshold() < value;
 		}
+		
+		// if log-likelihood ratio and value not set give all results
 		if (parameters.getThreshold() == Double.NaN) {
 			return false;
 		}
 		
+		// if log-likelihood ratio interpret threshold as lower bound 
 		return value < parameters.getThreshold();
 	}
 
-	// format -u DirMult:epsilon=<epsilon>:maxIterations=<maxIterions>:onlyObserved
+	
 	@Override
 	public boolean processCLI(String line) {
+		// format: -u DirMult:epsilon=<epsilon>:maxIterations=<maxIterions>:onlyObserved
 		String[] s = line.split(Character.toString(AbstractFilterFactory.SEP));
+		// indicates if a CLI has been successfully parsed
 		boolean r = false;
 
+		// ignore any first array element of s (e.g.: s[0] = "-u DirMult") 
 		for (int i = 1; i < s.length; ++i) {
-			// key=value
+			// kv := "key[=value]" 
 			String[] kv = s[i].split("=");
 			String key = kv[0];
+			// value may be empty for options without arguments, e.g.: "onlyObserved"
 			String value = new String();
 			if (kv.length == 2) {
 				value = kv[1];
 			}
 
-			// set value
-			if (key.equals("epsilon")) {
+			// parse key and do something
+			if (key.equals("epsilon")) { 
 				estimateAlpha.setEpsilon(Double.parseDouble(value));
 				r = true;
 			} else if(key.equals("maxIterations")) {
@@ -345,10 +412,12 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 				r = true;
 			} else if(key.equals("calculateP-value")) {
 				calcPValue = true;
+				r = true;
 			} else if(key.equals("showAlpha")) {
 				showAlpha = true;
 				r = true;
-			} else if(key.startsWith("initAlpha")) {
+			} else if(key.equals("initAlpha")) {
+				// parse arguments by factory
 				AbstractAlphaInit alphaInit = alphaInitFactory.processCLI(value);
 				estimateAlpha.setAlphaInit(alphaInit);
 				r = true;
@@ -358,6 +427,11 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		return r;
 	}
 
+	/**
+	 * 
+	 * @param parallelPileup
+	 * @return
+	 */
 	public int[] getBaseIs(ParallelPileup parallelPileup) {
 		if (onlyObservedBases) {
 			return parallelPileup.getPooledPileup().getAlleles();
@@ -365,12 +439,18 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 
 		return baseConfig.getBasesI();
 	}
-
 	
 	public MinkaEstimateParameters getEstimateAlpha() {
 		return  estimateAlpha;
 	}
 
+	/**
+	 * Pretty prints pileups.
+	 * Debug function.
+	 * 
+	 * @param pileups
+	 * @return
+	 */
 	public String printPileups(Pileup[] pileups) {
 		StringBuilder sb = new StringBuilder();
 		

@@ -25,17 +25,6 @@ public class DirichletMultinomialCompoundError extends AbstractDirichletStatisti
 	@Override
 	public String getDescription() {
 		return "Compound Err. (estimated err.{" + estimatedError + "} + phred score)";  
-		//" (DirMult-CE:epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>)";
-	}
-
-	@Override
-	public void populate(final Pileup[] pileups, final int[] baseIs, double[][] pileupMatrix) {
-		double[] pileupErrorVector = new double[baseIs.length];
-		
-		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
-			Pileup pileup = pileups[pileupI];
-			populate(pileup, baseIs, pileupErrorVector, pileupMatrix[pileupI]);
-		}
 	}
 
 	@Override
@@ -68,7 +57,7 @@ public class DirichletMultinomialCompoundError extends AbstractDirichletStatisti
 		return new DirichletMultinomialCompoundError(baseConfig, parameters);
 	}
 
-	// format -u DirMult:epsilon=<epsilon>:maxIterations=<maxIterions>:estimatedError=<estimatedError>
+	
 	@Override
 	public boolean processCLI(String line) {
 		boolean r = super.processCLI(line);

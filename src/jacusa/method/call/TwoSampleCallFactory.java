@@ -22,13 +22,7 @@ import jacusa.cli.options.ThreadWindowSizeOption;
 import jacusa.cli.options.VersionOption;
 import jacusa.cli.options.WindowSizeOption;
 import jacusa.cli.options.pileupbuilder.TwoSamplePileupBuilderOption;
-import jacusa.cli.options.sample.MaxDepthSampleOption;
-import jacusa.cli.options.sample.MinBASQSampleOption;
-import jacusa.cli.options.sample.MinCoverageSampleOption;
-import jacusa.cli.options.sample.MinMAPQSampleOption;
 import jacusa.cli.options.sample.filter.FilterFlagOption;
-import jacusa.cli.options.sample.filter.FilterNHsamTagOption;
-import jacusa.cli.options.sample.filter.FilterNMsamTagOption;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.cli.parameters.SampleParameters;
@@ -102,15 +96,6 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 	public TwoSampleCallFactory() {
 		super("call-2", "Call variants - two samples");
 		parameters = new TwoSampleCallParameters();
-	}
-
-	protected void initSampleACOptions(int sample, SampleParameters sampleParameters) {
-		acOptions.add(new MinMAPQSampleOption(sample, sampleParameters));
-		acOptions.add(new MinBASQSampleOption(sample, sampleParameters));
-		acOptions.add(new MinCoverageSampleOption(sample, sampleParameters));
-		acOptions.add(new MaxDepthSampleOption(sample, sampleParameters));
-		acOptions.add(new FilterNHsamTagOption(sample, sampleParameters));
-		acOptions.add(new FilterNMsamTagOption(sample, sampleParameters));
 	}
 	
 	public void initACOptions() {

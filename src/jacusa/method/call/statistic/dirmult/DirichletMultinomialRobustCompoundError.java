@@ -20,17 +20,32 @@ public class DirichletMultinomialRobustCompoundError extends DirichletMultinomia
 	@Override
 	public String getDescription() {
 		return "Robust Compound Err.";  
-				//"Options: epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>";
 	}
 
 	@Override
 	public double getStatistic(final ParallelPileup parallelPileup) {
+		/* 
+		 * check if any sample is homomorph and
+		 * replace this sample with the other sample and make it homomorph 
+		 */
+		
+		// determine the number of alleles per sample: 1, 2, and P 
 		int a1 = parallelPileup.getPooledPileup1().getAlleles().length;
 		int a2 = parallelPileup.getPooledPileup2().getAlleles().length;
+		// all observed alleles
 		int[] alleles = parallelPileup.getPooledPileup().getAlleles();
 		int aP = alleles.length;
 
+		// get bases that are different between the samples
 		int[] variantBaseIs = parallelPileup.getVariantBaseIs();
+		// if there are no variant bases than both samples are heteromorph; 
+		// use existing parallelPileup to calculate test-statistic
+		if (variantBaseIs.length == 0) {
+			return super.getStatistic(parallelPileup);
+		}
+
+		// determine common base (shared by both samples)
+		// TODO make this an array to support multiple shared bases
 		int commonBaseI = -1;
 		for (int baseI : alleles) {
 			int count1 = parallelPileup.getPooledPileup1().getCounts().getBaseCount(baseI);
@@ -40,23 +55,26 @@ public class DirichletMultinomialRobustCompoundError extends DirichletMultinomia
 				break;
 			}
 		}
-		if (variantBaseIs.length == 0) {
-			return super.getStatistic(parallelPileup);
-		}
 
-		ParallelPileup pp = null;
-		if (a1 > 1 && a2 == 1 && aP == 2) {
-			pp = new DefaultParallelPileup(parallelPileup.getPileups1(), parallelPileup.getPileups1());
-			pp.setPileups1(DefaultPileup.flat(pp.getPileups1(), variantBaseIs, commonBaseI));
-		} else if (a2 > 1 && a1 == 1 && aP == 2) {
-			pp = new DefaultParallelPileup(parallelPileup.getPileups2(), parallelPileup.getPileups2());
-			pp.setPileups2(DefaultPileup.flat(pp.getPileups2(), variantBaseIs, commonBaseI));
+		// container for adjusted parallelPileup
+		ParallelPileup adjustedParallelPileup = null;
+		// determine which sample has the variant base
+		if (a1 > 1 && a2 == 1 && aP == 2) { // sample1
+			// create new container that fits 2 x pileups1
+			adjustedParallelPileup = new DefaultParallelPileup(parallelPileup.getPileups1(), parallelPileup.getPileups1());
+			// and replace pileups2 with pileups1 where the variant bases have been replaced with the common base
+			adjustedParallelPileup.setPileups1(DefaultPileup.flat(adjustedParallelPileup.getPileups1(), variantBaseIs, commonBaseI));
+		} else if (a2 > 1 && a1 == 1 && aP == 2) { // sample2
+			// do the same for sample 2
+			adjustedParallelPileup = new DefaultParallelPileup(parallelPileup.getPileups2(), parallelPileup.getPileups2());
+			adjustedParallelPileup.setPileups2(DefaultPileup.flat(adjustedParallelPileup.getPileups2(), variantBaseIs, commonBaseI));
 		}
-		if (pp == null) {
+		// aP > 3, just use the existing parallelPileup to calculate the test-statistic (see TODO : multiple shared bases)
+		if (adjustedParallelPileup == null) { 
 			return super.getStatistic(parallelPileup);
 		}
 		
-		return super.getStatistic(pp);
+		return super.getStatistic(adjustedParallelPileup);
 	}
-	
+
 }

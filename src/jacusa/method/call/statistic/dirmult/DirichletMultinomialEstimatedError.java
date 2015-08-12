@@ -15,7 +15,7 @@ public class DirichletMultinomialEstimatedError extends AbstractDirichletStatist
 	public DirichletMultinomialEstimatedError(final BaseConfig baseConfig, final StatisticParameters parameters) {
 		super(new MinkaEstimateDirMultParameters(), baseConfig, parameters);
 	}
-	
+
 	@Override
 	public String getName() {
 		return "DirMult-EE";
@@ -24,38 +24,26 @@ public class DirichletMultinomialEstimatedError extends AbstractDirichletStatist
 	@Override
 	public String getDescription() {
 		return "(phred score IGNORED) Estimated Err. {" + estimatedError + "}"; 
-				//" (DirMult-EE:epsilon=<epsilon>:maxIterations=<maxIterations>:estimatedError=<estimatedError>)";
-	}
-
-	@Override
-	public void populate(final Pileup[] pileups, final int[] baseIs, double[][] pileupMatrix) {
-		double[] pileupErrorVector = new double[baseIs.length];
-		
-		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
-			Pileup pileup = pileups[pileupI];
-			populate(pileup, baseIs, pileupErrorVector, pileupMatrix[pileupI]);
-		}
 	}
 
 	@Override
 	protected void populate(final Pileup pileup, final int[] baseIs, double[] pileupErrorVector, double[] pileupMatrix) {
 		double[] pileupCount = phred2Prob.colSumCount(baseIs, pileup);
-		double[] pileupError = phred2Prob.colMeanErrorProb(baseIs, pileup);
 
 		for (int baseI : baseIs) {
 			if (pileupCount[baseI] > 0.0) {
 				pileupMatrix[baseI] += pileupCount[baseI];
 				for (int baseI2 : baseIs) {
 					if (baseI != baseI2) {
-						double combinedError = (pileupError[baseI2] + estimatedError) * (double)pileupCount[baseI] / (double)(baseIs.length - 1);
+						double combinedError = (estimatedError) * (double)pileupCount[baseI] / (double)(baseIs.length - 1);
 						pileupMatrix[baseI2] += combinedError;
 						pileupErrorVector[baseI2] = combinedError;
 					} else {
-						// pileupMatrix[pileupI][baseI2] -= (estimatedError) * (double)pileupCount[baseI];
+						// nothing to be done, yet
 					}
 				}
 			} else {
-			
+				// nothing to be done, yet			
 			}
 		}
 	}
@@ -65,7 +53,6 @@ public class DirichletMultinomialEstimatedError extends AbstractDirichletStatist
 		return new DirichletMultinomialEstimatedError(baseConfig, parameters);
 	}
 
-	// format -u DirMult:epsilon=<epsilon>:maxIterations=<maxIterions>:estimatedError=<estimatedError>
 	@Override
 	public boolean processCLI(String line) {
 		boolean r = super.processCLI(line);
@@ -91,7 +78,5 @@ public class DirichletMultinomialEstimatedError extends AbstractDirichletStatist
 
 		return r;
 	}
-
-	
 
 }

@@ -1,9 +1,15 @@
 package jacusa.method;
 
-
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
+import jacusa.cli.options.sample.MaxDepthSampleOption;
+import jacusa.cli.options.sample.MinBASQSampleOption;
+import jacusa.cli.options.sample.MinCoverageSampleOption;
+import jacusa.cli.options.sample.MinMAPQSampleOption;
+import jacusa.cli.options.sample.filter.FilterNHsamTagOption;
+import jacusa.cli.options.sample.filter.FilterNMsamTagOption;
 import jacusa.cli.parameters.AbstractParameters;
+import jacusa.cli.parameters.SampleParameters;
 import jacusa.pileup.dispatcher.AbstractWorkerDispatcher;
 import jacusa.pileup.worker.AbstractWorker;
 import jacusa.util.Coordinate;
@@ -45,6 +51,15 @@ public abstract class AbstractMethodFactory {
 	 * 
 	 */
 	public abstract void initACOptions();
+
+	protected void initSampleACOptions(int sample, SampleParameters sampleParameters) {
+		acOptions.add(new MinMAPQSampleOption(sample, sampleParameters));
+		acOptions.add(new MinBASQSampleOption(sample, sampleParameters));
+		acOptions.add(new MinCoverageSampleOption(sample, sampleParameters));
+		acOptions.add(new MaxDepthSampleOption(sample, sampleParameters));
+		acOptions.add(new FilterNHsamTagOption(sample, sampleParameters));
+		acOptions.add(new FilterNMsamTagOption(sample, sampleParameters));
+	}
 
 	/**
 	 * 
@@ -130,15 +145,15 @@ public abstract class AbstractMethodFactory {
 	
 	/**
 	 * 
-	 * @param pathnamesA
-	 * @param pathnamesB
+	 * @param pathnames1
+	 * @param pathnames2
 	 * @return
 	 * @throws Exception
 	 */
-	protected List<SAMSequenceRecord> getSAMSequenceRecords(String[] pathnamesA, String[] pathnamesB) throws Exception {
-		String error = "Sequence Dictionary of BAM files do not match";
+	protected List<SAMSequenceRecord> getSAMSequenceRecords(String[] pathnames1, String[] pathnames2) throws Exception {
+		String error = "Sequence Dictionaries of BAM files do not match";
 
-		List<SAMSequenceRecord> records 	= getSAMSequenceRecords(pathnamesA);
+		List<SAMSequenceRecord> records 	= getSAMSequenceRecords(pathnames1);
 
 		List<Coordinate> coordinates = new ArrayList<Coordinate>();
 		Set<String> targetSequenceNames = new HashSet<String>();
@@ -147,7 +162,7 @@ public abstract class AbstractMethodFactory {
 			targetSequenceNames.add(record.getSequenceName());
 		}
 
-		if(!isValid(targetSequenceNames, pathnamesA) || !isValid(targetSequenceNames, pathnamesB)) {
+		if(!isValid(targetSequenceNames, pathnames1) || !isValid(targetSequenceNames, pathnames2)) {
 			throw new Exception(error);
 		}
 

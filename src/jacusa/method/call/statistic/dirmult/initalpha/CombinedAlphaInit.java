@@ -4,10 +4,12 @@ import jacusa.pileup.Pileup;
 
 public class CombinedAlphaInit extends AbstractAlphaInit {
 
+	// initial alpha estimate when replicates > 1 are available
 	private AbstractAlphaInit A;
+	// initial alpha estimate when NO replicates are available
 	private AbstractAlphaInit B;
-	
-	public CombinedAlphaInit(String name, AbstractAlphaInit A, AbstractAlphaInit B) {
+
+	protected CombinedAlphaInit(String name, AbstractAlphaInit A, AbstractAlphaInit B) {
 		super(name, A.getName() + " + " + B.getName());
 		this.A = A;
 		this.B = B;
@@ -34,6 +36,7 @@ public class CombinedAlphaInit extends AbstractAlphaInit {
 			final Pileup pileup, 
 			final double[] pileupVector,
 			final double[] pileupErrorVector) {
+
 		return B.init(baseIs, pileup, pileupVector, pileupErrorVector);
 	}
 		

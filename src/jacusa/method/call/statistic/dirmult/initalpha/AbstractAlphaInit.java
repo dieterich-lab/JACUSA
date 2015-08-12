@@ -2,6 +2,10 @@ package jacusa.method.call.statistic.dirmult.initalpha;
 
 import jacusa.pileup.Pileup;
 
+/**
+ * 
+ * @author Michael Piechotta
+ */
 public abstract class AbstractAlphaInit {
 
 	private String name;
@@ -12,37 +16,78 @@ public abstract class AbstractAlphaInit {
 		this.desc	= desc;
 	}
 	
+	/**
+	 * Return the short name.
+	 * 
+	 * @return
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * Return a short description.
+	 * 
+	 * @return
+	 */
 	public String getDesc() {
 		return desc;
 	}
 
+	/**
+	 * Calculate initial estimates for alpha when > 1 replicates are available.
+	 * 
+	 * @param baseIs
+	 * @param pileups
+	 * @param pileupMatrix
+	 * @return
+	 */
 	public abstract double[] init(
 			final int[] baseIs,
 			final Pileup[] pileups,
 			final double[][] pileupMatrix);
 
+	/**
+	 * Calculate initial estimates for alpha when NO replicates are available.
+	 * 
+	 * @param baseIs
+	 * @param pileup
+	 * @param pileupVector
+	 * @param pileupErrorVector
+	 * @return
+	 */
 	public abstract double[] init(
 			final int[] baseIs, 
 			final Pileup pileup,
 			final double[] pileupVector,
 			final double[] pileupErrorVector);
 
+	/**
+	 * Create a new instance.
+	 * 
+	 * @param line
+	 * @return
+	 */
 	public abstract AbstractAlphaInit newInstance(final String line);
 
-	// misc method
+	/**
+	 * Calculate the coverage per pileup/replicate taking pseudocounts into account
+	 * 
+	 * Helper method.
+	 * 
+	 * @param baseIs
+	 * @param pileupMatrix
+	 * @return
+	 */
 	protected double[] getCoverages(final int[] baseIs, final double[][] pileupMatrix) {
 		int pileupN = pileupMatrix.length;
 		double[] coverages = new double[pileupN];
 		for (int pileupI = 0; pileupI < pileupN; pileupI++) {
-			double sum = 0.0;
+			double rowSum = 0.0;
 			for (int baseI : baseIs) {
-				sum += pileupMatrix[pileupI][baseI];
+				rowSum += pileupMatrix[pileupI][baseI];
 			}
-			coverages[pileupI] = sum;
+			coverages[pileupI] = rowSum;
 		}
 
 		return coverages;

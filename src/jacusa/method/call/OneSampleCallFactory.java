@@ -61,10 +61,11 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 	public OneSampleCallFactory() {
 		super("call-1", "Call variants - one sample");
 	}
-
+	
 	public void initACOptions() {
-		SampleParameters sampleA = parameters.getSample1();
-		acOptions.add(new OneSamplePileupBuilderOption(sampleA));
+		SampleParameters sample1 = parameters.getSample1();
+		initSampleACOptions(1, sample1);
+		acOptions.add(new OneSamplePileupBuilderOption(sample1));
 		
 		acOptions.add(new BedCoordinatesOption(parameters));
 		acOptions.add(new ResultFileOption(parameters));
@@ -94,11 +95,6 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 		// acOptions.add(new DebugOption(parameters));
 		acOptions.add(new HelpOption(CLI.getSingleton()));
 		acOptions.add(new VersionOption(CLI.getSingleton()));
-		
-		/*
-		acOptions.add(new FilterNHsamTagOption(parameters.getSample1()));
-		acOptions.add(new FilterNMsamTagOption(parameters.getSample1()));
-		*/
 	}
 
 	@Override

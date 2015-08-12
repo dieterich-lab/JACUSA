@@ -5,15 +5,19 @@ import java.util.Arrays;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.Pileup;
 
-public class WeirMoMAlphaInit extends AbstractAlphaInit {
+/**
+ * 
+ * @author Michael Piechotta
+ */
+public class WeirAlphaInit extends AbstractAlphaInit {
 
-	public WeirMoMAlphaInit() {
-		super("WeirMoM", "WeirMoM");
+	public WeirAlphaInit() {
+		super("Weir", "Weir");
 	}
 
 	@Override
 	public AbstractAlphaInit newInstance(String line) {
-		return new WeirMoMAlphaInit();
+		return new WeirAlphaInit();
 	}
 
 	@Override
@@ -93,7 +97,7 @@ public class WeirMoMAlphaInit extends AbstractAlphaInit {
 			final Pileup pileup, 
 			final double[] pileupVector,
 			final double[] pileupErrorVector) {
-		// this is not supported
+		// this is by WeirMoM not supported
 		return null;
 	}
 	
