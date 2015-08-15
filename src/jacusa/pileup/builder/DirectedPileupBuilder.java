@@ -90,7 +90,7 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 		pileup.setCounts(windowCache.getCounts(windowPosition));
 
 		byte refBaseByte = windowCache.getReferenceBase(windowPosition);
-		if (refBaseByte != (byte)0) {
+		if (refBaseByte != (byte)'N') {
 			pileup.setRefBase((char)refBaseByte);
 		}
 		

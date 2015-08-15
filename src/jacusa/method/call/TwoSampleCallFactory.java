@@ -47,6 +47,7 @@ import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
 import jacusa.filter.factory.RareEventFilterFactory;
 import jacusa.io.format.AbstractOutputFormat;
 import jacusa.io.format.BED6ResultFormat;
+import jacusa.io.format.DebugResultFormat;
 //import jacusa.io.format.DebugResultFormat;
 //import jacusa.io.format.DefaultOutputFormat;
 //import jacusa.io.format.PileupResultFormat;
@@ -251,8 +252,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
-		// resultFormat = new DebugResultFormat(n1, n2, parameters.getBaseConfig());
-		// resultFormats.put(resultFormat.getC(), resultFormat);
+		resultFormat = new DebugResultFormat(parameters.getBaseConfig());
+		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		resultFormat = new VCF_ResultFormat(parameters.getBaseConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);

@@ -10,6 +10,7 @@ import net.sf.samtools.SAMUtils;
 
 public class PileupFormat extends AbstractOutputFormat {
 
+	public final static char CHAR = 'M';
 	public static char EMPTY 	= '*';
 	public static char COMMENT = '#';
 	public static char SEP 	= '\t';
@@ -18,7 +19,7 @@ public class PileupFormat extends AbstractOutputFormat {
 	private BaseConfig baseConfig;
 
 	public PileupFormat(BaseConfig baseConfig) {
-		super('M', "samtools mpileup like format (base columns without: $ ^ < > *)");
+		super(CHAR, "samtools mpileup like format (base columns without: $ ^ < > *)");
 		this.baseConfig = baseConfig;
 	}
 
@@ -32,6 +33,12 @@ public class PileupFormat extends AbstractOutputFormat {
 		sb.append(SEP);
 		sb.append(parallelPileup.getStart());
 
+		// TODO remove
+		/*
+		sb.append(SEP);
+		sb.append(parallelPileup.getPooledPileup().getRefBase());
+		*/
+		
 		addPileups(sb, parallelPileup.getStrand1(), parallelPileup.getPileups1());
 		addPileups(sb, parallelPileup.getStrand2(), parallelPileup.getPileups2());
 

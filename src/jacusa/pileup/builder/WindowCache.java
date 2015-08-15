@@ -43,7 +43,7 @@ public class WindowCache {
 
 	public void clear() {
 		Arrays.fill(coverage, 0);
-		Arrays.fill(reference, (byte)0);
+		Arrays.fill(reference, (byte)'N');
 		for (int windowPositionI = 0; windowPositionI < windowSize; ++windowPositionI) {
 			Arrays.fill(baseCount[windowPositionI], 0);
 			for (int baseI = 0; baseI < baseLength; ++baseI) {

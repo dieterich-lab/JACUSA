@@ -6,10 +6,9 @@ import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.Result;
 
-@Deprecated
 public class DebugResultFormat extends AbstractOutputFormat {
 
-	public static final char CHAR = 'X';
+	public static final char CHAR = 'D';
 	
 	public static final char COMMENT= '#';
 	public static final char EMPTY 	= '*';
@@ -55,6 +54,9 @@ public class DebugResultFormat extends AbstractOutputFormat {
 		sb.append(getSEP());
 		// (2) second sample  infos
 		addSampleHeader(sb, '2', pathnames2.length);
+		
+		sb.append("reference");
+		sb.append(getSEP());
 		
 		return sb.toString();
 	}
@@ -102,6 +104,9 @@ public class DebugResultFormat extends AbstractOutputFormat {
 		addPileups(sb, parallelPileup.getPileups1());
 		// (2) second pileups
 		addPileups(sb, parallelPileup.getPileups2());
+		
+		sb.append(SEP);
+		sb.append(parallelPileup.getPooledPileup().getRefBase());
 		
 		return sb;
 	}

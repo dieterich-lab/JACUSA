@@ -43,6 +43,7 @@ import jacusa.filter.factory.ReadPositionalBiasFilterFactory;
 import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
 import jacusa.io.format.AbstractOutputFormat;
 import jacusa.io.format.BED6ResultFormat;
+import jacusa.io.format.DebugResultFormat;
 // import jacusa.io.format.ConsensusOutputFormat;
 import jacusa.io.format.PileupFormat;
 import jacusa.method.AbstractMethodFactory;
@@ -131,6 +132,9 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 		outputFormats.put(outputFormat.getC(), outputFormat);
 		
 		outputFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		outputFormats.put(outputFormat.getC(), outputFormat);
+		
+		outputFormat = new DebugResultFormat(parameters.getBaseConfig());
 		outputFormats.put(outputFormat.getC(), outputFormat);
 		
 		/*

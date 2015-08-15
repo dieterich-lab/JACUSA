@@ -12,7 +12,6 @@ import jacusa.pileup.DefaultPileup.STRAND;
 import jacusa.util.Coordinate;
 import jacusa.util.WindowCoordinates;
 
-import java.util.Arrays;
 import java.util.List;
 
 import net.sf.samtools.CigarElement;
@@ -284,15 +283,12 @@ public abstract class AbstractPileupBuilder {
 		System.err.println("Padding not handled yet!");
 	}
 
-	protected byte[] parseMDField(final SAMRecord record) {
+	protected byte[] parseMDField(final SAMRecord record, final byte[] referenceBases) {
 		String tag = "MD";
 		Object o = record.getAttribute(tag);
 		if (o == null) {
-			return new byte[0]; // no MD field :-(
+			return null; // no MD field :-(
 		}
-
-		// create copy of read bases
-		byte[] referenceBases = Arrays.copyOf(record.getReadBases(), record.getReadBases().length);
 		
 		// get MD string
 		String MD = (String)o;
@@ -337,13 +333,29 @@ public abstract class AbstractPileupBuilder {
 		int alignmentBlockI = 0;
 
 		int MDPosition = 0;
+		int destPos = 0;
 		byte[] referenceBases = null;
+		if (record.getAttribute("MD") != null) {
+			referenceBases = new byte[record.getReadLength()];
+		}
 
 		// collect alignment length of blocks
 		int alignmentBlockLength[] = new int[record.getAlignmentBlocks().size() + 2];
 		alignmentBlockLength[0] = 0;
 		for (int i = 0; i < record.getAlignmentBlocks().size(); i++) {
 			alignmentBlockLength[i + 1] = record.getAlignmentBlocks().get(i).getLength();
+
+			if (referenceBases != null) {
+				final int srcPos = record.getAlignmentBlocks().get(i).getReadStart() - 1;
+				final int length = record.getAlignmentBlocks().get(i).getLength();
+				System.arraycopy(
+						record.getReadBases(), 
+						srcPos, 
+						referenceBases, 
+						destPos, 
+						length);
+				destPos += length;
+			}
 		}
 		alignmentBlockLength[record.getAlignmentBlocks().size() + 1] = 0;
 
@@ -458,6 +470,7 @@ public abstract class AbstractPileupBuilder {
 			final int MDPosition, 
 			byte[] referenceBases) {
 		// process alignmentBlock specific filters
+
 		for (AbstractFilterStorage<?> filter : filterContainer.get(CigarOperator.M)) {
 			filter.processAlignmentBlock(windowPosition, readPosition, genomicPosition, cigarElement, record);
 		}
@@ -467,6 +480,18 @@ public abstract class AbstractPileupBuilder {
 			int qualI = record.getBaseQualities()[readPosition + offset];
 
 			if (baseI == -1) {
+				windowPosition = windowCoordinates.convert2WindowPosition(genomicPosition + offset);
+
+				// process MD on demand
+				if (windowPosition >= 0 && 
+						referenceBases != null && 
+						windowCache.getReferenceBase(windowPosition) == (byte)'N') {
+					referenceBases = parseMDField(record, referenceBases);
+					if (referenceBases != null) {
+						windowCache.addReferenceBase(windowPosition, referenceBases[MDPosition + offset]);
+					}
+				}
+
 				continue;
 			}
 
@@ -511,11 +536,11 @@ public abstract class AbstractPileupBuilder {
 						addLowQualityBaseCall(windowPosition, baseI, qualI, strand);
 					}
 					// process MD on demand
-					if (windowCache.getReferenceBase(windowPosition) == (byte)0) {
-						if (referenceBases == null) {
-							referenceBases = parseMDField(record);
-						}
-						if (referenceBases.length > 0) {
+					if (windowPosition >= 0 && 
+							referenceBases != null && 
+							windowCache.getReferenceBase(windowPosition) == (byte)'N') {
+						referenceBases = parseMDField(record, referenceBases);
+						if (referenceBases != null) {
 							windowCache.addReferenceBase(windowPosition, referenceBases[MDPosition + offset]);
 						}
 					}
