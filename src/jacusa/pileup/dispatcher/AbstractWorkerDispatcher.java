@@ -172,7 +172,7 @@ public abstract class AbstractWorkerDispatcher<T extends AbstractWorker> {
 				GZIPInputStream gzip = new GZIPInputStream(fileInputStream);
 				brs[threadId] = new BufferedReader(new InputStreamReader(gzip));
 			} catch (IOException e) {
-					e.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 

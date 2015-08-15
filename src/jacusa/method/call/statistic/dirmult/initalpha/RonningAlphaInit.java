@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import jacusa.pileup.BaseConfig;
 import jacusa.pileup.Pileup;
 
 public class RonningAlphaInit extends AbstractAlphaInit {
@@ -12,11 +13,12 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 	private int maxAlphaNull;
 	
 	public RonningAlphaInit() {
-		this(Math.pow(10, -6), Integer.MAX_VALUE);
+		// this(Math.pow(10, -6), Integer.MAX_VALUE);
+		this(Math.pow(10, -6), 100);
 	}
 
 	public RonningAlphaInit(double minVariance, int maxAlphaNull) {
-		super("Roning", "See Ronning 1989");
+		super("Ronning", "See Ronning 1989");
 		this.minVariance = minVariance;
 		this.maxAlphaNull = maxAlphaNull;
 	}
@@ -37,11 +39,11 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 			final double[][] pileupMatrix) {
 
 		// number of pileups
-		int n = pileupMatrix[0].length;
+		int baseLength = BaseConfig.VALID.length;
 		double[] pileupCoverages = getCoverages(baseIs, pileupMatrix);
 		
 		// calculate pileup proportion matrix
-		final double[][] pileupProportionMatrix = new double[pileups.length][n];
+		final double[][] pileupProportionMatrix = new double[pileups.length][baseLength];
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI : baseIs) {
 				pileupProportionMatrix[pileupI][baseI] = pileupMatrix[pileupI][baseI] / pileupCoverages[pileupI];
@@ -49,7 +51,7 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 		}
 
 		// calculate mean
-		double[] mean = new double[n];
+		double[] mean = new double[baseLength];
 		double min = Double.MAX_VALUE;
 
 		Set<Integer> bases = new HashSet<Integer>(baseIs.length);
@@ -68,11 +70,11 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 		}
 		
 		// init alpha with min.
-		double[] alpha = new double[n];
+		double[] alpha = new double[baseLength];
 		Arrays.fill(alpha, 0.0);
 
 		// variance of called bases
-		double[] variance = new double[baseIs.length];
+		double[] variance = new double[baseLength];
 		// init
 		Arrays.fill(variance, 0.0);
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
@@ -82,17 +84,26 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 		}
 
 		// Ronning 1989 to set Method Of Moments
-		double[] values = new double[baseIs.length];
+		double[] values = new double[baseLength];
 		for (int i = 0; i < baseIs.length; ++i) {
 			int baseI = baseIs[i];
 			variance[baseI] /= (double)(pileups.length - 1);
 			// fix if variance to small
+			/*
 			if (variance[baseI] > minVariance) {
 				// variance[baseI] = minVariance;
 				double v = mean[baseI] * (1d - mean[baseI]) / variance[baseI] - 1d;
 				if (v > 0) {
 					values[i] = v;
 				}
+			}*/
+
+			if (variance[baseI] < minVariance) {
+				variance[baseI] = minVariance;
+			}
+			double v = mean[baseI] * (1d - mean[baseI]) / variance[baseI] - 1d;
+			if (v > 0) {
+				values[i] = v;
 			}
 		}
 
@@ -112,6 +123,7 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 		if (alphaNull > maxAlphaNull) {
 			alphaNull = maxAlphaNull;
 		}
+		// of alphaNull is not defined 
 		if (alphaNull == 0.0) {
 			alphaNull = 10d;
 		}
@@ -130,7 +142,7 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 			final Pileup pileup,
 			final double[] pileupVector,
 			final double[] pileupErrorVector) {
-		return null;
+		return init(baseIs, new Pileup[]{pileup}, new double[][]{pileupVector});
 	}
 
 }

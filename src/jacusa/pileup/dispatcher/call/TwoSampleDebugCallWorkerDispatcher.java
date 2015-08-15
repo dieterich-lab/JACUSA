@@ -44,7 +44,7 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 		final StatisticCalculator sc = parameters.getStatisticParameters().getStatisticCalculator();
 		final Output output = parameters.getOutput();
 		final AbstractOutputFormat format = parameters.getFormat();
-
+		
 		File file = new File(parameters.getSample1().getPathnames()[0]);
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
@@ -56,6 +56,8 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 
 			List<Integer> replicateIndex2 = new ArrayList<Integer>();
 			replicateIndex2.add(7);
+			
+			
 			
 			// parsing
 			String line;
@@ -76,6 +78,18 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 							replicateIndex2.add(i);
 						}
 					}
+					// write header
+					String[] replicateNames1 = new String[replicateIndex1.size()];
+					String[] replicateNames2 = new String[replicateIndex2.size()];
+
+					for (int i = 0 ; i < replicateIndex1.size(); ++i) {
+						replicateNames1[i] = "sample1_" + replicateIndex1.get(0); 
+					}
+					for (int i = 0 ; i < replicateIndex2.size(); ++i) {
+						replicateNames1[i] = "sample2_" + replicateIndex2.get(0); 
+					}
+					
+					output.write(format.getHeader(replicateNames1, replicateNames2));
 					continue;
 				}
 				if (line.isEmpty()) {

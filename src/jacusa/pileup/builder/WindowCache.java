@@ -15,6 +15,8 @@ public class WindowCache {
 	private int[][] baseCount;
 	private int[][][] qualCount;
 
+	private byte[] reference;
+	
 	private int[][] minQual;
 	
 	private int[] alleleCount;
@@ -31,6 +33,8 @@ public class WindowCache {
 		baseCount = new int[windowSize][baseLength];
 		qualCount = new int[windowSize][baseLength][Phred2Prob.MAX_Q];
 
+		reference = new byte[windowSize]; 
+		
 		minQual	= new int[windowSize][baseLength];;
 		
 		alleleCount = new int[windowSize];
@@ -39,6 +43,7 @@ public class WindowCache {
 
 	public void clear() {
 		Arrays.fill(coverage, 0);
+		Arrays.fill(reference, (byte)0);
 		for (int windowPositionI = 0; windowPositionI < windowSize; ++windowPositionI) {
 			Arrays.fill(baseCount[windowPositionI], 0);
 			for (int baseI = 0; baseI < baseLength; ++baseI) {
@@ -51,6 +56,14 @@ public class WindowCache {
 		Arrays.fill(alleleMask, 0);
 	}
 
+	public void addReferenceBase(final int windowPosition, final byte referenceBase) {
+		reference[windowPosition] = referenceBase;
+	}
+	
+	public byte getReferenceBase(final int windowPosition) {
+		return reference[windowPosition];
+	}
+	
 	public void addHighQualityBaseCall(final int windowPosition, final int baseI, int qualI) {
 		// make sure we don't exceed...
 		Math.min(Phred2Prob.MAX_Q - 1, qualI);
@@ -116,4 +129,11 @@ public class WindowCache {
 		return windowCoordinates;
 	}
 
+	public int getWindowSize() {
+		return windowSize;
+	}
+	
+	public byte[] getReference() {
+		return reference;
+	}
 }

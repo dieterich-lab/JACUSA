@@ -89,6 +89,11 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 		// copy base and qual info from cache
 		pileup.setCounts(windowCache.getCounts(windowPosition));
 
+		byte refBaseByte = windowCache.getReferenceBase(windowPosition);
+		if (refBaseByte != (byte)0) {
+			pileup.setRefBase((char)refBaseByte);
+		}
+		
 		// for DirectedPileupBuilder the basesCounts in the pileup are already inverted (when on the reverse strand) 
 		return pileup;
 	}

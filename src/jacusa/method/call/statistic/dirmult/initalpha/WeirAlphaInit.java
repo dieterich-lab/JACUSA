@@ -97,8 +97,7 @@ public class WeirAlphaInit extends AbstractAlphaInit {
 			final Pileup pileup, 
 			final double[] pileupVector,
 			final double[] pileupErrorVector) {
-		// this is by WeirMoM not supported
-		return null;
+		return init(baseIs, new Pileup[]{pileup}, new double[][]{pileupVector});
 	}
 	
 }

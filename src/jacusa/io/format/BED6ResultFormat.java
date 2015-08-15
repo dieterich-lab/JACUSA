@@ -21,14 +21,22 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 	public Phred2Prob phred2Prob;
 
 	public BED6ResultFormat(
+			final char c,
+			final String desc,
 			final BaseConfig baseConfig, 
 			final FilterConfig filterConfig) {
-		super(CHAR, "Default");
+		super(c, desc);
 		
 		this.baseConfig = baseConfig;
 		this.filterConfig = filterConfig;
 
 		phred2Prob = Phred2Prob.getInstance(baseConfig.getBaseLength());
+	}
+
+	public BED6ResultFormat(
+			final BaseConfig baseConfig, 
+			final FilterConfig filterConfig) {
+		this(CHAR, "Default", baseConfig, filterConfig);
 	}
 
 	@Override
@@ -121,12 +129,12 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 		addPileups(sb, parallelPileup.getPileups2());
 
 		sb.append(getSEP());
-		sb.append(result.getInfo());
+		sb.append(result.getResultInfo().combine());
 		
 		// add filtering info
 		if (filterConfig.hasFiters()) {
 			sb.append(getSEP());
-			sb.append(result.getFilterInfo());
+			sb.append(result.getFilterInfo().combine());
 		}
 		
 		return sb.toString();		

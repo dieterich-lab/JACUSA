@@ -57,12 +57,12 @@ public class BiasBaseCountFilter extends AbstractStorageFilter<BaseCount> {
 		ChiSquareDist chi = new ChiSquareDist(rc.getGroupCount() - 1);
 		double prob = chi.cdf(H);
 		// convert to phred-score
-		double phred = MathUtil.Prob2Phred(1- prob); 
+		double phred = MathUtil.Prob2Phred(1 - prob); 
 
 		// filter positions with divergent distributions of data
 		if (1 - prob <= probT) {
 			// provide meta information
-			result.addFilterInfo(getC() + "=" + Double.toString(phred));
+			result.getFilterInfo().add(Character.toString(getC()), Double.toString(phred));
 			return true;
 		}
 

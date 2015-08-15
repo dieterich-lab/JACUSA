@@ -2,6 +2,7 @@ package jacusa.method.call.statistic.dirmult.initalpha;
 
 import java.util.Arrays;
 
+import jacusa.pileup.BaseConfig;
 import jacusa.pileup.Pileup;
 
 public class BayesAlphaInit extends AbstractAlphaInit {
@@ -20,7 +21,7 @@ public class BayesAlphaInit extends AbstractAlphaInit {
 			final int[] baseIs, 
 			final Pileup[] pileups,
 			final double[][] pileupMatrix) {
-		final double[] alpha = new double[baseIs.length];
+		final double[] alpha = new double[BaseConfig.VALID.length];
 		Arrays.fill(alpha, 0d);
 
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {

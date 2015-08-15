@@ -45,7 +45,6 @@ public class DirichletMultinomialRobustCompoundError extends DirichletMultinomia
 		}
 
 		// determine common base (shared by both samples)
-		// TODO make this an array to support multiple shared bases
 		int commonBaseI = -1;
 		for (int baseI : alleles) {
 			int count1 = parallelPileup.getPooledPileup1().getCounts().getBaseCount(baseI);
@@ -69,7 +68,7 @@ public class DirichletMultinomialRobustCompoundError extends DirichletMultinomia
 			adjustedParallelPileup = new DefaultParallelPileup(parallelPileup.getPileups2(), parallelPileup.getPileups2());
 			adjustedParallelPileup.setPileups2(DefaultPileup.flat(adjustedParallelPileup.getPileups2(), variantBaseIs, commonBaseI));
 		}
-		// aP > 3, just use the existing parallelPileup to calculate the test-statistic (see TODO : multiple shared bases)
+		// aP > 3, just use the existing parallelPileup to calculate the test-statistic
 		if (adjustedParallelPileup == null) { 
 			return super.getStatistic(parallelPileup);
 		}

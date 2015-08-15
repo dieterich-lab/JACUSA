@@ -10,9 +10,9 @@ public class BED6OneSampleResultFormat extends BED6ResultFormat {
 	public BED6OneSampleResultFormat(
 			final BaseConfig baseConfig, 
 			final FilterConfig filterConfig) {
-		super(baseConfig, filterConfig);
+		super('b', "One sample", baseConfig, filterConfig);
 	}
-
+	
 	@Override
 	public String getHeader(String[] pathnames1, String[] pathnames2) {
 		final StringBuilder sb = new StringBuilder();
@@ -83,12 +83,12 @@ public class BED6OneSampleResultFormat extends BED6ResultFormat {
 		addPileups(sb, parallelPileup.getPileups1());
 
 		sb.append(getSEP());
-		sb.append(result.getInfo());
+		sb.append(result.getResultInfo().combine());
 		
 		// add filtering info
 		if (filterConfig.hasFiters()) {
 			sb.append(getSEP());
-			sb.append(result.getFilterInfo());
+			sb.append(result.getFilterInfo().combine());
 		}
 		
 		return sb.toString();		

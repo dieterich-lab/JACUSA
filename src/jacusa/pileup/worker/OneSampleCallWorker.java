@@ -4,7 +4,7 @@ import jacusa.cli.parameters.OneSampleCallParameters;
 import jacusa.pileup.dispatcher.call.OneSampleCallWorkerDispatcher;
 import jacusa.pileup.iterator.OneSampleIterator;
 import jacusa.pileup.iterator.variant.Variant;
-import jacusa.pileup.iterator.variant.VariantParallelPileup;
+import jacusa.pileup.iterator.variant.VariantParallelPileup1;
 import jacusa.util.Coordinate;
 import net.sf.samtools.SAMFileReader;
 
@@ -29,7 +29,7 @@ public class OneSampleCallWorker extends AbstractCallWorker {
 		this.parameters = parameters;
 		readers1 = initReaders(parameters.getSample1().getPathnames());
 
-		variant = new VariantParallelPileup();
+		variant = new VariantParallelPileup1();
 	}
 
 	@Override

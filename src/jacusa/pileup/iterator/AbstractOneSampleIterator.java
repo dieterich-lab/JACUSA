@@ -4,6 +4,7 @@ import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.FilterContainer;
 import jacusa.pileup.builder.AbstractPileupBuilder;
+import jacusa.pileup.iterator.location.AbstractLocationAdvancer;
 import jacusa.pileup.iterator.variant.Variant;
 import jacusa.util.Coordinate;
 import jacusa.util.Location;
@@ -13,7 +14,6 @@ public abstract class AbstractOneSampleIterator extends AbstractWindowIterator {
 
 	protected SampleParameters sample;
 
-	protected Location location;
 	protected final AbstractPileupBuilder[] pileupBuilders;	
 
 	public AbstractOneSampleIterator(
@@ -31,11 +31,19 @@ public abstract class AbstractOneSampleIterator extends AbstractWindowIterator {
 				readers,
 				sample,
 				parameters);
-		location = initLocation(annotatedCoordinate, sample.getPileupBuilderFactory().isDirected(), pileupBuilders);
+		
+		final Location loc = initLocation(
+				coordinate, 
+				sample.getPileupBuilderFactory().isDirected(), 
+				pileupBuilders);
+		
+		// create the correct LocationAdvancer
+		locationAdvancer = AbstractLocationAdvancer.getInstance(
+				sample.getPileupBuilderFactory().isDirected(), loc);
 	}
 
-	protected boolean hasNextA() {
-		return hasNext(location, pileupBuilders);
+	protected boolean hasNext1() {
+		return hasNext(locationAdvancer.getLocation(), pileupBuilders);
 	}
 
 	public FilterContainer[] getFilterContainers4Replicates1(Location location) {
@@ -44,7 +52,7 @@ public abstract class AbstractOneSampleIterator extends AbstractWindowIterator {
 
 	// ugly code getFilterContainers4Replicates2(Location location)
 	public FilterContainer[] getFilterContainers4Replicates2(Location location) {
-		return null; 
+		return getFilterCaches4Replicates(location, pileupBuilders); 
 	}
 	
 }

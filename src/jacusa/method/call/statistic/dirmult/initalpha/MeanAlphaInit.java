@@ -1,5 +1,6 @@
 package jacusa.method.call.statistic.dirmult.initalpha;
 
+import jacusa.pileup.BaseConfig;
 import jacusa.pileup.Pileup;
 
 public class MeanAlphaInit extends AbstractAlphaInit {
@@ -18,8 +19,8 @@ public class MeanAlphaInit extends AbstractAlphaInit {
 			final int[] baseIs,
 			final Pileup[] pileups,
 			final double[][] pileupMatrix) {
-		final double[] alpha = new double[baseIs.length];
-		final double[] mean = new double[baseIs.length];
+		final double[] alpha = new double[BaseConfig.VALID.length];
+		final double[] mean = new double[BaseConfig.VALID.length];
 
 		double[] pileupCoverages = getCoverages(baseIs, pileupMatrix);
 		

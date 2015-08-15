@@ -6,14 +6,18 @@ import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.AlphaInitFactory;
 import jacusa.method.call.statistic.dirmult.initalpha.BayesAlphaInit;
+import jacusa.method.call.statistic.dirmult.initalpha.MeanAlphaInit;
+import jacusa.method.call.statistic.dirmult.initalpha.MinAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.RonningAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.RonningBayesAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.WeirAlphaInit;
+import jacusa.method.call.statistic.dirmult.initalpha.WeirBayesAlphaInit;
 import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.Result;
+import jacusa.util.Info;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -48,9 +52,7 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 	protected double logLikelihoodP;
 	
 	protected boolean numericallyStable;
-	protected StringBuilder info1;
-	protected StringBuilder info2;
-	protected StringBuilder infoP;
+	protected Info estimateInfo;
 
 	private AlphaInitFactory alphaInitFactory;
 	
@@ -71,8 +73,8 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		alphaInitFactory	= new AlphaInitFactory(getAlphaInits());
 		
 		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
-		otherSymbols.setDecimalSeparator(',');
-		otherSymbols.setGroupingSeparator('.');
+		otherSymbols.setDecimalSeparator('.');
+		otherSymbols.setGroupingSeparator(',');
 		decimalFormat = new DecimalFormat("#.##", otherSymbols);
 	}
 
@@ -88,6 +90,12 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		alphaInit = new WeirAlphaInit();
 		alphaInits.put(alphaInit.getName(), alphaInit);
 
+		alphaInit = new MeanAlphaInit();
+		alphaInits.put(alphaInit.getName(), alphaInit);
+		
+		alphaInit = new MinAlphaInit();
+		alphaInits.put(alphaInit.getName(), alphaInit);
+		
 		/* 
 		 * combined alpha init(s)
 		 * combined methods for 
@@ -97,7 +105,7 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		alphaInit = new RonningBayesAlphaInit();
 		alphaInits.put(alphaInit.getName(), alphaInit);
 
-		alphaInit = new RonningBayesAlphaInit();
+		alphaInit = new WeirBayesAlphaInit();
 		alphaInits.put(alphaInit.getName(), alphaInit);
 
 		return alphaInits;
@@ -113,7 +121,7 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 			final Pileup[] pileups, 
 			final int[] baseIs, 
 			double[][] pileupMatrix) {
-		double[] pileupErrorVector = new double[baseIs.length];
+		double[] pileupErrorVector = new double[BaseConfig.VALID.length];
 		
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			Pileup pileup = pileups[pileupI];
@@ -140,90 +148,16 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		final double statistic = getStatistic(result.getParellelPileup());
 		result.setStatistic(statistic);
 
+		final Info resultInfo = result.getResultInfo(); 
+		
 		// append content to info field
-		StringBuilder sb = new StringBuilder();
 		if (! isNumericallyStable()) {
-			sb.append("NumericallyInstable;");
-		}
-		if (getInfo1().length() > 0) {
-			sb.append("1=");
-			sb.append(getInfo1().toString());
-			sb.append(";");
-		}
-		if (getInfo2().length() > 0) {
-			sb.append("2=");
-			sb.append(getInfo2().toString());
-			sb.append(";");
-		}
-		if (getInfoP().length() > 0) {
-			sb.append("P=");
-			sb.append(getInfoP().toString());
-			sb.append(";");
+			resultInfo.add("NumericallyInstable");
 		}
 
-		// append alpha/iterations/log-likelihood to info info field
-		if (showAlpha) {
-			sb.append("alpha1=");
-			sb.append(decimalFormat.format(alpha1[0]));
-			for (int i = 1; i < alpha1.length; ++i) {
-				sb.append(":");
-				sb.append(decimalFormat.format(alpha1[i]));
-			}
-			sb.append(";alpha2=");
-			sb.append(decimalFormat.format(alpha2[0]));
-			for (int i = 1; i < alpha2.length; ++i) {
-				sb.append(":");
-				sb.append(decimalFormat.format(alpha2[i]));
-			}
-			sb.append(";alphaP=");
-			sb.append(decimalFormat.format(alphaP[0]));
-			for (int i = 1; i < alphaP.length; ++i) {
-				sb.append(":");
-				sb.append(decimalFormat.format(alphaP[i]));
-			}
-
-			sb.append(";initAlpha1=");
-			sb.append(decimalFormat.format(initAlpha1[0]));
-			for (int i = 1; i < initAlpha1.length; ++i) {
-				sb.append(":");
-				sb.append(decimalFormat.format(initAlpha1[i]));
-			}
-			sb.append(";initAlpha2=");
-			sb.append(decimalFormat.format(initAlpha2[0]));
-			for (int i = 1; i < initAlpha2.length; ++i) {
-				sb.append(":");
-				sb.append(decimalFormat.format(initAlpha2[i]));
-			}
-			sb.append(";initAlphaP=");
-			sb.append(decimalFormat.format(initAlphaP[0]));
-			for (int i = 1; i < initAlphaP.length; ++i) {
-				sb.append(":");
-				sb.append(decimalFormat.format(initAlphaP[i]));
-			}
-			
-			sb.append(";");
-			sb.append("logLikelihood1=");
-			sb.append(logLikelihood1);
-			sb.append(";");
-			sb.append("logLikelihood2=");
-			sb.append(logLikelihood2);
-			sb.append(";");
-			sb.append("logLikelihoodP=");
-			sb.append(logLikelihoodP);
-			sb.append(";");
-			sb.append("iterations1=");
-			sb.append(iterations1);
-			sb.append(";");
-			sb.append("iterations2=");
-			sb.append(iterations2);
-			sb.append(";");
-			sb.append("iterationsP=");
-			sb.append(iterationsP);
-			sb.append(";");
+		if (! estimateInfo.isEmpty()) {
+			resultInfo.addAll(estimateInfo);
 		}
-
-		// append to info field
-		result.addInfo(sb.toString());
 	}
 	
 	public double[] getAlpha1() {
@@ -253,15 +187,6 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 	public double getLogLikelihoodP() {
 		return logLikelihoodP;
 	}
-	public StringBuilder getInfo1() {
-		return info1;
-	}
-	public StringBuilder getInfo2() {
-		return info2;
-	}
-	public StringBuilder getInfoP() {
-		return infoP;
-	}
 	public boolean isNumericallyStable() {
 		return numericallyStable;
 	}
@@ -275,23 +200,20 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 
 		// flag to indicated numerical stability of parameter estimation
 		numericallyStable = true;
+		estimateInfo = new Info();
 
 		// parameters for distribution
 		alpha1 = new double[baseN];
 		// container[# of pileups][baseN] for data to be modeled by distribution
 		double[][] pileupMatrix1  = new double[parallelPileup.getN1()][baseN];
-		// info container for sample 1
-		info1 = new StringBuilder();
-		
+	
 		// the same for sample 2
 		alpha2 = new double[baseN];
 		double[][] pileupMatrix2 = new double[parallelPileup.getN2()][baseN];
-		info2 = new StringBuilder();
 
 		// the same for pooled sample 1, 2
 		alphaP = new double[baseN];
 		double[][] pileupMatrixP = new double[parallelPileup.getN()][baseN];
-		infoP = new StringBuilder();
 		
 		/* distinguish parameters estimation between 
 		 * - no replicates (pileup.length == 1),
@@ -332,15 +254,54 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		// container for test-statistic
 		double stat = Double.NaN;
 		try {
-			// estimate alphas, capture and info(s), and store log-likelihood
-			logLikelihood1 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha1, pileupMatrix1, info1);
+			// estimate alpha(s), capture and info(s), and store log-likelihood
+			logLikelihood1 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha1, pileupMatrix1, "1", estimateInfo);
 			iterations1 = estimateAlpha.getIterations();
-			logLikelihood2 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha2, pileupMatrix2, info2);
+			logLikelihood2 = estimateAlpha.maximizeLogLikelihood(baseIs, alpha2, pileupMatrix2, "2", estimateInfo);
 			iterations2 = estimateAlpha.getIterations();
-			logLikelihoodP = estimateAlpha.maximizeLogLikelihood(baseIs, alphaP, pileupMatrixP, infoP);
+			logLikelihoodP = estimateAlpha.maximizeLogLikelihood(baseIs, alphaP, pileupMatrixP, "P", estimateInfo);
 			iterationsP = estimateAlpha.getIterations();
 
-			// we want a value?
+			// append alpha/iterations/log-likelihood to info info field
+			if (showAlpha) {
+				estimateInfo.add("alpha1", decimalFormat.format(alpha1[0]));			
+				for (int i = 1; i < alpha1.length; ++i) {
+					estimateInfo.add("alpha1", ":");
+					estimateInfo.add("alpha1", decimalFormat.format(alpha1[i]));
+				}
+				estimateInfo.add("alpha2", decimalFormat.format(alpha2[0]));			
+				for (int i = 1; i < alpha2.length; ++i) {
+					estimateInfo.add("alpha2", ":");
+					estimateInfo.add("alpha2", decimalFormat.format(alpha2[i]));
+				}
+				estimateInfo.add("alphaP", decimalFormat.format(alphaP[0]));			
+				for (int i = 1; i < alphaP.length; ++i) {
+					estimateInfo.add("alphaP", ":");
+					estimateInfo.add("alphaP", decimalFormat.format(alphaP[i]));
+				}
+				
+				estimateInfo.add("initAlpha1", decimalFormat.format(initAlpha1[0]));			
+				for (int i = 1; i < initAlpha1.length; ++i) {
+					estimateInfo.add("initAlpha1", ":");
+					estimateInfo.add("initAlpha1", decimalFormat.format(initAlpha1[i]));
+				}
+				estimateInfo.add("initAlpha2", decimalFormat.format(initAlpha2[0]));			
+				for (int i = 1; i < initAlpha2.length; ++i) {
+					estimateInfo.add("initAlpha2", ":");
+					estimateInfo.add("initAlpha2", decimalFormat.format(initAlpha2[i]));
+				}
+				estimateInfo.add("initAlphaP", decimalFormat.format(initAlphaP[0]));			
+				for (int i = 1; i < initAlphaP.length; ++i) {
+					estimateInfo.add("initAlphaP", ":");
+					estimateInfo.add("initAlphaP", decimalFormat.format(initAlphaP[i]));
+				}
+				
+				estimateInfo.add("logLikelihood1", Double.toString(logLikelihood1));
+				estimateInfo.add("logLikelihood2", Double.toString(logLikelihood2));
+				estimateInfo.add("logLikelihoodP", Double.toString(logLikelihoodP));
+			}
+			
+			// we want a p-value?
 			if (calcPValue) {
 				stat = -2 * (logLikelihoodP - (logLikelihood1 + logLikelihood2));
 				ChiSquareDist dist = new ChiSquareDist(baseIs.length - 1);

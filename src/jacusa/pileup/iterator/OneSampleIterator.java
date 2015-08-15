@@ -5,8 +5,8 @@ import java.util.Set;
 
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
-import jacusa.pileup.DefaultPileup.STRAND;
 import jacusa.pileup.iterator.variant.Variant;
+import jacusa.pileup.BaseConfig;
 import jacusa.pileup.DefaultPileup;
 import jacusa.pileup.Pileup;
 import jacusa.util.Coordinate;
@@ -24,53 +24,10 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 		super(annotatedCoordinate, filter, readers, sample, parameters);
 	}
 
-	/*
 	@Override
 	public boolean hasNext() {
-		while (hasNextA()) {
-			parallelPileup.setContig(coordinate.getSequenceName());
-			parallelPileup.setStart(location.genomicPosition);
-
-			parallelPileup.setPileups1(parallelPileup.getPileups1());
-			int baseI = getHomomorphBaseI(parallelPileup.getPooledPileup1());
-			Pileup[] homoMorph = removeBase(baseI, parallelPileup.getPileups1());
-			parallelPileup.setPileups2(homoMorph);
-
-			if (filter.isValid(parallelPileup)) {
-				return true;
-			} else {
-				parallelPileup.setPileups1(new Pileup[0]);
-				parallelPileup.setPileups2(new Pileup[0]);
-
-				advance();
-			}
-		}
-
-		return false;
-	}
-	*/
-
-	protected void advance() {
-		if (location.strand == STRAND.FORWARD) {
-			location.strand = STRAND.REVERSE;
-		} else {
-			location.genomicPosition++;
-		}
-	}
-
-	@Override
-	public boolean hasNext() {
-		Location location = locationAdvancer.getLocation1();
-
-		while (hasNextA()) {
-			if (! locationAdvancer.isValidStrand()) {
-				location.strand = STRAND.REVERSE;
-				if (! isCovered(location, pileupBuilders)) {
-					locationAdvancer.advance();
-					break;
-				}
-			}
-			location = locationAdvancer.getLocation();
+		while (hasNext1()) {
+			Location location = locationAdvancer.getLocation();
 			
 			parallelPileup.setContig(coordinate.getSequenceName());
 			parallelPileup.setStart(location.genomicPosition);
@@ -81,16 +38,22 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 			parallelPileup.setPileups2(new Pileup[0]);
 
 			if (filter.isValid(parallelPileup)) {
-				int commonBaseI = 0;
-				int commonBaseCount = 0;
-				
+				int commonBaseI = -1;
+
 				int[] allelesIs = parallelPileup.getPooledPileup1().getAlleles();
-				for (int baseI : allelesIs) {
-					int count = parallelPileup.getPooledPileup1().getCounts().getBaseCount(baseI);
-					if (count > commonBaseCount) {
-						commonBaseCount = count;
-						commonBaseI = baseI;
+				if (parallelPileup.getPooledPileup1().getRefBase() != 'N') {
+					int commonBaseCount = 0;
+
+					for (int baseI : allelesIs) {
+						int count = parallelPileup.getPooledPileup1().getCounts().getBaseCount(baseI);
+						if (count > commonBaseCount) {
+							commonBaseCount = count;
+							commonBaseI = baseI;
+						}
 					}
+				} else {
+					char refBase = parallelPileup.getPooledPileup1().getRefBase();
+					commonBaseI = BaseConfig.BYTE_BASE2INT_BASE[(byte)refBase];
 				}
 				int [] variantBasesIs = new int[allelesIs.length - 1];
 				int i = 0;
@@ -101,7 +64,7 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 					}
 				}
 
-				parallelPileup.setPileups2(DefaultPileup.flat(parallelPileup.getPileups2(), variantBasesIs, commonBaseI));
+				parallelPileup.setPileups2(DefaultPileup.flat(parallelPileup.getPileups1(), variantBasesIs, commonBaseI));
 				
 				return true;
 			} else {
@@ -111,12 +74,10 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 
 				locationAdvancer.advance();
 			}
-			break;
 		}
-
+		
 		return false;
 	}
-
 	
 	@Override
 	public Location next() {

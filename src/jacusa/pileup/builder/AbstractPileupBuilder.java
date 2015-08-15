@@ -12,6 +12,7 @@ import jacusa.pileup.DefaultPileup.STRAND;
 import jacusa.util.Coordinate;
 import jacusa.util.WindowCoordinates;
 
+import java.util.Arrays;
 import java.util.List;
 
 import net.sf.samtools.CigarElement;
@@ -260,7 +261,7 @@ public abstract class AbstractPileupBuilder {
 			int genomicPosition, 
 			final CigarElement cigarElement, 
 			final SAMRecord record) {
-		System.err.println("Hard Clipping not handled yet!");
+		// System.err.println("Hard Clipping not handled yet!");
 	}
 	
 	protected void processSoftClipping(
@@ -283,12 +284,60 @@ public abstract class AbstractPileupBuilder {
 		System.err.println("Padding not handled yet!");
 	}
 
+	protected byte[] parseMDField(final SAMRecord record) {
+		String tag = "MD";
+		Object o = record.getAttribute(tag);
+		if (o == null) {
+			return new byte[0]; // no MD field :-(
+		}
+
+		// create copy of read bases
+		byte[] referenceBases = Arrays.copyOf(record.getReadBases(), record.getReadBases().length);
+		
+		// get MD string
+		String MD = (String)o;
+		// add potential missing number(s)
+		MD = "0" + MD.toUpperCase();
+
+		int position = 0;
+		boolean isInteger = true;
+		// change to reference base based on MD string
+		for (String e : MD.split("((?<=[0-9]+)(?=[^0-9]+))|((?<=[^0-9]+)(?=[0-9]+))")) {
+			if (isInteger) { // match
+				// use read sequence
+				int matchLength = Integer.parseInt(e);
+				position += matchLength;
+				isInteger = false;
+			} else if (e.charAt(0) == '^') {
+				isInteger = true;
+			} else { // deletion and/or mismatch
+				String[] s = e.split("\\^");
+				// use MD field to reconstruct reference
+				e = s[0];
+
+				int length = e.length();
+				for (int i = 0; i < length; ++i) {
+					referenceBases[position + i] = (byte)e.toCharArray()[i];
+				}
+				position += length;
+				isInteger = true;
+				// ignore rest of s
+			}
+		}
+
+		return referenceBases;
+		
+	}
+	
 	protected void processRecord(SAMRecord record) {
 		// init	
 		int readPosition 	= 0;
 		int genomicPosition = record.getAlignmentStart();
 		int windowPosition  = windowCoordinates.convert2WindowPosition(genomicPosition);
 		int alignmentBlockI = 0;
+
+		int MDPosition = 0;
+		byte[] referenceBases = null;
 
 		// collect alignment length of blocks
 		int alignmentBlockLength[] = new int[record.getAlignmentBlocks().size() + 2];
@@ -329,9 +378,10 @@ public abstract class AbstractPileupBuilder {
 			case M:
 			case EQ:
 			case X:
-				processAlignmentMatch(windowPosition, readPosition, genomicPosition, cigarElement, record);
+				processAlignmentMatch(windowPosition, readPosition, genomicPosition, cigarElement, record, MDPosition, referenceBases);
 				readPosition += cigarElement.getLength();
 				genomicPosition += cigarElement.getLength();
+				MDPosition += cigarElement.getLength();
 				windowPosition  = windowCoordinates.convert2WindowPosition(genomicPosition);
 				alignmentBlockI++;
 				break;
@@ -376,6 +426,7 @@ public abstract class AbstractPileupBuilder {
 			case S:
 				processSoftClipping(windowPosition, readPosition, genomicPosition, cigarElement, record);
 				readPosition += cigarElement.getLength();
+				MDPosition += cigarElement.getLength();
 				break;
 
 			/*
@@ -403,12 +454,14 @@ public abstract class AbstractPileupBuilder {
 			int readPosition, 
 			int genomicPosition, 
 			final CigarElement cigarElement, 
-			final SAMRecord record) {
+			final SAMRecord record,
+			final int MDPosition, 
+			byte[] referenceBases) {
 		// process alignmentBlock specific filters
 		for (AbstractFilterStorage<?> filter : filterContainer.get(CigarOperator.M)) {
 			filter.processAlignmentBlock(windowPosition, readPosition, genomicPosition, cigarElement, record);
 		}
-
+		
 		for (int offset = 0; offset < cigarElement.getLength(); ++offset) {
 			final int baseI = byte2int[record.getReadBases()[readPosition + offset]];
 			int qualI = record.getBaseQualities()[readPosition + offset];
@@ -456,6 +509,15 @@ public abstract class AbstractPileupBuilder {
 						}
 					} else if (parameters.collectLowQualityBaseCalls()) { 
 						addLowQualityBaseCall(windowPosition, baseI, qualI, strand);
+					}
+					// process MD on demand
+					if (windowCache.getReferenceBase(windowPosition) == (byte)0) {
+						if (referenceBases == null) {
+							referenceBases = parseMDField(record);
+						}
+						if (referenceBases.length > 0) {
+							windowCache.addReferenceBase(windowPosition, referenceBases[MDPosition + offset]);
+						}
 					}
 				}
 				break;

@@ -9,6 +9,7 @@ import jacusa.pileup.Result;
 import jacusa.pileup.DefaultPileup.STRAND;
 // import jacusa.util.StringCollapse;
 
+@Deprecated
 public class DefaultOutputFormat extends AbstractOutputFormat {
 
 	public static final char CHAR = 'D';

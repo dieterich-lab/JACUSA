@@ -2,6 +2,7 @@ package jacusa.estimate;
 
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.RonningBayesAlphaInit;
+import jacusa.util.Info;
 
 import org.apache.commons.math3.special.Gamma;
 
@@ -45,8 +46,9 @@ public abstract class MinkaEstimateParameters {
 	public abstract double maximizeLogLikelihood(
 			final int[] baseIs, 
 			final double[] alphaOld, 
-			final double[][] matrix, 
-			final StringBuilder info);
+			final double[][] matrix,
+			final String sample,
+			final Info resultInfo);
 
 	protected double[] backtracking(
 			final double[] alpha, 
@@ -60,7 +62,7 @@ public abstract class MinkaEstimateParameters {
 		double lamba = 1.0;
 		// decrease by
 		double offset = 0.1;
-
+		
 		while (lamba >= 0.0) {
 			lamba = lamba - offset;
 

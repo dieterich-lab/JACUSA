@@ -42,6 +42,8 @@ import jacusa.filter.factory.ReadPositionDistanceFilterFactory;
 import jacusa.filter.factory.ReadPositionalBiasFilterFactory;
 import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
 import jacusa.io.format.AbstractOutputFormat;
+import jacusa.io.format.BED6ResultFormat;
+// import jacusa.io.format.ConsensusOutputFormat;
 import jacusa.io.format.PileupFormat;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.pileup.dispatcher.pileup.MpileupWorkerDispatcher;
@@ -107,6 +109,7 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 			Character[] a = getOuptutFormats().keySet().toArray(new Character[1]);
 			parameters.setFormat(getOuptutFormats().get(a[0]));
 		} else {
+			parameters.setFormat(getOuptutFormats().get(PileupFormat.CHAR));
 			acOptions.add(new FormatOption<AbstractOutputFormat>(parameters, getOuptutFormats()));
 		}
 
@@ -126,7 +129,15 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 
 		AbstractOutputFormat outputFormat = new PileupFormat(parameters.getBaseConfig());
 		outputFormats.put(outputFormat.getC(), outputFormat);
-
+		
+		outputFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		outputFormats.put(outputFormat.getC(), outputFormat);
+		
+		/*
+		outputFormat = new ConsensusOutputFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		outputFormats.put(outputFormat.getC(), outputFormat);
+		*/
+		
 		return outputFormats;
 	}
 

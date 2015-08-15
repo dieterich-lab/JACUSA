@@ -43,7 +43,7 @@ public abstract class AbstractStorageFilter<T> {
 	}
 
 	public void addFilterInfo(Result result) {
-		result.addFilterInfo(Character.toString(getC()));
+		result.getFilterInfo().add(Character.toString(getC()));
 	}
 
 }

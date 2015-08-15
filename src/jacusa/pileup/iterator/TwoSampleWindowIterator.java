@@ -120,7 +120,6 @@ public class TwoSampleWindowIterator extends AbstractTwoSampleIterator {
 
 	@Override
 	public int getAlleleCount(Location location) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 	

@@ -4,12 +4,16 @@ import java.util.Arrays;
 
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
 
+import jacusa.util.Info;
 import jacusa.util.MathUtil;
 
 import org.apache.commons.math3.special.Gamma;
 
 public class MinkaEstimateDirichletParameters extends MinkaEstimateParameters {
 
+	private final static double EPSILON = 0.001;
+	private final static int MAX_ITERATIONS = 100;
+	
 	private int tmpN = Integer.MAX_VALUE;
 	private double[] tmpLogProbMean;
 	
@@ -18,6 +22,10 @@ public class MinkaEstimateDirichletParameters extends MinkaEstimateParameters {
 		super();
 	}
 
+	public MinkaEstimateDirichletParameters(final AbstractAlphaInit initialAlpha) {
+		this(initialAlpha, MAX_ITERATIONS, EPSILON);
+	}
+	
 	public MinkaEstimateDirichletParameters(
 			final AbstractAlphaInit initialAlpha, 
 			final int maxIterations, 
@@ -28,8 +36,9 @@ public class MinkaEstimateDirichletParameters extends MinkaEstimateParameters {
 	public double maximizeLogLikelihood(
 			final int[] baseIs, 
 			final double[] alphaOld, 
-			final double[][] pileupMatrix, 
-			final StringBuilder info) {
+			final double[][] pileupMatrix,
+			final String sample,
+			final Info estimateInfo) {
 		// parameters
 		int iteration = 0;
 		boolean converged = false;
@@ -53,6 +62,11 @@ public class MinkaEstimateDirichletParameters extends MinkaEstimateParameters {
 		double loglikOld = Double.NEGATIVE_INFINITY;;
 		double loglikNew = Double.NEGATIVE_INFINITY;
 
+		int pileupN = pileupMatrix.length;
+		
+		boolean backtracked = false;
+		boolean reseted = false;
+		
 		// maximize
 		while (iteration < maxIterations && ! converged) {
 			// pre-compute
@@ -85,25 +99,57 @@ public class MinkaEstimateDirichletParameters extends MinkaEstimateParameters {
 			b = b / (1.0 / z + b_DenominatorSum);
 
 			loglikOld = getLogLikelihood(alphaOld, baseIs, pileupMatrix);
-			// update alphaNew
+			// try update alphaNew
+			boolean admissible = true; 		
 			for (int baseI : baseIs) {
 				alphaNew[baseI] = alphaOld[baseI] - (gradient[baseI] - b) / Q[baseI];
-				// check that alpha is not < 0
-				if (alphaNew[baseI] < 0) {
-					alphaNew[baseI] = 0.005; // hard set
+
+				if (alphaNew[baseI] < 0.0) {
+					// System.err.println("Reset! " + iterations);
+					admissible = false;
 				}
 			}
+			// check if alpha negative
+			if (! admissible) {
+				if (backtracked) {
+					estimateInfo.add("backtrack" + sample, ",");
+				}
+				estimateInfo.add("backtrack" + sample, Integer.toString(iterations));
+				backtracked = true;
+
+				// try newton backtracking
+				alphaNew = backtracking(alphaOld, baseIs, gradient, b, Q);
+
+				if (alphaNew == null) {
+					alphaNew = new double[baseN];
+
+					// if backtracking did not work use Ronning1989 -> min_k X_ik 
+					for (int baseI : baseIs) {		
+						double min = Double.MAX_VALUE;
+						for (int pileupI = 0; pileupI < pileupN; ++pileupI) {
+							min = Math.min(min, pileupMatrix[pileupI][baseI]);
+						}
+						alphaNew[baseI] = min;
+					}
+					if (reseted) {
+						estimateInfo.add("reset" + sample, ",");
+					}
+					estimateInfo.add("reset" + sample, Integer.toString(iterations));
+					reseted = true;
+				}
+			}
+
+			// calculate log-likelihood for new alpha(s)
 			loglikNew = getLogLikelihood(alphaNew, baseIs, pileupMatrix);
 
 			// check if converged
 			double delta = Math.abs(loglikNew - loglikOld);
-			if (delta  <= epsilon) {
+			if (delta  <= EPSILON) {
 				converged = true;
 			}
 			// update value
-			System.arraycopy(alphaNew, 0, alphaOld, 0, baseN);
-
-			iteration++;
+			System.arraycopy(alphaNew, 0, alphaOld, 0, alphaNew.length);
+			iterations++;
 		}
 
 		// reset

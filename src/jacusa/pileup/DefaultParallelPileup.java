@@ -204,6 +204,7 @@ public final class DefaultParallelPileup implements ParallelPileup {
 	public Pileup getPooledPileup1() {
 		if(pileup1 == null && pileups1[0] != null) {
 			pileup1 = new DefaultPileup(pileups1[0].getContig(), pileups1[0].getPosition(), pileups1[0].getStrand(), pileups1[0].getCounts().getBaseLength());
+			pileup1.setRefBase(pileups1[0].getRefBase());
 			for(int i = 0; i < pileups1.length; ++i) {
 				pileup1.addPileup(pileups1[i]);
 			}
@@ -215,6 +216,7 @@ public final class DefaultParallelPileup implements ParallelPileup {
 	public Pileup getPooledPileup2() {
 		if(pileup2 == null && pileups2[0] != null) {
 			pileup2 = new DefaultPileup(pileups2[0].getContig(), pileups2[0].getPosition(), pileups2[0].getStrand(), pileups2[0].getCounts().getBaseLength());
+			pileup2.setRefBase(pileups2[0].getRefBase());
 			for(int i = 0; i < pileups2.length; ++i) {
 				pileup2.addPileup(pileups2[i]);
 			}
@@ -336,7 +338,5 @@ public final class DefaultParallelPileup implements ParallelPileup {
 		
 		return ret;
 	}
-
-	
 	
 }

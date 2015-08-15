@@ -5,9 +5,14 @@ import jacusa.cli.options.AbstractACOption;
 import jacusa.cli.options.BaseConfigOption;
 import jacusa.cli.options.BedCoordinatesOption;
 import jacusa.cli.options.FilterConfigOption;
+import jacusa.cli.options.FilterModusOption;
 import jacusa.cli.options.FormatOption;
 import jacusa.cli.options.HelpOption;
+import jacusa.cli.options.MaxDepthOption;
 import jacusa.cli.options.MaxThreadOption;
+import jacusa.cli.options.MinBASQOption;
+import jacusa.cli.options.MinCoverageOption;
+import jacusa.cli.options.MinMAPQOption;
 import jacusa.cli.options.SAMPathnameArg;
 import jacusa.cli.options.ResultFileOption;
 import jacusa.cli.options.StatisticCalculatorOption;
@@ -16,6 +21,8 @@ import jacusa.cli.options.ThreadWindowSizeOption;
 import jacusa.cli.options.VersionOption;
 import jacusa.cli.options.WindowSizeOption;
 import jacusa.cli.options.pileupbuilder.OneSamplePileupBuilderOption;
+import jacusa.cli.options.sample.filter.FilterNHsamTagOption;
+import jacusa.cli.options.sample.filter.FilterNMsamTagOption;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.cli.parameters.OneSampleCallParameters;
@@ -30,6 +37,7 @@ import jacusa.filter.factory.RareEventFilterFactory;
 import jacusa.filter.factory.ReadPositionDistanceFilterFactory;
 import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
 import jacusa.io.format.AbstractOutputFormat;
+import jacusa.io.format.BED6OneSampleResultFormat;
 import jacusa.io.format.BED6ResultFormat;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.statistic.ACCUSA2Statistic;
@@ -60,11 +68,23 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 	
 	public OneSampleCallFactory() {
 		super("call-1", "Call variants - one sample");
+		parameters = new OneSampleCallParameters();
 	}
 	
 	public void initACOptions() {
 		SampleParameters sample1 = parameters.getSample1();
-		initSampleACOptions(1, sample1);
+		SampleParameters[] samples = new SampleParameters[] {
+				sample1
+		};
+		
+		acOptions.add(new MinMAPQOption(samples));
+		acOptions.add(new MinBASQOption(samples));
+		acOptions.add(new MinCoverageOption(samples));
+		acOptions.add(new MaxDepthOption(samples));
+		acOptions.add(new FilterNHsamTagOption(1, sample1));
+		acOptions.add(new FilterNMsamTagOption(1, sample1));
+		
+		
 		acOptions.add(new OneSamplePileupBuilderOption(sample1));
 		
 		acOptions.add(new BedCoordinatesOption(parameters));
@@ -73,6 +93,7 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 			Character[] a = getFormats().keySet().toArray(new Character[1]);
 			parameters.setFormat(getFormats().get(a[0]));
 		} else {
+			parameters.setFormat(new BED6OneSampleResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig()));
 			acOptions.add(new FormatOption<AbstractOutputFormat>(parameters, getFormats()));
 		}
 
@@ -88,7 +109,8 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 		}
 
 		acOptions.add(new FilterConfigOption(parameters, getFilterFactories()));
-
+		acOptions.add(new FilterModusOption(parameters));
+		
 		acOptions.add(new BaseConfigOption(parameters));
 		acOptions.add(new StatisticFilterOption(parameters.getStatisticParameters()));
 		
@@ -147,9 +169,12 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 
 		AbstractOutputFormat resultFormat = null;
 		
-		resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		resultFormat = new BED6OneSampleResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
+		resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		resultFormats.put(resultFormat.getC(), resultFormat);
+		
 		return resultFormats;
 	}
 

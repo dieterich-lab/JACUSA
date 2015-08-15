@@ -196,7 +196,7 @@ public abstract class AbstractWorker extends Thread {
 			final String line = workerDispatcher.getFormat().convert2String(result);
 			try {
 				char c = 'F';
-				if (result.hasFilterInfo()) {
+				if (! result.getFilterInfo().isEmpty()) {
 					c = 'T';
 				}
 				final String s = new String(line + c + "\n"); 

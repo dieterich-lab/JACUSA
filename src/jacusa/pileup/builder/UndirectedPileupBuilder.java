@@ -40,6 +40,11 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 		// set base and qual info from cache
 		pileup.setCounts(windowCache.getCounts(windowPosition));
 
+		byte refBaseByte = windowCache.getReferenceBase(windowPosition);
+		if (refBaseByte != (byte)0) {
+			pileup.setRefBase((char)refBaseByte);
+		}
+
 		// and complement if needed
 		if (strand == STRAND.REVERSE) {
 			pileup = pileup.invertBaseCount();

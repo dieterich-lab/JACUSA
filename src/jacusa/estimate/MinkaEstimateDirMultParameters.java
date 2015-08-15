@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
 
+import jacusa.util.Info;
 import jacusa.util.MathUtil;
 
 import org.apache.commons.math3.special.Gamma;
@@ -40,9 +41,9 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 	public double maximizeLogLikelihood(
 			final int[] baseIs, 
 			final double[] alphaOld, 
-			final double[][] pileupMatrix, 
-			final StringBuilder info) {
-		// optim "bounds"
+			final double[][] pileupMatrix,
+			final String sample,
+			final Info estimateInfo) {
 		iterations = 0;
 
 		final double localCoverages[] = getCoverages(baseIs, pileupMatrix);
@@ -71,6 +72,9 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 
 		int pileupN = pileupMatrix.length;
 
+		boolean backtracked = false;
+		boolean reseted = false;
+		
 		// maximize
 		while (iterations < maxIterations && ! converged) {
 			// pre-compute
@@ -128,9 +132,15 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 			}
 			// check if alpha negative
 			if (! admissible) {
-				info.append("backtrack" + iterations);
+				if (backtracked) {
+					estimateInfo.add("backtrack" + sample, ",");
+				}
+				estimateInfo.add("backtrack" + sample, Integer.toString(iterations));
+				backtracked = true;
+
 				// try newton backtracking
 				alphaNew = backtracking(alphaOld, baseIs, gradient, b, Q);
+
 				if (alphaNew == null) {
 					alphaNew = new double[baseN];
 
@@ -142,7 +152,11 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 						}
 						alphaNew[baseI] = min;
 					}
-					info.append("reset" + iterations);
+					if (reseted) {
+						estimateInfo.add("reset" + sample, ",");
+					}
+					estimateInfo.add("reset" + sample, Integer.toString(iterations));
+					reseted = true;
 				}
 			}
 
