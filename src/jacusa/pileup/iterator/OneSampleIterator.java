@@ -1,5 +1,6 @@
 package jacusa.pileup.iterator;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,11 +38,19 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 			parallelPileup.setPileups1(getPileups(location, pileupBuilders));
 			parallelPileup.setPileups2(new Pileup[0]);
 
-			if (filter.isValid(parallelPileup)) {
-				int commonBaseI = -1;
-
+			int commonBaseI = -1;
+			boolean noReference = false;
+			if (parallelPileup.getPooledPileup1().getRefBase() != 'N') {
+				char refBase = parallelPileup.getPooledPileup1().getRefBase();
+				commonBaseI = BaseConfig.BYTE_BASE2INT_BASE[(byte)refBase];
+				if (parallelPileup.getPooledPileup1().getCounts().getBaseCount(commonBaseI) == 0) {
+					noReference = true;
+				}
+			}
+			
+			if (filter.isValid(parallelPileup) || noReference) {
 				int[] allelesIs = parallelPileup.getPooledPileup1().getAlleles();
-				if (parallelPileup.getPooledPileup1().getRefBase() == 'N') {
+				if (commonBaseI == -1) {
 					int commonBaseCount = 0;
 
 					for (int baseI : allelesIs) {
@@ -51,19 +60,16 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 							commonBaseI = baseI;
 						}
 					}
-				} else {
-					char refBase = parallelPileup.getPooledPileup1().getRefBase();
-					commonBaseI = BaseConfig.BYTE_BASE2INT_BASE[(byte)refBase];
 				}
-				int [] variantBasesIs = new int[allelesIs.length - 1];
+				int [] tmpVariantBasesIs = new int[allelesIs.length];
 				int i = 0;
 				for (int j = 0; j < allelesIs.length; ++j) {
 					if (allelesIs[j] != commonBaseI) {
-						variantBasesIs[i] = allelesIs[j];
+						tmpVariantBasesIs[i] = allelesIs[j];
 						++i;
 					}
 				}
-
+				int[] variantBasesIs = Arrays.copyOf(tmpVariantBasesIs, i);
 				parallelPileup.setPileups2(DefaultPileup.flat(parallelPileup.getPileups1(), variantBasesIs, commonBaseI));
 				
 				return true;

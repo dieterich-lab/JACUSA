@@ -5,24 +5,16 @@ import java.util.Arrays;
 public class BaseConfig {
 
 	// dictionary to convert byte to int -> index to ALL, or valid
-	public static final int[] BYTE_BASE2INT_BASE = new int[86 + 1];
-	public static final char[] BYTE_BASE2CHAR_BASE = new char[86 + 1];
+	public static final int[] BYTE_BASE2INT_BASE = new int[84 + 1];
 	static {
 		for (int i = 0; i < BYTE_BASE2INT_BASE.length; ++i) {
 			BYTE_BASE2INT_BASE[i] = -1;
-			BYTE_BASE2CHAR_BASE[i] = '*';
 		}
 		BYTE_BASE2INT_BASE[65] = 0; // 65 A
 		BYTE_BASE2INT_BASE[67] = 1; // 67 C
 		BYTE_BASE2INT_BASE[71] = 2; // 71 G
-		BYTE_BASE2INT_BASE[86] = 3; // 86 T
+		BYTE_BASE2INT_BASE[84] = 3; // 84 T
 		BYTE_BASE2INT_BASE[78] = 4; // 78 N
-		
-		BYTE_BASE2CHAR_BASE[65] = 'A'; // 65 A
-		BYTE_BASE2CHAR_BASE[67] = 'C'; // 67 C
-		BYTE_BASE2CHAR_BASE[71] = 'G'; // 71 G
-		BYTE_BASE2CHAR_BASE[86] = 'T'; // 86 T
-		BYTE_BASE2CHAR_BASE[78] = 'N'; // 78 N
 	}
 
 	public static final char STRAND_FORWARD_CHAR = '+';
@@ -69,7 +61,7 @@ public class BaseConfig {
 		byte2int[65] = 0; // 65 A
 		byte2int[67] = 1; // 67 C
 		byte2int[71] = 2; // 71 G
-		byte2int[86] = 3; // 86 T
+		byte2int[84] = 3; // 84 T
 		byte2int[78] = 4; // 78 N
 		*/
 		return byte2int;
@@ -98,7 +90,6 @@ public class BaseConfig {
 			}
 			return byte2int;
 		}
-
 
 	public int getBaseI(byte base) {
 		return byte2int[base];

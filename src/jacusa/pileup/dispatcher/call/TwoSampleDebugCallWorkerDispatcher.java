@@ -56,9 +56,7 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 
 			List<Integer> replicateIndex2 = new ArrayList<Integer>();
 			replicateIndex2.add(7);
-			
-			
-			
+
 			// parsing
 			String line;
 			while((line = br.readLine()) != null) {
@@ -83,12 +81,12 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 					String[] replicateNames2 = new String[replicateIndex2.size()];
 
 					for (int i = 0 ; i < replicateIndex1.size(); ++i) {
-						replicateNames1[i] = "sample1_" + replicateIndex1.get(0); 
+						replicateNames1[i] = "sample1_" + replicateIndex1.get(i); 
 					}
 					for (int i = 0 ; i < replicateIndex2.size(); ++i) {
-						replicateNames1[i] = "sample2_" + replicateIndex2.get(0); 
+						replicateNames2[i] = "sample2_" + replicateIndex2.get(i); 
 					}
-					
+
 					output.write(format.getHeader(replicateNames1, replicateNames2));
 					continue;
 				}
@@ -98,12 +96,12 @@ public class TwoSampleDebugCallWorkerDispatcher extends AbstractCallWorkerDispat
 
 				String[] cols = line.split("\t");
 				String sequenceName = cols[0];
-				int start = Integer.parseInt(cols[1]);
+				int start = Integer.parseInt(cols[1]) + 1;
 				int end = Integer.parseInt(cols[2]);
 				// ignore those values
 				// String name = cols[3];
 				// String stat = cols[4];
-				STRAND strand = STRAND.UNKNOWN;
+				STRAND strand = STRAND.getEnum(cols[5]);
 
 				Pileup[] pileups1 = getPileup(sequenceName, end, strand, replicateIndex1, cols);
 				Pileup[] pileups2 = getPileup(sequenceName, end, strand, replicateIndex2, cols);
