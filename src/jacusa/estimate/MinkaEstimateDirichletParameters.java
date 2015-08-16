@@ -9,6 +9,7 @@ import jacusa.util.MathUtil;
 
 import org.apache.commons.math3.special.Gamma;
 
+// TODO adjust reset
 public class MinkaEstimateDirichletParameters extends MinkaEstimateParameters {
 
 	private final static double EPSILON = 0.001;
@@ -16,7 +17,6 @@ public class MinkaEstimateDirichletParameters extends MinkaEstimateParameters {
 	
 	private int tmpN = Integer.MAX_VALUE;
 	private double[] tmpLogProbMean;
-	
 	
 	public MinkaEstimateDirichletParameters() {
 		super();

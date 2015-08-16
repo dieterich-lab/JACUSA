@@ -123,7 +123,7 @@ public class RonningAlphaInit extends AbstractAlphaInit {
 		if (alphaNull > maxAlphaNull) {
 			alphaNull = maxAlphaNull;
 		}
-		// of alphaNull is not defined 
+		// if alphaNull is not defined 
 		if (alphaNull == 0.0) {
 			alphaNull = 10d;
 		}

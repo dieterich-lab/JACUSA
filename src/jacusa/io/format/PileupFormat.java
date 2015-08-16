@@ -33,7 +33,6 @@ public class PileupFormat extends AbstractOutputFormat {
 		sb.append(SEP);
 		sb.append(parallelPileup.getStart());
 
-		// TODO remove
 		/*
 		sb.append(SEP);
 		sb.append(parallelPileup.getPooledPileup().getRefBase());

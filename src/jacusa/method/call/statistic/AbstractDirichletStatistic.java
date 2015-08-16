@@ -296,6 +296,10 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 					estimateInfo.add("initAlphaP", decimalFormat.format(initAlphaP[i]));
 				}
 				
+				estimateInfo.add("iterations1", Integer.toString(iterations1));
+				estimateInfo.add("iterations2", Integer.toString(iterations2));
+				estimateInfo.add("iterationsP", Integer.toString(iterationsP));
+				
 				estimateInfo.add("logLikelihood1", Double.toString(logLikelihood1));
 				estimateInfo.add("logLikelihood2", Double.toString(logLikelihood2));
 				estimateInfo.add("logLikelihoodP", Double.toString(logLikelihoodP));

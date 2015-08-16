@@ -72,8 +72,9 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 
 		int pileupN = pileupMatrix.length;
 
-		boolean backtracked = false;
-		boolean reseted = false;
+		boolean backtrack = false;
+		reset = false;
+		int num = 0;
 		
 		// maximize
 		while (iterations < maxIterations && ! converged) {
@@ -132,18 +133,19 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 			}
 			// check if alpha negative
 			if (! admissible) {
-				if (backtracked) {
+				if (backtrack) {
 					estimateInfo.add("backtrack" + sample, ",");
 				}
 				estimateInfo.add("backtrack" + sample, Integer.toString(iterations));
-				backtracked = true;
+				num++;
+				backtrack = true;
 
 				// try newton backtracking
 				alphaNew = backtracking(alphaOld, baseIs, gradient, b, Q);
 
 				if (alphaNew == null) {
 					alphaNew = new double[baseN];
-
+	
 					// if backtracking did not work use Ronning1989 -> min_k X_ik 
 					for (int baseI : baseIs) {		
 						double min = Double.MAX_VALUE;
@@ -152,25 +154,26 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 						}
 						alphaNew[baseI] = min;
 					}
-					if (reseted) {
+					if (reset) {
 						estimateInfo.add("reset" + sample, ",");
 					}
 					estimateInfo.add("reset" + sample, Integer.toString(iterations));
-					reseted = true;
+					reset = true;
 				}
-			}
-
-			// calculate log-likelihood for new alpha(s)
-			loglikNew = getLogLikelihood(alphaNew, baseIs, pileupMatrix);
-
-			// check if converged
-			double delta = Math.abs(loglikNew - loglikOld);
-			if (delta  <= EPSILON) {
-				converged = true;
+			} else {
+	
+				// calculate log-likelihood for new alpha(s)
+				loglikNew = getLogLikelihood(alphaNew, baseIs, pileupMatrix);
+	
+				// check if converged
+				double delta = Math.abs(loglikNew - loglikOld);
+				if (delta  <= EPSILON) {
+					converged = true;
+				}
 			}
 			// update value
 			System.arraycopy(alphaNew, 0, alphaOld, 0, alphaNew.length);
-			iterations++;
+			iterations++;	
 
 			/*
 			System.out.print("iter: " + iterations + "\t=>\t");

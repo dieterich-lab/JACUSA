@@ -283,11 +283,27 @@ public abstract class AbstractPileupBuilder {
 		System.err.println("Padding not handled yet!");
 	}
 
-	protected byte[] parseMDField(final SAMRecord record, final byte[] referenceBases) {
+	protected byte[] parseMDField(final SAMRecord record) {
 		String tag = "MD";
 		Object o = record.getAttribute(tag);
 		if (o == null) {
-			return null; // no MD field :-(
+			return new byte[0]; // no MD field :-(
+		}
+		
+		final byte[] referenceBases = new byte[record.getReadLength()];
+		int destPos = 0;
+		for (int i = 0; i < record.getAlignmentBlocks().size(); i++) {
+		if (referenceBases != null) {
+				final int srcPos = record.getAlignmentBlocks().get(i).getReadStart() - 1;
+				final int length = record.getAlignmentBlocks().get(i).getLength();
+				System.arraycopy(
+						record.getReadBases(), 
+						srcPos, 
+						referenceBases, 
+						destPos, 
+						length);
+				destPos += length;
+			}
 		}
 		
 		// get MD string
@@ -333,29 +349,19 @@ public abstract class AbstractPileupBuilder {
 		int alignmentBlockI = 0;
 
 		int MDPosition = 0;
-		int destPos = 0;
 		byte[] referenceBases = null;
+		/*
 		if (record.getAttribute("MD") != null) {
 			referenceBases = new byte[record.getReadLength()];
 		}
+		*/
 
 		// collect alignment length of blocks
 		int alignmentBlockLength[] = new int[record.getAlignmentBlocks().size() + 2];
 		alignmentBlockLength[0] = 0;
+		
 		for (int i = 0; i < record.getAlignmentBlocks().size(); i++) {
 			alignmentBlockLength[i + 1] = record.getAlignmentBlocks().get(i).getLength();
-
-			if (referenceBases != null) {
-				final int srcPos = record.getAlignmentBlocks().get(i).getReadStart() - 1;
-				final int length = record.getAlignmentBlocks().get(i).getLength();
-				System.arraycopy(
-						record.getReadBases(), 
-						srcPos, 
-						referenceBases, 
-						destPos, 
-						length);
-				destPos += length;
-			}
 		}
 		alignmentBlockLength[record.getAlignmentBlocks().size() + 1] = 0;
 
@@ -481,13 +487,14 @@ public abstract class AbstractPileupBuilder {
 
 			if (baseI == -1) {
 				windowPosition = windowCoordinates.convert2WindowPosition(genomicPosition + offset);
-
+				int orientation = windowCoordinates.getOrientation(genomicPosition + offset);
+				
 				// process MD on demand
-				if (windowPosition >= 0 && 
-						referenceBases != null && 
-						windowCache.getReferenceBase(windowPosition) == (byte)'N') {
-					referenceBases = parseMDField(record, referenceBases);
-					if (referenceBases != null) {
+				if (orientation == 0 && windowCache.getReferenceBase(windowPosition) == (byte)'N') {
+					if (referenceBases == null) {
+						referenceBases = parseMDField(record);
+					}
+					if (referenceBases.length > 0) {
 						windowCache.addReferenceBase(windowPosition, referenceBases[MDPosition + offset]);
 					}
 				}
@@ -536,11 +543,11 @@ public abstract class AbstractPileupBuilder {
 						addLowQualityBaseCall(windowPosition, baseI, qualI, strand);
 					}
 					// process MD on demand
-					if (windowPosition >= 0 && 
-							referenceBases != null && 
-							windowCache.getReferenceBase(windowPosition) == (byte)'N') {
-						referenceBases = parseMDField(record, referenceBases);
-						if (referenceBases != null) {
+					if (windowCache.getReferenceBase(windowPosition) == (byte)'N') {
+						if (referenceBases == null) {
+							referenceBases = parseMDField(record);
+						}
+						if (referenceBases.length > 0) {
 							windowCache.addReferenceBase(windowPosition, referenceBases[MDPosition + offset]);
 						}
 					}

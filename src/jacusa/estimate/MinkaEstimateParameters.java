@@ -1,6 +1,8 @@
 package jacusa.estimate;
 
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
+import jacusa.method.call.statistic.dirmult.initalpha.MeanAlphaInit;
+import jacusa.method.call.statistic.dirmult.initalpha.MinAlphaInit;
 import jacusa.method.call.statistic.dirmult.initalpha.RonningBayesAlphaInit;
 import jacusa.util.Info;
 
@@ -9,18 +11,25 @@ import org.apache.commons.math3.special.Gamma;
 public abstract class MinkaEstimateParameters {
 
 	protected AbstractAlphaInit alphaInit;
-
+	protected AbstractAlphaInit fallBackAlphaInit;
+	
 	// options for paremeters estimation
 	protected int maxIterations;
 	protected double epsilon; 
 	protected int iterations;
+	protected boolean reset;
 	
 	public MinkaEstimateParameters() {
-		alphaInit = new RonningBayesAlphaInit();
+		alphaInit = new MinAlphaInit();
 		maxIterations = 100;
 		epsilon = 0.001;
+		reset = false;
 	}
 
+	public boolean isReset() {
+		return reset;
+	}
+	
 	public MinkaEstimateParameters(
 			final int maxIterations, 
 			final double epsilon) {
@@ -61,7 +70,7 @@ public abstract class MinkaEstimateParameters {
 		// try smaller newton steps
 		double lamba = 1.0;
 		// decrease by
-		double offset = 0.1;
+		double offset = 0.01;
 		
 		while (lamba >= 0.0) {
 			lamba = lamba - offset;

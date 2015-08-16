@@ -22,23 +22,16 @@ public class MeanAlphaInit extends AbstractAlphaInit {
 		final double[] alpha = new double[BaseConfig.VALID.length];
 		final double[] mean = new double[BaseConfig.VALID.length];
 
-		double[] pileupCoverages = getCoverages(baseIs, pileupMatrix);
-		
-		double[][] pileupProportionMatrix = new double[pileups.length][baseIs.length];
+		double total = 0.0;
 		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
 			for (int baseI : baseIs) {
-				pileupProportionMatrix[pileupI][baseI] = pileupMatrix[pileupI][baseI] / pileupCoverages[pileupI];
+				mean[baseI] += pileupMatrix[pileupI][baseI];
+				total += pileupMatrix[pileupI][baseI];
 			}
 		}
 		
-		for (int pileupI = 0; pileupI < pileups.length; ++pileupI) {
-			for (int baseI : baseIs) {
-				pileupProportionMatrix[pileupI][baseI] /= pileupCoverages[pileupI];
-				mean[baseI] += pileupProportionMatrix[pileupI][baseI];
-			}
-		}
 		for (int baseI : baseIs) {
-			mean[baseI] /= (double)(pileups.length);
+			mean[baseI] /= total;
 			alpha[baseI] = mean[baseI];
 		}
 

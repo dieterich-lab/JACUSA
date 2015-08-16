@@ -41,7 +41,7 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 				int commonBaseI = -1;
 
 				int[] allelesIs = parallelPileup.getPooledPileup1().getAlleles();
-				if (parallelPileup.getPooledPileup1().getRefBase() != 'N') {
+				if (parallelPileup.getPooledPileup1().getRefBase() == 'N') {
 					int commonBaseCount = 0;
 
 					for (int baseI : allelesIs) {
