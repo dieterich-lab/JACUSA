@@ -7,11 +7,10 @@
 \usepackage{amssymb}
 \usepackage[T1]{fontenc}
 
-
 % document related
 \title{JACUSA manual \\ Version 1.0}
 \author{Michael Piechotta \\ michael.piechotta@age.mpg.de}
-\date{July 20, 2015} 
+\date{August 17, 2015} 
 
 % --------------------------------------------------------------------------------------------------
 \begin{document}
@@ -60,14 +59,14 @@ consists of:
 \begin{description}
   \item[gDNA.bam, cDNA.bam] BAM files: gDNA.bam and cDNA OR cDNA\_1.bam and cDNA\_2.bam
   \item[snps.txt] Only available for cDNA VS cDNA. Coordinates of imputed SNPs. In both
-  BAM files matching SNPs has the same target frequency but different effective or sampled
+  BAM files matching SNPs have the same target frequency but different effective or sampled
   frequency. The shape parameter determines how much the sampled frequency will deviate from the
   target frequency in each BAM file. The suffixes: \_cdna\_1 and \_cdna\_2 correspond to the
   respective BAM file
   \item[variants.txt] Coordinates of imputed variants and their target and sample
   frequencies
 \end{description}
-Available data sample, organized by data type and species:
+Available sample data organized by data type and species:
 \begin{itemize}
   \item
   \href{http://www.age.mpg.com/software/jacusa/sample_data/hg19_chr1_gDNA_VS_cDNA.tar.gz}{hg19\_chr1\_gDNA\_VS\_cDNA.tar.gz}
@@ -102,7 +101,7 @@ Variant detection can be limited to specific regions of the genome or transcript
 minimalistic BED-like file to restrict the search to this region(s) or site(s). Remaining region(s)
 of the BAM files will not be considered.
 
-In the following example traverse file, the search is confined to a 100nt region on contig 1
+In the following traverse file, the search is confined to a 100nt region on contig 1
 staring at 1,000 and a single site on contig 2 at coordinates 10,000:
 \begin{table}
 \centering
@@ -139,7 +138,7 @@ bedtools intersect -wa -a JACUSA.out -b singular_sites.bed
 JACUSA writes its output to a user defined file or a pipe. When using multiple threads, JACUSA will
 create a gzipped temporary file for each allocated thread. Chosen command line parameters
 and current genomic position are printed to the command prompt. Furthermore, depending on
-the provided command line parameters, JACUSA will generate a file with site that have been
+the provided command line parameters, JACUSA will generate a file with sites that have been
 identified as potential artefacts when ``-s" is provided. Currently, JACUSA supports the following
 output formats, controlled by ``-f'':
 \begin{itemize}
@@ -165,16 +164,16 @@ contig & start & end & name & score & strand & bases11 & bases22 & info & filter
 \item[name] Currently, constant string: ``variant''. This dummy field is to ensure BED6
 compatibility
 \item[score] Test-statistic $z \in \mathbb{R}$ that indicates the likelihood that this is a true
-variant. Higher number indicate a higher likelihood for a variant
+variant. Higher number indicates a higher likelihood for a variant
 \item[strand] Possible values are: ``.'', ``+'', and ``-'' which correspond to ``unstranded'',
-``positive strand'', and ``negative strand''. If strand is != ``.'', then the following base columns
+``positive strand'', and ``negative strand'' respectively. If strand is != ``.'', then the following base columns
 will be indicating base counts according to the strand - inverted base count if on the ``negative
 strand''
 \item[basesIJ] The number of base columns depends on the number of BAM files. In basesIJ: $I$
 corresponds to sample and $J$ to the respective replicate. Numbers indicate the base count of the
 following base vector: $(A, C, G, T)$
 \item[info] Additional info for this specific site. Currently, details about the parameter
-estimation of the Dirichlet-Multinomial can be shown. If nothing provided, the empty filed is equal
+estimation of the Dirichlet-Multinomial can be shown. If nothing provided, the empty field is equal
 to ``*''
 \item[filter\_info] Relevant, if feature filter(s) $X$ have been provided with ``-a X'' on the
 command line. The column will contain a comma-separated list of feature filters that predict this
@@ -186,9 +185,11 @@ Calling JACUSA without any arguments will print the available tools which curren
 \begin{verbatim}
 java -jarJACUSA.jar
 	call-2  Call variants - two samples
-    pileup  SAMtools like mpileup for two samples
+  pileup  SAMtools like mpileup for two samples
 \end{verbatim}
-\subsection{Call variant - two samples}
+% call-1  Call variants - one sample
+% TODO \subsection{Call variant - one sample}
+
 {\small
 \begin{verbatim}
 usage: jacusa.jar [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...]
@@ -208,8 +209,8 @@ usage: jacusa.jar [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...
                                                 & H | Filter non-homozygous pileup/BAM (1 or 2). Default: none \\
                                                 & I | Filter distance to INDEL position. Default: 6:0.5 (I:distance:min\_ratio) \\
                                                 & Separate multiple PILEUP-FILTER with ',' (e.g.: D,I) \\
- -b,--bed <BED>									& BED file to scan for variants \\
- -C,--base-config <BASE-CONFIG> 				& Choose what bases should be considered for variant calling: TC or AG or ACGT or AT$\ldots$. Default: ACGT \\
+ -b,--bed <BED>									                & BED file to scan for variants \\
+ -C,--base-config <BASE-CONFIG> 				        & Choose what bases should be considered for variant calling: TC or AG or ACGT or AT$\ldots$. Default: ACGT \\
  -c,--min-coverage <MIN-COVERAGE>               & filter positions with coverage < MIN-COVERAGE. Default: 5 \\
  -c1,--min-coverage1 <MIN-COVERAGE1>            & filter 1 positions with coverage < MIN-COVERAGE1. Default: 5 \\
  -c2,--min-coverage2 <MIN-COVERAGE2>            & filter 2 positions with coverage < MIN-COVERAGE2. Default: 5 \\
@@ -242,7 +243,8 @@ usage: jacusa.jar [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...
                                                 & < > DirMult-RCE : Robust Compound Err. \\
  -v,--version                                   & Print version information. \\
  -W,--thread-window-size <THREAD-WINDOW-SIZE>   & size of the window used per thread. Default: 100000 \\
- -w,--window-size <WINDOW-SIZE>                 & size of the window used for caching. Make sure this is greater than the read size. Default: 10000
+ -w,--window-size <WINDOW-SIZE>                 & size of the window used for caching. Make sure this is greater than the read size and smaller than THREAD-WINDOW-SIZE>. Default:
+ 10000
 \end{tabular}}
 \end{table}
 \subsection{SAMtools like mpileup for two samples}
@@ -253,8 +255,15 @@ Use the following command line to identify RNA-DNA differences in BAM files that
 \begin{verbatim}
 java -jar call-2 -o JACUSA.out -s -a H:1 gDNA.bam cDNA.bam
 \end{verbatim}
-Option ``-a H:1'' ensures that potential polymorphisms in gDNA will eliminate site as artefact in order to discriminate from RNA editing sites. The number
+Option ``-a H:1'' ensures that potential polymorphisms in gDNA will be eliminated as artefacts. The number $x \in \{1, 2\}$
 determines which sample has to be homomorph - in this case: gDNA.bam.
+
+Use the following command line to identify RNA-DNA differences:
+\begin{verbatim}
+java -jar call-2 -o JACUSA.out -s cDNA1.bam cDNA2.bam
+\end{verbatim}
+WARNING: If you want to identify RNA-RNA differences make sure NOT to use the filter ``-a H:x''! Otherwise, potential valid variants will be filtered out. 
+
 %--------------------------------------------------------------------------------------------------
 \section{Used libraries}
 picard tools
