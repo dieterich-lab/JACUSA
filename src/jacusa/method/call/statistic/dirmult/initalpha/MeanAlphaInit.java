@@ -29,7 +29,7 @@ public class MeanAlphaInit extends AbstractAlphaInit {
 				total += pileupMatrix[pileupI][baseI];
 			}
 		}
-		
+
 		for (int baseI : baseIs) {
 			mean[baseI] /= total;
 			alpha[baseI] = mean[baseI];

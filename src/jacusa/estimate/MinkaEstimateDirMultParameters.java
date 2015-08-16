@@ -43,7 +43,8 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 			final double[] alphaOld, 
 			final double[][] pileupMatrix,
 			final String sample,
-			final Info estimateInfo) {
+			final Info estimateInfo,
+			final boolean backtrack) {
 		iterations = 0;
 
 		final double localCoverages[] = getCoverages(baseIs, pileupMatrix);
@@ -72,9 +73,7 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 
 		int pileupN = pileupMatrix.length;
 
-		boolean backtrack = false;
 		reset = false;
-		int num = 0;
 		
 		// maximize
 		while (iterations < maxIterations && ! converged) {
@@ -127,41 +126,26 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 				alphaNew[baseI] = alphaOld[baseI] - (gradient[baseI] - b) / Q[baseI];
 
 				if (alphaNew[baseI] < 0.0) {
-					// System.err.println("Reset! " + iterations);
 					admissible = false;
 				}
 			}
 			// check if alpha negative
 			if (! admissible) {
 				if (backtrack) {
-					estimateInfo.add("backtrack" + sample, ",");
-				}
-				estimateInfo.add("backtrack" + sample, Integer.toString(iterations));
-				num++;
-				backtrack = true;
-
-				// try newton backtracking
-				alphaNew = backtracking(alphaOld, baseIs, gradient, b, Q);
-
-				if (alphaNew == null) {
-					alphaNew = new double[baseN];
-	
-					// if backtracking did not work use Ronning1989 -> min_k X_ik 
-					for (int baseI : baseIs) {		
-						double min = Double.MAX_VALUE;
-						for (int pileupI = 0; pileupI < pileupN; ++pileupI) {
-							min = Math.min(min, pileupMatrix[pileupI][baseI] / localCoverages[pileupI]);
-						}
-						alphaNew[baseI] = min;
+					estimateInfo.add("backtrack" + sample, Integer.toString(iterations));
+					alphaNew = backtracking(alphaOld, baseIs, gradient, b_DenominatorSum, Q);
+					if (alphaNew == null) {
+						reset = true;
+						this.tmpCoverages = null;
+						return Double.NaN;
 					}
-					if (reset) {
-						estimateInfo.add("reset" + sample, ",");
-					}
+				} else {
 					estimateInfo.add("reset" + sample, Integer.toString(iterations));
 					reset = true;
+					this.tmpCoverages = null;
+					return Double.NaN;
 				}
 			} else {
-	
 				// calculate log-likelihood for new alpha(s)
 				loglikNew = getLogLikelihood(alphaNew, baseIs, pileupMatrix);
 	
@@ -171,19 +155,14 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 					converged = true;
 				}
 			}
+
 			// update value
 			System.arraycopy(alphaNew, 0, alphaOld, 0, alphaNew.length);
 			iterations++;	
-
-			/*
-			System.out.print("iter: " + iterations + "\t=>\t");
-			System.out.println(printAlpha(alphaNew));
-			*/
 		}
 
 		// reset
 		this.tmpCoverages = null;
-
 		return loglikNew;
 	}
 	

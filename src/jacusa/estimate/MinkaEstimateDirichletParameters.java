@@ -38,7 +38,8 @@ public class MinkaEstimateDirichletParameters extends MinkaEstimateParameters {
 			final double[] alphaOld, 
 			final double[][] pileupMatrix,
 			final String sample,
-			final Info estimateInfo) {
+			final Info estimateInfo,
+			final boolean backtrack) {
 		// parameters
 		int iteration = 0;
 		boolean converged = false;
