@@ -1,5 +1,6 @@
 package jacusa.method.call;
 
+
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
 import jacusa.cli.options.BaseConfigOption;
@@ -47,7 +48,7 @@ import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
 import jacusa.filter.factory.RareEventFilterFactory;
 import jacusa.io.format.AbstractOutputFormat;
 import jacusa.io.format.BED6ResultFormat;
-import jacusa.io.format.DebugResultFormat;
+// import jacusa.io.format.DebugResultFormat;
 //import jacusa.io.format.DebugResultFormat;
 //import jacusa.io.format.DefaultOutputFormat;
 //import jacusa.io.format.PileupResultFormat;
@@ -55,7 +56,7 @@ import jacusa.io.format.VCF_ResultFormat;
 //import jacusa.io.format.result.DebugResultFormat;
 //import jacusa.io.format.result.VCF_ResultFormat;
 import jacusa.method.AbstractMethodFactory;
-import jacusa.method.call.statistic.ACCUSA2Statistic;
+// import jacusa.method.call.statistic.ACCUSA2Statistic;
 // import jacusa.method.call.statistic.ACCUSA2Statistic;
 //import jacusa.method.call.statistic.ACCUSA2Statistic;
 //import jacusa.method.call.statistic.DirichletBayesStatistic;
@@ -167,8 +168,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 
 		StatisticCalculator statistic = null;
 
-		statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
+		// statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		// statistics.put(statistic.getName(), statistic);
 		
 		// RC statistic = new LR_SPEC_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		// RC statistics.put(statistic.getName(), statistic);
@@ -252,8 +253,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
-		resultFormat = new DebugResultFormat(parameters.getBaseConfig());
-		resultFormats.put(resultFormat.getC(), resultFormat);
+		// resultFormat = new DebugResultFormat(parameters.getBaseConfig());
+		// resultFormats.put(resultFormat.getC(), resultFormat);
 
 		resultFormat = new VCF_ResultFormat(parameters.getBaseConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
