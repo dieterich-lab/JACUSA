@@ -5,6 +5,7 @@
 \usepackage{todonotes}
 \usepackage{hyperref}
 \usepackage{amssymb}
+%\usepackage{multirow}
 \usepackage[T1]{fontenc}
 
 % document related
@@ -95,6 +96,40 @@ In the following, commands for SAMtools are presented.
 \item[sort BAM] \begin{verbatim} samtools sort mapping.bam mapping.sorted \end{verbatim} 
 \item[index BAM] \begin{verbatim} samtools index mapping.sorted.bam \end{verbatim}
 \end{description}
+\subsubsection{Strand information}
+Depending on the employed sequencing library, JACUSA can use the strand orientation to build pileups.
+With the command line parameter ``-P,--build-pileup <BUILD-PILEUP>'' the user can choose from combinations of:
+\begin{description} 
+\item[S] stranded, and
+\item[U] unstranded
+\end{description}
+to define if strand information will be utilized to build pileups.
+The format of <BUILD-PILEUP> is: 
+$$x,y : x,y \in \{S,U\}$$ 
+where x corresponds corresponds to the first sample (BAM1\_1-n files) and y to the second sample (BAM2\_1-m files).
+The default is to ignore strand information for both samples (``-P U,U'')
+JACUSA will process unstraded single-end and paired-end but strand orientation of base counts needs to be inferred from annotation (GFF). 
+For stranded single-end RNA-Seq distiguish after which strand synthesis the read is sequenced:
+\begin{itemize}
+  \item first-strand or
+  \item second-strand
+\end{itemize}
+and invert JACUSA output when first-strand library type is used.
+In order to utilize read orientation in paired end RNA-Seq both fragments must have same orientation f-f or r-r.
+Otherwise, use unstranded and invert correct orientation from annotation (see \ref{tbl:strandness} for summary).
+\begin{table}[ht]
+\caption{Summary of supported library types by JACUSA}
+\label{tbl:strandness}
+\begin{tabular}{lp{4cm}p{4cm}}
+                    & \textbf{single-end}                    & \textbf{paired end} \\
+\hline
+\textbf{unstranded} & \multicolumn{2}{c}{infer correct orientation from annotation} \\
+\textbf{stranded}   & \multicolumn{2}{c}{} \\
+\quad first-strand  & invert the orienation in JACUSA output & invert the orienation in JACUSA output (both fragments \emph{must} have same orientation f-f or r-r) \\
+\quad second-strand & JACUSA output has correct orientation  & JACUSA output has correct orientation (both fragments \emph{must} have same orientation f-f or r-r)
+\end{tabular}
+\end{table}
+In order to identify RNA editing sites by comparing gDNA and \emph{stranded} RNA-Seq use ``-P U,S''
 %--------------------------------------------------------------------------------------------------
 \subsection{Traverse BED-like file}
 Variant detection can be limited to specific regions of the genome or transcriptome.  Provide a
