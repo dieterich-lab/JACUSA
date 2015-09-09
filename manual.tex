@@ -90,12 +90,20 @@ efficient storage of alignments. Check the manuals for
 \footnote{\href{http://broadinstitute.github.io/picard/}{picard tools}} for how to use the
 respective tool to convert your alignment files to valid JACUSA input BAM.
 
-In the following, commands for SAMtools are presented.
+In the following, commands for SAMtools are presented:
 \begin{description}
 \item[SAM $\rightarrow BAM$] \begin{verbatim} samtools view -Sb mapping.sam > mapping.bam \end{verbatim}
 \item[sort BAM] \begin{verbatim} samtools sort mapping.bam mapping.sorted \end{verbatim} 
 \item[index BAM] \begin{verbatim} samtools index mapping.sorted.bam \end{verbatim}
 \end{description}
+
+It is recommended pre-processing step to remove duplicate reads when identifying variants.
+Duplicated reads occur mostly due to PCR-artefacts. 
+They are likely to harbour false variants and most statistical test require that reads are sampled independently.  
+In the following, commands for picarf tools are presented:
+\begin{verbatim} java -jar MarkDuplicates.jar I=mapping.sorted.bam O=dedup_mapping.sorted.bam M=duplication.info \end{verbatim}
+Invoke JACUSA with the additional command line option ``-F 1024'' to filter read that have been marked as duplicates.
+
 \subsubsection{Strand information}
 Depending on the employed sequencing library, JACUSA can use the strand orientation to build pileups.
 With the command line parameter ``-P,--build-pileup <BUILD-PILEUP>'' the user can choose from combinations of:
