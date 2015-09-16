@@ -18,7 +18,7 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 	private boolean strict;
 	
 	public HomozygousFilterFactory(AbstractParameters parameters) {
-		super('H', "Filter non-homozygous pileup/BAM (1 or 2). Default: none");
+		super('H', "Filter non-homozygous pileup/BAM (MUST be set to 1 or 2). Default: none");
 		sample = 0;
 		this.parameters = parameters;
 		strict = parameters.collectLowQualityBaseCalls();
