@@ -1,6 +1,6 @@
 package jacusa.cli.parameters;
 
-public interface hasSampleA {
+public interface hasSample1 {
 
 	SampleParameters getSample1();
 

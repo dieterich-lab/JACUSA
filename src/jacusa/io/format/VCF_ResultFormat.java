@@ -13,7 +13,7 @@ public class VCF_ResultFormat extends AbstractOutputFormat {
 	public static final char CHAR = 'V';
 
 	public VCF_ResultFormat(final BaseConfig baseConfig) {
-		super(CHAR, "VCF");
+		super(CHAR, "VCF Output format. Option -P will be ignored (VCF is unstranded)");
 		this.baseConfig = baseConfig;
 	}
 	
