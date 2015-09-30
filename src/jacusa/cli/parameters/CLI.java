@@ -106,8 +106,8 @@ public class CLI {
 			}
 			
 			if (error) {
-				System.err.println("ERROR: Output format VCF does not supported stranded Pileup Builder!");
-				System.err.println("ERROR: Change output format or use unstranded Pileup Builder!");
+				System.err.println("ERROR: Output format VCF does not support stranded Pileup Builder!");
+				System.err.println("ERROR: Change output format or use unstranded Pileup Builder (-P U,U)!");
 				System.exit(0);
 			}
 		}
