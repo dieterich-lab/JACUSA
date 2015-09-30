@@ -2,7 +2,7 @@ package jacusa;
 
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
-import jacusa.cli.parameters.hasSampleB;
+import jacusa.cli.parameters.hasSample2;
 import jacusa.method.AbstractMethodFactory;
 //import jacusa.method.call.OneSampleCallFactory;
 import jacusa.method.call.TwoSampleCallFactory;
@@ -223,8 +223,8 @@ public class JACUSA {
 		jacusa.printProlog(args);
 		String[] pathnames1 = parameters.getSample1().getPathnames();
 		String[] pathnames2 = new String[0];
-		if (parameters instanceof hasSampleB) {
-			pathnames2 = ((hasSampleB)parameters).getSample2().getPathnames();
+		if (parameters instanceof hasSample2) {
+			pathnames2 = ((hasSample2)parameters).getSample2().getPathnames();
 		}
 
 		// wrap chosen coordinate provider 

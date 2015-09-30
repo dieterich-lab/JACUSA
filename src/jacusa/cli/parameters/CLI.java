@@ -3,6 +3,7 @@ package jacusa.cli.parameters;
 
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
+import jacusa.io.format.VCF_ResultFormat;
 import jacusa.method.AbstractMethodFactory;
 
 import java.util.HashMap;
@@ -88,6 +89,27 @@ public class CLI {
 			e.printStackTrace();
 			methodFactory.printUsage();
 			return false;
+		}
+
+		// check stranded and VCF chosen
+		if (methodFactory.getParameters().getFormat().getC() == VCF_ResultFormat.CHAR) {
+			boolean error = false;
+			if(methodFactory.getParameters() instanceof hasSample1) {
+				if (methodFactory.getParameters().getSample1().getPileupBuilderFactory().isDirected()) {
+					error = true;
+				}
+			}
+			if(methodFactory.getParameters() instanceof hasSample2) {
+				if (((hasSample2)methodFactory.getParameters()).getSample2().getPileupBuilderFactory().isDirected()) {
+					error = true;
+				}
+			}
+			
+			if (error) {
+				System.err.println("ERROR: Output format VCF does not support stranded Pileup Builder!");
+				System.err.println("ERROR: Change output format or use unstranded Pileup Builder (-P U,U)!");
+				System.exit(0);
+			}
 		}
 
 		return true;

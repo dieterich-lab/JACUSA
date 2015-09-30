@@ -1,6 +1,6 @@
 package jacusa.cli.parameters;
 
-public class TwoSamplePileupParameters extends AbstractParameters implements hasSampleB {
+public class TwoSamplePileupParameters extends AbstractParameters implements hasSample2 {
 
 	private SampleParameters sampleB;
 

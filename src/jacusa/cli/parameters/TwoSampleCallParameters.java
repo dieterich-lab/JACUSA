@@ -3,7 +3,7 @@ package jacusa.cli.parameters;
 import jacusa.io.format.AbstractOutputFormat;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialCompoundError;
 
-public class TwoSampleCallParameters extends AbstractParameters implements hasSampleB, hasStatisticCalculator {
+public class TwoSampleCallParameters extends AbstractParameters implements hasSample2, hasStatisticCalculator {
 	private SampleParameters sampleB;
 	private StatisticParameters statisticParameters;
 

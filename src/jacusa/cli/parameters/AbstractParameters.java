@@ -9,7 +9,7 @@ import jacusa.pileup.BaseConfig;
 import jacusa.pileup.builder.PileupBuilderFactory;
 import jacusa.pileup.builder.UndirectedPileupBuilderFactory;
 
-public abstract class AbstractParameters implements hasSampleA {
+public abstract class AbstractParameters implements hasSample1 {
 	
 	// cache related
 	private int windowSize;
