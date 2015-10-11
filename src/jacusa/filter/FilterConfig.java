@@ -67,7 +67,14 @@ public class FilterConfig implements Cloneable {
 		return c2Factory.size() > 0;
 	}
 
+	public boolean hasFilter(final char c) {
+		return c2Factory.containsKey(c);
+	}
+
 	public int c2i(char c) {
+		if (! hasFilter(c)) {
+			return -1;
+		}
 		return c2i.get(c);
 	}
 	

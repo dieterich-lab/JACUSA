@@ -80,7 +80,7 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new MinMAPQOption(samples));
 		acOptions.add(new MinBASQOption(samples));
 		acOptions.add(new MinCoverageOption(samples));
-		acOptions.add(new MaxDepthOption(samples));
+		acOptions.add(new MaxDepthOption(parameters));
 		acOptions.add(new FilterNHsamTagOption(1, sample1));
 		acOptions.add(new FilterNMsamTagOption(1, sample1));
 		

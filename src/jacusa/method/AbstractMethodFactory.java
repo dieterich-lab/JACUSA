@@ -56,7 +56,7 @@ public abstract class AbstractMethodFactory {
 		acOptions.add(new MinMAPQSampleOption(sample, sampleParameters));
 		acOptions.add(new MinBASQSampleOption(sample, sampleParameters));
 		acOptions.add(new MinCoverageSampleOption(sample, sampleParameters));
-		acOptions.add(new MaxDepthSampleOption(sample, sampleParameters));
+		acOptions.add(new MaxDepthSampleOption(sample, sampleParameters, parameters));
 		acOptions.add(new FilterNHsamTagOption(sample, sampleParameters));
 		acOptions.add(new FilterNMsamTagOption(sample, sampleParameters));
 	}

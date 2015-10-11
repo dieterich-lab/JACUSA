@@ -1,6 +1,8 @@
 package jacusa.cli.options;
 
-import jacusa.cli.parameters.SampleParameters;
+import jacusa.cli.parameters.AbstractParameters;
+import jacusa.cli.parameters.hasSample2;
+import jacusa.filter.factory.MaxDepthFilterFactory;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -8,13 +10,12 @@ import org.apache.commons.cli.OptionBuilder;
 
 public class MaxDepthOption extends AbstractACOption {
 
-	private SampleParameters[] samples;
+	private AbstractParameters parameters;
 	
-	public MaxDepthOption(SampleParameters[] samples) {
-		this.samples = samples;
-
+	public MaxDepthOption(final AbstractParameters parameters) {
 		opt = "d";
 		longOpt = "max-depth";
+		this.parameters = parameters;
 	}
 	
 	@SuppressWarnings("static-access")
@@ -23,7 +24,7 @@ public class MaxDepthOption extends AbstractACOption {
 		return OptionBuilder.withLongOpt(longOpt)
 			.withArgName(longOpt.toUpperCase())
 			.hasArg()
-			.withDescription("max per-BAM depth\ndefault: " + samples[0].getMaxDepth())
+			.withDescription("max per-BAM depth\ndefault: " + parameters.getSample1().getMaxDepth())
 			.create(opt);
 	}
 
@@ -34,10 +35,15 @@ public class MaxDepthOption extends AbstractACOption {
 	    	if (maxDepth < 2 || maxDepth == 0) {
 	    		throw new IllegalArgumentException(longOpt.toUpperCase() + " must be > 0 or -1 (limited by memory)!");
 	    	}
-	    	for (SampleParameters sample : samples) {
-	    		sample.setMaxDepth(maxDepth);
+
+	    	parameters.getSample1().setMaxDepth(maxDepth);
+	    	if (parameters instanceof hasSample2) {
+	    		((hasSample2)parameters).getSample2().setMaxDepth(maxDepth);
 	    	}
 	    	
+	    	if (! parameters.getFilterConfig().hasFilter(MaxDepthFilterFactory.C)) {
+	    		parameters.getFilterConfig().addFactory(new MaxDepthFilterFactory(parameters));
+	    	}
 	    }
 	}
 

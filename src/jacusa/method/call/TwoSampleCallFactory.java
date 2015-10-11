@@ -117,7 +117,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new MinMAPQOption(samples));
 		acOptions.add(new MinBASQOption(samples));
 		acOptions.add(new MinCoverageOption(samples));
-		acOptions.add(new MaxDepthOption(samples));
+		acOptions.add(new MaxDepthOption(parameters));
 		acOptions.add(new FilterFlagOption(samples));
 		
 		acOptions.add(new TwoSamplePileupBuilderOption(sample1, sample2));
