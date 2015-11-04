@@ -1,0 +1,9 @@
+Package: JacusaHelper
+Type: Package
+Title: Helper scripts for ploting and convering JACUSA output
+Version: 0.1
+Date: 2015-06-23
+Author: Michael Piechotta
+Maintainer: <michael.piechotta@age.mpg.de>
+Description: More about what it does (maybe more than one line)
+License: What license is it under?
