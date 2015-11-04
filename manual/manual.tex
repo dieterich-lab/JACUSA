@@ -5,6 +5,7 @@
 \usepackage{todonotes}
 \usepackage{hyperref}
 \usepackage{amssymb}
+\usepackage{longtable}
 %\usepackage{multirow}
 \usepackage[T1]{fontenc}
 
@@ -101,7 +102,10 @@ It is recommended pre-processing step to remove duplicate reads when identifying
 Duplicated reads occur mostly due to PCR-artefacts. 
 They are likely to harbour false variants and most statistical test require that reads are sampled independently.  
 In the following, commands for picarf tools are presented:
-\begin{verbatim} java -jar MarkDuplicates.jar I=mapping.sorted.bam O=dedup_mapping.sorted.bam M=duplication.info \end{verbatim}
+\begin{verbatim} java -jar MarkDuplicates.jar \ 
+  I=mapping.sorted.bam O=dedup_mapping.sorted.bam \ 
+  M=duplication.info
+\end{verbatim}
 Invoke JACUSA with the additional command line option ``-F 1024'' to filter read that have been marked as duplicates.
 
 \subsubsection{Strand information}
@@ -164,7 +168,8 @@ bedtools\footnote{\href{http://bedtools.readthedocs.org/en/latest/}{bedtools}} i
 \begin{description}
 \item[merge sites] \begin{verbatim} 
 
-bedtools merge -d 500 singular_sites.bed > contigous_regions.bed
+bedtools merge -d 500 singular_sites.bed > \ 
+  contigous_regions.bed
 \end{verbatim}
 \item[run JACUSA] \begin{verbatim} 
 
@@ -193,34 +198,48 @@ The default output format is based on
 BED6\footnote{\href{http://genome.ucsc.edu/FAQ/FAQformat.html\#format1}{BED file format}} with
 additional JACUSA specific columns. The actual number of columns depends on number of provided BAM
 files.
-\begin{table}
+\begin{table}[ht]
 \caption{JACUSA default output format}
-\begin{tabular}{cccccc|cccc}
-contig & start & end & name & score & strand & bases11 & bases22 & info & filter\_info \\
+{\small
+\begin{tabular}{lcccccc|cccc}
+%contig & start & end & name & score & strand & bases11 & bases22 & info & filter\_info \\
+Column: & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
 \hline
-1 & 100 & 101 & variant & $8.07\ldots$ & - & 0,0,0,6 & 0,6,0,0 & * & * \\	
-\multicolumn{6}{c|}{\ldots} & \multicolumn{4}{c}{\ldots}
-\end{tabular}
+& 1 & 100 & 101 & variant & $8.07\ldots$ & - & 0,0,0,6 & 0,6,0,0 & * & * \\	
+& \multicolumn{6}{c|}{\ldots} & \multicolumn{4}{c}{\ldots}
+\end{tabular}}
 \end{table}
 \begin{description}
-\item[contig + start + end] 0-based, genomic coordinates of potential variant site
-\item[name] Currently, constant string: ``variant''. This dummy field is to ensure BED6
+\item[(1, 2, 3) contig + start + end] 0-based, genomic coordinates of potential variant site
+\item[(4) name] Currently, constant string: ``variant''. This dummy field is to ensure BED6
 compatibility
-\item[score] Test-statistic $z \in \mathbb{R}$ that indicates the likelihood that this is a true
+\item[(5) score] Test-statistic $z \in \mathbb{R}$ that indicates the likelihood that this is a true
 variant. Higher number indicates a higher likelihood for a variant
-\item[strand] Possible values are: ``.'', ``+'', and ``-'' which correspond to ``unstranded'',
+\item[(6) strand] Possible values are: ``.'', ``+'', and ``-'' which correspond to ``unstranded'',
 ``positive strand'', and ``negative strand'' respectively. If strand is != ``.'', then the following base columns
 will be indicating base counts according to the strand - inverted base count if on the ``negative
 strand''
-\item[basesIJ] The number of base columns depends on the number of BAM files. In basesIJ: $I$
+\item[(7,8) basesIJ] The number of base columns depends on the number of BAM files. In basesIJ: $I$
 corresponds to sample and $J$ to the respective replicate. Numbers indicate the base count of the
 following base vector: $(A, C, G, T)$
-\item[info] Additional info for this specific site. Currently, details about the parameter
+\item[(9) info] Additional info for this specific site. Currently, details about the parameter
 estimation of the Dirichlet-Multinomial can be shown. If nothing provided, the empty field is equal
 to ``*''
-\item[filter\_info] Relevant, if feature filter(s) $X$ have been provided with ``-a X'' on the
+\item[(10) filter\_info] Relevant, if feature filter(s) $X$ have been provided with ``-a X'' on the
 command line. The column will contain a comma-separated list of feature filters that predict this
-site to be a potential artefact
+site to be a potential artefact. Possible values are: \\ 
+\begin{tabular}{lp{.8\textwidth}}
+\textbf{Value} & \textbf{Description of potential artefact} \\
+\hline
+D & Variant call in the vicinity of Read Start/End, Intron, and/or INDEL position \\
+B & Variant call in the vicinity of Read Start/End \\
+I & Variant call in the vicinity of INDEL position \\
+S & Variant call in the vicinity of Splice Site \\
+Y & Variant call in the vicinity of homopolymer \\
+M & Max allowed alleles exceeded \\ 
+H & ``Control" sample contains non-homozygous pileup \\
+d & Some pileup exceeds max depth
+\end{tabular}
 \end{description}
 %--------------------------------------------------------------------------------------------------
 \section{Usage}
@@ -237,10 +256,9 @@ java -jarJACUSA.jar
 \begin{verbatim}
 usage: jacusa.jar [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...]
 \end{verbatim}}
-\begin{table}
-\centering
+\begin{center}
 {\small
-\begin{tabular}{p{.4\textwidth}p{.6\textwidth}}
+\begin{longtable}{p{.4\textwidth}p{.6\textwidth}}
  -a,--pileup-filter <PILEUP-FILTER>             & chain of PILEUP-FILTER to apply to pileups: \\
                                                 & D | Filter distance to Read Start/End, Intron, and INDEL position. Default: 5:0.5 (D:distance:min\_ratio) \\
                                                 & S | Filter distance to Splice Site. Default: 6:0.5 (S:distance:min\_ratio) \\
@@ -288,8 +306,8 @@ usage: jacusa.jar [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...
  -W,--thread-window-size <THREAD-WINDOW-SIZE>   & size of the window used per thread. Default: 100000 \\
  -w,--window-size <WINDOW-SIZE>                 & size of the window used for caching. Make sure this is greater than the read size and smaller than THREAD-WINDOW-SIZE>. Default:
  10000
-\end{tabular}}
-\end{table}
+\end{longtable}}
+\end{center}
 \subsection{SAMtools like mpileup for two samples}
 See ``Call variant - two samples'' for details.
 %--------------------------------------------------------------------------------------------------
