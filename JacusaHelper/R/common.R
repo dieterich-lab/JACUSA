@@ -1,41 +1,54 @@
 # Author: Michael Piechotta
-# Contains scripts to process JACUSA output in R
+# This package scripts to process JACUSA output:
+# * read + write + filter
+# * invert base calls when analysing stranded Illumina RNA-Seq sequencing data
+# * calculate read coverage 
+# * determine base change(s) when samples are gDNA vs. cDNA
+# * calculate editing frequency
+# * other convience functions...
 
 # Info:
-# Note for function 'Samples(l, sample)' : sample in {1, 2} corresponding to the first or second sample (replicates are considered separately)
+# Note: function 'Samples(l, sample)' : sample in {1, 2} corresponding to the first or second sample (replicates are considered separately)
 # Per default DNA is expected to be sample 1
-# The varialbe 'invert' indicates if we are dealing with Illumina sequencing data (orientation needs to be inverted)
-# Some function support replicates
+# The varialbe 'invert' indicates if we are dealing with stranded Illumina sequencing data (orientation needs to be inverted)
+# Warning: Some function do not support replicates!
 
 # use l <- Read(l) to read the data
-# and then sample <- Samples(l, 1) to extract the specific sample
+# and then sample <- Samples(l, 1) to extract the sample specific data
 # then continue with ToMatrix(sample)
 
-BASES <- c("A", "C", "G", "T")
+.BASES <- c("A", "C", "G", "T")
 
+# converts sample columns to a matrices
+# "collapse = T" indicates that replicates should be merged to one result matrix or 
+# "collapse = F" a list of matrices per replicate 
 ToMatrix <- function(sample, invert = F, collapse = T) {
-  # merge matrices sample1
+  # merge matrices sample
   if (is.list(sample))  {
-    m <- lapply(sample, ToMatrixHelper, invert)
+    m <- lapply(sample, .ToMatrixHelper, invert)
     if (collapse) {
       m <- Reduce('+', m)
     }
     m
   } else {
-    ToMatrixHelper(sample, invert)
+    .ToMatrixHelper(sample, invert)
   }
 }
-ToMatrixHelper <- function(sample, invert = F) { 
+# this helper function will convert one base column vector e.g.: [A, C, G, T] = 10,0,0,0 
+# to a matrix and invert base calls when desired
+.ToMatrixHelper <- function(sample, invert = F) { 
   l <- strsplit(sample, ",")
   m <- do.call(rbind, l)
   class(m) <- "numeric"
-  colnames(m) <- c("A", "C", "G", "T")
+  colnames(m) <- .BASES
   if (invert) { 
     m <- Invert(m) 
   }
   m
 }
 
+# this gives the read coverage for sample
+# replicates can be collapsed to the the total read covearge for sample
 Coverage <- function(sample, collapse = F) {
   m <- ToMatrix(sample, collapse = collapse)
   if (is.list(m)) {
@@ -44,7 +57,10 @@ Coverage <- function(sample, collapse = F) {
     rowSums(m)
   }
 }
-# possible fields cov1, cov2, all
+# filters parallel pileup(l) by covearge (cov)
+# fields indicates if filtering should be carried out on total coverage of both samples fields = c(cov1, cov2) or
+# on in each replicate of samples 2: fields = c(covs2)
+# possible values are: cov1, cov2, covs1, or covs2
 FilterByCoverage <- function(l, fields, cov) {
   AddCoverageInfo(l)
 
@@ -82,7 +98,8 @@ FilterByCoverageHelper <- function(covs, cov) {
            )
   }
 }
-# Ensure that in cDNA are at least minCount variant bases
+# Assumes gDNA vs. cDNA comparison with cDNA being sample 2
+# Retains sites that have at least min_count variant base in sample 2
 FilterByMinVariantCount <- function(l, min_count = 2, collapse = F) {
   l <- AddBaseChangeInfo(l)
 
@@ -113,6 +130,8 @@ FilterByMinVariantCount <- function(l, min_count = 2, collapse = F) {
   l <- FilterRec(l, ! f)
   l
 }
+# Assumes gDNA vs. cDNA comparison with cDNA being sample 2
+# FIMXE duplicated code in upper function
 GetVariantCount <- function(l, collapse = F) {
   # reference base
   b1 <- l[["base1"]]
@@ -134,7 +153,7 @@ GetVariantCount <- function(l, collapse = F) {
   }
   c
 }
-
+# filter parallel pileup (l) with boolean vector f
 FilterRec <- function(l, f) {
   lapply(l, function(x) {
     if (is.list(x)) {
@@ -153,6 +172,7 @@ FilterRec <- function(l, f) {
   })
 }
 
+# filters sites by test-statistic
 FilterByStat <- function(l, stat) {
   i <- l$stat >= stat
   FilterRec(l, i)
@@ -161,12 +181,12 @@ FilterByStat <- function(l, stat) {
 # convert from matrix to string for saving
 ToString <- function(m) {
   if (is.list(m)) {
-    lapply(m, ToStringHelper)
+    lapply(m, .ToStringHelper)
   } else {
     ToStringHelper(m) 
   }
 }
-ToStringHelper <- function(m) {
+.ToStringHelper <- function(m) {
   apply(m, 1, paste, collapse = ",")
 }
 
@@ -183,7 +203,7 @@ ToBases <- function(d) {
   }
   apply(d, 1, function(x) { b <- names(x)[x > 0] ; return(b) } )
 }
-
+# retains base information of sample from parallel pileup
 Samples <- function(l, sample) {
   sample <- paste("bases", sample, sep = "")
   j <- grep(sample, names(l))
@@ -193,7 +213,7 @@ Samples <- function(l, sample) {
     l[[j]]
   }
 }
-
+# reads JACUSA output, processes if desired and output parallel pileup
 Read <- function(f, invert = F, stat = NULL, header = T, fields = NULL, cov = NULL, collapse = F, ...) {
   d <- read.table(f, header = header, stringsAsFactors = F, check.names = F, comment.char = "", ...) 
   colnames(d)[1] <- gsub("^#", "", colnames(d)[1])
@@ -232,6 +252,7 @@ Read <- function(f, invert = F, stat = NULL, header = T, fields = NULL, cov = NU
   }
   l
 }
+# calculate coverage info for parallel pileup (l) and appends to l
 AddCoverageInfo <- function(l) {
   if (! is.null(l[["cov"]])) {
     return(l)
@@ -246,7 +267,7 @@ AddCoverageInfo <- function(l) {
   l[["cov"]] <- l[["cov1"]] + l[["cov2"]]
   l
 }
-
+# determines called base(s) for parallel pileup (l) and appends to l
 AddBaseInfo <- function(l) {
   if (! is.null(l[["base1"]]) & ! is.null(l[["base2"]])) {
     return(l)
@@ -264,7 +285,7 @@ AddBaseInfo <- function(l) {
   l[["base2"]] <- ToBase(l[["matrix2"]])
   l
 }
-
+# determines base change assuming DNA is sample 1 and cDNA is sample 2 for parallel pileup (l) and appends to l
 AddBaseChangeInfo <- function(l) {
   if (! is.null(l[["baseChange"]])) {
     return(l)
@@ -281,6 +302,7 @@ AddBaseChangeInfo <- function(l) {
   l
 }
 
+# determines editing frequency assuming DNA is sample 1 and cDNA is sample 2 for parallel pileup (l) and appends to l
 AddEditingFreqInfo <- function(l) {
   if (! is.null(l[["editingFreq"]])) {
     return(l)
@@ -319,7 +341,7 @@ AddEditingFreqInfo <- function(l) {
   l
 }
 
-# collapse replicates and give conversion table
+# collapse replicates and gives conversion table
 Table <- function(l, fixAlleles = F) {
   l <- AddBaseChangeInfo(l)
 
@@ -340,12 +362,13 @@ Table <- function(l, fixAlleles = F) {
   return(tbl(baseChange[i]))
 }
 
+# gives the fraction of "true editing"
 Score <- function(tbl, editing = c("A->G")) {
   total <- sum(tbl)
   TP <- sum(tbl[editing])
   return(TP / total)
 }
-
+# invert the base calls of a base call matrix
 Invert <- function(m) {
   tmp <- m 
   tmp[, "A"] <- m[, "T"]
@@ -356,19 +379,19 @@ Invert <- function(m) {
 }
 InvertBase <- function(b) {
   r <- rep("", length(b))
-  bases <- c("A", "C", "G", "T")
   mapply(function(o, c) {
     i <- unlist(lapply(b, function(x) { any(x %in% o) } ))
     r[i] <<- paste(r[i], c, sep = "")
-  }, bases, rev(bases))
+  }, .BASES, rev(.BASES))
   r
 }
-
+# assuming some true editing gives the fraction of false editing
 FalsePositives <- function(l, editing) {
   FP <- 1 - Score(l, editing)
   FP
 }
 
+# write a parallel pileup to a file
 Write <- function(l, file, extra = NULL) {
   fields <- c("contig", "start", "end", "name", "stat", "strand", "info", "filter_info")
   if (! is.null(extra)) {
@@ -383,6 +406,7 @@ Write <- function(l, file, extra = NULL) {
   write.table(d, file, col.names = T, row.names = F, quote = F, sep = "\t")
 }
 
+# formats editing of two base call vectors
 Editing <- function(a, b) {
   paste(a, sep = "->", b)
 }
@@ -396,6 +420,8 @@ PlotTable <- function(tbl, score = T) {
   barplot(tbl, las = 2, main = main, ylab = "Frequency")
 }
 
+# converts parallel pileup (l) to VCF file format
+# WARNING assumes sample 1 to be gDNA and sample 2 cDNA
 BED2VCF <- function(l) {
   chrom <- l[["contig"]]
   pos <- l[["end"]]
@@ -419,6 +445,7 @@ BED2VCF <- function(l) {
   return(data.frame("#CHROM" = chrom, POS = pos, ID = rep(".", n), REF = ref, ALT = alt, QUAL = rep(".", n), FILTER = rep(".", n), check.names = F))
 }
 
+# returns the editing frequency of all sites from two gDNA vs. cDNA comparisons: RDDx and RDDy
 GetEditingFreq <- function(RDDx, RDDy, all = F) {
   RDDx <- AddCoverageInfo(RDDx)
   RDDx <- AddEditingFreqInfo(RDDx)
