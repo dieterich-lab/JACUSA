@@ -116,7 +116,7 @@ FilterByMinVariantCount <- function(l, min_count = 2, collapse = F) {
 
   # base counts from cDNA
   m2 <- l[["matrix2"]]
-  i <- match(v, BASES)
+  i <- match(v, .BASES)
   f <- c()
   if (is.list(m2)) {
     f <- lapply(m2, function(m) {
@@ -142,7 +142,7 @@ GetVariantCount <- function(l, collapse = F) {
 
   # base counts from cDNA
   m2 <- l[["matrix2"]]
-  i <- match(v, BASES)
+  i <- match(v, .BASES)
   f <- c()
   if (is.list(m2)) {
     c <- lapply(m2, function(m) {
@@ -318,7 +318,7 @@ AddEditingFreqInfo <- function(l) {
   # base counts
   m1 <- l[["matrix1"]]
   m2 <- l[["matrix2"]]
-  i <- match(v, BASES)
+  i <- match(v, .BASES)
 
   freq <- c()
   if (is.list(m2)) {
