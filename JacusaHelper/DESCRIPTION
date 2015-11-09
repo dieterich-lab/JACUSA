@@ -6,4 +6,4 @@ Date: 2015-10-23
 Author: Michael Piechotta
 Maintainer: <michael.piechotta@age.mpg.de>
 Description: This package enables to process JACUSA output: read, filter, process, plot, write
-License: None
+License: GNU Affero General Public License, Version 3.0
