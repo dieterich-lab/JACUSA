@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="tools/AddVariants/src"/>
 	<classpathentry kind="lib" path="lib/Picard/picard-1.92.jar"/>
 	<classpathentry kind="lib" path="lib/Picard/sam-1.92.jar"/>
 	<classpathentry kind="lib" path="lib/ssj/lib/ssj.jar"/>
