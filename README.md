@@ -21,7 +21,7 @@ Download
 Get the current Jacusa JAR:
 
 ```
-$ wget http://www.age.mpg.com/software/jacusa/current/JACUSA.jar
+$ https://github.com/dieterich-lab/JACUSA/blob/master/build/JACUSA_v1.0.0.jar
 ```
 
 Usage
@@ -50,11 +50,11 @@ Example gDNA vs. cDNA
 Download and extract sample data 
 
 ```
-$ wget http://www.age.mpg.com/software/jacusa/sample_data/hg19_chr1_gDNA_VS_cDNA.tar.gz
+$ wget https://github.com/dieterich-lab/JACUSA/sample_data/hg19_chr1_gDNA_VS_cDNA.tar.gz
 $ tar xzvpf hg19_chr1_gDNA_VS_cDNA.tar.gz
 ```
 
-Call RNA-DNA differences (RRDs) by comparing gDNA and cDNA in sample data and save results in rdds.out.
+Call RNA-DNA differences (RDDs) by comparing gDNA and cDNA in sample data and save results in rdds.out.
 
 ```
 $ java -jar call-2 -P U,S -a H,M,B,Y -f 1024 -T 2.3	-p 2 -r rdds.out gDNA.bam cDNA1.bam,cDNA2.bam
