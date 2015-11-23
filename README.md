@@ -50,8 +50,10 @@ Example gDNA vs. cDNA
 Download and extract sample data 
 
 ```
-$ wget https://github.com/dieterich-lab/JACUSA/sample_data/hg19_chr1_gDNA_VS_cDNA.tar.gz
-$ tar xzvpf hg19_chr1_gDNA_VS_cDNA.tar.gz
+open https://cloud.dieterichlab.org/index.php/s/349PMjCdJl4wUwV
+get hg19_chr1_gDNA_VS_cDNA.tar.gz
+and unpack with
+tar xzvpf hg19_chr1_gDNA_VS_cDNA.tar.gz
 ```
 
 Call RNA-DNA differences (RDDs) by comparing gDNA and cDNA in sample data and save results in rdds.out.
