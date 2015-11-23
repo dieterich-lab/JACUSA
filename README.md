@@ -136,4 +136,4 @@ chr | start | end
 License
 -------
 
-TODO
+see LICENSE file
