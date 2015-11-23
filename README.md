@@ -117,7 +117,7 @@ Download
 Get the current AddVariants JAR:
 
 ```
-$ wget http://www.age.mpg.com/software/jacusa/current/AddVariants.jar
+$ wget https://github.com/dieterich-lab/JACUSA/blob/master/tools/AddVariants/build/AddVariants_v0.3.jar
 ```
 
 Usage
