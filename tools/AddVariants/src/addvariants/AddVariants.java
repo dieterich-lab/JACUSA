@@ -18,6 +18,8 @@
 
 package addvariants;
 
+import jacusa.pileup.iterator.variant.Variant;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -216,6 +218,7 @@ public class AddVariants {
 	
 	private static void printUsage() {
 		System.err.println("usage: <bam> <bed>");
+		System.err.println("version 0.3");
 	}
 
 	/**
