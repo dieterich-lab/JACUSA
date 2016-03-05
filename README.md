@@ -21,7 +21,7 @@ Download
 Get the current Jacusa JAR:
 
 ```
-$ wget http://www.age.mpg.com/software/jacusa/current/JACUSA.jar
+$ https://github.com/dieterich-lab/JACUSA/blob/master/build/JACUSA_v1.0.0.jar
 ```
 
 Usage
@@ -50,11 +50,13 @@ Example gDNA vs. cDNA
 Download and extract sample data 
 
 ```
-$ wget http://www.age.mpg.com/software/jacusa/sample_data/hg19_chr1_gDNA_VS_cDNA.tar.gz
-$ tar xzvpf hg19_chr1_gDNA_VS_cDNA.tar.gz
+open https://cloud.dieterichlab.org/index.php/s/349PMjCdJl4wUwV
+get hg19_chr1_gDNA_VS_cDNA.tar.gz
+and unpack with
+tar xzvpf hg19_chr1_gDNA_VS_cDNA.tar.gz
 ```
 
-Call RNA-DNA differences (RRDs) by comparing gDNA and cDNA in sample data and save results in rdds.out.
+Call RNA-DNA differences (RDDs) by comparing gDNA and cDNA in sample data and save results in rdds.out.
 
 ```
 $ java -jar call-2 -P U,S -a H,M,B,Y -f 1024 -T 2.3	-p 2 -r rdds.out gDNA.bam cDNA1.bam,cDNA2.bam
@@ -115,7 +117,7 @@ Download
 Get the current AddVariants JAR:
 
 ```
-$ wget http://www.age.mpg.com/software/jacusa/current/AddVariants.jar
+$ wget https://github.com/dieterich-lab/JACUSA/blob/master/tools/AddVariants/build/AddVariants_v0.3.jar
 ```
 
 Usage
@@ -134,4 +136,4 @@ chr | start | end
 License
 -------
 
-TODO
+see LICENSE file
