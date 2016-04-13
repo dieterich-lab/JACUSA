@@ -36,14 +36,18 @@ public class BED6OneSampleResultFormat extends BED6ResultFormat {
 		
 		sb.append("strand");
 		sb.append(getSEP());
-		
-		// (1) first sample  infos
+
+		// (1) first sample infos / reference
 		addSampleHeader(sb, '1', pathnames1.length);
+		sb.append(getSEP());
+
+		// (2) second sample infos / actual sample
+		addSampleHeader(sb, '2', pathnames1.length);
 		sb.append(getSEP());
 
 		sb.append(getSEP());
 		sb.append("info");
-		
+
 		// add filtering info
 		if (filterConfig.hasFiters()) {
 			sb.append(getSEP());
@@ -79,9 +83,12 @@ public class BED6OneSampleResultFormat extends BED6ResultFormat {
 		sb.append(SEP);
 		sb.append(parallelPileup.getStrand().character());
 
-		// (1) first pileups
+		// (1) first pileups / actual sample
+		addPileups(sb, parallelPileup.getPileups2());
+		
+		// (2) first pileups / actual sample
 		addPileups(sb, parallelPileup.getPileups1());
-
+		
 		sb.append(getSEP());
 		sb.append(result.getResultInfo().combine());
 		
