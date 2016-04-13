@@ -1,8 +1,8 @@
 Package: JacusaHelper
 Type: Package
 Title: Processing JACUSA output
-Version: 0.2
-Date: 2015-10-23
+Version: 0.3
+Date: 2016-04-13
 Author: Michael Piechotta
 Maintainer: <michael.piechotta@age.mpg.de>
 Description: This package enables to process JACUSA output: read, filter, process, plot, write
