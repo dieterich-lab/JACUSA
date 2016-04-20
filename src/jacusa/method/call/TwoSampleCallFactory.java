@@ -56,6 +56,7 @@ import jacusa.io.format.VCF_ResultFormat;
 //import jacusa.io.format.result.DebugResultFormat;
 //import jacusa.io.format.result.VCF_ResultFormat;
 import jacusa.method.AbstractMethodFactory;
+import jacusa.method.call.statistic.ACCUSA2Statistic;
 // import jacusa.method.call.statistic.ACCUSA2Statistic;
 // import jacusa.method.call.statistic.ACCUSA2Statistic;
 //import jacusa.method.call.statistic.ACCUSA2Statistic;
@@ -168,8 +169,11 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 
 		StatisticCalculator statistic = null;
 
-		// statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		// statistics.put(statistic.getName(), statistic);
+		statistic = new DirichletMultinomialRobustCompoundError	(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistics.put("DirMult", statistic);
+		
+		statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		statistics.put(statistic.getName(), statistic);
 		
 		// RC statistic = new LR_SPEC_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		// RC statistics.put(statistic.getName(), statistic);
@@ -197,13 +201,13 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 
 		//statistic = new DirichletMultinomialPooledError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
-
+		
 		statistic = new DirichletMultinomialCompoundError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
 		statistic = new DirichletMultinomialRobustCompoundError	(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
-		
+
 		//statistic = new DirichletMultinomialEstimatedError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
 		
