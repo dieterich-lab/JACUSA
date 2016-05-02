@@ -153,6 +153,48 @@ GetVariantCount <- function(l, collapse = F) {
   }
   c
 }
+GetFilterResult <- function(l) {
+  GetMask <- function(m, op = "&") {
+    AnyBases <- function(m) {
+      t(apply(m, 1, function(x) {
+	      x > 0
+		}))
+    }
+    if (is.list(m)) {
+      m <- lapply(m, AnyBases)
+      m <- Reduce(op, m)
+    } else {
+      m <- AnyBases(m)
+    }
+    m
+  }
+
+  cm <- list()
+  if (! is.list(l$matrix1)) {
+    cm <- list(bases11 = l$matrix1)
+  } else {
+    cm <- l$matrix1
+  }
+  if (! is.list(l$matrix2)) {
+    cm$bases21 <- l$matrix2
+  } else {
+    cm <- c(cm, l$matrix2)
+  }
+
+  m <- GetMask(cm, op = "|")
+  m1 <- GetMask(l$matrix1)
+  m2 <- GetMask(l$matrix2)
+
+  b <- (m1 | m2) == m
+  i <- apply(b, 1, function(x) {
+	     all(x)
+    })
+  i
+}
+FilterResult <- function(l) {
+  i <- GetFilterResult(l)
+  FilterRec(l, i)
+}
 # filter parallel pileup (l) with boolean vector f
 FilterRec <- function(l, f) {
   lapply(l, function(x) {
@@ -192,14 +234,14 @@ ToString <- function(m) {
 
 ToBase <- function(d) {
   if (is.list(d)) {
-    d <- do.call('+', d)
+    d <- Reduce('+', d)
   }
 
   apply(d, 1, function(x) { b <- names(x)[x > 0] ; paste(b, collapse = "") } ) 
 }
 ToBases <- function(d) {
   if (is.list(d)) {
-    d <- do.call('+', d)
+    d <- Reduce('+', d)
   }
   apply(d, 1, function(x) { b <- names(x)[x > 0] ; return(b) } )
 }
