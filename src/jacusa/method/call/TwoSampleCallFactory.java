@@ -66,7 +66,7 @@ import jacusa.method.call.statistic.ACCUSA2Statistic;
 import jacusa.method.call.statistic.StatisticCalculator;
 //import jacusa.method.call.statistic.dirmult.DirichletMultinomial;
 //import jacusa.method.call.statistic.dirmult.DirichletMultinomialPooledError;
-import jacusa.method.call.statistic.dirmult.DirichletMultinomialCompoundError;
+//import jacusa.method.call.statistic.dirmult.DirichletMultinomialCompoundError;
 //import jacusa.method.call.statistic.dirmult.DirichletMultinomialEstimatedError;
 import jacusa.method.call.statistic.dirmult.DirichletMultinomialRobustCompoundError;
 //import jacusa.method.call.statistic.lr.LR_SENS_Statistic;
@@ -172,8 +172,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		statistic = new DirichletMultinomialRobustCompoundError	(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put("DirMult", statistic);
 		
-		statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
+		//statistic = new ACCUSA2Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		//statistics.put(statistic.getName(), statistic);
 		
 		// RC statistic = new LR_SPEC_Statistic(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		// RC statistics.put(statistic.getName(), statistic);
@@ -202,8 +202,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		//statistic = new DirichletMultinomialPooledError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
 		
-		statistic = new DirichletMultinomialCompoundError(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
+		// statistic = new DirichletMultinomialCompoundError(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		// statistics.put(statistic.getName(), statistic);
 
 		// statistic = new DirichletMultinomialRobustCompoundError	(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		// statistics.put(statistic.getName(), statistic);

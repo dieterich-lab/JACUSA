@@ -299,9 +299,9 @@ usage: jacusa.jar [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...
  -r,--result-file <RESULT-FILE>                 & results are written to RESULT-FILE or STDOUT if empty \\
  -s,--separate                                  & Put feature-filtered results in to a separate file (= RESULT-FILE.filtered)\\
  -T,--threshold <THRESHOLD>                     & Filter positions depending on test-statistic THRESHOLD default: DO NOT FILTER \\
- -u,--modus <MODUS>                             & Choose between different modes: \\
-                                                & <*> DirMult-CE : Compound Err. (estimated err.{0.01} + phred score) \\
-                                                & < > DirMult-RCE : Robust Compound Err. \\
+ %-u,--modus <MODUS>                             & Choose between different modes: \\
+ %                                               & <*> DirMult-CE : Compound Err. (estimated err.{0.01} + phred score) \\
+ %                                               & < > DirMult-RCE : Robust Compound Err. \\
  -v,--version                                   & Print version information. \\
  -W,--thread-window-size <THREAD-WINDOW-SIZE>   & size of the window used per thread. Default: 100000 \\
  -w,--window-size <WINDOW-SIZE>                 & size of the window used for caching. Make sure this is greater than the read size and smaller than THREAD-WINDOW-SIZE>. Default:
