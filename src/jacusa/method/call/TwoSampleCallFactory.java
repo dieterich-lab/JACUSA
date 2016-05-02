@@ -205,8 +205,8 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		statistic = new DirichletMultinomialCompoundError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		statistics.put(statistic.getName(), statistic);
 
-		statistic = new DirichletMultinomialRobustCompoundError	(parameters.getBaseConfig(), parameters.getStatisticParameters());
-		statistics.put(statistic.getName(), statistic);
+		// statistic = new DirichletMultinomialRobustCompoundError	(parameters.getBaseConfig(), parameters.getStatisticParameters());
+		// statistics.put(statistic.getName(), statistic);
 
 		//statistic = new DirichletMultinomialEstimatedError(parameters.getBaseConfig(), parameters.getStatisticParameters());
 		//statistics.put(statistic.getName(), statistic);
