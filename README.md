@@ -73,13 +73,13 @@ Installation
 Download JacusaHelper: 
 
 ```
-$ wget https://github.com/dieterich-lab/JACUSA/tree/master/JacusaHelper/build/JacusaHelper_0.3.tar.gz
+$ wget [https://github.com/dieterich-lab/JACUSA/tree/master/JacusaHelper/build/JacusaHelper_0.3.tar.gz](https://github.com/dieterich-lab/JACUSA/tree/master/JacusaHelper/build/JacusaHelper_0.3.tar.gz)
 ```
 
 Install JacusaHelper in R:
 
 ```
-install.packages("JacusaHelper_0.2.tar.gz")
+install.packages("JacusaHelper_0.3.tar.gz")
 library("JacusaHelper")
 ```
 
@@ -92,18 +92,24 @@ Load JacusaHelper package in R:
 library("JacusaHelper")
 ```
 
-Read JACUSA output and add editing frequency info:
+Read JACUSA output, filter sites where the variant base is NOT present in all replicates of at least one sample, and finally add editing frequency info:
 
 ```
-data <- read.table("Jacusa_RDD.out")
+data <- Read("Jacusa_RDD.out")
+data <- FilterResult(data)
 data <- AddEditingFreqInfo(data)
 ```
 
 Plot base change conversion:
 
 ```
-tbl <- Table(data)
+tbl <- table(data$baseChange)
 barplot(tbl)
+```
+
+Check documentation in R for more details
+```
+?JacusaHelper.
 ```
 
 AddVariants
@@ -117,7 +123,7 @@ Download
 Get the current AddVariants JAR:
 
 ```
-$ wget https://github.com/dieterich-lab/JACUSA/blob/master/tools/AddVariants/build/AddVariants_v0.3.jar
+$ wget [https://github.com/dieterich-lab/JACUSA/blob/master/tools/AddVariants/build/AddVariants_v0.3.jar](https://github.com/dieterich-lab/JACUSA/blob/master/tools/AddVariants/build/AddVariants_v0.3.jar)
 ```
 
 Usage

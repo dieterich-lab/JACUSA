@@ -1,27 +1,58 @@
-# Author: Michael Piechotta
-# This package scripts to process JACUSA output:
-# * read + write + filter
-# * invert base calls when analysing stranded Illumina RNA-Seq sequencing data
-# * calculate read coverage 
-# * determine base change(s) when samples are gDNA vs. cDNA
-# * calculate editing frequency
-# * other convience functions...
+#' JacusaHelper: A package for post-processing JACUSA result files.
+#'
+#' The JacusaHelper package provides three categories of important functions:
+#' InputOutput, AddInfo, and Filter.
+#' 
+#' When calling RDDs where the RNA-Seq sample has been generated with stranded sequencing library, base change(s) can be directly inferred and if necessary base calls can be inverted.
+#' Per default DNA need to be provided as sample 1 and cDNA as sample 2!
+#' Warning: Some function do not support replicates or are exclusively applicable on RDD or RRD result files!
+#' use l <- Read(l) to read the data
+#' and then sample <- Samples(l, 1) to extract the sample specific data
+#' then continue with ToMatrix(sample)
+#' 
+#' @section InputOutput functions:
+#' The functions Read, and Write facilitate input and output operations on JACUSA output files.
+#'
+#' @section AddInfo functions:
+#' This functions calculate and add additional information such as read depth or base changes. 
+#' This includes functions convert base counts that are encoded as character vectors to base count matrices.
+#' See: 
+#' * AddCoverageInfo
+#' * AddBaseChangeInfo
+#' * AddEditingFreqInfo
+#'
+#' @section Filter functions:
+#' This function set enables processing of JACUSA output files such as filtering by read coverage or enforcing a minimal number of variant base calls per sample.
+#' See:
+#' * FilterByStat
+#' * FilterResult
+#' * FilterByMinVariant
+#'
+#' @docType package
+#' @name JacusaHelper
+NULL
 
-# Info:
-# Note: function 'Samples(l, sample)' : sample in {1, 2} corresponding to the first or second sample (replicates are considered separately)
-# Per default DNA is expected to be sample 1
-# The varialbe 'invert' indicates if we are dealing with stranded Illumina sequencing data (orientation needs to be inverted)
-# Warning: Some function do not support replicates!
-
-# use l <- Read(l) to read the data
-# and then sample <- Samples(l, 1) to extract the sample specific data
-# then continue with ToMatrix(sample)
-
+# convenience: All possible bases
 .BASES <- c("A", "C", "G", "T")
 
-# converts sample columns to a matrices
-# "collapse = T" indicates that replicates should be merged to one result matrix or 
-# "collapse = F" a list of matrices per replicate 
+#' Converts base counts from sample columns to matrices.
+#' 
+#' \code{ToMatrix} converts base counts encoded as "," separated string vectors to count matrices.
+#' 
+#' @param sample List of string vectors where base counts (A,C,G,T) are separated by ",". Typically, the result of \code{Samples(data, i)}, where i = 1 or 2.
+#' @param invert Logical indicates if base counts should be inverted (A=>T, C=>G, etc...) after conversion. Depends on employed sequencing library. 
+#' @param collapse Logical indicates if sample is a list of string vectors and if converted matrices should be aggregated - collapses replicates. 
+#' @return Returns a matrix or a list of matrices of base counts.
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out asdf
+#' data <- Read("JACUSA.out")
+#' ## Extract sequencing info of sample 1
+#' sample1 <- Samples(data, 1)
+#' ## Convert character encoded base counts to count matrices
+#' matrix1 <- ToMatrix(sample1)
+#' 
+#' @export 
 ToMatrix <- function(sample, invert = F, collapse = T) {
   # merge matrices sample
   if (is.list(sample))  {
@@ -34,6 +65,7 @@ ToMatrix <- function(sample, invert = F, collapse = T) {
     .ToMatrixHelper(sample, invert)
   }
 }
+
 # this helper function will convert one base column vector e.g.: [A, C, G, T] = 10,0,0,0 
 # to a matrix and invert base calls when desired
 .ToMatrixHelper <- function(sample, invert = F) { 
@@ -47,8 +79,15 @@ ToMatrix <- function(sample, invert = F, collapse = T) {
   m
 }
 
-# this gives the read coverage for sample
-# replicates can be collapsed to the the total read covearge for sample
+#' Helper function
+#'
+#' Calculate read coverage
+#'
+#' @param sample todo
+#' @param collapse todo
+#' @return
+#'
+#' @export
 Coverage <- function(sample, collapse = F) {
   m <- ToMatrix(sample, collapse = collapse)
   if (is.list(m)) {
@@ -57,11 +96,22 @@ Coverage <- function(sample, collapse = F) {
     rowSums(m)
   }
 }
-# filters parallel pileup(l) by covearge (cov)
-# fields indicates if filtering should be carried out on total coverage of both samples fields = c(cov1, cov2) or
-# on in each replicate of samples 2: fields = c(covs2)
-# possible values are: cov1, cov2, covs1, or covs2
-FilterByCoverage <- function(l, fields, cov) {
+
+#' Filters sites by read coverage.
+#'
+#' \code{FilterByCoverage} filters sites by customizable read coverage restrictions.   
+#'
+#' @param l List object created by \code{Read()}.
+#' @param fields Character vector indicates if filtering should be carried out on total read coverage of both samples fields = c("cov1", "cov2") or on each replicate of sample 2: fields = c("covs2"). Possible values are: "cov1", "cov2", "covs1", or "covs2".
+#' @param cov Vector or numeric value of the minimal read coverage.
+#' @return Returns List of sites filtered by minimal read coverage according to fields and cov.
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out
+#' data <- Read(data)
+#' ## Keep sites that have a total read depth of at least 10 reads in sample 1 and each of sample 2 replicates has a minimal read coverage of 5 reads. 
+#' data <- FilterByCoverage(data, fields = c("cov1", "covs2"), cov = c(10, 5))
+FilterByCoverage <- function(data, fields, cov) {
   AddCoverageInfo(l)
 
   i <- mapply(function(f, c) {
@@ -87,6 +137,16 @@ FilterByCoverage <- function(l, fields, cov) {
 
   FilterRec(l, i)
 }
+
+#' Helper function
+#'
+#' FilterByCoverage Helper
+#'
+#' @param covs todo
+#' @param cov todo
+#' @return
+#'
+#' @export
 FilterByCoverageHelper <- function(covs, cov) {
   if (is.list(covs)) {
     df <- do.call(cbind, covs)
@@ -98,8 +158,22 @@ FilterByCoverageHelper <- function(covs, cov) {
            )
   }
 }
-# Assumes gDNA vs. cDNA comparison with cDNA being sample 2
-# Retains sites that have at least min_count variant base in sample 2
+
+#' Filters JACUSA results of RDD calls and ensures minimal number of variant reads.
+#'
+#' \code{FilterByMinVariant} Filters JACUSA result files of gDNA vs. cDNA comparisons and enforces a minimal number of variant bases in cDNA.
+#' Per default gDNA is expected to be sample 1 and cDNA sample2!
+#'
+#' @param l List object created by \code{Read()}.
+#' @param min_count Numeric value that specifies the minimal number of variant reads in sample 2 or cDNA.
+#' @param collapse Logical indicates if read counts of sample 2 should be merged - replicates are collapsed. 
+#' @return Returns List of sites that have at least min_count variant reads in cDNA.  
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out
+#' data <- Read(data)
+#' ## Filters sites that have less than 2 variant reads in the cDNA sample. 
+#' data <- FilterByMinVariantCount(data, min_count = 2)
 FilterByMinVariantCount <- function(l, min_count = 2, collapse = F) {
   l <- AddBaseChangeInfo(l)
 
@@ -130,8 +204,23 @@ FilterByMinVariantCount <- function(l, min_count = 2, collapse = F) {
   l <- FilterRec(l, ! f)
   l
 }
-# Assumes gDNA vs. cDNA comparison with cDNA being sample 2
+
 # FIMXE duplicated code in upper function
+#' Calculates the number of variant reads in RDD JACUSA results files
+#'
+#' Calculates the number of variant reads in JACUSA results of RDD calls
+#'
+#' Calculates the number of variant reads in JACUSA result files of gDNA vs. cDNA comparisons.
+#' Per default gDNA is expected to be sample 1 and cDNA to be sample 2!
+#'
+#' @param l List object created by \code{Read()}.
+#' @param collapse Logical indicates if read counts of sample 2 should be merged - replicates are collapsed. 
+#' @return Returns List of count that represent the number of variant reads in cDNA.  
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out
+#' data <- Read(data)
+#' variant_count <- GetVariantCount(data)
 GetVariantCount <- function(l, collapse = F) {
   # reference base
   b1 <- l[["base1"]]
@@ -153,6 +242,14 @@ GetVariantCount <- function(l, collapse = F) {
   }
   c
 }
+#' Helper function
+#'
+#' \code{GetFilterResult}
+#'
+#' @param l todo
+#' @return
+#'
+#' @export
 GetFilterResult <- function(l) {
   GetMask <- function(m, op = "&") {
     AnyBases <- function(m) {
@@ -191,11 +288,40 @@ GetFilterResult <- function(l) {
     })
   i
 }
+
+#' Retains sites that contain the variant base in all replicates of at least one sample.
+#'
+#' \code{FilterResults} Enforces that at least one sample contains the variant base in all replicates. 
+#'
+#' @param l List object created by \code{Read()}.
+#' @return Returns List with sites where at least one sample contains the variant base in all replicates.  
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out
+#' data <- Read(data)
+#' result <- FilterResult(data)
 FilterResult <- function(l) {
   i <- GetFilterResult(l)
   FilterRec(l, i)
 }
-# filter parallel pileup (l) with boolean vector f
+
+#' Filters List of sites recursively.
+#'
+#' \code{FilterRec} filters list of sites recursively.
+#'
+#' @param l List object created by \code{Read()}.
+#' @param f Vector of sites that should be retained.
+#' @return Returns List with sites that are contained in vector f.
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out - RDD calls
+#' data <- Read(data)
+#' ## calculate variant count
+#' variant_count <- GetVariantCount(data, collapse = T)
+#' ## create index of sites that contain at least 10 variant bases
+#' index <- variant_count >=10
+#' ## filter data according to index
+#' filtered_data <- FilterResult(data, index)
 FilterRec <- function(l, f) {
   lapply(l, function(x) {
     if (is.list(x)) {
@@ -214,24 +340,51 @@ FilterRec <- function(l, f) {
   })
 }
 
-# filters sites by test-statistic
+#' Filters List of sites by test-statistic.
+#'
+#' \code{FilterByStat} removes sites that as less than some threshold that has been provided by user.
+#'
+#' @param l List object created by \code{Read()}.
+#' @param stat Numeric value that represents the minimal test-statistic.
+#' @return Returns List with sites with a test-statistic >= stat.
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out
+#' data <- Read(data)
+#' ## filter by test-statistic = 1.56
+#' filtered_data <- FilterByStat(data, 1.56)
 FilterByStat <- function(l, stat) {
   i <- l$stat >= stat
   FilterRec(l, i)
 }
 
-# convert from matrix to string for saving
+#' Helper function
+#'
+#' \codeToString} convert from count matrix to vector of character
+#'
+#' @param m todo
+#' @return
+#'
+#' @export
 ToString <- function(m) {
   if (is.list(m)) {
     lapply(m, .ToStringHelper)
   } else {
-    ToStringHelper(m) 
+    .ToStringHelper(m) 
   }
 }
 .ToStringHelper <- function(m) {
   apply(m, 1, paste, collapse = ",")
 }
 
+#' Helper function
+#'
+#' returns the observed bases per site as a string
+#'
+#' @param d todo
+#' @return
+#'
+#' @export
 ToBase <- function(d) {
   if (is.list(d)) {
     d <- Reduce('+', d)
@@ -239,13 +392,35 @@ ToBase <- function(d) {
 
   apply(d, 1, function(x) { b <- names(x)[x > 0] ; paste(b, collapse = "") } ) 
 }
+
+#' Helper function
+#'
+#' returns the observed bases per site as a vector of characters
+#'
+#' @param d todo
+#' @return
+#'
+#' @export
 ToBases <- function(d) {
   if (is.list(d)) {
     d <- Reduce('+', d)
   }
   apply(d, 1, function(x) { b <- names(x)[x > 0] ; return(b) } )
 }
-# retains base information of sample from parallel pileup
+
+#' Returns base call columns for a sample from a JACUSA result file.
+#'
+#' \code{Samples} returns base call columns for a sample (1 or 2) from a JACUSA result file.
+#'
+#' @param l List object created by \code{Read()}.
+#' @param sample Integer value: 1 or 2.
+#' @return Returns a list of base calls "," separated for choosen sample.
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out
+#' data <- Read(data)
+#' ## Extract sequencing information for sample 1. 
+#' sample1 <- Samples(data, 1)
 Samples <- function(l, sample) {
   sample <- paste("bases", sample, sep = "")
   j <- grep(sample, names(l))
@@ -255,7 +430,22 @@ Samples <- function(l, sample) {
     l[[j]]
   }
 }
-# reads JACUSA output, processes if desired and output parallel pileup
+
+#' Reads JACUSA output.
+#'
+#' \code{Read} reads JACUSA output and returns a list of identified sites. See JACUSA manual for details on encoding of replicates and samples.
+#'
+#' @param f String represents the filename of the JACUSA output. 
+#' @param invert Logical indicates if base calls should be inverted.
+#' @param stat Numeric value represents the minimal test-statistic.
+#' @param fields Vector of strings defines how to filter by read coverage
+#' @param cov Vector of numeric defines the minimal read coverage.
+#' @param collapse Logical indicates if replicates should be collapsed - replicates of base count vectors will be aggregated.
+#' @return Returns a list of base calls "," separated for chosen parameters.
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out, invert base count and retain sites with test-statistic >= 1.56
+#' data <- Read(data, invert = T, stat = 1.56)
 Read <- function(f, invert = F, stat = NULL, header = T, fields = NULL, cov = NULL, collapse = F, ...) {
   d <- read.table(f, header = header, stringsAsFactors = F, check.names = F, comment.char = "", ...) 
   colnames(d)[1] <- gsub("^#", "", colnames(d)[1])
@@ -294,7 +484,22 @@ Read <- function(f, invert = F, stat = NULL, header = T, fields = NULL, cov = NU
   }
   l
 }
-# calculate coverage info for parallel pileup (l) and appends to l
+
+#' Add coverage info.
+#'
+#' \code{AddCoverageInfo} calculates and adds read coverage to list of sites. This function will add 5 fields to the initial list: 
+#' cov1, cov2: total read coverage per sample,
+#' covs1, covs2: read coverage per sample and replicate, and
+#' cov: total read coverage (cov1 + cov2). 
+#'
+#' @param l List object created by \code{Read()}.
+#' @return Returns a list of base calls with additional coverage fields.
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out
+#' data <- Read(data)
+#' ## add coverage info to data
+#' data <- AddCoverageInfo(data)
 AddCoverageInfo <- function(l) {
   if (! is.null(l[["cov"]])) {
     return(l)
@@ -309,7 +514,20 @@ AddCoverageInfo <- function(l) {
   l[["cov"]] <- l[["cov1"]] + l[["cov2"]]
   l
 }
-# determines called base(s) for parallel pileup (l) and appends to l
+
+#' Calculates a base vector for each sample of JACUSA output.
+#'
+#' \code{AddBaseInfo} calculates a base vector for each sample of JACUSA output and adds the result to the initial list object.  
+#'
+#' @param l List object created by \code{Read()}.
+#' @return Returns a list of base calls with additional base1 and base2 fields.
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out
+#' data <- Read(data)
+#' data <- AddBaseInfo(data)
+#' ## plot distribution of bases in sample1
+#' barplot(table(data$base1))
 AddBaseInfo <- function(l) {
   if (! is.null(l[["base1"]]) & ! is.null(l[["base2"]])) {
     return(l)
@@ -327,7 +545,20 @@ AddBaseInfo <- function(l) {
   l[["base2"]] <- ToBase(l[["matrix2"]])
   l
 }
-# determines base change assuming DNA is sample 1 and cDNA is sample 2 for parallel pileup (l) and appends to l
+
+#' Calculates base change for RDD comparisons of JACUSA output.
+#'
+#' \code{AddBaseChangeInfo} calculates base change for gDNA vs. cDNA comparisons and adds the result to the initial list object.  
+#'
+#' @param l List object created by \code{Read()}.
+#' @return Returns a list of base calls with the additional baseChange fields.
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out
+#' data <- Read(data)
+#' data <- AddBaseChangeInfo(data)
+#' ## plot distribution of base changes
+#' barplot(Table(data))
 AddBaseChangeInfo <- function(l) {
   if (! is.null(l[["baseChange"]])) {
     return(l)
@@ -344,7 +575,20 @@ AddBaseChangeInfo <- function(l) {
   l
 }
 
-# determines editing frequency assuming DNA is sample 1 and cDNA is sample 2 for parallel pileup (l) and appends to l
+#' Calculates editing frequency for RDDs in JACUSA output.
+#'
+#' \code{AddEditingFreqInfo} calculates the editing frequency for each replicate and an average for gDNA vs. cDNA comparisons. The result is added to the initial list object.
+#' 
+#' @param l List object created by \code{Read()}.
+#' @return Returns a list of base calls with the additional editingFreq fields.
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out
+#' data <- Read(data)
+#' ## AddEditingFreqInfo implicitly adds the baseChange field
+#' data <- AddEditingFreqInfo(data)
+#' ## plot a boxplot of editing frequencies for each base change
+#' boxplot(tapply(data$editingFreq, data$baseChange, c))
 AddEditingFreqInfo <- function(l) {
   if (! is.null(l[["editingFreq"]])) {
     return(l)
@@ -383,7 +627,20 @@ AddEditingFreqInfo <- function(l) {
   l
 }
 
-# collapse replicates and gives conversion table
+#' Calculates the distribution of base changes of RDDs in JACUSA output.
+#'
+#' \code{Calculates} the distribution of base changes of RDDs in JACUSA output.
+#' 
+#' @param l List object created by \code{Read()}.
+#' @param fixAlleles Logical indicates if list of sites should be filtered to ensure that each site contains a maximum of 2 alleles.
+#' @return Returns a vector of numeric values that contains the number of observed base changes.
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out
+#' data <- Read(data)
+#' ## Table implicitly populates the baseChange field
+#' tbl <- Table(data)
+#' plot(tbl)
 Table <- function(l, fixAlleles = F) {
   l <- AddBaseChangeInfo(l)
 
@@ -404,13 +661,34 @@ Table <- function(l, fixAlleles = F) {
   return(tbl(baseChange[i]))
 }
 
-# gives the fraction of "true editing"
+#' Calculates the fraction of editing sites among RDDs in JACUSA output.
+#'
+#' \code{Score} calculates the fraction of editing sites among RDDs in JACUSA output.
+#' 
+#' @param tbl Vector object created by \code{Table()}.
+#' @param editing Vector of strings that identifies true editing, e.g.: "A->G".
+#' @return Returns a numeric values that represent the fraction of editing sites among RDDs.
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out
+#' data <- Read(data)
+#' ## Table implicitly populates the baseChange field
+#' tbl <- Table(data)
+#' Score(tbl)
 Score <- function(tbl, editing = c("A->G")) {
   total <- sum(tbl)
   TP <- sum(tbl[editing])
   return(TP / total)
 }
-# invert the base calls of a base call matrix
+
+#' Helper function
+#'
+#' invert the base calls of a base call matrix
+#'
+#' @param m todo
+#' @return
+#'
+#' @export
 Invert <- function(m) {
   tmp <- m 
   tmp[, "A"] <- m[, "T"]
@@ -419,6 +697,15 @@ Invert <- function(m) {
   tmp[, "T"] <- m[, "A"]
   return(tmp)
 }
+
+#' Helper function
+#'
+#' invert vector of base calls
+#'
+#' @param m todo
+#' @return
+#'
+#' @export
 InvertBase <- function(b) {
   r <- rep("", length(b))
   mapply(function(o, c) {
@@ -427,13 +714,35 @@ InvertBase <- function(b) {
   }, .BASES, rev(.BASES))
   r
 }
-# assuming some true editing gives the fraction of false editing
+#' Helper function
+#'
+#' assuming some true editing gives the fraction of false editing
+#'
+#' @param l todo
+#' @param editing todo
+#' @return
+#'
+#' @export
 FalsePositives <- function(l, editing) {
   FP <- 1 - Score(l, editing)
   FP
 }
 
-# write a parallel pileup to a file
+#' Writes a list of sites to a file.
+#'
+#' \code{Write} Stores a list of sites in a file.
+#' 
+#' @param l Vector object created by \code{Table()}.
+#' @param file String is the filename to store the list object.
+#' @param extra Vector of strings that defines additional elements from the list that will be stored in the file. 
+#'
+#' @examples
+#' ## Read JACUSA result file JACUSA.out
+#' data <- Read(data)
+#' data <- AddBaseChangeInfo(data)
+#' ## base change will be stored in the id/name column according to the BED file format definition.
+#' data$name <- data$baseChange
+#' Write(data)
 Write <- function(l, file, extra = NULL) {
   fields <- c("contig", "start", "end", "name", "stat", "strand", "info", "filter_info")
   if (! is.null(extra)) {
@@ -448,11 +757,28 @@ Write <- function(l, file, extra = NULL) {
   write.table(d, file, col.names = T, row.names = F, quote = F, sep = "\t")
 }
 
-# formats editing of two base call vectors
+#' Helper function
+#'
+#' formats editing of two base call vectors
+#'
+#' @param a todo
+#' @param b todo
+#' @return
+#'
+#' @export
 Editing <- function(a, b) {
   paste(a, sep = "->", b)
 }
 
+#' Helper function
+#'
+#' plots the distribution of base changes
+#'
+#' @param tbl todo
+#' @param score todo
+#' @return
+#'
+#' @export
 PlotTable <- function(tbl, score = T) {
   main <- ""
   if (score) {
@@ -462,8 +788,8 @@ PlotTable <- function(tbl, score = T) {
   barplot(tbl, las = 2, main = main, ylab = "Frequency")
 }
 
-# converts parallel pileup (l) to VCF file format
-# WARNING assumes sample 1 to be gDNA and sample 2 cDNA
+# Helper function - create VCF 
+# FIXME add invert as parameter 
 BED2VCF <- function(l) {
   chrom <- l[["contig"]]
   pos <- l[["end"]]
@@ -486,7 +812,7 @@ BED2VCF <- function(l) {
 
   return(data.frame("#CHROM" = chrom, POS = pos, ID = rep(".", n), REF = ref, ALT = alt, QUAL = rep(".", n), FILTER = rep(".", n), check.names = F))
 }
-
+# Helper function
 # returns the editing frequency of all sites from two gDNA vs. cDNA comparisons: RDDx and RDDy
 GetEditingFreq <- function(RDDx, RDDy, all = F) {
   RDDx <- AddCoverageInfo(RDDx)
@@ -549,7 +875,7 @@ GetEditingFreq <- function(RDDx, RDDy, all = F) {
                    baseChange_y = base_change_y, 
                    stringsAsFactors = F, check.names = F)
 }
-
+# Helper function
 PaperTheme <- function(...) {
   theme(plot.title = element_text(face = "bold", size = 20), # use theme_get() to see available options
         axis.title.x = element_text(face = "bold", size = 16),
