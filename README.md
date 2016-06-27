@@ -73,13 +73,13 @@ Installation
 Download JacusaHelper: 
 
 ```
-$ wget [https://github.com/dieterich-lab/JACUSA/tree/master/JacusaHelper/build/JacusaHelper_0.3.tar.gz](https://github.com/dieterich-lab/JACUSA/tree/master/JacusaHelper/build/JacusaHelper_0.3.tar.gz)
+$ wget [https://github.com/dieterich-lab/JACUSA/tree/master/JacusaHelper/build/JacusaHelper_0.41.tar.gz](https://github.com/dieterich-lab/JACUSA/tree/master/JacusaHelper/build/JacusaHelper_0.41.tar.gz)
 ```
 
 Install JacusaHelper in R:
 
 ```
-install.packages("JacusaHelper_0.3.tar.gz")
+install.packages("JacusaHelper_0.41.tar.gz")
 library("JacusaHelper")
 ```
 
@@ -95,14 +95,20 @@ library("JacusaHelper")
 Read JACUSA output, filter sites where the variant base is NOT present in all replicates of at least one sample, and finally add editing frequency info:
 
 ```
-data <- Read("Jacusa_RDD.out")
+# Read Jacusa output and filter by test-statistic >= 1.56 and 
+# ensure that site have at least 10 reads in (cov1) sample 1 and at least 5 reads per replicate in (covs2) sample 2
+data <- Read("Jacusa_RDD.out, stat = 1.56, fields = c("cov1", "covs2"), cov = c(10, 5))
+# This ensures that the variant base is present in all replicates of at least one sample
 data <- FilterResult(data)
+# This is only applicable for RDD calls and it will calculate their editing frequency.
+# It is expected that gDNA is stored as sample 1!
 data <- AddEditingFreqInfo(data)
 ```
 
 Plot base change conversion:
 
 ```
+# Among other additional infos, AddEditingFreqInfo will populate baseChange field in data
 tbl <- table(data$baseChange)
 barplot(tbl)
 ```
