@@ -20,8 +20,8 @@ Returns a matrix or a list of matrices of base counts.
 \code{ToMatrix} converts base counts encoded as "," separated string vectors to count matrices.
 }
 \examples{
-## Read JACUSA result file JACUSA.out asdf
-data <- Read("JACUSA.out")
+## Read JACUSA result file hek293_untreated.out asdf
+data <- Read("hek293_untreated.out")
 ## Extract sequencing info of sample 1
 sample1 <- Samples(data, 1)
 ## Convert character encoded base counts to count matrices

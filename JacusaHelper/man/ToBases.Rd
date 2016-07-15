@@ -10,7 +10,7 @@ ToBases(d)
 \item{d}{todo}
 }
 \value{
-
+todo
 }
 \description{
 returns the observed bases per site as a vector of characters

@@ -18,9 +18,10 @@ Returns a list of base calls "," separated for choosen sample.
 \code{Samples} returns base call columns for a sample (1 or 2) from a JACUSA result file.
 }
 \examples{
-## Read JACUSA result file JACUSA.out
-data <- Read(data)
+## Read JACUSA result file hek293_untreated.out
+data <- Read("hek293_untreated.out")
 ## Extract sequencing information for sample 1. 
 sample1 <- Samples(data, 1)
+
 }
 

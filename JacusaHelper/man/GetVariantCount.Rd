@@ -22,8 +22,9 @@ Calculates the number of variant reads in JACUSA result files of gDNA vs. cDNA c
 Per default gDNA is expected to be sample 1 and cDNA to be sample 2!
 }
 \examples{
-## Read JACUSA result file JACUSA.out
-data <- Read(data)
+## Read JACUSA result file hek293_untreated.out
+data <- Read("hek293_untreated.out")
 variant_count <- GetVariantCount(data)
+
 }
 

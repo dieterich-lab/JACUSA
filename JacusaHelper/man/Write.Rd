@@ -11,17 +11,19 @@ Write(l, file, extra = NULL)
 
 \item{file}{String is the filename to store the list object.}
 
-\item{extra}{Vector of strings that defines additional elements from the list that will be stored in the file.}
+\item{extra}{Vector of strings that defines additional elements from the list that 
+will be stored in the file.}
 }
 \description{
 \code{Write} Stores a list of sites in a file.
 }
 \examples{
-## Read JACUSA result file JACUSA.out
-data <- Read(data)
+## Read JACUSA result file hek293_untreated.out
+data <- Read("hek293_untreated.out")
 data <- AddBaseChangeInfo(data)
 ## base change will be stored in the id/name column according to the BED file format definition.
 data$name <- data$baseChange
-Write(data)
+Write(data, "JACUSA_modified.out")
+
 }
 

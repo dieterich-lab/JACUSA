@@ -7,10 +7,10 @@
 InvertBase(b)
 }
 \arguments{
-\item{m}{todo}
+\item{b}{todo}
 }
 \value{
-
+todo
 }
 \description{
 invert vector of base calls

@@ -13,14 +13,16 @@ AddEditingFreqInfo(l)
 Returns a list of base calls with the additional editingFreq fields.
 }
 \description{
-\code{AddEditingFreqInfo} calculates the editing frequency for each replicate and an average for gDNA vs. cDNA comparisons. The result is added to the initial list object.
+\code{AddEditingFreqInfo} calculates the editing frequency for each replicate and an average 
+for gDNA vs. cDNA comparisons. The result is added to the initial list object.
 }
 \examples{
-## Read JACUSA result file JACUSA.out
-data <- Read(data)
+## Read JACUSA result file hek293_untreated.out
+data <- Read("hek293_untreated.out")
 ## AddEditingFreqInfo implicitly adds the baseChange field
 data <- AddEditingFreqInfo(data)
 ## plot a boxplot of editing frequencies for each base change
 boxplot(tapply(data$editingFreq, data$baseChange, c))
+
 }
 

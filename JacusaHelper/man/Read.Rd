@@ -4,8 +4,8 @@
 \alias{Read}
 \title{Reads JACUSA output.}
 \usage{
-Read(f, invert = F, stat = NULL, header = T, fields = NULL,
-  cov = NULL, collapse = F, ...)
+Read(f, invert = F, stat = NULL, fields = NULL, cov = NULL,
+  collapse = F, ...)
 }
 \arguments{
 \item{f}{String represents the filename of the JACUSA output.}
@@ -18,16 +18,22 @@ Read(f, invert = F, stat = NULL, header = T, fields = NULL,
 
 \item{cov}{Vector of numeric defines the minimal read coverage.}
 
-\item{collapse}{Logical indicates if replicates should be collapsed - replicates of base count vectors will be aggregated.}
+\item{collapse}{Logical indicates if replicates should be collapsed - replicates of base 
+count vectors will be aggregated.}
+
+\item{...}{Additional parameters that will be forwarded to read.table.}
 }
 \value{
 Returns a list of base calls "," separated for chosen parameters.
 }
 \description{
-\code{Read} reads JACUSA output and returns a list of identified sites. See JACUSA manual for details on encoding of replicates and samples.
+\code{Read} reads JACUSA output and returns a list of identified sites. See JACUSA manual for 
+details on encoding of replicates and samples.
 }
 \examples{
-## Read JACUSA result file JACUSA.out, invert base count and retain sites with test-statistic >= 1.56
+## Read JACUSA result file hek293_untreated.out, invert base count and 
+## retain sites with test-statistic >= 1.56
 data <- Read(data, invert = T, stat = 1.56)
+
 }
 

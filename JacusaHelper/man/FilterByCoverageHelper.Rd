@@ -12,7 +12,7 @@ FilterByCoverageHelper(covs, cov)
 \item{cov}{todo}
 }
 \value{
-
+todo
 }
 \description{
 FilterByCoverage Helper

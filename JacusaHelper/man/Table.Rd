@@ -9,7 +9,8 @@ Table(l, fixAlleles = F)
 \arguments{
 \item{l}{List object created by \code{Read()}.}
 
-\item{fixAlleles}{Logical indicates if list of sites should be filtered to ensure that each site contains a maximum of 2 alleles.}
+\item{fixAlleles}{Logical indicates if list of sites should be filtered to ensure 
+that each site contains a maximum of 2 alleles.}
 }
 \value{
 Returns a vector of numeric values that contains the number of observed base changes.
@@ -18,10 +19,11 @@ Returns a vector of numeric values that contains the number of observed base cha
 \code{Calculates} the distribution of base changes of RDDs in JACUSA output.
 }
 \examples{
-## Read JACUSA result file JACUSA.out
-data <- Read(data)
+## Read JACUSA result file hek293_untreated.out
+data <- Read("hek293_untreated.out")
 ## Table implicitly populates the baseChange field
 tbl <- Table(data)
 plot(tbl)
+
 }
 

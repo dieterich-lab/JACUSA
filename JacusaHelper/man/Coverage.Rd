@@ -12,7 +12,7 @@ Coverage(sample, collapse = F)
 \item{collapse}{todo}
 }
 \value{
-
+todo
 }
 \description{
 Calculate read coverage

@@ -12,7 +12,7 @@ Editing(a, b)
 \item{b}{todo}
 }
 \value{
-
+todo
 }
 \description{
 formats editing of two base call vectors

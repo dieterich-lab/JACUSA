@@ -13,13 +13,15 @@ AddBaseChangeInfo(l)
 Returns a list of base calls with the additional baseChange fields.
 }
 \description{
-\code{AddBaseChangeInfo} calculates base change for gDNA vs. cDNA comparisons and adds the result to the initial list object.
+\code{AddBaseChangeInfo} calculates base change for gDNA vs. cDNA comparisons and adds the 
+result to the initial list object.
 }
 \examples{
-## Read JACUSA result file JACUSA.out
-data <- Read(data)
+## Read JACUSA result file hek293_untreated.out
+data <- Read("hek293_untreated.out")
 data <- AddBaseChangeInfo(data)
 ## plot distribution of base changes
 barplot(Table(data))
+
 }
 

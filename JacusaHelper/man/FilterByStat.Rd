@@ -18,9 +18,10 @@ Returns List with sites with a test-statistic >= stat.
 \code{FilterByStat} removes sites that as less than some threshold that has been provided by user.
 }
 \examples{
-## Read JACUSA result file JACUSA.out
-data <- Read(data)
+## Read JACUSA result file hek293_untreated.out
+data <- Read("hek293_untreated.out")
 ## filter by test-statistic = 1.56
 filtered_data <- FilterByStat(data, 1.56)
+
 }
 

@@ -4,14 +4,16 @@
 \alias{FilterByCoverage}
 \title{Filters sites by read coverage.}
 \usage{
-FilterByCoverage(data, fields, cov)
+FilterByCoverage(l, fields, cov)
 }
 \arguments{
-\item{fields}{Character vector indicates if filtering should be carried out on total read coverage of both samples fields = c("cov1", "cov2") or on each replicate of sample 2: fields = c("covs2"). Possible values are: "cov1", "cov2", "covs1", or "covs2".}
+\item{l}{List object created by \code{Read()}.}
+
+\item{fields}{Character vector indicates if filtering should be carried out on total read coverage 
+of both samples fields = c("cov1", "cov2") or on each replicate of sample 2: fields = c("covs2"). 
+Possible values are: "cov1", "cov2", "covs1", or "covs2".}
 
 \item{cov}{Vector or numeric value of the minimal read coverage.}
-
-\item{l}{List object created by \code{Read()}.}
 }
 \value{
 Returns List of sites filtered by minimal read coverage according to fields and cov.
@@ -20,9 +22,11 @@ Returns List of sites filtered by minimal read coverage according to fields and 
 \code{FilterByCoverage} filters sites by customizable read coverage restrictions.
 }
 \examples{
-## Read JACUSA result file JACUSA.out
-data <- Read(data)
-## Keep sites that have a total read depth of at least 10 reads in sample 1 and each of sample 2 replicates has a minimal read coverage of 5 reads. 
+## Read JACUSA result file hek293_untreated.out
+data <- Read("hek293_untreated.out")
+## Keep sites that have a total read depth of at least 10 reads in sample 1 and 
+## each of sample 2 replicates has a minimal read coverage of 5 reads. 
 data <- FilterByCoverage(data, fields = c("cov1", "covs2"), cov = c(10, 5))
+
 }
 

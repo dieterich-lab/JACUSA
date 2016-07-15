@@ -12,7 +12,7 @@ FalsePositives(l, editing)
 \item{editing}{todo}
 }
 \value{
-
+todo
 }
 \description{
 assuming some true editing gives the fraction of false editing

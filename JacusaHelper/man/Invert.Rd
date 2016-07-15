@@ -10,7 +10,7 @@ Invert(m)
 \item{m}{todo}
 }
 \value{
-
+todo
 }
 \description{
 invert the base calls of a base call matrix

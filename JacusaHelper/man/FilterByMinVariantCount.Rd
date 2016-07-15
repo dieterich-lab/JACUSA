@@ -21,9 +21,10 @@ Returns List of sites that have at least min_count variant reads in cDNA.
 Per default gDNA is expected to be sample 1 and cDNA sample2!
 }
 \examples{
-## Read JACUSA result file JACUSA.out
-data <- Read(data)
+## Read JACUSA result file hek293_untreated.out
+data <- Read("hek293_untreated.out")
 ## Filters sites that have less than 2 variant reads in the cDNA sample. 
 data <- FilterByMinVariantCount(data, min_count = 2)
+
 }
 

@@ -12,7 +12,7 @@ PlotTable(tbl, score = T)
 \item{score}{todo}
 }
 \value{
-
+todo
 }
 \description{
 plots the distribution of base changes

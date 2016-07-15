@@ -13,13 +13,15 @@ AddBaseInfo(l)
 Returns a list of base calls with additional base1 and base2 fields.
 }
 \description{
-\code{AddBaseInfo} calculates a base vector for each sample of JACUSA output and adds the result to the initial list object.
+\code{AddBaseInfo} calculates a base vector for each sample of JACUSA output and adds the 
+result to the initial list object.
 }
 \examples{
-## Read JACUSA result file JACUSA.out
-data <- Read(data)
+## Read JACUSA result file hek293_untreated.out
+data <- Read("hek293_untreated.out")
 data <- AddBaseInfo(data)
 ## plot distribution of bases in sample1
 barplot(table(data$base1))
+
 }
 

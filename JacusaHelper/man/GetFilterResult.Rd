@@ -10,7 +10,7 @@ GetFilterResult(l)
 \item{l}{todo}
 }
 \value{
-
+todo
 }
 \description{
 \code{GetFilterResult}

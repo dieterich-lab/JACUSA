@@ -13,15 +13,17 @@ AddCoverageInfo(l)
 Returns a list of base calls with additional coverage fields.
 }
 \description{
-\code{AddCoverageInfo} calculates and adds read coverage to list of sites. This function will add 5 fields to the initial list: 
+\code{AddCoverageInfo} calculates and adds read coverage to list of sites. This function will 
+add 5 fields to the initial list: 
 cov1, cov2: total read coverage per sample,
 covs1, covs2: read coverage per sample and replicate, and
 cov: total read coverage (cov1 + cov2).
 }
 \examples{
-## Read JACUSA result file JACUSA.out
-data <- Read(data)
+## Read JACUSA result file hek293_untreated.out
+data <- Read("hek293_untreated.out")
 ## add coverage info to data
 data <- AddCoverageInfo(data)
+
 }
 

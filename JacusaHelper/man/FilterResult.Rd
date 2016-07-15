@@ -16,8 +16,9 @@ Returns List with sites where at least one sample contains the variant base in a
 \code{FilterResults} Enforces that at least one sample contains the variant base in all replicates.
 }
 \examples{
-## Read JACUSA result file JACUSA.out
-data <- Read(data)
+## Read JACUSA result file hek293_untreated.out
+data <- Read("hek293_untreated.out")
 result <- FilterResult(data)
+
 }
 

@@ -18,13 +18,14 @@ Returns List with sites that are contained in vector f.
 \code{FilterRec} filters list of sites recursively.
 }
 \examples{
-## Read JACUSA result file JACUSA.out - RDD calls
-data <- Read(data)
+## Read JACUSA result file hek293_untreated.out - RDD calls
+data <- Read("hek293_untreated.out")
 ## calculate variant count
 variant_count <- GetVariantCount(data, collapse = T)
 ## create index of sites that contain at least 10 variant bases
 index <- variant_count >=10
 ## filter data according to index
 filtered_data <- FilterResult(data, index)
+
 }
 
