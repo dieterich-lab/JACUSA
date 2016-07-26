@@ -4,7 +4,7 @@
 \alias{GetVariantCount}
 \title{Calculates the number of variant reads in RDD JACUSA results files}
 \usage{
-GetVariantCount(l, collapse = F)
+GetVariantCount(l, collapse = FALSE)
 }
 \arguments{
 \item{l}{List object created by \code{Read()}.}
@@ -20,11 +20,5 @@ Calculates the number of variant reads in JACUSA results of RDD calls
 \details{
 Calculates the number of variant reads in JACUSA result files of gDNA vs. cDNA comparisons.
 Per default gDNA is expected to be sample 1 and cDNA to be sample 2!
-}
-\examples{
-## Read JACUSA result file hek293_untreated.out
-data <- Read("hek293_untreated.out")
-variant_count <- GetVariantCount(data)
-
 }
 

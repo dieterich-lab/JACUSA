@@ -10,9 +10,11 @@ The JacusaHelper package provides three categories of important functions:
 InputOutput, AddInfo, and Filter.
 }
 \details{
-When calling RDDs where the RNA-Seq sample has been generated with stranded sequencing library, base change(s) can be directly inferred and if necessary base calls can be inverted.
+When calling RDDs where the RNA-Seq sample has been generated with stranded sequencing library, 
+base change(s) can be directly inferred and if necessary base calls can be inverted.
 Per default DNA need to be provided as sample 1 and cDNA as sample 2!
-Warning: Some function do not support replicates or are exclusively applicable on RDD or RRD result files!
+Warning: Some function do not support replicates or are exclusively applicable on RDD or RRD 
+result files!
 use l <- Read(l) to read the data
 and then sample <- Samples(l, 1) to extract the sample specific data
 then continue with ToMatrix(sample)
@@ -25,19 +27,27 @@ The functions Read, and Write facilitate input and output operations on JACUSA o
 \section{AddInfo functions}{
 
 This functions calculate and add additional information such as read depth or base changes. 
-This includes functions convert base counts that are encoded as character vectors to base count matrices.
-See: 
-* AddCoverageInfo
-* AddBaseChangeInfo
-* AddEditingFreqInfo
+This includes functions convert base counts that are encoded as character vectors to base count 
+matrices.
+
+See:
+\itemize{
+  \item AddCoverageInfo
+  \item AddBaseChangeInfo
+  \item AddEditingFreqInfo
+}
 }
 
 \section{Filter functions}{
 
-This function set enables processing of JACUSA output files such as filtering by read coverage or enforcing a minimal number of variant base calls per sample.
+This function set enables processing of JACUSA output files such as filtering by read coverage 
+or enforcing a minimal number of variant base calls per sample.
+
 See:
-* FilterByStat
-* FilterResult
-* FilterByMinVariant
+\itemize{
+  \item FilterByStat
+  \item FilterResult
+  \item FilterByMinVariant
+}
 }
 

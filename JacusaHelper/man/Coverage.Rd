@@ -4,7 +4,7 @@
 \alias{Coverage}
 \title{Helper function}
 \usage{
-Coverage(sample, collapse = F)
+Coverage(sample, collapse = FALSE)
 }
 \arguments{
 \item{sample}{todo}

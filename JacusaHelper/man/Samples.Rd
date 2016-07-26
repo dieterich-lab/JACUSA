@@ -19,9 +19,8 @@ Returns a list of base calls "," separated for choosen sample.
 }
 \examples{
 ## Read JACUSA result file hek293_untreated.out
-data <- Read("hek293_untreated.out")
 ## Extract sequencing information for sample 1. 
-sample1 <- Samples(data, 1)
+sample1 <- Samples(untr_hek293_rdds, 1)
 
 }
 

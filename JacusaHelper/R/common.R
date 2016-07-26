@@ -54,7 +54,7 @@ NULL
 #' @return todo
 #'
 #' @export
-Coverage <- function(sample, collapse = F) {
+Coverage <- function(sample, collapse = FALSE) {
 	m <- ToMatrix(sample, collapse = collapse)
 
 	if (is.list(m)) {
@@ -64,7 +64,7 @@ Coverage <- function(sample, collapse = F) {
 	}
 }
 
-# FIMXE duplicated code in upper function
+# FIMXE duplicated code
 #' Calculates the number of variant reads in RDD JACUSA results files
 #'
 #' Calculates the number of variant reads in JACUSA results of RDD calls
@@ -76,19 +76,16 @@ Coverage <- function(sample, collapse = F) {
 #' @param collapse Logical indicates if read counts of sample 2 should be merged - replicates are collapsed. 
 #' @return Returns List of count that represent the number of variant reads in cDNA.  
 #'
-#' @examples
-#' ## Read JACUSA result file hek293_untreated.out
-#' data <- Read("hek293_untreated.out")
-#' variant_count <- GetVariantCount(data)
-#' 
 #' @export 
-GetVariantCount <- function(l, collapse = F) {
+GetVariantCount <- function(l, collapse = FALSE) {
+	l <- AddBaseInfo(l, collapse)
+
 	# reference base
 	b1 <- l[["base1"]]
 	# cDNA base
 	b2 <- l[["base2"]]
 	# variant base
-	v <- mapply(function(x, y) { gsub(x, "", y) }, b1, b2, USE.NAMES = F)
+	v <- mapply(function(x, y) { gsub(x, "", y) }, b1, b2, USE.NAMES = FALSE)
 
 	# base counts from cDNA
 	m2 <- l[["matrix2"]]
@@ -115,9 +112,8 @@ GetVariantCount <- function(l, collapse = F) {
 #'
 #' @examples
 #' ## Read JACUSA result file hek293_untreated.out
-#' data <- Read("hek293_untreated.out")
 #' ## Extract sequencing information for sample 1. 
-#' sample1 <- Samples(data, 1)
+#' sample1 <- Samples(untr_hek293_rdds, 1)
 #' 
 #' @export 
 Samples <- function(l, sample) {
@@ -141,14 +137,12 @@ Samples <- function(l, sample) {
 #' @return Returns a vector of numeric values that contains the number of observed base changes.
 #'
 #' @examples
-#' ## Read JACUSA result file hek293_untreated.out
-#' data <- Read("hek293_untreated.out")
 #' ## Table implicitly populates the baseChange field
-#' tbl <- Table(data)
+#' tbl <- Table(untr_hek293_rdds)
 #' plot(tbl)
 #' 
 #' @export 
-Table <- function(l, fixAlleles = F) {
+Table <- function(l, fixAlleles = FALSE) {
 	l <- AddBaseChangeInfo(l)
 
 	baseChange <- l[["baseChange"]]
@@ -178,10 +172,8 @@ Table <- function(l, fixAlleles = F) {
 #' @return Returns a numeric values that represent the fraction of editing sites among RDDs.
 #'
 #' @examples
-#' ## Read JACUSA result file hek293_untreated.out
-#' data <- Read("hek293_untreated.out")
 #' ## Table implicitly populates the baseChange field
-#' tbl <- Table(data)
+#' tbl <- Table(untr_hek293_rdds)
 #' Score(tbl)
 #' 
 #' @export 
@@ -265,7 +257,7 @@ Editing <- function(a, b) {
 #' @return todo
 #'
 #' @export
-PlotTable <- function(tbl, score = T) {
+PlotTable <- function(tbl, score = TRUE) {
 	main <- ""
 	if (score) {
 		score <- Score(tbl)
@@ -286,7 +278,7 @@ BED2VCF <- function(l) {
 	ref <- l$base1
 	alt <- l$base2
 
-	alt <- mapply(function(x, y) { gsub(x, "", y) }, ref, alt, USE.NAMES = F)
+	alt <- mapply(function(x, y) { gsub(x, "", y) }, ref, alt, USE.NAMES = FALSE)
 
 	# invert bases
 	i <- strand == "-"
@@ -296,12 +288,12 @@ BED2VCF <- function(l) {
 	}
 	n <- length(l$name)
 
-	return(data.frame("#CHROM" = chrom, POS = pos, ID = rep(".", n), REF = ref, ALT = alt, QUAL = rep(".", n), FILTER = rep(".", n), check.names = F))
+	return(data.frame("#CHROM" = chrom, POS = pos, ID = rep(".", n), REF = ref, ALT = alt, QUAL = rep(".", n), FILTER = rep(".", n), check.names = FALSE))
 }
 
 # Helper function
 # returns the editing frequency of all sites from two gDNA vs. cDNA comparisons: RDDx and RDDy
-GetEditingFreq <- function(RDDx, RDDy, all = F) {
+GetEditingFreq <- function(RDDx, RDDy, all = FALSE) {
 	RDDx <- AddCoverageInfo(RDDx)
 	RDDx <- AddEditingFreqInfo(RDDx)
 	RDDx$coord <- paste(RDDx$contig, RDDx$start, RDDx$end, RDDx$end, RDDx$strand, sep = "|")
@@ -312,10 +304,10 @@ GetEditingFreq <- function(RDDx, RDDy, all = F) {
 
 	data <- merge(
 								as.data.frame(
-															RDDx[c("coord", "cov2", "baseChange", "editingFreq")], stringsAsFactors = F, check.names = F
+															RDDx[c("coord", "cov2", "baseChange", "editingFreq")], stringsAsFactors = FALSE, check.names = FALSE
 															),
 								as.data.frame(
-															RDDy[c("coord", "cov2", "baseChange", "editingFreq")], stringsAsFactors = F, check.names = F
+															RDDy[c("coord", "cov2", "baseChange", "editingFreq")], stringsAsFactors = FALSE, check.names = FALSE
 															),
 								by = "coord",
 								suffixes = c("_x", "_y"),
@@ -360,17 +352,17 @@ GetEditingFreq <- function(RDDx, RDDy, all = F) {
 									baseChange = base_change,
 									baseChange_x = base_change_x, 
 									baseChange_y = base_change_y, 
-									stringsAsFactors = F, check.names = F)
+									stringsAsFactors = FALSE, check.names = FALSE)
 }
 
 # Helper function
 PaperTheme <- function(...) {
 	# use theme_get() to see available options
-	theme(plot.title = element_text(face = "bold", size = 20), 
-		axis.title.x = element_text(face = "bold", size = 16),
-		axis.title.y = element_text(face = "bold", size = 16, angle = 90),
-		panel.grid.major = element_blank(), # switch off major gridlines
-		panel.grid.minor = element_blank(), # switch off minor gridlines 
+	ggplot2::theme(plot.title = ggplot2::element_text(face = "bold", size = 20), 
+		axis.title.x = ggplot2::element_text(face = "bold", size = 16),
+		axis.title.y = ggplot2::element_text(face = "bold", size = 16, angle = 90),
+		panel.grid.major = ggplot2::element_blank(), # switch off major gridlines
+		panel.grid.minor = ggplot2::element_blank(), # switch off minor gridlines 
 		...
 	)
 }

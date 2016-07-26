@@ -4,7 +4,7 @@
 \alias{PlotTable}
 \title{Helper function}
 \usage{
-PlotTable(tbl, score = T)
+PlotTable(tbl, score = TRUE)
 }
 \arguments{
 \item{tbl}{todo}

@@ -10,11 +10,9 @@
 #' @return Returns List of sites filtered by minimal read coverage according to fields and cov.
 #'
 #' @examples
-#' ## Read JACUSA result file hek293_untreated.out
-#' data <- Read("hek293_untreated.out")
 #' ## Keep sites that have a total read depth of at least 10 reads in sample 1 and 
 #' ## each of sample 2 replicates has a minimal read coverage of 5 reads. 
-#' data <- FilterByCoverage(data, fields = c("cov1", "covs2"), cov = c(10, 5))
+#' data <- FilterByCoverage(untr_hek293_rdds, fields = c("cov1", "covs2"), cov = c(10, 5))
 #' 
 #' @export 
 FilterByCoverage <- function(l, fields, cov) {
@@ -33,7 +31,7 @@ FilterByCoverage <- function(l, fields, cov) {
 							} else {
 								l[[f]] >= c
 							}
-}, fields, cov, SIMPLIFY = F, USE.NAMES = F)
+}, fields, cov, SIMPLIFY = FALSE, USE.NAMES = FALSE)
 	if (is.list(i)) {
 		i <- do.call(cbind, i)
 		i <- apply(i, 1, function(x) {
@@ -60,7 +58,7 @@ FilterByCoverageHelper <- function(covs, cov) {
 	} else {
 		unlist(
 					lapply(covs, function(r) { r >= cov })
-					, use.names = F
+					, use.names = FALSE
 					)
 	}
 }
@@ -76,13 +74,11 @@ FilterByCoverageHelper <- function(covs, cov) {
 #' @return Returns List of sites that have at least min_count variant reads in cDNA.  
 #'
 #' @examples
-#' ## Read JACUSA result file hek293_untreated.out
-#' data <- Read("hek293_untreated.out")
 #' ## Filters sites that have less than 2 variant reads in the cDNA sample. 
-#' data <- FilterByMinVariantCount(data, min_count = 2)
+#' data <- FilterByMinVariantCount(untr_hek293_rdds, min_count = 2)
 #' 
 #' @export
-FilterByMinVariantCount <- function(l, min_count = 2, collapse = F) {
+FilterByMinVariantCount <- function(l, min_count = 2, collapse = FALSE) {
 	l <- AddBaseChangeInfo(l)
 
 	if (is.null(l[["matrix2"]])) {
@@ -94,7 +90,7 @@ FilterByMinVariantCount <- function(l, min_count = 2, collapse = F) {
 	# cDNA base
 	b2 <- l[["base2"]]
 	# variant base
-	v <- mapply(function(x, y) { gsub(x, "", y) }, b1, b2, USE.NAMES = F)
+	v <- mapply(function(x, y) { gsub(x, "", y) }, b1, b2, USE.NAMES = FALSE)
 
 	# base counts from cDNA
 	m2 <- l[["matrix2"]]
@@ -123,11 +119,13 @@ FilterByMinVariantCount <- function(l, min_count = 2, collapse = F) {
 #'
 #' @export
 GetFilterResult <- function(l) {
+	l <- AddBaseInfo(l, collapse = TRUE)
+
 	GetMask <- function(m, op = "&") {
 		AnyBases <- function(m) {
 			t(apply(m, 1, function(x) {
 							x > 0
-}))
+			}))
 		}
 		if (is.list(m)) {
 			m <- lapply(m, AnyBases)
@@ -169,9 +167,7 @@ GetFilterResult <- function(l) {
 #' @return Returns List with sites where at least one sample contains the variant base in all replicates.  
 #'
 #' @examples
-#' ## Read JACUSA result file hek293_untreated.out
-#' data <- Read("hek293_untreated.out")
-#' result <- FilterResult(data)
+#' result <- FilterResult(untr_hek293_rdds)
 #' 
 #' @export 
 FilterResult <- function(l) {
@@ -189,14 +185,12 @@ FilterResult <- function(l) {
 #' @return Returns List with sites that are contained in vector f.
 #'
 #' @examples
-#' ## Read JACUSA result file hek293_untreated.out - RDD calls
-#' data <- Read("hek293_untreated.out")
 #' ## calculate variant count
-#' variant_count <- GetVariantCount(data, collapse = T)
+#' variant_count <- GetVariantCount(untr_hek293_rdds, collapse = TRUE)
 #' ## create index of sites that contain at least 10 variant bases
-#' index <- variant_count >=10
+#' index <- variant_count >= 10
 #' ## filter data according to index
-#' filtered_data <- FilterResult(data, index)
+#' filtered <- FilterRec(untr_hek293_rdds, index)
 #' 
 #' @export 
 FilterRec <- function(l, f) {
@@ -226,10 +220,8 @@ FilterRec <- function(l, f) {
 #' @return Returns List with sites with a test-statistic >= stat.
 #'
 #' @examples
-#' ## Read JACUSA result file hek293_untreated.out
-#' data <- Read("hek293_untreated.out")
 #' ## filter by test-statistic = 1.56
-#' filtered_data <- FilterByStat(data, 1.56)
+#' filtered_data <- FilterByStat(untr_hek293_rdds, 1.56)
 #' 
 #' @export 
 FilterByStat <- function(l, stat) {

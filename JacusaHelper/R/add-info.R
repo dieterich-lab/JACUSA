@@ -10,10 +10,8 @@
 #' @return Returns a list of base calls with additional coverage fields.
 #'
 #' @examples
-#' ## Read JACUSA result file hek293_untreated.out
-#' data <- Read("hek293_untreated.out")
 #' ## add coverage info to data
-#' data <- AddCoverageInfo(data)
+#' data <- AddCoverageInfo(untr_hek293_rdds)
 #' 
 #' @export 
 AddCoverageInfo <- function(l) {
@@ -21,11 +19,11 @@ AddCoverageInfo <- function(l) {
 		return(l)
 	}
 
-	l[["cov1"]] <- Coverage(Samples(l, 1), collapse = T)
-	l[["covs1"]]  <- Coverage(Samples(l, 1), collapse = F)
+	l[["cov1"]] <- Coverage(Samples(l, 1), collapse = TRUE)
+	l[["covs1"]]  <- Coverage(Samples(l, 1), collapse = FALSE)
 
-	l[["cov2"]] <- Coverage(Samples(l, 2), collapse = T)
-	l[["covs2"]]  <- Coverage(Samples(l, 2), collapse = F)
+	l[["cov2"]] <- Coverage(Samples(l, 2), collapse = TRUE)
+	l[["covs2"]]  <- Coverage(Samples(l, 2), collapse = FALSE)
 
 	l[["cov"]] <- l[["cov1"]] + l[["cov2"]]
 	l
@@ -37,29 +35,28 @@ AddCoverageInfo <- function(l) {
 #' result to the initial list object.  
 #'
 #' @param l List object created by \code{Read()}.
+#' @param collapse Logical indicates if read counts of sample 2 should be merged - replicates are collapsed. 
 #' @return Returns a list of base calls with additional base1 and base2 fields.
 #'
 #' @examples
-#' ## Read JACUSA result file hek293_untreated.out
-#' data <- Read("hek293_untreated.out")
-#' data <- AddBaseInfo(data)
+#' data <- AddBaseInfo(untr_hek293_rdds)
 #' ## plot distribution of bases in sample1
 #' barplot(table(data$base1))
 #' 
 #' @export 
-AddBaseInfo <- function(l) {
+AddBaseInfo <- function(l, collapse = FALSE) {
 	if (! is.null(l[["base1"]]) & ! is.null(l[["base2"]])) {
 		return(l)
 	}
 	if (is.null(l[["matrix1"]]))  {
 		sample1 <- Samples(l, 1)
-		l[["matrix1"]] <- ToMatrix(sample1, collapse = F)
+		l[["matrix1"]] <- ToMatrix(sample1, collapse = collapse)
 	}
 	l[["base1"]] <- ToBase(l[["matrix1"]])
 
 	if (is.null(l[["matrix2"]])) {
 		sample2 <- Samples(l, 2)
-		l[["matrix2"]] <- ToMatrix(sample2, collapse = F)
+		l[["matrix2"]] <- ToMatrix(sample2, collapse = collapse)
 	}
 	l[["base2"]] <- ToBase(l[["matrix2"]])
 	l
@@ -75,9 +72,7 @@ AddBaseInfo <- function(l) {
 #' @return Returns a list of base calls with the additional baseChange fields.
 #'
 #' @examples
-#' ## Read JACUSA result file hek293_untreated.out
-#' data <- Read("hek293_untreated.out")
-#' data <- AddBaseChangeInfo(data)
+#' data <- AddBaseChangeInfo(untr_hek293_rdds)
 #' ## plot distribution of base changes
 #' barplot(Table(data))
 #' 
@@ -107,10 +102,8 @@ AddBaseChangeInfo <- function(l) {
 #' @return Returns a list of base calls with the additional editingFreq fields.
 #'
 #' @examples
-#' ## Read JACUSA result file hek293_untreated.out
-#' data <- Read("hek293_untreated.out")
 #' ## AddEditingFreqInfo implicitly adds the baseChange field
-#' data <- AddEditingFreqInfo(data)
+#' data <- AddEditingFreqInfo(untr_hek293_rdds)
 #' ## plot a boxplot of editing frequencies for each base change
 #' boxplot(tapply(data$editingFreq, data$baseChange, c))
 #' 
@@ -126,7 +119,7 @@ AddEditingFreqInfo <- function(l) {
   # cDNA base
   b2 <- l[["base2"]]
   # variant base
-  v <- mapply(function(x, y) { gsub(x, "", y) }, b1, b2, USE.NAMES = F)
+  v <- mapply(function(x, y) { gsub(x, "", y) }, b1, b2, USE.NAMES = FALSE)
   # base counts
   m1 <- l[["matrix1"]]
   m2 <- l[["matrix2"]]

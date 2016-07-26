@@ -13,15 +13,13 @@
 #' @param ... Additional parameters that will be forwarded to read.table.
 #' @return Returns a list of base calls "," separated for chosen parameters.
 #'
-#' @examples
-#' ## Read JACUSA result file hek293_untreated.out, invert base count and 
-#' ## retain sites with test-statistic >= 1.56
-#' data <- Read(data, invert = T, stat = 1.56)
 #' 
 #' @export 
-Read <- function(f, invert = F, stat = NULL, fields = NULL, cov = NULL, collapse = F, ...) {
-	print(getwd())
-	d <- read.table(f, header = T, stringsAsFactors = F, check.names = F, comment.char = "", ...) 
+Read <- function(f, invert = FALSE, stat = NULL, fields = NULL, cov = NULL, collapse = FALSE, ...) {
+# Read JACUSA result file hek293_untreated.out, invert base count and 
+# retain sites with test-statistic >= 1.56
+# data <- Read(data, invert = TRUE, stat = 1.56)
+	d <- read.table(f, header = TRUE, stringsAsFactors = FALSE, check.names = FALSE, comment.char = "", ...) 
 	colnames(d)[1] <- gsub("^#", "", colnames(d)[1])
 	l <- as.list(d)
 
@@ -36,14 +34,14 @@ Read <- function(f, invert = F, stat = NULL, fields = NULL, cov = NULL, collapse
 
 	if (! is.null(invert)) {
 		if(invert) {
-			m1 <- ToMatrix(Samples(l, 1), invert = T, collapse = F)
+			m1 <- ToMatrix(Samples(l, 1), invert = TRUE, collapse = FALSE)
 			i <- grep("bases1", names(l))
 			if (length(i) == 1) {
 				l[[i]] <- ToString(m1)
 			} else {
 				l[i] <- ToString(m1)
 			}
-			m2 <- ToMatrix(Samples(l, 2), invert = T, collapse = F)
+			m2 <- ToMatrix(Samples(l, 2), invert = TRUE, collapse = FALSE)
 			i <- grep("bases2", names(l))
 			if (length(i) == 1) {
 				l[[i]] <- ToString(m2)
@@ -68,16 +66,14 @@ Read <- function(f, invert = F, stat = NULL, fields = NULL, cov = NULL, collapse
 #' @param extra Vector of strings that defines additional elements from the list that 
 #'        will be stored in the file. 
 #'
-#' @examples
-#' ## Read JACUSA result file hek293_untreated.out
-#' data <- Read("hek293_untreated.out")
-#' data <- AddBaseChangeInfo(data)
-#' ## base change will be stored in the id/name column according to the BED file format definition.
-#' data$name <- data$baseChange
-#' Write(data, "JACUSA_modified.out")
-#' 
 #' @export 
 Write <- function(l, file, extra = NULL) {
+# Read JACUSA result file hek293_untreated.out
+# data <- Read("hek293_untreated.out")
+# data <- AddBaseChangeInfo(data)
+# base change will be stored in the id/name column according to the BED file format definition.
+# data$name <- data$baseChange
+# Write(data, "JACUSA_modified.out")
   fields <- c("contig", "start", "end", "name", "stat", "strand", "info", "filter_info")
   if (! is.null(extra)) {
     fields <- c(fields, extra)
@@ -86,7 +82,7 @@ Write <- function(l, file, extra = NULL) {
   i <- grep("^bases", names(l))
   fields <- c(fields, names(l)[i])
   l <- l[fields]
-  d <- as.data.frame(l, stringsAsFactors = F, check.names = F)
+  d <- as.data.frame(l, stringsAsFactors = FALSE, check.names = FALSE)
   colnames(d)[1] <- paste0("#", colnames(d)[1])
-  write.table(d, file, col.names = T, row.names = F, quote = F, sep = "\t")
+  write.table(d, file, col.names = TRUE, row.names = FALSE, quote = FALSE, sep = "\t")
 }

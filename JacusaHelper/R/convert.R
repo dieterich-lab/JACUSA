@@ -8,15 +8,13 @@
 #' @return Returns a matrix or a list of matrices of base counts.
 #'
 #' @examples
-#' ## Read JACUSA result file hek293_untreated.out asdf
-#' data <- Read("hek293_untreated.out")
 #' ## Extract sequencing info of sample 1
-#' sample1 <- Samples(data, 1)
+#' sample1 <- Samples(untr_hek293_rdds, 1)
 #' ## Convert character encoded base counts to count matrices
 #' matrix1 <- ToMatrix(sample1)
 #' 
 #' @export 
-ToMatrix <- function(sample, invert = F, collapse = T) {
+ToMatrix <- function(sample, invert = FALSE, collapse = TRUE) {
 	# merge matrices sample
 	if (is.list(sample))  {
 		m <- lapply(sample, .ToMatrixHelper, invert)
@@ -31,7 +29,7 @@ ToMatrix <- function(sample, invert = F, collapse = T) {
 
 # this helper function will convert one base column vector e.g.: [A, C, G, T] = 10,0,0,0 
 # to a matrix and invert base calls when desired
-.ToMatrixHelper <- function(sample, invert = F) { 
+.ToMatrixHelper <- function(sample, invert = FALSE) { 
 	l <- strsplit(sample, ",")
 	m <- do.call(rbind, l)
 	class(m) <- "numeric"
@@ -43,9 +41,9 @@ ToMatrix <- function(sample, invert = F, collapse = T) {
 }
 
 #' Helper function
-#'
-#' \codeToString} convert from count matrix to vector of character
-#'
+#' 
+#' \code{ToString} convert from count matrix to vector of character.
+#' 
 #' @param m todo
 #' @return todo
 #'

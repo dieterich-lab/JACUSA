@@ -1,12 +1,12 @@
 Package: JacusaHelper
 Type: Package
 Title: Post-rocessing JACUSA output
-Version: 0.41
+Version: 0.42
 Date: 2016-05-24
 Author: Michael Piechotta
 Maintainer: <michael.piechotta@gmail.com>
 Description: This package enables post-process JACUSA output: read, filter, process, plot, write.
-License: GNU Affero General Public License, Version 3.0
+License: GNU Affero General Public License, Version 3.0 + file LICENSE
 RoxygenNote: 5.0.1
 LazyData: true
 Suggests: testthat

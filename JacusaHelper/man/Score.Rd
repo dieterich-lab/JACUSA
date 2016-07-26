@@ -18,10 +18,8 @@ Returns a numeric values that represent the fraction of editing sites among RDDs
 \code{Score} calculates the fraction of editing sites among RDDs in JACUSA output.
 }
 \examples{
-## Read JACUSA result file hek293_untreated.out
-data <- Read("hek293_untreated.out")
 ## Table implicitly populates the baseChange field
-tbl <- Table(data)
+tbl <- Table(untr_hek293_rdds)
 Score(tbl)
 
 }

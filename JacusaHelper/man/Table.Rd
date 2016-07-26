@@ -4,7 +4,7 @@
 \alias{Table}
 \title{Calculates the distribution of base changes of RDDs in JACUSA output.}
 \usage{
-Table(l, fixAlleles = F)
+Table(l, fixAlleles = FALSE)
 }
 \arguments{
 \item{l}{List object created by \code{Read()}.}
@@ -19,10 +19,8 @@ Returns a vector of numeric values that contains the number of observed base cha
 \code{Calculates} the distribution of base changes of RDDs in JACUSA output.
 }
 \examples{
-## Read JACUSA result file hek293_untreated.out
-data <- Read("hek293_untreated.out")
 ## Table implicitly populates the baseChange field
-tbl <- Table(data)
+tbl <- Table(untr_hek293_rdds)
 plot(tbl)
 
 }
