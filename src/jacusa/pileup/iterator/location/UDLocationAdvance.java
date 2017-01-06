@@ -29,7 +29,7 @@ public class UDLocationAdvance extends AbstractLocationAdvancer {
 
 	@Override
 	void advanceLocation2() {
-		directedAdvanceLocation(loc2);
+		strandedAdvanceLocation(loc2);
 	}
 
 	@Override

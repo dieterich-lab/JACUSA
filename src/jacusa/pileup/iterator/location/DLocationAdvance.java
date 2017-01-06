@@ -27,7 +27,7 @@ public class DLocationAdvance extends AbstractLocationAdvancer {
 	
 	@Override
 	void advanceLocation1() {
-		directedAdvanceLocation(loc1);
+		strandedAdvanceLocation(loc1);
 	}
 
 	@Override

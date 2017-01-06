@@ -34,12 +34,12 @@ public abstract class AbstractOneSampleIterator extends AbstractWindowIterator {
 		
 		final Location loc = initLocation(
 				coordinate, 
-				sample.getPileupBuilderFactory().isDirected(), 
+				sample.getPileupBuilderFactory().isStranded(), 
 				pileupBuilders);
 		
 		// create the correct LocationAdvancer
 		locationAdvancer = AbstractLocationAdvancer.getInstance(
-				sample.getPileupBuilderFactory().isDirected(), loc);
+				sample.getPileupBuilderFactory().isStranded(), loc);
 	}
 
 	protected boolean hasNext1() {

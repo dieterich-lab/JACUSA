@@ -68,7 +68,7 @@ public abstract class AbstractLocationAdvancer {
 		return true;
 	}
 	
-	protected void directedAdvanceLocation(Location location) {
+	protected void strandedAdvanceLocation(Location location) {
 		switch (location.strand) {
 		case FORWARD:
 			location.strand = STRAND.REVERSE;

@@ -13,6 +13,6 @@ public interface PileupBuilderFactory {
 			final SampleParameters sample,
 			final AbstractParameters parameters);
 
-	public abstract boolean isDirected();
+	public abstract boolean isStranded();
 	
 }

@@ -5,9 +5,9 @@ import jacusa.cli.parameters.SampleParameters;
 import jacusa.util.Coordinate;
 import net.sf.samtools.SAMFileReader;
 
-public class UndirectedPileupBuilderFactory implements PileupBuilderFactory {
+public class UnstrandedPileupBuilderFactory implements PileupBuilderFactory {
 
-	public UndirectedPileupBuilderFactory() {
+	public UnstrandedPileupBuilderFactory() {
 		// nothing to be done
 	}
 
@@ -17,11 +17,11 @@ public class UndirectedPileupBuilderFactory implements PileupBuilderFactory {
 			final SAMFileReader reader, 
 			final SampleParameters sample, 
 			final AbstractParameters parameters) {
-		return new UndirectedPileupBuilder(coordinate, reader, sample, parameters);
+		return new UnstrandedPileupBuilder(coordinate, reader, sample, parameters);
 	}
 
 	@Override
-	public boolean isDirected() {
+	public boolean isStranded() {
 		return false;
 	}
 

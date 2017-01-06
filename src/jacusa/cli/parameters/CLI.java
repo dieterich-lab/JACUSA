@@ -95,12 +95,12 @@ public class CLI {
 		if (methodFactory.getParameters().getFormat().getC() == VCF_ResultFormat.CHAR) {
 			boolean error = false;
 			if(methodFactory.getParameters() instanceof hasSample1) {
-				if (methodFactory.getParameters().getSample1().getPileupBuilderFactory().isDirected()) {
+				if (methodFactory.getParameters().getSample1().getPileupBuilderFactory().isStranded()) {
 					error = true;
 				}
 			}
 			if(methodFactory.getParameters() instanceof hasSample2) {
-				if (((hasSample2)methodFactory.getParameters()).getSample2().getPileupBuilderFactory().isDirected()) {
+				if (((hasSample2)methodFactory.getParameters()).getSample2().getPileupBuilderFactory().isStranded()) {
 					error = true;
 				}
 			}

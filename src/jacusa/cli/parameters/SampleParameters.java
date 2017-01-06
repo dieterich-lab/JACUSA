@@ -3,7 +3,7 @@ package jacusa.cli.parameters;
 import jacusa.cli.options.sample.filter.samtag.SamTagFilter;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.builder.PileupBuilderFactory;
-import jacusa.pileup.builder.UndirectedPileupBuilderFactory;
+import jacusa.pileup.builder.UnstrandedPileupBuilderFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class SampleParameters {
 
 		samTagFilters 	= new ArrayList<SamTagFilter>();
 		pathnames 		= new String[0];
-		pileupBuilderFactory = new UndirectedPileupBuilderFactory();
+		pileupBuilderFactory = new UnstrandedPileupBuilderFactory();
 	}
 
 	/**

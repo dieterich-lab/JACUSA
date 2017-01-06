@@ -5,23 +5,23 @@ import jacusa.cli.parameters.SampleParameters;
 import jacusa.util.Coordinate;
 import net.sf.samtools.SAMFileReader;
 
-public class DirectedPileupBuilderFactory implements PileupBuilderFactory {
+public class FRPairedEnd1PileupBuilderFactory implements PileupBuilderFactory {
 
-	public DirectedPileupBuilderFactory() {
+	public FRPairedEnd1PileupBuilderFactory() {
 		// Nothing to be done
 	}
 
 	@Override
-	public DirectedPileupBuilder newInstance(
+	public SingleEndStrandedPileupBuilder newInstance(
 			final Coordinate coordinate, 
 			final SAMFileReader reader, 
 			final SampleParameters sample,
 			final AbstractParameters parameters) {
-		return new DirectedPileupBuilder(coordinate, reader, sample, parameters);
+		return new FRPairedEnd1PileupBuilder(coordinate, reader, sample, parameters);
 	}
 
 	@Override
-	public boolean isDirected() {
+	public boolean isStranded() {
 		return true;
 	}
 

@@ -30,12 +30,12 @@ public class DDLocationAdvance extends AbstractLocationAdvancer {
 	
 	@Override
 	void advanceLocation1() {
-		directedAdvanceLocation(loc1);
+		strandedAdvanceLocation(loc1);
 	}
 
 	@Override
 	void advanceLocation2() {
-		directedAdvanceLocation(loc2);
+		strandedAdvanceLocation(loc2);
 	}
 
 	@Override

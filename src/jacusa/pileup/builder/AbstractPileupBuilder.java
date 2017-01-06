@@ -294,9 +294,9 @@ public abstract class AbstractPileupBuilder {
 		int destPos = 0;
 		for (int i = 0; i < record.getAlignmentBlocks().size(); i++) {
 		if (referenceBases != null) {
-				final int srcPos = record.getAlignmentBlocks().get(i).getReadStart() - 1;
-				final int length = record.getAlignmentBlocks().get(i).getLength();
-				System.arraycopy(
+			final int srcPos = record.getAlignmentBlocks().get(i).getReadStart() - 1;
+			final int length = record.getAlignmentBlocks().get(i).getLength();
+			System.arraycopy(
 						record.getReadBases(), 
 						srcPos, 
 						referenceBases, 
@@ -338,7 +338,6 @@ public abstract class AbstractPileupBuilder {
 		}
 
 		return referenceBases;
-		
 	}
 	
 	protected void processRecord(SAMRecord record) {
@@ -444,7 +443,7 @@ public abstract class AbstractPileupBuilder {
 			case S:
 				processSoftClipping(windowPosition, readPosition, genomicPosition, cigarElement, record);
 				readPosition += cigarElement.getLength();
-				MDPosition += cigarElement.getLength();
+				//MDPosition += cigarElement.getLength();
 				break;
 
 			/*

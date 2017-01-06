@@ -16,9 +16,9 @@ import net.sf.samtools.SAMFileReader;
  * @author Michael Piechotta
  *
  */
-public class UndirectedPileupBuilder extends AbstractPileupBuilder {
+public class UnstrandedPileupBuilder extends AbstractPileupBuilder {
 	
-	public UndirectedPileupBuilder(
+	public UnstrandedPileupBuilder(
 			final Coordinate annotatedCoordinate, 
 			final SAMFileReader reader, 
 			final SampleParameters sample,
@@ -82,13 +82,13 @@ public class UndirectedPileupBuilder extends AbstractPileupBuilder {
 	 */
 	@Override
 	public boolean isCovered(int windowPosition, STRAND strand) {
-		// for undirectedPileup we ignore strand
+		// for unstrandedPileup we ignore strand
 		return getCoverage(windowPosition, STRAND.UNKNOWN) >= sampleParameters.getMinCoverage();
 	}
 
 	@Override
 	public int getCoverage(int windowPosition, STRAND strand) {
-		// for undirectedPileup we ignore strand
+		// for unstrandedPileup we ignore strand
 		return windowCache.getCoverage(windowPosition);
 	}
 

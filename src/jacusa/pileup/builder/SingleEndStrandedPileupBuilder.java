@@ -16,14 +16,14 @@ import net.sf.samtools.SAMRecord;
  * @author Michael Piechotta
  *
  */
-public class DirectedPileupBuilder extends AbstractPileupBuilder {
+public class SingleEndStrandedPileupBuilder extends AbstractPileupBuilder {
 
-	private WindowCache[] windowCaches;
+	protected WindowCache[] windowCaches;
 
-	private FilterContainer[] filterContainers;
-	private int[][] byte2intAr;
+	protected FilterContainer[] filterContainers;
+	protected int[][] byte2intAr;
 	
-	public DirectedPileupBuilder(
+	public SingleEndStrandedPileupBuilder(
 			final Coordinate annotatedCoordinate, 
 			final SAMFileReader reader, 
 			final SampleParameters sample,
@@ -94,7 +94,7 @@ public class DirectedPileupBuilder extends AbstractPileupBuilder {
 			pileup.setRefBase((char)refBaseByte);
 		}
 		
-		// for DirectedPileupBuilder the basesCounts in the pileup are already inverted (when on the reverse strand) 
+		// for "Stranded"PileupBuilder the basesCounts in the pileup are already inverted (when on the reverse strand) 
 		return pileup;
 	}
 
