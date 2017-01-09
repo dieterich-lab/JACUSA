@@ -30,8 +30,8 @@ public class TwoSamplePileupBuilderOption extends AbstractPileupBuilderOption {
 	public void process(CommandLine line) throws Exception {
 		if (line.hasOption(opt)) {
 	    	String s = line.getOptionValue(opt);
-	    	String[] ss = s.split(Character.getName(SEP));
-
+	    	String[] ss = s.split(Character.toString(SEP));
+	    	
 	    	StringBuilder sb = new StringBuilder();
 	    	sb.append("Format: s1,s2. \n");
 	    	sb.append("Possible values for s1 and s2:\n");

@@ -12,7 +12,7 @@ import net.sf.samtools.SAMRecord;
  * @author Michael Piechotta
  *
  */
-public class FRPairedEnd1PileupBuilder extends SingleEndStrandedPileupBuilder {
+public class FRPairedEnd1PileupBuilder extends AbstractStrandedPileupBuilder {
 
 	public FRPairedEnd1PileupBuilder(
 			final Coordinate annotatedCoordinate, 
@@ -23,11 +23,17 @@ public class FRPairedEnd1PileupBuilder extends SingleEndStrandedPileupBuilder {
 	}
 	
 	protected void processRecord(SAMRecord record) {
-		if (record.getReadNegativeStrandFlag() && record.getSecondOfPairFlag() || 
-				! record.getReadNegativeStrandFlag() && record.getFirstOfPairFlag()) {
-			strand = STRAND.REVERSE;
-		} else {
+		/*
+		 * 
+		 * Taken from: https://www.biostars.org/p/64250/
+	     * fr-firststrand:dUTP, NSR, NNSR Same as above except we enforce the rule that the right-most end of the fragment (in transcript coordinates) is the first sequenced (or only sequenced for single-end reads). Equivalently, it is assumed that only the strand generated during first strand synthesis is sequenced.
+	     *  
+		 */
+		if (record.getFirstOfPairFlag() && record.getReadNegativeStrandFlag() || 
+				record.getSecondOfPairFlag() && ! record.getReadNegativeStrandFlag()) {
 			strand = STRAND.FORWARD;
+		} else {
+			strand = STRAND.REVERSE;
 		}
 		int i = strand.integer() - 1;
 		// makes sure that for reads on the reverse strand the complement is stored in pileup and filters

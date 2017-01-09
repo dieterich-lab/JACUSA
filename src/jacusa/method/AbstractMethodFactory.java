@@ -2,6 +2,7 @@ package jacusa.method;
 
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
+import jacusa.cli.options.sample.InvertStrandOption;
 import jacusa.cli.options.sample.MaxDepthSampleOption;
 import jacusa.cli.options.sample.MinBASQSampleOption;
 import jacusa.cli.options.sample.MinCoverageSampleOption;
@@ -59,6 +60,7 @@ public abstract class AbstractMethodFactory {
 		acOptions.add(new MaxDepthSampleOption(sample, sampleParameters, parameters));
 		acOptions.add(new FilterNHsamTagOption(sample, sampleParameters));
 		acOptions.add(new FilterNMsamTagOption(sample, sampleParameters));
+		acOptions.add(new InvertStrandOption(sample, sampleParameters));
 	}
 
 	/**

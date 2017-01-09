@@ -39,6 +39,7 @@ public abstract class AbstractPileupBuilderOption extends AbstractACOption {
 		s = s.toUpperCase();
 
 		// for compatibility with older versions 
+		/* SE stranded now - flips the strand
 		if (s.length() == 1) {
 			switch(s.charAt(0)) {
 			case 'S':
@@ -48,6 +49,7 @@ public abstract class AbstractPileupBuilderOption extends AbstractACOption {
 				return LibraryType.UNSTRANDED;
 			}	
 		}
+		*/
 
 		s = s.replace("-", "_");
 		
@@ -78,15 +80,15 @@ public abstract class AbstractPileupBuilderOption extends AbstractACOption {
 
 			switch (l) {
 			case SE_STRANDED:
-				desc = "Single End STRANDED library";
+				desc = "Single End STRANDED library - first read sequenced";
 				break;
 				
 			case FR_FIRSTSTRAND:
-				desc = "Paired End STRANDED library - first read";
+				desc = "Paired End STRANDED library - first read sequenced";
 				break;
 				
 			case FR_SECONDSTRAND:
-				desc = "Paired End STRANDED library - second read";
+				desc = "Paired End STRANDED library - second read sequenced";
 				break;
 
 			case UNSTRANDED:
@@ -96,7 +98,7 @@ public abstract class AbstractPileupBuilderOption extends AbstractACOption {
 			}
 			
 			sb.append(option);
-			sb.append("\t");
+			sb.append("\t\t");
 			sb.append(desc);
 			sb.append("\n");
 		}
@@ -106,9 +108,9 @@ public abstract class AbstractPileupBuilderOption extends AbstractACOption {
 
 	public enum LibraryType {
 		SE_STRANDED, 
-		UNSTRANDED, 
 		FR_FIRSTSTRAND, 
-		FR_SECONDSTRAND
+		FR_SECONDSTRAND,
+		UNSTRANDED
 	}
 	
 }

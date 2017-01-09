@@ -21,6 +21,7 @@ import jacusa.cli.options.ThreadWindowSizeOption;
 import jacusa.cli.options.VersionOption;
 import jacusa.cli.options.WindowSizeOption;
 import jacusa.cli.options.pileupbuilder.OneSamplePileupBuilderOption;
+import jacusa.cli.options.sample.InvertStrandOption;
 import jacusa.cli.options.sample.filter.FilterNHsamTagOption;
 import jacusa.cli.options.sample.filter.FilterNMsamTagOption;
 import jacusa.cli.parameters.AbstractParameters;
@@ -81,8 +82,10 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new MinBASQOption(samples));
 		acOptions.add(new MinCoverageOption(samples));
 		acOptions.add(new MaxDepthOption(parameters));
-		acOptions.add(new FilterNHsamTagOption(1, sample1));
-		acOptions.add(new FilterNMsamTagOption(1, sample1));
+		final int sampleI = 1;
+		acOptions.add(new FilterNHsamTagOption(sampleI, sample1));
+		acOptions.add(new FilterNMsamTagOption(sampleI, sample1));
+		acOptions.add(new InvertStrandOption(sampleI, sample1));
 		
 		
 		acOptions.add(new OneSamplePileupBuilderOption(sample1));

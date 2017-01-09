@@ -17,6 +17,7 @@ public class SampleParameters {
 	private byte minBASQ;
 	private int minMAPQ;
 	private int minCoverage;
+	private boolean invertStrand;
 
 	// filter: flags
 	private int filterFlags;
@@ -32,11 +33,14 @@ public class SampleParameters {
 	private BaseConfig baseConfig;
 	private PileupBuilderFactory pileupBuilderFactory;
 
+	
+	
 	public SampleParameters() {
 		maxDepth 		= -1;
 		minBASQ			= Byte.parseByte("20");
 		minMAPQ 		= 20;
 		minCoverage 	= 5;
+		invertStrand	= false;
 
 		filterFlags 	= 0;
 		retainFlags	 	= 0;
@@ -178,6 +182,14 @@ public class SampleParameters {
 
 	public void setBaseConfig(BaseConfig baseConfig) {
 		this.baseConfig = baseConfig;
+	}
+	
+	public void setInvertStrand(boolean invertStrand) {
+		this.invertStrand = invertStrand;
+	}
+	
+	public boolean isInvertStrand() {
+		return invertStrand;
 	}
 	
 }

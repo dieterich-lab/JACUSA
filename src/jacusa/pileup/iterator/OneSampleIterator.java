@@ -37,40 +37,38 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 			parallelPileup.setStrand(location.strand);
 			parallelPileup.setPileups1(getPileups(location, pileupBuilders));
 			parallelPileup.setPileups2(new Pileup[0]);
-
-			int commonBaseI = -1;
-			boolean noReference = false;
-			if (parallelPileup.getPooledPileup1().getRefBase() != 'N') {
-				char refBase = parallelPileup.getPooledPileup1().getRefBase();
-				commonBaseI = BaseConfig.BYTE_BASE2INT_BASE[(byte)refBase];
-				if (parallelPileup.getPooledPileup1().getCounts().getBaseCount(commonBaseI) == 0) {
-					noReference = true;
-				}
-			}
 			
-			if (filter.isValid(parallelPileup) || noReference) {
+			if (filter.isValid(parallelPileup)) {
 				int[] allelesIs = parallelPileup.getPooledPileup1().getAlleles();
-				if (commonBaseI == -1) {
-					int commonBaseCount = 0;
+
+				// pick reference base by MD or by majority.
+				// all other bases will be converted in pileup2 to refBaseI
+				int refBaseI = -1;
+				if (parallelPileup.getPooledPileup1().getRefBase() != 'N') {
+					char refBase = parallelPileup.getPooledPileup1().getRefBase();
+					refBaseI = BaseConfig.BYTE_BASE2INT_BASE[(byte)refBase];
+				} else {
+					int maxBaseCount = 0;
 
 					for (int baseI : allelesIs) {
 						int count = parallelPileup.getPooledPileup1().getCounts().getBaseCount(baseI);
-						if (count > commonBaseCount) {
-							commonBaseCount = count;
-							commonBaseI = baseI;
+						if (count > maxBaseCount) {
+							maxBaseCount = count;
+							refBaseI = baseI;
 						}
 					}
 				}
+
 				int [] tmpVariantBasesIs = new int[allelesIs.length];
 				int i = 0;
 				for (int j = 0; j < allelesIs.length; ++j) {
-					if (allelesIs[j] != commonBaseI) {
+					if (allelesIs[j] != refBaseI) {
 						tmpVariantBasesIs[i] = allelesIs[j];
 						++i;
 					}
 				}
 				int[] variantBasesIs = Arrays.copyOf(tmpVariantBasesIs, i);
-				parallelPileup.setPileups2(DefaultPileup.flat(parallelPileup.getPileups1(), variantBasesIs, commonBaseI));
+				parallelPileup.setPileups2(DefaultPileup.flat(parallelPileup.getPileups1(), variantBasesIs, refBaseI));
 				
 				return true;
 			} else {

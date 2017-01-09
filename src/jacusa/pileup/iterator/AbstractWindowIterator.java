@@ -178,6 +178,7 @@ public abstract class AbstractWindowIterator implements Iterator<Location> {
 				return false;
 			}
 			location.genomicPosition = record.getAlignmentStart();
+
 			return adjustWindowStart(location, pileupBuilders);
 		}
 		location.genomicPosition = pileupBuilders[0]

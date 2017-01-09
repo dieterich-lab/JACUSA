@@ -31,7 +31,7 @@ public class OneSamplePileupBuilderOption extends AbstractPileupBuilderOption {
 		if (line.hasOption(opt)) {
 	    	String s = line.getOptionValue(opt);
 	    	LibraryType l = parse(s);
-	    	if (l != null) {
+	    	if (l == null) {
 	    		throw new IllegalArgumentException("Possible values for " + longOpt.toUpperCase() + ":\n" + getPossibleValues());
 	    	}
 	    	parameters.setPileupBuilderFactory(buildPileupBuilderFactory(l));

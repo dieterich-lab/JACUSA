@@ -12,6 +12,7 @@ import jacusa.pileup.DefaultPileup.STRAND;
 import jacusa.util.Coordinate;
 import jacusa.util.WindowCoordinates;
 
+import java.util.Arrays;
 import java.util.List;
 
 import net.sf.samtools.CigarElement;
@@ -289,14 +290,16 @@ public abstract class AbstractPileupBuilder {
 		if (o == null) {
 			return new byte[0]; // no MD field :-(
 		}
-		
+
+		// init container size with read length
 		final byte[] referenceBases = new byte[record.getReadLength()];
 		int destPos = 0;
+		// copy read sequence to reference container / concatenate mapped segements ignor DELs
 		for (int i = 0; i < record.getAlignmentBlocks().size(); i++) {
-		if (referenceBases != null) {
-			final int srcPos = record.getAlignmentBlocks().get(i).getReadStart() - 1;
-			final int length = record.getAlignmentBlocks().get(i).getLength();
-			System.arraycopy(
+			if (referenceBases != null) {
+				final int srcPos = record.getAlignmentBlocks().get(i).getReadStart() - 1;
+				final int length = record.getAlignmentBlocks().get(i).getLength();
+				System.arraycopy(
 						record.getReadBases(), 
 						srcPos, 
 						referenceBases, 
@@ -305,36 +308,41 @@ public abstract class AbstractPileupBuilder {
 				destPos += length;
 			}
 		}
-		
+
 		// get MD string
 		String MD = (String)o;
 		// add potential missing number(s)
 		MD = "0" + MD.toUpperCase();
 
 		int position = 0;
-		boolean isInteger = true;
+		boolean nextInteger = true;
 		// change to reference base based on MD string
+//		int j = 0;
 		for (String e : MD.split("((?<=[0-9]+)(?=[^0-9]+))|((?<=[^0-9]+)(?=[0-9]+))")) {
-			if (isInteger) { // match
+			if (nextInteger) { // match
 				// use read sequence
 				int matchLength = Integer.parseInt(e);
 				position += matchLength;
-				isInteger = false;
+				nextInteger = false;	
 			} else if (e.charAt(0) == '^') {
-				isInteger = true;
-			} else { // deletion and/or mismatch
-				String[] s = e.split("\\^");
-				// use MD field to reconstruct reference
-				e = s[0];
+				// ignore deletions from reference
+				nextInteger = true;
+			} else { // mismatch
+//				try {
+				referenceBases[position] = (byte)e.toCharArray()[0];
+//				} catch (ArrayIndexOutOfBoundsException e2) {
+//					String[] tmp = MD.split("((?<=[0-9]+)(?=[^0-9]+))|((?<=[^0-9]+)(?=[0-9]+))");
+//					System.out.println(e2.toString());
+//				}
 
-				int length = e.length();
-				for (int i = 0; i < length; ++i) {
-					referenceBases[position + i] = (byte)e.toCharArray()[i];
-				}
-				position += length;
-				isInteger = true;
-				// ignore rest of s
+				position += 1;
+				nextInteger = true;
 			}
+//			++j;
+		}
+		// resize container if MD < read length
+		if (position < referenceBases.length) {
+			Arrays.copyOf(referenceBases, position);
 		}
 
 		return referenceBases;
@@ -349,11 +357,6 @@ public abstract class AbstractPileupBuilder {
 
 		int MDPosition = 0;
 		byte[] referenceBases = null;
-		/*
-		if (record.getAttribute("MD") != null) {
-			referenceBases = new byte[record.getReadLength()];
-		}
-		*/
 
 		// collect alignment length of blocks
 		int alignmentBlockLength[] = new int[record.getAlignmentBlocks().size() + 2];
@@ -369,9 +372,9 @@ public abstract class AbstractPileupBuilder {
 			filter.processRecord(windowCoordinates.getGenomicWindowStart(), record);
 		}
 
-		// process CIGAR -> SP, INDELs
+		// process CIGAR -> SNP, INDELs
 		for (final CigarElement cigarElement : record.getCigar().getCigarElements()) {
-
+			
 			switch(cigarElement.getOperator()) {
 
 			/*
@@ -443,7 +446,6 @@ public abstract class AbstractPileupBuilder {
 			case S:
 				processSoftClipping(windowPosition, readPosition, genomicPosition, cigarElement, record);
 				readPosition += cigarElement.getLength();
-				//MDPosition += cigarElement.getLength();
 				break;
 
 			/*
@@ -489,7 +491,7 @@ public abstract class AbstractPileupBuilder {
 				int orientation = windowCoordinates.getOrientation(genomicPosition + offset);
 				
 				// process MD on demand
-				if (orientation == 0 && windowCache.getReferenceBase(windowPosition) == (byte)'N') {
+				if (record.getAttribute("MD") != null && orientation == 0 && windowCache.getReferenceBase(windowPosition) == (byte)'N') {
 					if (referenceBases == null) {
 						referenceBases = parseMDField(record);
 					}
@@ -542,7 +544,7 @@ public abstract class AbstractPileupBuilder {
 						addLowQualityBaseCall(windowPosition, baseI, qualI, strand);
 					}
 					// process MD on demand
-					if (windowCache.getReferenceBase(windowPosition) == (byte)'N') {
+					if (record.getAttribute("MD") != null && windowCache.getReferenceBase(windowPosition) == (byte)'N') {
 						if (referenceBases == null) {
 							referenceBases = parseMDField(record);
 						}

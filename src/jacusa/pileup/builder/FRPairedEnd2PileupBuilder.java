@@ -12,7 +12,7 @@ import net.sf.samtools.SAMRecord;
  * @author Michael Piechotta
  *
  */
-public class FRPairedEnd2PileupBuilder extends SingleEndStrandedPileupBuilder {
+public class FRPairedEnd2PileupBuilder extends AbstractStrandedPileupBuilder {
 
 	public FRPairedEnd2PileupBuilder(
 			final Coordinate annotatedCoordinate, 
@@ -23,8 +23,8 @@ public class FRPairedEnd2PileupBuilder extends SingleEndStrandedPileupBuilder {
 	}
 	
 	protected void processRecord(SAMRecord record) {
-		if (! record.getReadNegativeStrandFlag() && record.getSecondOfPairFlag() || 
-				record.getReadNegativeStrandFlag() && record.getFirstOfPairFlag()) {
+		if (record.getFirstOfPairFlag() && record.getReadNegativeStrandFlag() || 
+				record.getSecondOfPairFlag() && ! record.getReadNegativeStrandFlag() ) {
 			strand = STRAND.REVERSE;
 		} else {
 			strand = STRAND.FORWARD;
