@@ -29,12 +29,21 @@ public class FRPairedEnd1PileupBuilder extends AbstractStrandedPileupBuilder {
 	     * fr-firststrand:dUTP, NSR, NNSR Same as above except we enforce the rule that the right-most end of the fragment (in transcript coordinates) is the first sequenced (or only sequenced for single-end reads). Equivalently, it is assumed that only the strand generated during first strand synthesis is sequenced.
 	     *  
 		 */
-		if (record.getFirstOfPairFlag() && record.getReadNegativeStrandFlag() || 
-				record.getSecondOfPairFlag() && ! record.getReadNegativeStrandFlag()) {
-			strand = STRAND.FORWARD;
-		} else {
-			strand = STRAND.REVERSE;
+		if (record.getReadPairedFlag()) { // paired end
+			if (record.getFirstOfPairFlag() && record.getReadNegativeStrandFlag() || 
+					record.getSecondOfPairFlag() && ! record.getReadNegativeStrandFlag()) {
+				strand = STRAND.FORWARD;
+			} else {
+				strand = STRAND.REVERSE;
+			}
+		} else { // single end
+			if (record.getReadNegativeStrandFlag()) {
+				strand = STRAND.FORWARD;
+			} else {
+				strand = STRAND.REVERSE;
+			}
 		}
+
 		int i = strand.integer() - 1;
 		// makes sure that for reads on the reverse strand the complement is stored in pileup and filters
 		byte2int = byte2intAr[i]; 

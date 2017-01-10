@@ -23,12 +23,21 @@ public class FRPairedEnd2PileupBuilder extends AbstractStrandedPileupBuilder {
 	}
 	
 	protected void processRecord(SAMRecord record) {
-		if (record.getFirstOfPairFlag() && record.getReadNegativeStrandFlag() || 
-				record.getSecondOfPairFlag() && ! record.getReadNegativeStrandFlag() ) {
-			strand = STRAND.REVERSE;
-		} else {
-			strand = STRAND.FORWARD;
+		if (record.getReadPairedFlag()) { // paired end
+			if (record.getFirstOfPairFlag() && record.getReadNegativeStrandFlag() || 
+					record.getSecondOfPairFlag() && ! record.getReadNegativeStrandFlag() ) {
+				strand = STRAND.REVERSE;
+			} else {
+				strand = STRAND.FORWARD;
+			}
+		} else { // single end
+			if (record.getReadNegativeStrandFlag()) {
+				strand = STRAND.REVERSE;
+			} else {
+				strand = STRAND.FORWARD;
+			}
 		}
+
 		int i = strand.integer() - 1;
 		// makes sure that for reads on the reverse strand the complement is stored in pileup and filters
 		byte2int = byte2intAr[i]; 

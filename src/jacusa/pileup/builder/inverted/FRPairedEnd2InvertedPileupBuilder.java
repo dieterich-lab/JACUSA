@@ -25,13 +25,22 @@ public class FRPairedEnd2InvertedPileupBuilder extends AbstractStrandedPileupBui
 	
 	// invert
 	protected void processRecord(SAMRecord record) {
-		if (record.getFirstOfPairFlag() && record.getReadNegativeStrandFlag() || 
-				record.getSecondOfPairFlag() && ! record.getReadNegativeStrandFlag() ) {
-			//strand = STRAND.REVERSE;
-			strand = STRAND.FORWARD;
+		if (record.getReadPairedFlag()) { // paired end
+			if (record.getFirstOfPairFlag() && record.getReadNegativeStrandFlag() || 
+					record.getSecondOfPairFlag() && ! record.getReadNegativeStrandFlag() ) {
+				//strand = STRAND.REVERSE;
+				strand = STRAND.FORWARD;
+			} else {
+				//strand = STRAND.FORWARD;
+				strand = STRAND.REVERSE;
+			}
 		} else {
-			//strand = STRAND.FORWARD;
-			strand = STRAND.REVERSE;
+			if (record.getReadNegativeStrandFlag()) {
+				strand = STRAND.FORWARD;
+			} else {
+				//strand = STRAND.FORWARD;
+				strand = STRAND.REVERSE;
+			}
 		}
 		int i = strand.integer() - 1;
 
