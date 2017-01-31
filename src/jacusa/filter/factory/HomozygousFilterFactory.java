@@ -18,7 +18,7 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 	private boolean strict;
 	
 	public HomozygousFilterFactory(AbstractParameters parameters) {
-		super('H', "Filter non-homozygous pileup/BAM (MUST be set to 1 or 2). Default: none");
+		super('H', "Filter non-homozygous pileup/BAM in sample 1 or 2 (MUST be set to H:1 or H:2). Default: none");
 		sample = 0;
 		this.parameters = parameters;
 		strict = parameters.collectLowQualityBaseCalls();
@@ -134,7 +134,7 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 				break;
 	
 			default:
-				throw new IllegalArgumentException("Unsupported sample!");
+				throw new IllegalArgumentException("Unsupported sample! Must be sample 1 or 2 (H:1 or H:2)");
 			}
 	
 			if (alleles > 1) {

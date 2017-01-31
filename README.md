@@ -21,7 +21,7 @@ Download
 Get the current Jacusa JAR:
 
 ```
-$ https://github.com/dieterich-lab/JACUSA/blob/master/build/JACUSA_v1.0.0.jar
+$ https://github.com/dieterich-lab/JACUSA/raw/master/build/JACUSA_v1.0.0.jar
 ```
 
 Usage
@@ -73,7 +73,7 @@ Installation
 Download JacusaHelper: 
 
 ```
-$ wget [https://github.com/dieterich-lab/JACUSA/tree/master/JacusaHelper/build/JacusaHelper_0.42.tar.gz](https://github.com/dieterich-lab/JACUSA/tree/master/JacusaHelper/build/JacusaHelper_0.42.tar.gz)
+$ wget https://github.com/dieterich-lab/JACUSA/raw/master/JacusaHelper/build/JacusaHelper_0.42.tar.gz
 ```
 
 Install JacusaHelper in R:
@@ -129,7 +129,7 @@ Download
 Get the current AddVariants JAR:
 
 ```
-$ wget [https://github.com/dieterich-lab/JACUSA/blob/master/tools/AddVariants/build/AddVariants_v0.3.jar](https://github.com/dieterich-lab/JACUSA/blob/master/tools/AddVariants/build/AddVariants_v0.3.jar)
+$ wget https://github.com/dieterich-lab/JACUSA/raw/master/tools/AddVariants/build/AddVariants_v0.3.jar
 ```
 
 Usage
