@@ -13,7 +13,13 @@ Find source code and tools in the following sub-directories of the repository:
 Requirements
 ------------
 
-JACUSA has been developed and tested with Java v1.7
+JACUSA has been developed and tested with Java v1.7.
+
+**IMPORTANT!** JACUSA has been tested with unstranded paired-end
+and firststrand (dUTP) single-end RNA-seq data.
+Stranded paired-end data are currently not handled properly.
+We are actively working on a new release (branch: stranded_paired_end)
+to include this feature.
 
 Download
 --------
