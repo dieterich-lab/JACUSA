@@ -27,7 +27,7 @@ Download
 Get the current Jacusa JAR:
 
 ```
-$ https://github.com/dieterich-lab/JACUSA/raw/master/build/JACUSA_v1.0.0.jar
+$ https://github.com/dieterich-lab/JACUSA/raw/master/build/JACUSA_v1.0.1.jar
 ```
 
 Usage

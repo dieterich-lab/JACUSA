@@ -9,7 +9,7 @@ import org.apache.commons.cli.OptionBuilder;
 public class StatisticFilterOption  extends AbstractACOption {
 
 	private StatisticParameters parameters;
-	
+
 	public StatisticFilterOption(StatisticParameters parameters) {
 		this.parameters = parameters;
 		opt = "T";
@@ -31,8 +31,8 @@ public class StatisticFilterOption  extends AbstractACOption {
 		if (line.hasOption(opt)) {
 		    String value = line.getOptionValue(opt);
 	    	double stat = Double.parseDouble(value);
-	    	if (stat < 0 || stat > 1) {
-	    		throw new Exception("Invalid value for " + longOpt.toUpperCase() + ". Allowed values are 0 <= " + longOpt.toUpperCase() + " <= 1");
+	    	if (stat < 0) {
+	    		throw new Exception("Invalid value for " + longOpt.toUpperCase() + ". Allowed values are 0 <= " + longOpt.toUpperCase());
 	    	}
 	    	parameters.setThreshold(stat);
 		}

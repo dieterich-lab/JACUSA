@@ -56,7 +56,7 @@ import jacusa.io.format.VCF_ResultFormat;
 //import jacusa.io.format.result.DebugResultFormat;
 //import jacusa.io.format.result.VCF_ResultFormat;
 import jacusa.method.AbstractMethodFactory;
-import jacusa.method.call.statistic.ACCUSA2Statistic;
+//import jacusa.method.call.statistic.ACCUSA2Statistic;
 // import jacusa.method.call.statistic.ACCUSA2Statistic;
 // import jacusa.method.call.statistic.ACCUSA2Statistic;
 //import jacusa.method.call.statistic.ACCUSA2Statistic;
