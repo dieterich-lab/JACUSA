@@ -79,7 +79,7 @@ Installation
 Download JacusaHelper: 
 
 ```
-$ wget https://github.com/dieterich-lab/JACUSA/raw/master/JacusaHelper/build/JacusaHelper_0.42.tar.gz
+$ wget https://github.com/dieterich-lab/JACUSA/raw/master/JacusaHelper/build/JacusaHelper_0.43.tar.gz
 ```
 
 Install JacusaHelper in R:

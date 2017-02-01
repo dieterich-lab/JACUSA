@@ -22,6 +22,12 @@ then continue with ToMatrix(sample)
 \section{InputOutput functions}{
 
 The functions Read, and Write facilitate input and output operations on JACUSA output files.
+
+See:
+\itemize{
+  \item Read
+  \item Write
+}
 }
 
 \section{AddInfo functions}{
@@ -33,6 +39,7 @@ matrices.
 See:
 \itemize{
   \item AddCoverageInfo
+  \item AddBaseInfo
   \item AddBaseChangeInfo
   \item AddEditingFreqInfo
 }
@@ -45,9 +52,10 @@ or enforcing a minimal number of variant base calls per sample.
 
 See:
 \itemize{
+  \item FilterByCoverage
   \item FilterByStat
   \item FilterResult
-  \item FilterByMinVariant
+  \item FilterByMinVariantCount
 }
 }
 

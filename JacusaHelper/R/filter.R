@@ -98,7 +98,7 @@ FilterByMinVariantCount <- function(l, min_count = 2, collapse = FALSE) {
 	f <- c()
 	if (is.list(m2)) {
 		f <- lapply(m2, function(m) {
-								m[cbind(1:nrow(m), i)] < 1
+								m[cbind(1:nrow(m), i)] < min_count
 					})
 		f <- do.call(cbind, f)
 		f <- apply(f, 1, any)

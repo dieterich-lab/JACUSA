@@ -15,6 +15,12 @@
 #' @section InputOutput functions:
 #' The functions Read, and Write facilitate input and output operations on JACUSA output files.
 #'
+#' See:
+#' \itemize{
+#'   \item Read
+#'   \item Write
+#' }
+#'
 #' @section AddInfo functions:
 #' This functions calculate and add additional information such as read depth or base changes. 
 #' This includes functions convert base counts that are encoded as character vectors to base count 
@@ -23,6 +29,7 @@
 #' See:
 #' \itemize{
 #'   \item AddCoverageInfo
+#'   \item AddBaseInfo
 #'   \item AddBaseChangeInfo
 #'   \item AddEditingFreqInfo
 #' }
@@ -33,9 +40,10 @@
 #'
 #' See:
 #' \itemize{
+#'   \item FilterByCoverage
 #'   \item FilterByStat
 #'   \item FilterResult
-#'   \item FilterByMinVariant
+#'   \item FilterByMinVariantCount
 #' }
 #'
 #' @docType package
