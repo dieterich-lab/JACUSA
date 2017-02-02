@@ -1,9 +1,13 @@
 Package: JacusaHelper
 Type: Package
-Title: Processing JACUSA output
-Version: 0.2
-Date: 2015-10-23
+Title: Post-rocessing JACUSA output
+Version: 0.43
+Date: 2017-02-01
 Author: Michael Piechotta
-Maintainer: <michael.piechotta@age.mpg.de>
-Description: This package enables to process JACUSA output: read, filter, process, plot, write
-License: GNU Affero General Public License, Version 3.0
+Maintainer: <michael.piechotta@gmail.com>
+Description: This package enables post-process JACUSA output: read, filter, process, plot, write.
+License: GNU Affero General Public License, Version 3.0 + file LICENSE
+RoxygenNote: 5.0.1
+LazyData: true
+Suggests: testthat
+Imports: ggplot2

@@ -12,7 +12,7 @@
 % document related
 \title{JACUSA manual \\ Version 1.0}
 \author{Michael Piechotta \\ michael.piechotta@age.mpg.de}
-\date{August 17, 2015} 
+\date{June 18, 2016} 
 
 % --------------------------------------------------------------------------------------------------
 \begin{document}
@@ -30,10 +30,8 @@ RNA-RNA sequencing samples. JACUSA requires an operating JAVA environment and us
 indexed BAM files as input.
 % --------------------------------------------------------------------------------------------------
 \section{Download}
-Download the latest version of JACUSA from \todo{Just a
-suggestion}\href{http://www.age.mpg.de/software/jacusa/latest.tar.gz}{here}.
-\todo{Is this gone be an open repository?}Check the source in the repository on
-\href{https://github.com/dieterich-lab/JACUSA}{GiTHub}.
+Download the latest version of JACUSA from \href{https://github.com/dieterich-lab/JACUSA/blob/master/build/JACUSA_v1.0.0.jar}. 
+Check the source in the repository on \href{https://github.com/dieterich-lab/JACUSA}{GiTHub}.
 % --------------------------------------------------------------------------------------------------
 \subsection{Installation and requirements}
 JACUSA does not need any configuration but needs a correctly configured Java environment.
@@ -75,13 +73,13 @@ Available sample data organized by data type and species:
   \item
   \href{http://www.age.mpg.com/software/jacusa/sample_data/hg19_chr1_cDNA_VS_cDNA.tar.gz}{hg19\_chr1\_cDNA\_VS\_cDNA.tar.gz}
 \end{itemize}
-\todo{This data has to be generated}
-\begin{itemize}
-  \item 
-  \href{http://www.age.mpg.com/software/jacusa/sample_data/ce10_chrI_gDNA_VS_cDNA.tar.gz}{ce10\_chrI\_gDNA\_VS\_cDNA.tar.gz}
-  \item 
-  \href{http://www.age.mpg.com/software/jacusa/sample_data/ce10_chrI_cDNA_VS_cDNA.tar.gz}{ce10\_chrI\_cDNA\_VS\_cDNA.tar.gz}
-\end{itemize}
+%\todo{This data has to be generated}
+%\begin{itemize}
+%  \item 
+%  \href{http://www.age.mpg.com/software/jacusa/sample_data/ce10_chrI_gDNA_VS_cDNA.tar.gz}{ce10\_chrI\_gDNA\_VS\_cDNA.tar.gz}
+%  \item 
+%  \href{http://www.age.mpg.com/software/jacusa/sample_data/ce10_chrI_cDNA_VS_cDNA.tar.gz}{ce10\_chrI\_cDNA\_VS\_cDNA.tar.gz}
+%\end{itemize}
 %--------------------------------------------------------------------------------------------------
 \section{Input}
 \subsection{Alignment files}
@@ -299,9 +297,9 @@ usage: jacusa.jar [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...
  -r,--result-file <RESULT-FILE>                 & results are written to RESULT-FILE or STDOUT if empty \\
  -s,--separate                                  & Put feature-filtered results in to a separate file (= RESULT-FILE.filtered)\\
  -T,--threshold <THRESHOLD>                     & Filter positions depending on test-statistic THRESHOLD default: DO NOT FILTER \\
- -u,--modus <MODUS>                             & Choose between different modes: \\
-                                                & <*> DirMult-CE : Compound Err. (estimated err.{0.01} + phred score) \\
-                                                & < > DirMult-RCE : Robust Compound Err. \\
+ %-u,--modus <MODUS>                             & Choose between different modes: \\
+ %                                               & <*> DirMult-CE : Compound Err. (estimated err.{0.01} + phred score) \\
+ %                                               & < > DirMult-RCE : Robust Compound Err. \\
  -v,--version                                   & Print version information. \\
  -W,--thread-window-size <THREAD-WINDOW-SIZE>   & size of the window used per thread. Default: 100000 \\
  -w,--window-size <WINDOW-SIZE>                 & size of the window used for caching. Make sure this is greater than the read size and smaller than THREAD-WINDOW-SIZE>. Default:
@@ -328,7 +326,7 @@ WARNING: If you want to identify RNA-RNA differences make sure NOT to use the fi
 %--------------------------------------------------------------------------------------------------
 \section{Used libraries}
 picard tools
-\todo{complete list}
+%\todo{complete list}
 %--------------------------------------------------------------------------------------------------
 \end{document}
 %--------------------------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 package jacusa.cli.parameters;
 
 import jacusa.io.format.AbstractOutputFormat;
-import jacusa.method.call.statistic.dirmult.DirichletMultinomialCompoundError;
+import jacusa.method.call.statistic.dirmult.DirichletMultinomialRobustCompoundError;
 
 public class TwoSampleCallParameters extends AbstractParameters implements hasSample2, hasStatisticCalculator {
 	private SampleParameters sampleB;
@@ -12,7 +12,7 @@ public class TwoSampleCallParameters extends AbstractParameters implements hasSa
 
 		sampleB				= new SampleParameters();
 		statisticParameters = new StatisticParameters();
-		statisticParameters.setStatisticCalculator(new DirichletMultinomialCompoundError(getBaseConfig(), statisticParameters));
+		statisticParameters.setStatisticCalculator(new DirichletMultinomialRobustCompoundError(getBaseConfig(), statisticParameters));
 	}
 
 	@Override

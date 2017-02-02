@@ -13,7 +13,13 @@ Find source code and tools in the following sub-directories of the repository:
 Requirements
 ------------
 
-JACUSA has been developed and tested with Java v1.7
+JACUSA has been developed and tested with Java v1.7.
+
+**IMPORTANT!** JACUSA has been tested with unstranded paired-end
+and firststrand (dUTP) single-end RNA-seq data.
+Stranded paired-end data are currently not handled properly.
+We are actively working on a new release (branch: stranded_paired_end)
+to include this feature.
 
 Download
 --------
@@ -21,7 +27,7 @@ Download
 Get the current Jacusa JAR:
 
 ```
-$ wget http://www.age.mpg.com/software/jacusa/current/JACUSA.jar
+$ https://github.com/dieterich-lab/JACUSA/raw/master/build/JACUSA_v1.0.1.jar
 ```
 
 Usage
@@ -50,11 +56,13 @@ Example gDNA vs. cDNA
 Download and extract sample data 
 
 ```
-$ wget http://www.age.mpg.com/software/jacusa/sample_data/hg19_chr1_gDNA_VS_cDNA.tar.gz
-$ tar xzvpf hg19_chr1_gDNA_VS_cDNA.tar.gz
+open https://cloud.dieterichlab.org/index.php/s/349PMjCdJl4wUwV
+get hg19_chr1_gDNA_VS_cDNA.tar.gz
+and unpack with
+tar xzvpf hg19_chr1_gDNA_VS_cDNA.tar.gz
 ```
 
-Call RNA-DNA differences (RRDs) by comparing gDNA and cDNA in sample data and save results in rdds.out.
+Call RNA-DNA differences (RDDs) by comparing gDNA and cDNA in sample data and save results in rdds.out.
 
 ```
 $ java -jar call-2 -P U,S -a H,M,B,Y -f 1024 -T 2.3	-p 2 -r rdds.out gDNA.bam cDNA1.bam,cDNA2.bam
@@ -71,13 +79,13 @@ Installation
 Download JacusaHelper: 
 
 ```
-$ wget https://github.com/dieterich-lab/JACUSA/tree/master/JacusaHelper/release/JacusaHelper_0.2.tar.gz
+$ wget https://github.com/dieterich-lab/JACUSA/raw/master/JacusaHelper/build/JacusaHelper_0.43.tar.gz
 ```
 
 Install JacusaHelper in R:
 
 ```
-install.packages("JacusaHelper_0.2.tar.gz")
+install.packages("JacusaHelper_0.42.tar.gz")
 library("JacusaHelper")
 ```
 
@@ -90,18 +98,30 @@ Load JacusaHelper package in R:
 library("JacusaHelper")
 ```
 
-Read JACUSA output and add editing frequency info:
+Read JACUSA output, filter sites where the variant base is NOT present in all replicates of at least one sample, and finally add editing frequency info:
 
 ```
-data <- read.table("Jacusa_RDD.out")
+# Read Jacusa output and filter by test-statistic >= 1.56 and 
+# ensure that site have at least 10 reads in (cov1) sample 1 and at least 5 reads per replicate in (covs2) sample 2
+data <- Read("Jacusa_RDD.out, stat = 1.56, fields = c("cov1", "covs2"), cov = c(10, 5))
+# This ensures that the variant base is present in all replicates of at least one sample
+data <- FilterResult(data)
+# This is only applicable for RDD calls and it will calculate their editing frequency.
+# It is expected that gDNA is stored as sample 1!
 data <- AddEditingFreqInfo(data)
 ```
 
 Plot base change conversion:
 
 ```
-tbl <- Table(data)
+# Among other additional infos, AddEditingFreqInfo will populate baseChange field in data
+tbl <- table(data$baseChange)
 barplot(tbl)
+```
+
+Check documentation in R for more details
+```
+?JacusaHelper.
 ```
 
 AddVariants
@@ -115,7 +135,7 @@ Download
 Get the current AddVariants JAR:
 
 ```
-$ wget http://www.age.mpg.com/software/jacusa/current/AddVariants.jar
+$ wget https://github.com/dieterich-lab/JACUSA/raw/master/tools/AddVariants/build/AddVariants_v0.3.jar
 ```
 
 Usage
@@ -134,4 +154,4 @@ chr | start | end
 License
 -------
 
-TODO
+see LICENSE file
