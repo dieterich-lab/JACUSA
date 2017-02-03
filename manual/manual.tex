@@ -171,7 +171,7 @@ bedtools merge -d 500 singular_sites.bed > \
 \end{verbatim}
 \item[run JACUSA] \begin{verbatim} 
 
-java -jar JACUSA.jar call-2 -b contigous_regions.bed -o
+java -jar JACUSA.jar call-2 -b contigous_regions.bed -r
 JACUSA.out mapping_1.sorted.bam mapping_2.sorted.bam
 \end{verbatim}
 \item[extract sites] \begin{verbatim}
@@ -312,14 +312,14 @@ See ``Call variant - two samples'' for details.
 \section{Identification of RNA editing sites}
 Use the following command line to identify RNA-DNA differences in BAM files that might give rise to RNA editing sites:
 \begin{verbatim}
-java -jar call-2 -o JACUSA.out -s -a H:1 gDNA.bam cDNA.bam
+java -jar call-2 -r JACUSA.out -s -a H:1 gDNA.bam cDNA.bam
 \end{verbatim}
 Option ``-a H:1'' ensures that potential polymorphisms in gDNA will be eliminated as artefacts. The number $x \in \{1, 2\}$
 determines which sample has to be homomorph - in this case: gDNA.bam.
 
 Use the following command line to identify RNA-DNA differences:
 \begin{verbatim}
-java -jar call-2 -o JACUSA.out -s cDNA1.bam cDNA2.bam
+java -jar call-2 -r JACUSA.out -s cDNA1.bam cDNA2.bam
 \end{verbatim}
 WARNING: If you want to identify RNA-RNA differences make sure NOT to use the filter ``-a H:x''! Otherwise, potential valid variants will be filtered out. 
 
