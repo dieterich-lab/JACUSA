@@ -19,24 +19,28 @@ public class ConsensusOutputFormat extends AbstractOutputFormat {
 	protected FilterConfig filterConfig;
 	protected BaseConfig baseConfig;
 	public Phred2Prob phred2Prob;
-
+	private boolean showReferenceBase;
+	
 	public ConsensusOutputFormat(
 			final char c,
 			final String desc,
 			final BaseConfig baseConfig, 
-			final FilterConfig filterConfig) {
+			final FilterConfig filterConfig,
+			final boolean showReferenceBase) {
 		super(c, desc);
 		
 		this.baseConfig = baseConfig;
 		this.filterConfig = filterConfig;
 
 		phred2Prob = Phred2Prob.getInstance(baseConfig.getBaseLength());
+		this.showReferenceBase = showReferenceBase;
 	}
 
 	public ConsensusOutputFormat(
 			final BaseConfig baseConfig, 
-			final FilterConfig filterConfig) {
-		this(CHAR, "Consensus", baseConfig, filterConfig);
+			final FilterConfig filterConfig,
+			final boolean showReferenceBase) {
+		this(CHAR, "Consensus", baseConfig, filterConfig, showReferenceBase);
 	}
 
 	@Override
@@ -74,6 +78,11 @@ public class ConsensusOutputFormat extends AbstractOutputFormat {
 			sb.append("filter_info");
 		}
 
+		if (showReferenceBase) {
+			sb.append(getSEP());
+			sb.append("refBase");
+		}
+		
 		return sb.toString();
 	}
 	
@@ -130,6 +139,11 @@ public class ConsensusOutputFormat extends AbstractOutputFormat {
 			sb.append(result.getFilterInfo().combine());
 		}
 		
+		if (showReferenceBase) {
+			sb.append(getSEP());
+			sb.append(parallelPileup.getPooledPileup().getRefBase());
+		}
+
 		return sb.toString();		
 	}
 	

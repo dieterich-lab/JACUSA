@@ -93,7 +93,7 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 			Character[] a = getFormats().keySet().toArray(new Character[1]);
 			parameters.setFormat(getFormats().get(a[0]));
 		} else {
-			parameters.setFormat(new BED6OneSampleResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig()));
+			parameters.setFormat(new BED6OneSampleResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig(), parameters.showReferenceBase()));
 			acOptions.add(new FormatOption<AbstractOutputFormat>(parameters, getFormats()));
 		}
 
@@ -169,10 +169,10 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 
 		AbstractOutputFormat resultFormat = null;
 		
-		resultFormat = new BED6OneSampleResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		resultFormat = new BED6OneSampleResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig(), parameters.showReferenceBase());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
-		resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig(), parameters.showReferenceBase());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 		
 		return resultFormats;

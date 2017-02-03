@@ -16,6 +16,7 @@ public abstract class AbstractParameters implements hasSample1 {
 	private int threadWindowSize;
 
 	private BaseConfig baseConfig;
+	private boolean showReferenceBase;
 
 	private int maxThreads;
 
@@ -42,6 +43,7 @@ public abstract class AbstractParameters implements hasSample1 {
 		windowSize 			= 10000;
 		threadWindowSize	= 10 * windowSize;
 		baseConfig		= new BaseConfig(BaseConfig.VALID);
+		showReferenceBase = false;
 
 		maxThreads		= 1;
 		
@@ -195,6 +197,14 @@ public abstract class AbstractParameters implements hasSample1 {
 		return separate;
 	}
 
+	public boolean showReferenceBase() {
+		return showReferenceBase;
+	}
+	
+	public void setShowReferenceBase(boolean showReferenceBase) {
+		this.showReferenceBase = showReferenceBase;
+	}
+	
 	/**
 	 * @param debug the debug to set
 	 */

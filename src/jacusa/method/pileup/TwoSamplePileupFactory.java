@@ -128,10 +128,10 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 	public Map<Character, AbstractOutputFormat> getOuptutFormats() {
 		Map<Character, AbstractOutputFormat> outputFormats = new HashMap<Character, AbstractOutputFormat>();
 
-		AbstractOutputFormat outputFormat = new PileupFormat(parameters.getBaseConfig());
+		AbstractOutputFormat outputFormat = new PileupFormat(parameters.getBaseConfig(), parameters.showReferenceBase());
 		outputFormats.put(outputFormat.getC(), outputFormat);
 		
-		outputFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		outputFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig(), parameters.showReferenceBase());
 		outputFormats.put(outputFormat.getC(), outputFormat);
 		
 		outputFormat = new DebugResultFormat(parameters.getBaseConfig());

@@ -7,10 +7,14 @@ import jacusa.pileup.Result;
 
 public class BED6OneSampleResultFormat extends BED6ResultFormat {
 
+	private boolean showReferenceBase;
+	
 	public BED6OneSampleResultFormat(
 			final BaseConfig baseConfig, 
-			final FilterConfig filterConfig) {
-		super('b', "One sample", baseConfig, filterConfig);
+			final FilterConfig filterConfig,
+			final boolean showReferenceBase) {
+		super('b', "One sample", baseConfig, filterConfig, showReferenceBase);
+		this.showReferenceBase = showReferenceBase;
 	}
 	
 	@Override
@@ -54,6 +58,11 @@ public class BED6OneSampleResultFormat extends BED6ResultFormat {
 			sb.append("filter_info");
 		}
 
+		if (showReferenceBase) {
+			sb.append(getSEP());
+			sb.append("refBase");
+		}
+		
 		return sb.toString();
 	}
 
@@ -96,6 +105,11 @@ public class BED6OneSampleResultFormat extends BED6ResultFormat {
 		if (filterConfig.hasFiters()) {
 			sb.append(getSEP());
 			sb.append(result.getFilterInfo().combine());
+		}
+		
+		if (showReferenceBase) {
+			sb.append(getSEP());
+			sb.append(parallelPileup.getPooledPileup().getRefBase());
 		}
 		
 		return sb.toString();		
