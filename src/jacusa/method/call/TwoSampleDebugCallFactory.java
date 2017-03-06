@@ -97,7 +97,7 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 		AbstractOutputFormat resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig(), parameters.showReferenceBase());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
-		resultFormat = new VCF_ResultFormat(parameters.getBaseConfig());
+		resultFormat = new VCF_ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;
@@ -137,7 +137,7 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 			options.addOption(acoption.getOption());
 		}
 
-		formatter.printHelp(JACUSA.NAME + " [OPTIONS] input.txt", options);
+		formatter.printHelp(JACUSA.JAR + " [OPTIONS] input.txt", options);
 	}
 
 	

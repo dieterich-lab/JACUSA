@@ -203,7 +203,7 @@ public class TwoSampleWindowCallFactory extends AbstractMethodFactory {
 			options.addOption(acoption.getOption());
 		}
 		
-		formatter.printHelp(JACUSA.NAME + " [OPTIONS] BAM1 BAM2", options);
+		formatter.printHelp(JACUSA.JAR + " [OPTIONS] BAM1 BAM2", options);
 	}
 	
 }

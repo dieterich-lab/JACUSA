@@ -15,6 +15,7 @@ import jacusa.cli.options.MinCoverageOption;
 import jacusa.cli.options.MinMAPQOption;
 import jacusa.cli.options.SAMPathnameArg;
 import jacusa.cli.options.ResultFileOption;
+import jacusa.cli.options.ShowReferenceOption;
 import jacusa.cli.options.StatisticCalculatorOption;
 import jacusa.cli.options.StatisticFilterOption;
 import jacusa.cli.options.ThreadWindowSizeOption;
@@ -40,7 +41,8 @@ import jacusa.filter.factory.ReadPositionDistanceFilterFactory;
 import jacusa.filter.factory.SpliceSiteDistanceFilterFactory;
 import jacusa.io.format.AbstractOutputFormat;
 import jacusa.io.format.BED6OneSampleResultFormat;
-import jacusa.io.format.BED6ResultFormat;
+//import jacusa.io.format.BED6ResultFormat;
+import jacusa.io.format.VCF_ResultFormat;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.method.call.statistic.ACCUSA2Statistic;
 import jacusa.method.call.statistic.StatisticCalculator;
@@ -120,6 +122,7 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 		acOptions.add(new StatisticFilterOption(parameters.getStatisticParameters()));
 		
 		// acOptions.add(new DebugOption(parameters));
+		acOptions.add(new ShowReferenceOption(parameters));
 		acOptions.add(new HelpOption(CLI.getSingleton()));
 		acOptions.add(new VersionOption(CLI.getSingleton()));
 	}
@@ -177,9 +180,14 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 		resultFormat = new BED6OneSampleResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig(), parameters.showReferenceBase());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
+		/*
 		resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig(), parameters.showReferenceBase());
 		resultFormats.put(resultFormat.getC(), resultFormat);
+		*/
 		
+		resultFormat = new VCF_ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
+		resultFormats.put(resultFormat.getC(), resultFormat);
+
 		return resultFormats;
 	}
 
@@ -219,7 +227,7 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 			options.addOption(acoption.getOption());
 		}
 		
-		formatter.printHelp(JACUSA.NAME + " [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...]", options);
+		formatter.printHelp(JACUSA.JAR + " [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...]", options);
 	}
 	
 }

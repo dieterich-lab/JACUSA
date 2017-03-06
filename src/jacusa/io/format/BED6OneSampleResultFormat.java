@@ -13,62 +13,8 @@ public class BED6OneSampleResultFormat extends BED6ResultFormat {
 			final BaseConfig baseConfig, 
 			final FilterConfig filterConfig,
 			final boolean showReferenceBase) {
-		super('b', "One sample", baseConfig, filterConfig, showReferenceBase);
+		super('B', "Default", baseConfig, filterConfig, showReferenceBase);
 		this.showReferenceBase = showReferenceBase;
-	}
-	
-	@Override
-	public String getHeader(String[] pathnames1, String[] pathnames2) {
-		final StringBuilder sb = new StringBuilder();
-
-		sb.append(COMMENT);
-
-		// position (0-based)
-		sb.append("contig");
-		sb.append(getSEP());
-		sb.append("start");
-		sb.append(getSEP());
-		sb.append("end");
-		sb.append(getSEP());
-
-		sb.append("name");
-		sb.append(getSEP());
-
-		// stat	
-		sb.append("stat");
-		sb.append(getSEP());
-		
-		sb.append("strand");
-		sb.append(getSEP());
-
-		// (1) first sample infos / reference
-		addSampleHeader(sb, '1', pathnames1.length);
-		sb.append(getSEP());
-
-		// (2) second sample infos / actual sample
-		addSampleHeader(sb, '2', pathnames1.length);
-		sb.append(getSEP());
-
-		sb.append(getSEP());
-		sb.append("info");
-
-		/*s
-		sb.append(getSEP());
-		sb.append("ref");
-		*/
-		
-		// add filtering info
-		if (filterConfig.hasFiters()) {
-			sb.append(getSEP());
-			sb.append("filter_info");
-		}
-
-		if (showReferenceBase) {
-			sb.append(getSEP());
-			sb.append("refBase");
-		}
-		
-		return sb.toString();
 	}
 
 	@Override
@@ -105,11 +51,6 @@ public class BED6OneSampleResultFormat extends BED6ResultFormat {
 		
 		sb.append(getSEP());
 		sb.append(result.getResultInfo().combine());
-		
-		/*
-		sb.append(getSEP());
-		sb.append(parallelPileup.getPooledPileup().getRefBase());
-		*/
 		
 		// add filtering info
 		if (filterConfig.hasFiters()) {

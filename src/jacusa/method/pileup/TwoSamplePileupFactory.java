@@ -15,6 +15,7 @@ import jacusa.cli.options.MinCoverageOption;
 import jacusa.cli.options.MinMAPQOption;
 import jacusa.cli.options.SAMPathnameArg;
 import jacusa.cli.options.ResultFileOption;
+import jacusa.cli.options.ShowReferenceOption;
 import jacusa.cli.options.ThreadWindowSizeOption;
 import jacusa.cli.options.VersionOption;
 import jacusa.cli.options.WindowSizeOption;
@@ -123,6 +124,7 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 
 		acOptions.add(new MaxThreadOption(parameters));
 		// acOptions.add(new DebugOption(parameters));
+		acOptions.add(new ShowReferenceOption(parameters));
 		acOptions.add(new HelpOption(CLI.getSingleton()));
 		acOptions.add(new VersionOption(CLI.getSingleton()));
 	}
@@ -223,7 +225,7 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 			options.addOption(acoption.getOption());
 		}
 
-		formatter.printHelp(JACUSA.NAME + " [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...]", options);
+		formatter.printHelp(JACUSA.JAR + " [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...]", options);
 	}
 	
 }

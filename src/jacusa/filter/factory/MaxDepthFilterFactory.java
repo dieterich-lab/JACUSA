@@ -15,7 +15,12 @@ public class MaxDepthFilterFactory extends AbstractFilterFactory<Void> {
 	private AbstractParameters parameters;
 	
 	public MaxDepthFilterFactory(AbstractParameters parameters) {
-		super(C, "");
+		super(C, "Filter sites with sample1 coverage >= ");
+		desc += parameters.getSample1().getMaxDepth();
+		if (parameters instanceof hasSample2) {
+			desc += " or sample2 coverage >= " + ((hasSample2)parameters).getSample2().getMaxDepth();
+		}
+
 		this.parameters = parameters;
 	}
 

@@ -15,11 +15,9 @@ Requirements
 
 JACUSA has been developed and tested with Java v1.7.
 
-**IMPORTANT!** JACUSA has been tested with unstranded paired-end
-and firststrand (dUTP) single-end RNA-seq data.
-Stranded paired-end data are currently not handled properly.
-We are actively working on a new release (branch: stranded_paired_end)
-to include this feature.
+**IMPORTANT!** 
+Stranded paired-end data are handled properly with JACUSA v1.2.0 and higher.
+DO NOT USE JACUSA v1.0.1 on stranded paired-end data! 
 
 Download
 --------
@@ -27,16 +25,66 @@ Download
 Get the current Jacusa JAR:
 
 ```
-$ https://github.com/dieterich-lab/JACUSA/raw/master/build/JACUSA_v1.0.1.jar
+https://github.com/dieterich-lab/JACUSA/raw/master/build/JACUSA_v1.2.0.jar
 ```
+
+Changes:
+--------
+
+v1.2.0
+* Added support for stranded paired end reads - parameter -P changed
+* Added support for single sample mode
+* Added -R | --SHOW-REF option
+* Minor fixes / typos
+
+v1.0.1
+* Minor fixes / typos.
+
+Older releases:
+---------------
+```
+  DO NOT USE JACUSA v1.0.1 on stranded paired-end data!
+https://github.com/dieterich-lab/JACUSA/raw/master/build/JACUSA_v1.0.1.jar
+```
+
+Important Change
+----------------
+
+Since v1.2 the format of **-P** has changed!
+The format has been inspired by tophat's http://ccb.jhu.edu/software/tophat/manual.shtml library type parameter.
+With the command line parameter **-P,--build-pileup <BUILD-PILEUP>** the user can choose from combinations of:
+
+* FR-FIRSTSTRAND
+  STRANDED library - first strand sequenced,
+* FR-SECONDSTRAND
+  STRANDED library - second strand sequenced, and
+* UNSTRANDED
+  UNSTRANDED library.
 
 Usage
 -----
 
 Available methods for JACUSA ```$ java -jar jacusa.jar [ENTER]```: 
 
+* call-1  Call variants - one sample
 * call-2	Call variants - two samples
 * pileup	SAMtools like mpileup for two samples
+
+### Single sample mode: call-1 ###
+
+General command line structure for variant calling *call-1*:
+
+```
+jacusa.jar call-2 [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...]
+```
+
+Get available options:
+
+```
+java -jar jacusa.jar call-1
+```
+
+### Two sample mode: call-2 ###
 
 General command line structure for variant calling *call-2*:
 
@@ -50,8 +98,8 @@ Get available options:
 java -jar jacusa.jar call-2
 ```
 
-Example gDNA vs. cDNA
----------------------
+Example gDNA vs. cDNA (two sample mode)
+---------------------------------------
 
 Download and extract sample data 
 
@@ -65,7 +113,7 @@ tar xzvpf hg19_chr1_gDNA_VS_cDNA.tar.gz
 Call RNA-DNA differences (RDDs) by comparing gDNA and cDNA in sample data and save results in rdds.out.
 
 ```
-$ java -jar call-2 -P U,S -a H,M,B,Y -f 1024 -T 2.3	-p 2 -r rdds.out gDNA.bam cDNA1.bam,cDNA2.bam
+$ java -jar call-2 -P UNSTRANDED,FR-FIRSTSTRAND -a H,M,B,Y -f 1024 -T 2.3	-p 2 -r rdds.out gDNA.bam cDNA1.bam,cDNA2.bam
 ```
 
 JacusaHelper
@@ -85,7 +133,7 @@ $ wget https://github.com/dieterich-lab/JACUSA/raw/master/JacusaHelper/build/Jac
 Install JacusaHelper in R:
 
 ```
-install.packages("JacusaHelper_0.42.tar.gz")
+install.packages("JacusaHelper_0.43.tar.gz")
 library("JacusaHelper")
 ```
 
@@ -121,7 +169,7 @@ barplot(tbl)
 
 Check documentation in R for more details
 ```
-?JacusaHelper.
+?JacusaHelper
 ```
 
 AddVariants

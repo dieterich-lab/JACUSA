@@ -17,6 +17,7 @@ import jacusa.cli.options.MinCoverageOption;
 import jacusa.cli.options.MinMAPQOption;
 import jacusa.cli.options.SAMPathnameArg;
 import jacusa.cli.options.ResultFileOption;
+import jacusa.cli.options.ShowReferenceOption;
 import jacusa.cli.options.StatisticCalculatorOption;
 import jacusa.cli.options.StatisticFilterOption;
 import jacusa.cli.options.ThreadWindowSizeOption;
@@ -152,6 +153,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 
 		// 
 		// acOptions.add(new DebugOption(parameters));
+		acOptions.add(new ShowReferenceOption(parameters));
 		acOptions.add(new HelpOption(CLI.getSingleton()));
 		acOptions.add(new VersionOption(CLI.getSingleton()));
 	}
@@ -260,7 +262,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 		// resultFormat = new DebugResultFormat(parameters.getBaseConfig());
 		// resultFormats.put(resultFormat.getC(), resultFormat);
 
-		resultFormat = new VCF_ResultFormat(parameters.getBaseConfig());
+		resultFormat = new VCF_ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		return resultFormats;
@@ -304,7 +306,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 			options.addOption(acoption.getOption());
 		}
 		
-		formatter.printHelp(JACUSA.NAME + " [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...]", options);
+		formatter.printHelp(JACUSA.JAR + " [OPTIONS] BAM1_1[,BAM1_2,BAM1_3,...] BAM2_1[,BAM2_2,BAM2_3,...]", options);
 	}
 	
 }

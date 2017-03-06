@@ -16,7 +16,7 @@ public abstract class AbstractFilterFactory<T> {
 	public final static char SEP = ':';
 
 	private char c;
-	private String desc;
+	protected String desc;
 
 	private boolean filterByRecord;
 	private Set<CigarOperator> cigarOperators;
