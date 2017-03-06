@@ -7,7 +7,7 @@ import jacusa.io.format.AbstractOutputFormat;
 import jacusa.method.AbstractMethodFactory;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.builder.PileupBuilderFactory;
-import jacusa.pileup.builder.UndirectedPileupBuilderFactory;
+import jacusa.pileup.builder.UnstrandedPileupBuilderFactory;
 
 public abstract class AbstractParameters implements hasSample1 {
 	
@@ -101,7 +101,7 @@ public abstract class AbstractParameters implements hasSample1 {
 	}
 	
 	protected PileupBuilderFactory getDefaultPileupBuilderFactory() {
-		return new UndirectedPileupBuilderFactory();
+		return new UnstrandedPileupBuilderFactory();
 	}
 	
 	/**

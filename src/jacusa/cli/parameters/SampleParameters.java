@@ -3,7 +3,7 @@ package jacusa.cli.parameters;
 import jacusa.cli.options.sample.filter.samtag.SamTagFilter;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.builder.PileupBuilderFactory;
-import jacusa.pileup.builder.UndirectedPileupBuilderFactory;
+import jacusa.pileup.builder.UnstrandedPileupBuilderFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,7 @@ public class SampleParameters {
 	private byte minBASQ;
 	private int minMAPQ;
 	private int minCoverage;
+	private boolean invertStrand;
 
 	// filter: flags
 	private int filterFlags;
@@ -32,18 +33,21 @@ public class SampleParameters {
 	private BaseConfig baseConfig;
 	private PileupBuilderFactory pileupBuilderFactory;
 
+	
+	
 	public SampleParameters() {
 		maxDepth 		= -1;
 		minBASQ			= Byte.parseByte("20");
 		minMAPQ 		= 20;
 		minCoverage 	= 5;
+		invertStrand	= false;
 
 		filterFlags 	= 0;
 		retainFlags	 	= 0;
 
 		samTagFilters 	= new ArrayList<SamTagFilter>();
 		pathnames 		= new String[0];
-		pileupBuilderFactory = new UndirectedPileupBuilderFactory();
+		pileupBuilderFactory = new UnstrandedPileupBuilderFactory();
 	}
 
 	/**
@@ -178,6 +182,14 @@ public class SampleParameters {
 
 	public void setBaseConfig(BaseConfig baseConfig) {
 		this.baseConfig = baseConfig;
+	}
+	
+	public void setInvertStrand(boolean invertStrand) {
+		this.invertStrand = invertStrand;
+	}
+	
+	public boolean isInvertStrand() {
+		return invertStrand;
 	}
 	
 }

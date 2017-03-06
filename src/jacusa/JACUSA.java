@@ -25,8 +25,7 @@ import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.cli.parameters.hasSample2;
 import jacusa.method.AbstractMethodFactory;
-// import jacusa.method.call.OneSampleCallFactory;
-// import jacusa.method.call.OneSampleCallFactory;
+import jacusa.method.call.OneSampleCallFactory;
 import jacusa.method.call.TwoSampleCallFactory;
 //import jacusa.method.call.TwoSampleDebugCallFactory;
 import jacusa.method.pileup.TwoSamplePileupFactory;
@@ -57,7 +56,7 @@ public class JACUSA {
 	// timer used for all time measurements
 	private static SimpleTimer timer;
 	public static final String NAME = "jacusa.jar";
-	public static final String VERSION = "1.0.1";
+	public static final String VERSION = "1.2.0-beta1-PE-call-1";
 
 	// command line interface
 	private CLI cli;
@@ -72,7 +71,7 @@ public class JACUSA {
 		Map<String, AbstractMethodFactory> methodFactories = new TreeMap<String, AbstractMethodFactory>();
 
 		AbstractMethodFactory[] factories = new AbstractMethodFactory[] {
-			// new OneSampleCallFactory(), 
+			new OneSampleCallFactory(), 
 			new TwoSampleCallFactory(),
 			new TwoSamplePileupFactory(),
 			// RC new TwoSampleWindowCallFactory(),

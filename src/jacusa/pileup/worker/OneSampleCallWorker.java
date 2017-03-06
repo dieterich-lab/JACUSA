@@ -34,10 +34,6 @@ public class OneSampleCallWorker extends AbstractCallWorker {
 
 	@Override
 	protected OneSampleIterator buildIterator(final Coordinate coordinate) {
-		if (parameters.getSample1().getPileupBuilderFactory().isDirected()) {
-			return new OneSampleIterator(coordinate, variant, readers1, parameters.getSample1(), parameters);
-		}
-
 		return new OneSampleIterator(coordinate, variant, readers1, parameters.getSample1(), parameters);
 	}
 

@@ -22,18 +22,19 @@ public class OneSamplePileupBuilderOption extends AbstractPileupBuilderOption {
 		return OptionBuilder.withLongOpt(longOpt)
 			.withArgName(longOpt.toUpperCase())
 			.hasArg(true)
-	        .withDescription("Choose how parallel pileups are build: strand specific (" + STRAND_SPECIFIC + ") or strand unspecific (" + STRAND_UNSPECIFIC + ")\n default: " + STRAND_UNSPECIFIC)
+	        .withDescription("Choose the library type and how parallel pileups are build:\n" + getPossibleValues()+ "\n default: " + LibraryType.UNSTRANDED)
 	        .create(opt);
 	}
 
 	@Override
 	public void process(CommandLine line) throws Exception {
 		if (line.hasOption(opt)) {
-	    	char[] value = line.getOptionValue(opt).toCharArray();
-	    	if (value.length != 1) {
-	    		throw new IllegalArgumentException("Possible values for " + longOpt.toUpperCase() + ": S or U");
+	    	String s = line.getOptionValue(opt);
+	    	LibraryType l = parse(s);
+	    	if (l == null) {
+	    		throw new IllegalArgumentException("Possible values for " + longOpt.toUpperCase() + ":\n" + getPossibleValues());
 	    	}
-	    	parameters.setPileupBuilderFactory(buildPileupBuilderFactory(parse(value[0])));
+	    	parameters.setPileupBuilderFactory(buildPileupBuilderFactory(l));
 	    }
 	}
 

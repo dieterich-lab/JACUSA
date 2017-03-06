@@ -38,7 +38,7 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 				readers1,
 				sample1,
 				parameters);
-		final Location loc1 = initLocation(coordinate, sample1.getPileupBuilderFactory().isDirected(), pileupBuilders1);
+		final Location loc1 = initLocation(coordinate, sample1.getPileupBuilderFactory().isStranded(), pileupBuilders1);
 
 		this.sample2 = sample2;
 		pileupBuilders2 = createPileupBuilders(
@@ -47,12 +47,12 @@ public abstract class AbstractTwoSampleIterator extends AbstractWindowIterator {
 				readers2,
 				sample2,
 				parameters);
-		final Location loc2 = initLocation(coordinate, sample2.getPileupBuilderFactory().isDirected(), pileupBuilders2);
+		final Location loc2 = initLocation(coordinate, sample2.getPileupBuilderFactory().isStranded(), pileupBuilders2);
 		
 		// create the correct LocationAdvancer
 		locationAdvancer = AbstractLocationAdvancer.getInstance(
-				sample1.getPileupBuilderFactory().isDirected(), loc1, 
-				sample2.getPileupBuilderFactory().isDirected(), loc2);
+				sample1.getPileupBuilderFactory().isStranded(), loc1, 
+				sample2.getPileupBuilderFactory().isStranded(), loc2);
 
 		parallelPileup = new DefaultParallelPileup(pileupBuilders1.length, pileupBuilders2.length);
 	}

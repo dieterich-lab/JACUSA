@@ -19,6 +19,7 @@ import jacusa.cli.options.ThreadWindowSizeOption;
 import jacusa.cli.options.VersionOption;
 import jacusa.cli.options.WindowSizeOption;
 import jacusa.cli.options.pileupbuilder.TwoSamplePileupBuilderOption;
+import jacusa.cli.options.sample.InvertStrandOption;
 import jacusa.cli.options.sample.MaxDepthSampleOption;
 import jacusa.cli.options.sample.MinBASQSampleOption;
 import jacusa.cli.options.sample.MinCoverageSampleOption;
@@ -80,6 +81,7 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 		acOptions.add(new MaxDepthSampleOption(sample, sampleParameters, parameters));
 		acOptions.add(new FilterNHsamTagOption(sample, sampleParameters));
 		acOptions.add(new FilterNMsamTagOption(sample, sampleParameters));
+		acOptions.add(new InvertStrandOption(sample, sampleParameters));
 	}
 	
 	public void initACOptions() {

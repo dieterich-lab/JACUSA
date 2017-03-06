@@ -13,26 +13,26 @@ public abstract class AbstractLocationAdvancer {
 		this.loc2 = loc2;
 	}
 	
-	public static AbstractLocationAdvancer getInstance(boolean isDirected1, Location loc1) {
-		if (isDirected1) {
-			return new DLocationAdvance(loc1);
-		} else if (! isDirected1) {
+	public static AbstractLocationAdvancer getInstance(boolean isStranded1, Location loc1) {
+		if (isStranded1) {
+			return new SLocationAdvance(loc1);
+		} else if (! isStranded1) {
 			return new ULocationAdvance(loc1);
 		}
 		
 		return null;
 	}
 	
-	public static AbstractLocationAdvancer getInstance(boolean isDirected1, Location loc1, boolean isDirected2, Location loc2) { 
+	public static AbstractLocationAdvancer getInstance(boolean isStranded1, Location loc1, boolean isStranded2, Location loc2) { 
 		// create the correct LocationAdvancer
-		if (isDirected1 && isDirected2) {
-			return new DDLocationAdvance(loc1, loc2);
-		} else if (! isDirected1 && ! isDirected2) {
+		if (isStranded1 && isStranded2) {
+			return new SSLocationAdvance(loc1, loc2);
+		} else if (! isStranded1 && ! isStranded2) {
 			return new UULocationAdvance(loc1, loc2);
-		} else if (isDirected1 && ! isDirected2) {
-			return new DULocationAdvance(loc1, loc2);
-		} else if (! isDirected1 && isDirected2) {
-			return new UDLocationAdvance(loc1, loc2);
+		} else if (isStranded1 && ! isStranded2) {
+			return new SULocationAdvance(loc1, loc2);
+		} else if (! isStranded1 && isStranded2) {
+			return new USLocationAdvance(loc1, loc2);
 		}
 		
 		return null;
@@ -68,7 +68,7 @@ public abstract class AbstractLocationAdvancer {
 		return true;
 	}
 	
-	protected void directedAdvanceLocation(Location location) {
+	protected void strandedAdvanceLocation(Location location) {
 		switch (location.strand) {
 		case FORWARD:
 			location.strand = STRAND.REVERSE;
