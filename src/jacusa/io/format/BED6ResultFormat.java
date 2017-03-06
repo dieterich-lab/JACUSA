@@ -19,24 +19,28 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 	protected FilterConfig filterConfig;
 	protected BaseConfig baseConfig;
 	public Phred2Prob phred2Prob;
+	private boolean showReferenceBase;
 
 	public BED6ResultFormat(
 			final char c,
 			final String desc,
 			final BaseConfig baseConfig, 
-			final FilterConfig filterConfig) {
+			final FilterConfig filterConfig,
+			final boolean showReferenceBase) {
 		super(c, desc);
 		
 		this.baseConfig = baseConfig;
 		this.filterConfig = filterConfig;
 
 		phred2Prob = Phred2Prob.getInstance(baseConfig.getBaseLength());
+		this.showReferenceBase = showReferenceBase;
 	}
 
 	public BED6ResultFormat(
 			final BaseConfig baseConfig, 
-			final FilterConfig filterConfig) {
-		this(CHAR, "Default", baseConfig, filterConfig);
+			final FilterConfig filterConfig,
+			final boolean showReferenceBase) {
+		this(CHAR, "Default", baseConfig, filterConfig, showReferenceBase);
 	}
 
 	@Override
@@ -78,6 +82,11 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 			sb.append("filter_info");
 		}
 
+		if (showReferenceBase) {
+			sb.append(getSEP());
+			sb.append("refBase");
+		}
+		
 		return sb.toString();
 	}
 	
@@ -137,6 +146,11 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 			sb.append(result.getFilterInfo().combine());
 		}
 		
+		if (showReferenceBase) {
+			sb.append(getSEP());
+			sb.append(parallelPileup.getPooledPileup().getRefBase());
+		}
+
 		return sb.toString();		
 	}
 	

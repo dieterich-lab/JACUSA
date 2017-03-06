@@ -16,10 +16,12 @@ public class PileupFormat extends AbstractOutputFormat {
 	public static char SEP 	= '\t';
 	public static char SEP2 	= ',';
 
+	private boolean showReferenceBase;
 	private BaseConfig baseConfig;
 
-	public PileupFormat(BaseConfig baseConfig) {
+	public PileupFormat(final BaseConfig baseConfig, final boolean showReferenceBase) {
 		super(CHAR, "samtools mpileup like format (base columns without: $ ^ < > *)");
+		this.showReferenceBase = showReferenceBase;
 		this.baseConfig = baseConfig;
 	}
 
@@ -33,13 +35,13 @@ public class PileupFormat extends AbstractOutputFormat {
 		sb.append(SEP);
 		sb.append(parallelPileup.getStart());
 
-		/*
-		sb.append(SEP);
-		sb.append(parallelPileup.getPooledPileup().getRefBase());
-		*/
-		
 		addPileups(sb, parallelPileup.getStrand1(), parallelPileup.getPileups1());
 		addPileups(sb, parallelPileup.getStrand2(), parallelPileup.getPileups2());
+
+		if (showReferenceBase) {
+			sb.append(getSEP());
+			sb.append(parallelPileup.getPooledPileup().getRefBase());
+		}
 
 		return sb.toString();		
 	}

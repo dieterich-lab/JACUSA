@@ -8,13 +8,15 @@ import jacusa.pileup.Result;
 public class PileupResultFormat extends AbstractOutputFormat {
 
 	private PileupFormat pileupFormat; 
+	private boolean showReferenceBase;
 	
 	public PileupResultFormat(
 			final BaseConfig baseConfig, 
-			final FilterConfig fitlerConfig) {
+			final FilterConfig fitlerConfig,
+			final boolean showReferenceBase) {
 		super('A', "pileup like ACCUSA result format");
 		
-		pileupFormat = new PileupFormat(baseConfig);
+		pileupFormat = new PileupFormat(baseConfig, showReferenceBase);
 	}
 	
 	public String getHeader(String[] pathnames1, String[] pathnames2) {
@@ -57,6 +59,11 @@ public class PileupResultFormat extends AbstractOutputFormat {
 		sb.append(getSEP());
 		sb.append("filter_info");
 
+		if (showReferenceBase) {
+			sb.append(getSEP());
+			sb.append("refBase");
+		}
+
 		return sb.toString();
 	}
 	
@@ -70,6 +77,11 @@ public class PileupResultFormat extends AbstractOutputFormat {
 		sb.append(pileupFormat.getSEP());
 		sb.append(result.getObject("filterInfo"));
 		
+		if (showReferenceBase) {
+			sb.append(getSEP());
+			sb.append(result.getParellelPileup().getPooledPileup().getRefBase());
+		}
+
 		return sb.toString();
 	}
 
