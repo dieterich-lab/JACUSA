@@ -66,4 +66,51 @@ public class BED6OneSampleResultFormat extends BED6ResultFormat {
 		return sb.toString();		
 	}
 
+	@Override
+	public String getHeader(String[] pathnames1, String[] pathnames2) {
+		final StringBuilder sb = new StringBuilder();
+
+		sb.append(COMMENT);
+
+		// position (0-based)
+		sb.append("contig");
+		sb.append(getSEP());
+		sb.append("start");
+		sb.append(getSEP());
+		sb.append("end");
+		sb.append(getSEP());
+
+		sb.append("name");
+		sb.append(getSEP());
+
+		// stat	
+		sb.append("stat");
+		sb.append(getSEP());
+		
+		sb.append("strand");
+		sb.append(getSEP());
+		
+		// (1) first sample  infos
+		addSampleHeader(sb, '1', pathnames1.length);
+		sb.append(getSEP());
+		// (2) second sample  infos
+		addSampleHeader(sb, '2', pathnames1.length);
+
+		sb.append(getSEP());
+		sb.append("info");
+		
+		// add filtering info
+		if (filterConfig.hasFiters()) {
+			sb.append(getSEP());
+			sb.append("filter_info");
+		}
+
+		if (showReferenceBase) {
+			sb.append(getSEP());
+			sb.append("refBase");
+		}
+		
+		return sb.toString();
+	}
+	
 }
