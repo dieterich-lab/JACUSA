@@ -66,7 +66,7 @@ public class WindowCache {
 	
 	public void addHighQualityBaseCall(final int windowPosition, final int baseI, int qualI) {
 		// make sure we don't exceed...
-		Math.min(Phred2Prob.MAX_Q - 1, qualI);
+		qualI = Math.min(Phred2Prob.MAX_Q - 1, qualI);
 		++coverage[windowPosition];
 		++baseCount[windowPosition][baseI];
 		++qualCount[windowPosition][baseI][qualI];
