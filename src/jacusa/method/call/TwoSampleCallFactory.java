@@ -1,6 +1,5 @@
 package jacusa.method.call;
 
-
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
 import jacusa.cli.options.BaseConfigOption;
@@ -25,7 +24,6 @@ import jacusa.cli.options.VersionOption;
 import jacusa.cli.options.WindowSizeOption;
 import jacusa.cli.options.pileupbuilder.TwoSamplePileupBuilderOption;
 import jacusa.cli.options.sample.filter.FilterFlagOption;
-import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.cli.parameters.TwoSampleCallParameters;
@@ -277,7 +275,7 @@ public class TwoSampleCallFactory extends AbstractMethodFactory {
 	}
 
 	@Override
-	public AbstractParameters getParameters() {
+	public TwoSampleCallParameters getParameters() {
 		return parameters;
 	}
 

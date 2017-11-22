@@ -26,7 +26,6 @@ import jacusa.cli.options.sample.InvertStrandOption;
 import jacusa.cli.options.sample.filter.FilterFlagOption;
 import jacusa.cli.options.sample.filter.FilterNHsamTagOption;
 import jacusa.cli.options.sample.filter.FilterNMsamTagOption;
-import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.CLI;
 import jacusa.cli.parameters.OneSampleCallParameters;
 import jacusa.cli.parameters.SampleParameters;
@@ -200,7 +199,7 @@ public class OneSampleCallFactory extends AbstractMethodFactory {
 	}
 
 	@Override
-	public AbstractParameters getParameters() {
+	public OneSampleCallParameters getParameters() {
 		return parameters;
 	}
 	

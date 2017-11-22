@@ -3,8 +3,12 @@ package jacusa.cli.parameters;
 
 import jacusa.JACUSA;
 import jacusa.cli.options.AbstractACOption;
+import jacusa.cli.options.StatisticCalculatorOption;
 import jacusa.io.format.VCF_ResultFormat;
 import jacusa.method.AbstractMethodFactory;
+import jacusa.method.call.OneSampleCallFactory;
+import jacusa.method.call.TwoSampleCallFactory;
+import jacusa.method.call.statistic.StatisticCalculator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -80,10 +84,35 @@ public class CLI {
 		// parse arguments
 		CommandLineParser parser = new PosixParser();
 		try {
+			// hack to enable hidden statisticOption
+			StatisticCalculatorOption statCalcOption = null;
+			Map<String, StatisticCalculator> statistics = null;
+			StatisticParameters statisticParameters = null; 
+			if (methodFactory instanceof OneSampleCallFactory) {
+				OneSampleCallFactory tmp = ((OneSampleCallFactory)methodFactory);
+				statistics = tmp.getStatistics();
+				statisticParameters = tmp.getParameters().getStatisticParameters();
+			} else if (methodFactory instanceof TwoSampleCallFactory) {
+				TwoSampleCallFactory tmp = ((TwoSampleCallFactory)methodFactory);
+				statistics = tmp.getStatistics();
+				statisticParameters = tmp.getParameters().getStatisticParameters();
+			}
+			if (statistics != null) {
+				statCalcOption = new StatisticCalculatorOption(statisticParameters, statistics);
+				options.addOption(statCalcOption.getOption());
+			}
+			
 			CommandLine line = parser.parse(options, processedArgs);
+					
 			for (AbstractACOption acption : acOptions) {
 				acption.process(line);
 			}
+			
+			if (statCalcOption != null) {
+				statCalcOption.process(line);
+			}
+			
+
 			methodFactory.parseArgs(line.getArgs());
 		} catch (Exception e) {
 			e.printStackTrace();
