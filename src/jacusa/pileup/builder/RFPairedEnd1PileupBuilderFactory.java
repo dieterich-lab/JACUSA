@@ -6,9 +6,9 @@ import jacusa.pileup.builder.inverted.FRPairedEnd1InvertedPileupBuilder;
 import jacusa.util.Coordinate;
 import net.sf.samtools.SAMFileReader;
 
-public class FRPairedEnd1PileupBuilderFactory implements PileupBuilderFactory {
+public class RFPairedEnd1PileupBuilderFactory implements PileupBuilderFactory {
 
-	public FRPairedEnd1PileupBuilderFactory() {
+	public RFPairedEnd1PileupBuilderFactory() {
 		// Nothing to be done
 	}
 

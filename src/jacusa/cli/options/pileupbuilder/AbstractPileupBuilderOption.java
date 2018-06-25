@@ -1,7 +1,7 @@
 package jacusa.cli.options.pileupbuilder;
 
 import jacusa.cli.options.AbstractACOption;
-import jacusa.pileup.builder.FRPairedEnd1PileupBuilderFactory;
+import jacusa.pileup.builder.RFPairedEnd1PileupBuilderFactory;
 import jacusa.pileup.builder.FRPairedEnd2PileupBuilderFactory;
 import jacusa.pileup.builder.PileupBuilderFactory;
 import jacusa.pileup.builder.UnstrandedPileupBuilderFactory;
@@ -20,8 +20,8 @@ public abstract class AbstractPileupBuilderOption extends AbstractACOption {
 		case UNSTRANDED:
 			return new UnstrandedPileupBuilderFactory();
 		
-		case FR_FIRSTSTRAND:
-			return new FRPairedEnd1PileupBuilderFactory();
+		case RF_FIRSTSTRAND:
+			return new RFPairedEnd1PileupBuilderFactory();
 		
 		case FR_SECONDSTRAND:
 			return new FRPairedEnd2PileupBuilderFactory();
@@ -54,8 +54,8 @@ public abstract class AbstractPileupBuilderOption extends AbstractACOption {
 		case UNSTRANDED:
 			return LibraryType.UNSTRANDED;
 			
-		case FR_FIRSTSTRAND:
-			return LibraryType.FR_FIRSTSTRAND;
+		case RF_FIRSTSTRAND:
+			return LibraryType.RF_FIRSTSTRAND;
 		
 		case FR_SECONDSTRAND:
 			return LibraryType.FR_SECONDSTRAND;
@@ -73,7 +73,7 @@ public abstract class AbstractPileupBuilderOption extends AbstractACOption {
 			String desc = "";
 
 			switch (l) {
-			case FR_FIRSTSTRAND:
+			case RF_FIRSTSTRAND:
 				desc = "STRANDED library - first strand sequenced";
 				break;
 				
@@ -97,7 +97,7 @@ public abstract class AbstractPileupBuilderOption extends AbstractACOption {
 	}
 
 	public enum LibraryType {
-		FR_FIRSTSTRAND, 
+		RF_FIRSTSTRAND, 
 		FR_SECONDSTRAND,
 		UNSTRANDED
 	}
