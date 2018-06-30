@@ -19,6 +19,22 @@ public abstract class Util {
 		return sb.toString();
 	}
 
+	public static String printMatrix(final double m[][]) {
+		StringBuilder sb = new StringBuilder();
+
+		for (int i = 0; i < m.length; ++i) {
+			for (int j = 0; j < m[i].length; ++j) {
+				if (j > 0) {
+					sb.append('\t');
+				}
+				sb.append(m[i][j]);
+			}
+			sb.append('\n');
+		}
+
+		return sb.toString();
+	}
+	
 	public static Pileup[] flat(Pileup[] pileups, int[] variantBaseIs, int commonBaseI) {
 		Pileup[] ret = new Pileup[pileups.length];
 		for (int i = 0; i < pileups.length; ++i) {

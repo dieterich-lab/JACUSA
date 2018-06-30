@@ -4,14 +4,8 @@ import jacusa.cli.parameters.StatisticParameters;
 import jacusa.estimate.MinkaEstimateParameters;
 import jacusa.filter.factory.AbstractFilterFactory;
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
-//import jacusa.method.call.statistic.dirmult.initalpha.AlphaInitFactory;
-//import jacusa.method.call.statistic.dirmult.initalpha.BayesAlphaInit;
-//import jacusa.method.call.statistic.dirmult.initalpha.MeanAlphaInit;
+
 import jacusa.method.call.statistic.dirmult.initalpha.MinAlphaInit;
-//import jacusa.method.call.statistic.dirmult.initalpha.RonningAlphaInit;
-//import jacusa.method.call.statistic.dirmult.initalpha.RonningBayesAlphaInit;
-//import jacusa.method.call.statistic.dirmult.initalpha.WeirAlphaInit;
-//import jacusa.method.call.statistic.dirmult.initalpha.WeirBayesAlphaInit;
 import jacusa.phred2prob.Phred2Prob;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
@@ -21,13 +15,11 @@ import jacusa.util.Info;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-// import java.util.HashMap;
-// import java.util.Map;
 
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 
 public abstract class AbstractDirichletStatistic implements StatisticCalculator {
-
+	
 	protected final StatisticParameters parameters;
 	protected final BaseConfig baseConfig;
 	protected Phred2Prob phred2Prob;
@@ -231,6 +223,8 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		// store initial alpha guess
 		System.arraycopy(initAlphaValues, 0, alpha, 0, alpha.length);
 
+// System.out.println(sample);
+// System.out.print(Util.printMatrix(matrix));
 		// estimate alpha(s), capture and info(s), and store log-likelihood
 		return estimateAlpha.maximizeLogLikelihood(baseIs, alpha, matrix, sample, estimateInfo, backtrack);
 	}
@@ -255,7 +249,7 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		// the same for pooled sample 1, 2
 		alphaP = new double[baseN];
 		initAlphaP = new double[baseN];
-
+		
 		// estimate alpha(s), capture and info(s), and store log-likelihood
 		boolean isReset = false;
 		logLikelihood1 = estimate("1", baseIs, alpha1, initAlpha1, estimateAlpha.getAlphaInit(), parallelPileup.getPileups1(), false);
@@ -267,7 +261,7 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		logLikelihoodP = estimate("P", baseIs, alphaP, initAlphaP, estimateAlpha.getAlphaInit(), parallelPileup.getPileupsP(), false);
 		iterationsP = estimateAlpha.getIterations();
 		isReset |= estimateAlpha.isReset();
-
+		
 		if (isReset) {
 			logLikelihood1 = estimate("1", baseIs, alpha1, initAlpha1, fallbackAlphaInit, parallelPileup.getPileups1(), true);
 			iterations1 = estimateAlpha.getIterations();
@@ -276,7 +270,7 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 			logLikelihoodP = estimate("P", baseIs, alphaP, initAlphaP, fallbackAlphaInit, parallelPileup.getPileupsP(), true);
 			iterationsP = estimateAlpha.getIterations();
 		}
-
+		
 		// container for test-statistic
 		double stat = Double.NaN;
 		try {

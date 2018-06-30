@@ -65,8 +65,9 @@ public abstract class MinkaEstimateParameters {
 			final double[] gradient, 
 			final double b, 
 			final double[] Q) {
-		double[] alphaNew = new double[alpha.length];
 
+		double[] alphaNew = new double[alpha.length];
+		
 		// try smaller newton steps
 		double lamba = 1.0;
 		// decrease by
@@ -90,7 +91,7 @@ public abstract class MinkaEstimateParameters {
 				return alphaNew;
 			}
 		}
-
+		
 		// could not find alpha(s)
 		return null;
 	}

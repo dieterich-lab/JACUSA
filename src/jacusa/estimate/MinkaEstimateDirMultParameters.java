@@ -1,11 +1,11 @@
 package jacusa.estimate;
 
-import java.util.Arrays;
-
 import jacusa.method.call.statistic.dirmult.initalpha.AbstractAlphaInit;
 
 import jacusa.util.Info;
 import jacusa.util.MathUtil;
+
+import java.util.Arrays;
 
 import org.apache.commons.math3.special.Gamma;
 
@@ -13,9 +13,9 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 
 	private final static double EPSILON = 0.001;
 	private final static int MAX_ITERATIONS = 100;
-	
+
 	private double[] tmpCoverages;
-	
+
 	public MinkaEstimateDirMultParameters() {
 		super();
 	}
@@ -24,36 +24,27 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 		this(initialAlpha, MAX_ITERATIONS, EPSILON);
 	}
 
-	public MinkaEstimateDirMultParameters(
-			final int maxIterations, 
-			final double epsilon) {
+	public MinkaEstimateDirMultParameters(final int maxIterations, final double epsilon) {
 		super(maxIterations, epsilon);
 	}
-	
-	public MinkaEstimateDirMultParameters(
-			final AbstractAlphaInit initialAlpha, 
-			final int maxIterations, 
+
+	public MinkaEstimateDirMultParameters(final AbstractAlphaInit initialAlpha, final int maxIterations,
 			final double epsilon) {
 		super(initialAlpha, maxIterations, epsilon);
 	}
-	
+
 	// estimate alpha and returns loglik
-	public double maximizeLogLikelihood(
-			final int[] baseIs, 
-			final double[] alphaOld, 
-			final double[][] pileupMatrix,
-			final String sample,
-			final Info estimateInfo,
-			final boolean backtrack) {
+	public double maximizeLogLikelihood(final int[] baseIs, final double[] alphaOld, final double[][] pileupMatrix,
+			final String sample, final Info estimateInfo, final boolean backtrack) {
 		iterations = 0;
 
 		final double localCoverages[] = getCoverages(baseIs, pileupMatrix);
-		
+
 		boolean converged = false;
 
 		// final int baseN = baseConfig.getBases().length;
 		final int baseN = alphaOld.length;
-		
+
 		// init alpha new
 		double[] alphaNew = new double[baseN];
 		Arrays.fill(alphaNew, 0.0);
@@ -74,9 +65,9 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 		int pileupN = pileupMatrix.length;
 
 		reset = false;
-		
+
 		// maximize
-		while (iterations < maxIterations && ! converged) {
+		while (iterations < maxIterations && !converged) {
 			// pre-compute
 			summedAlphaOld = MathUtil.sum(alphaOld);
 			digammaSummedAlphaOld = digamma(summedAlphaOld);
@@ -90,12 +81,11 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 				gradient[baseI] = 0.0;
 				Q[baseI] = 0.0;
 
-				// System.out.println("baseI: " + baseI);
 				for (int pileupI = 0; pileupI < pileupN; ++pileupI) {
 					// calculate gradient
 					gradient[baseI] += digammaSummedAlphaOld;
 					gradient[baseI] -= digamma(localCoverages[pileupI] + summedAlphaOld);
-					// 
+					//
 					gradient[baseI] += digamma(pileupMatrix[pileupI][baseI] + alphaOld[baseI]);
 					gradient[baseI] -= digamma(alphaOld[baseI]);
 
@@ -119,9 +109,9 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 			b = b / (1.0 / z + b_DenominatorSum);
 
 			loglikOld = getLogLikelihood(alphaOld, baseIs, pileupMatrix);
-			
+
 			// try update alphaNew
-			boolean admissible = true; 		
+			boolean admissible = true;
 			for (int baseI : baseIs) {
 				alphaNew[baseI] = alphaOld[baseI] - (gradient[baseI] - b) / Q[baseI];
 
@@ -129,8 +119,9 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 					admissible = false;
 				}
 			}
+
 			// check if alpha negative
-			if (! admissible) {
+			if (!admissible) {
 				if (backtrack) {
 					estimateInfo.add("backtrack" + sample, Integer.toString(iterations));
 					alphaNew = backtracking(alphaOld, baseIs, gradient, b_DenominatorSum, Q);
@@ -148,24 +139,24 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 			} else {
 				// calculate log-likelihood for new alpha(s)
 				loglikNew = getLogLikelihood(alphaNew, baseIs, pileupMatrix);
-	
+
 				// check if converged
 				double delta = Math.abs(loglikNew - loglikOld);
-				if (delta  <= EPSILON) {
+				if (delta <= EPSILON) {
 					converged = true;
 				}
 			}
 
 			// update value
 			System.arraycopy(alphaNew, 0, alphaOld, 0, alphaNew.length);
-			iterations++;	
+			iterations++;
 		}
 
 		// reset
 		this.tmpCoverages = null;
 		return loglikNew;
 	}
-	
+
 	private double[] getCoverages(final int[] baseIs, final double[][] pileupMatrix) {
 		if (tmpCoverages == null) {
 			int pileupN = pileupMatrix.length;
@@ -181,12 +172,9 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 
 		return tmpCoverages;
 	}
-	
+
 	// calculate likelihood
-	protected double getLogLikelihood(
-			final double[] alpha, 
-			final int[] baseIs, 
-			final double[][] pileupMatrix) {
+	protected double getLogLikelihood(final double[] alpha, final int[] baseIs, final double[][] pileupMatrix) {
 		double logLikelihood = 0.0;
 		final double alphaSum = MathUtil.sum(alpha);
 		final double[] coverages = getCoverages(baseIs, pileupMatrix);

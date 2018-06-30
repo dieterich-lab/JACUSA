@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class Info {
-
+	
 	private static final char SEP = ';'; 
 	private Map<String, StringBuilder> map;
 	
