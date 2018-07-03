@@ -32,24 +32,24 @@ public class DistanceFilterStorage extends AbstractWindowFilterStorage {
 
 	@Override
 	public void processRecord(int genomicWindowStart, SAMRecord record) {
-		AlignmentBlock alignmentBlock;
 		int windowPosition;
 
 		// process read start and end
 		List<AlignmentBlock> alignmentBlocks = record.getAlignmentBlocks();
 
 		// read start
-		alignmentBlock = alignmentBlocks.get(0);
-		windowPosition = windowCache.getWindowCoordinates().convert2WindowPosition(alignmentBlock.getReferenceStart());
-		final int upstreamD = Math.min(this.distance + 1, alignmentBlock.getLength());
-		addRegion(windowPosition, upstreamD, alignmentBlock.getReadStart() - 1, record);
+		final AlignmentBlock firstAlignmentBlock = alignmentBlocks.get(0);
+		windowPosition = windowCache.getWindowCoordinates().convert2WindowPosition(firstAlignmentBlock.getReferenceStart());
+		final int upstreamD = Math.min(distance + 1, firstAlignmentBlock.getLength());
+		addRegion(windowPosition, upstreamD, firstAlignmentBlock.getReadStart() - 1, record);
 	
 		// read end
-		final int downstreamD = Math.min(this.distance + 1, alignmentBlock.getLength());
-		alignmentBlock = alignmentBlocks.get(alignmentBlocks.size() - 1); // get last alignment
-		windowPosition = windowCache.getWindowCoordinates().convert2WindowPosition(alignmentBlock.getReferenceStart() + alignmentBlock.getLength() - 1 - distance);
+		final AlignmentBlock lastAlignmentBlock = alignmentBlocks.get(alignmentBlocks.size() - 1); // get last alignment
+		final int downstreamD = Math.min(distance + 1, lastAlignmentBlock.getLength());
+		windowPosition = windowCache.getWindowCoordinates().convert2WindowPosition(
+				lastAlignmentBlock.getReferenceStart() + lastAlignmentBlock.getLength() - downstreamD);
 		// note: alignmentBlock.getReadStart() is 1-indexed
-		addRegion(windowPosition, downstreamD, alignmentBlock.getReadStart() - 1 + alignmentBlock.getLength() - downstreamD, record);
+		addRegion(windowPosition, downstreamD, lastAlignmentBlock.getReadStart()  + lastAlignmentBlock.getLength() - downstreamD - 1, record);
 	}
 
 	// process IN
