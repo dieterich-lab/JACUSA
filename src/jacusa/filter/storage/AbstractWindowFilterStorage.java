@@ -43,19 +43,6 @@ public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<
 		baseConfig = parameters.getBaseConfig();
 	}
 
-	// assume baseI and qual are correct
-	protected void addBaseUnique(int windowPosition, int baseI, int qual, SAMRecord record) {
-		if (this.record != record) {
-			this.record = record;
-			Arrays.fill(visited, false);
-		}
-
-		if (windowPosition >= 0 && windowPosition < windowSize && ! visited[windowPosition]) {
-			windowCache.addHighQualityBaseCall(windowPosition, baseI, qual);
-			visited[windowPosition] = true;
-		}
-	}
-	
 	protected void addRegion(int windowPosition, int length, int readPosition, SAMRecord record) {
 		if (this.record != record) {
 			this.record = record;
