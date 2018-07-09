@@ -5,7 +5,6 @@ import java.util.Arrays;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 
-import jacusa.pileup.BaseConfig;
 import jacusa.pileup.builder.WindowCache;
 import jacusa.util.WindowCoordinates;
 
@@ -16,8 +15,6 @@ public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<
 	// count indel, read start/end, splice site as only 1!!!
 	// this ensure that a base-call will only be counted once...
 	private boolean[] visited;
-	private BaseConfig baseConfig;
-
 	protected int windowSize;
 	protected WindowCache windowCache;
 
@@ -40,10 +37,9 @@ public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<
 		windowCache = getContainer();
 		
 		this.sampleParameters = sampleParameters;
-		baseConfig = parameters.getBaseConfig();
 	}
 
-	protected void addRegion(int windowPosition, int length, int readPosition, SAMRecord record) {
+	protected void addRegion(int windowPosition, int length, int readPosition, int[] byte2int, SAMRecord record) {
 		if (this.record != record) {
 			this.record = record;
 			Arrays.fill(visited, false);
@@ -69,12 +65,7 @@ public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<
 
 		for (int i = 0; i < length && windowPosition + i < windowSize && readPosition + i < record.getReadLength(); ++i) {
 			if (! visited[windowPosition + i]) {
-				int baseI = -1; 	
-				if (sampleParameters.getPileupBuilderFactory().isStranded() && record.getReadNegativeStrandFlag()) {
-					baseI = baseConfig.getComplementBaseI(record.getReadBases()[readPosition + i]);
-				} else {
-					baseI = baseConfig.getBaseI(record.getReadBases()[readPosition + i]);
-				}
+				final int baseI = byte2int[record.getReadBases()[readPosition + i]];
 
 				// corresponds to N -> ignore
 				if (baseI < 0) {

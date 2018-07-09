@@ -369,7 +369,7 @@ public abstract class AbstractPileupBuilder {
 
 		// process record specific filters
 		for (AbstractFilterStorage<?> filter : filterContainer.getPR()) {
-			filter.processRecord(windowCoordinates.getGenomicWindowStart(), record);
+			filter.processRecord(windowCoordinates.getGenomicWindowStart(), byte2int, record);
 		}
 
 		// process CIGAR -> SNP, INDELs
@@ -574,7 +574,7 @@ public abstract class AbstractPileupBuilder {
 					upstreamMatch, 
 					downstreamMatch, 
 					cigarElement, 
-					record);
+					byte2int, record);
 		}
 	}
 
@@ -594,7 +594,7 @@ public abstract class AbstractPileupBuilder {
 					upstreamMatch,
 					downstreamMatch,
 					cigarElement, 
-					record);
+					byte2int, record);
 		}
 	}
 
@@ -614,7 +614,7 @@ public abstract class AbstractPileupBuilder {
 					upstreamMatch,
 					downstreamMatch,
 					cigarElement, 
-					record);
+					byte2int, record);
 		}
 	}
 

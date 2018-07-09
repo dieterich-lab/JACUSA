@@ -27,7 +27,7 @@ public abstract class AbstractFilterStorage<T> {
 
 	public void processRecord(
 			int genomicWindowStart, 
-			SAMRecord record) {
+			int[] byte2int, SAMRecord record) {
 		// override if needed	
 	}
 
@@ -51,7 +51,7 @@ public abstract class AbstractFilterStorage<T> {
 			int upstreamMatch,
 			int downstreamMatch,
 			final CigarElement cigarElement, 
-			final SAMRecord record) {
+			int[] byte2int, final SAMRecord record) {
 		// override if needed
 	}
 
@@ -82,7 +82,7 @@ public abstract class AbstractFilterStorage<T> {
 			int upstreamMatch,
 			int downstreamMatch,
 			final CigarElement cigarElement, 
-			final SAMRecord record) {
+			int[] byte2int, final SAMRecord record) {
 		// override if needed
 	}
 	
@@ -93,7 +93,7 @@ public abstract class AbstractFilterStorage<T> {
 			int upstreamMatch,
 			int downstreamMatch,
 			final CigarElement cigarElement, 
-			final SAMRecord record) {
+			int[] byte2int, final SAMRecord record) {
 		// override if needed
 	}
 	
