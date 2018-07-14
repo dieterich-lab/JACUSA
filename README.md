@@ -25,12 +25,14 @@ Download
 Get the current Jacusa JAR:
 
 ```
-https://github.com/dieterich-lab/JACUSA/raw/master/build/JACUSA_v1.2.0.jar
+https://github.com/dieterich-lab/JACUSA/releases/download/1.2.3/JACUSA_v1.2.3.jar
 ```
 
 Changes:
 --------
-
+v1.2.3
+* Fixed pileup filter to maintain orientation for all library type combinations
+* Fixed typo in library type: FR_FIRSTSTRAND -> RF_FIRSTSTRAND
 v1.2.0
 * Added support for stranded paired end reads - parameter -P changed
 * Added support for single sample mode
