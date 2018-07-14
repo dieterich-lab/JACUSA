@@ -33,6 +33,7 @@ Changes:
 v1.2.3
 * Fixed pileup filter to maintain orientation for all library type combinations
 * Fixed typo in library type: FR_FIRSTSTRAND -> RF_FIRSTSTRAND
+
 v1.2.0
 * Added support for stranded paired end reads - parameter -P changed
 * Added support for single sample mode
