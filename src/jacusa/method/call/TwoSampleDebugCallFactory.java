@@ -94,7 +94,7 @@ public class TwoSampleDebugCallFactory extends AbstractMethodFactory {
 	public Map<Character, AbstractOutputFormat> getResultFormats() {
 		Map<Character, AbstractOutputFormat> resultFormats = new HashMap<Character, AbstractOutputFormat>();
 
-		AbstractOutputFormat resultFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig(), parameters.showReferenceBase());
+		AbstractOutputFormat resultFormat = new BED6ResultFormat(parameters);
 		resultFormats.put(resultFormat.getC(), resultFormat);
 
 		resultFormat = new VCF_ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig());

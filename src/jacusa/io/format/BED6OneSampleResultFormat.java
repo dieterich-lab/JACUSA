@@ -1,20 +1,13 @@
 package jacusa.io.format;
 
-import jacusa.filter.FilterConfig;
-import jacusa.pileup.BaseConfig;
+import jacusa.cli.parameters.AbstractParameters;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Result;
 
 public class BED6OneSampleResultFormat extends BED6ResultFormat {
-
-	private boolean showReferenceBase;
 	
-	public BED6OneSampleResultFormat(
-			final BaseConfig baseConfig, 
-			final FilterConfig filterConfig,
-			final boolean showReferenceBase) {
-		super('B', "Default", baseConfig, filterConfig, showReferenceBase);
-		this.showReferenceBase = showReferenceBase;
+	public BED6OneSampleResultFormat(final AbstractParameters parameters) {
+		super('B', "Default", parameters);
 	}
 
 	@Override
@@ -53,12 +46,12 @@ public class BED6OneSampleResultFormat extends BED6ResultFormat {
 		sb.append(result.getResultInfo().combine());
 		
 		// add filtering info
-		if (filterConfig.hasFiters()) {
+		if (parameters.getFilterConfig().hasFiters()) {
 			sb.append(getSEP());
 			sb.append(result.getFilterInfo().combine());
 		}
 		
-		if (showReferenceBase) {
+		if (parameters.showReferenceBase()) {
 			sb.append(getSEP());
 			sb.append(parallelPileup.getPooledPileup().getRefBase());
 		}
@@ -100,12 +93,12 @@ public class BED6OneSampleResultFormat extends BED6ResultFormat {
 		sb.append("info");
 		
 		// add filtering info
-		if (filterConfig.hasFiters()) {
+		if (parameters.getFilterConfig().hasFiters()) {
 			sb.append(getSEP());
 			sb.append("filter_info");
 		}
 
-		if (showReferenceBase) {
+		if (parameters.showReferenceBase()) {
 			sb.append(getSEP());
 			sb.append("refBase");
 		}

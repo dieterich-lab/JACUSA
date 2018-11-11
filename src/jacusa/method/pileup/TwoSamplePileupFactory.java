@@ -135,7 +135,7 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 		AbstractOutputFormat outputFormat = new PileupFormat(parameters.getBaseConfig(), parameters.showReferenceBase());
 		outputFormats.put(outputFormat.getC(), outputFormat);
 		
-		outputFormat = new BED6ResultFormat(parameters.getBaseConfig(), parameters.getFilterConfig(), parameters.showReferenceBase());
+		outputFormat = new BED6ResultFormat(parameters);
 		outputFormats.put(outputFormat.getC(), outputFormat);
 		
 		outputFormat = new DebugResultFormat(parameters.getBaseConfig());

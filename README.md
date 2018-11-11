@@ -13,7 +13,7 @@ Find source code and tools in the following sub-directories of the repository:
 Requirements
 ------------
 
-JACUSA has been developed and tested with Java v1.7.
+JACUSA has been developed and tested with Java v1.8.
 
 **IMPORTANT!** 
 Stranded paired-end data are handled properly with JACUSA v1.2.0 and higher.
@@ -25,7 +25,7 @@ Download
 Get the current Jacusa JAR:
 
 ```
-https://github.com/dieterich-lab/JACUSA/releases/download/1.2.3/JACUSA_v1.2.3.jar
+https://github.com/dieterich-lab/JACUSA/releases/download/1.2.4/JACUSA_v1.2.4.jar
 ```
 
 Changes:
