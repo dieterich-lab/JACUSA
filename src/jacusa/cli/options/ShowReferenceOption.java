@@ -21,8 +21,7 @@ public class ShowReferenceOption extends AbstractACOption {
 	@Override
 	public Option getOption() {
 				return OptionBuilder.withLongOpt(longOpt)
-			.withArgName(longOpt.toUpperCase())
-			.hasArg(true)
+			.hasArg(false)
 	        .withDescription("Add reference base to output. BAM file(s) must have MD field!")
 	        .create(opt);
 	}
