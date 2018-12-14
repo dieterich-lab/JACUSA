@@ -1,7 +1,6 @@
 package jacusa.io.format;
 
-import jacusa.filter.FilterConfig;
-import jacusa.phred2prob.Phred2Prob;
+import jacusa.cli.parameters.AbstractParameters;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
@@ -15,32 +14,19 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 	public static final char EMPTY 	= '*';
 	public static final char SEP 	= '\t';
 	public static final char SEP2 	= ',';
-	
-	protected FilterConfig filterConfig;
-	protected BaseConfig baseConfig;
-	public Phred2Prob phred2Prob;
-	private boolean showReferenceBase;
 
+	protected AbstractParameters parameters;
+	
 	public BED6ResultFormat(
 			final char c,
 			final String desc,
-			final BaseConfig baseConfig, 
-			final FilterConfig filterConfig,
-			final boolean showReferenceBase) {
+			final AbstractParameters parameters) {
 		super(c, desc);
-		
-		this.baseConfig = baseConfig;
-		this.filterConfig = filterConfig;
-
-		phred2Prob = Phred2Prob.getInstance(baseConfig.getBaseLength());
-		this.showReferenceBase = showReferenceBase;
+		this.parameters = parameters;
 	}
 
-	public BED6ResultFormat(
-			final BaseConfig baseConfig, 
-			final FilterConfig filterConfig,
-			final boolean showReferenceBase) {
-		this(CHAR, "Default", baseConfig, filterConfig, showReferenceBase);
+	public BED6ResultFormat(final AbstractParameters parameters) {
+		this(CHAR, "Default", parameters);
 	}
 
 	@Override
@@ -77,12 +63,12 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 		sb.append("info");
 		
 		// add filtering info
-		if (filterConfig.hasFiters()) {
+		if (parameters.getFilterConfig().hasFiters()) {
 			sb.append(getSEP());
 			sb.append("filter_info");
 		}
 
-		if (showReferenceBase) {
+		if (parameters.showReferenceBase()) {
 			sb.append(getSEP());
 			sb.append("refBase");
 		}
@@ -141,12 +127,12 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 		sb.append(result.getResultInfo().combine());
 		
 		// add filtering info
-		if (filterConfig.hasFiters()) {
+		if (parameters.getFilterConfig().hasFiters()) {
 			sb.append(getSEP());
 			sb.append(result.getFilterInfo().combine());
 		}
 		
-		if (showReferenceBase) {
+		if (parameters.showReferenceBase()) {
 			sb.append(getSEP());
 			sb.append(parallelPileup.getPooledPileup().getRefBase());
 		}
@@ -164,7 +150,7 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 
 			int i = 0;
 			char b = BaseConfig.VALID[i];
-			int baseI = baseConfig.getBaseI((byte)b);
+			int baseI = parameters.getBaseConfig().getBaseI((byte)b);
 			int count = 0;
 			if (baseI >= 0) {
 				count = pileup.getCounts().getBaseCount(baseI);
@@ -173,7 +159,7 @@ public class BED6ResultFormat extends AbstractOutputFormat {
 			++i;
 			for (; i < BaseConfig.VALID.length; ++i) {
 				b = BaseConfig.VALID[i];
-				baseI = baseConfig.getBaseI((byte)b);
+				baseI = parameters.getBaseConfig().getBaseI((byte)b);
 				count = 0;
 				if (baseI >= 0) {
 					count = pileup.getCounts().getBaseCount(baseI);
