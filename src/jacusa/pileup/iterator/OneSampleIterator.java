@@ -9,6 +9,7 @@ import jacusa.cli.parameters.SampleParameters;
 import jacusa.pileup.iterator.variant.Variant;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.DefaultPileup;
+import jacusa.pileup.DefaultPileup.STRAND;
 import jacusa.pileup.Pileup;
 import jacusa.util.Coordinate;
 import jacusa.util.Location;
@@ -38,27 +39,18 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 			parallelPileup.setPileups1(getPileups(location, pileupBuilders));
 			parallelPileup.setPileups2(new Pileup[0]);
 			
-			if (filter.isValid(parallelPileup)) {
+			if (filter.isValid(parallelPileup) && parallelPileup.getPooledPileup1().getRefBase() == 'N') {
 				int[] allelesIs = parallelPileup.getPooledPileup1().getAlleles();
 
-				// pick reference base by MD or by majority.
+				// pick reference base by MD
 				// all other bases will be converted in pileup2 to refBaseI
-				int refBaseI = -1;
-				if (parallelPileup.getPooledPileup1().getRefBase() != 'N') {
-					char refBase = parallelPileup.getPooledPileup1().getRefBase();
-					refBaseI = BaseConfig.BYTE_BASE2INT_BASE[(byte)refBase];
-				} else {
-					int maxBaseCount = 0;
-
-					for (int baseI : allelesIs) {
-						int count = parallelPileup.getPooledPileup1().getCounts().getBaseCount(baseI);
-						if (count > maxBaseCount) {
-							maxBaseCount = count;
-							refBaseI = baseI;
-						}
-					}
+				char refBase = parallelPileup.getPooledPileup1().getRefBase();
+				int refBaseI = BaseConfig.BYTE_BASE2INT_BASE[(byte)refBase];
+				
+				if (location.strand == STRAND.REVERSE) {
+					refBaseI = BaseConfig.VALID_COMPLEMENTED[refBaseI];
 				}
-
+				
 				int [] tmpVariantBasesIs = new int[allelesIs.length];
 				int i = 0;
 				for (int j = 0; j < allelesIs.length; ++j) {
