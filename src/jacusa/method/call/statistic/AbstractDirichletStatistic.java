@@ -12,9 +12,7 @@ import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.Result;
 import jacusa.util.Info;
-
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import jacusa.util.Util;
 
 import umontreal.iro.lecuyer.probdist.ChiSquareDist;
 
@@ -52,8 +50,6 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 	
 	protected AbstractAlphaInit fallbackAlphaInit;
 	
-	private DecimalFormat decimalFormat;
-	
 	public AbstractDirichletStatistic(final MinkaEstimateParameters estimateAlpha, final BaseConfig baseConfig, final StatisticParameters parameters) {
 		this.parameters 	= parameters;
 		final int n 		= baseConfig.getBaseLength();
@@ -66,11 +62,6 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		fallbackAlphaInit	= new MinAlphaInit();
 		
 		// alphaInitFactory	= new AlphaInitFactory(getAlphaInits());
-		
-		DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
-		otherSymbols.setDecimalSeparator('.');
-		otherSymbols.setGroupingSeparator(',');
-		decimalFormat = new DecimalFormat("#.##", otherSymbols);
 	}
 
 	/*
@@ -114,7 +105,7 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 	 * @param baseIs
 	 * @param pileupMatrix
 	 */
-	protected void populate(
+	public void populate(
 			final Pileup[] pileups, 
 			final int[] baseIs, 
 			double[][] pileupMatrix) {
@@ -277,36 +268,36 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 
 			// append alpha/iterations/log-likelihood to info info field
 			if (showAlpha) {
-				estimateInfo.add("alpha1", decimalFormat.format(alpha1[0]));			
+				estimateInfo.add("alpha1", Util.format(alpha1[0]));			
 				for (int i = 1; i < alpha1.length; ++i) {
 					estimateInfo.add("alpha1", ":");
-					estimateInfo.add("alpha1", decimalFormat.format(alpha1[i]));
+					estimateInfo.add("alpha1", Util.format(alpha1[i]));
 				}
-				estimateInfo.add("alpha2", decimalFormat.format(alpha2[0]));			
+				estimateInfo.add("alpha2", Util.format(alpha2[0]));			
 				for (int i = 1; i < alpha2.length; ++i) {
 					estimateInfo.add("alpha2", ":");
-					estimateInfo.add("alpha2", decimalFormat.format(alpha2[i]));
+					estimateInfo.add("alpha2", Util.format(alpha2[i]));
 				}
-				estimateInfo.add("alphaP", decimalFormat.format(alphaP[0]));			
+				estimateInfo.add("alphaP", Util.format(alphaP[0]));			
 				for (int i = 1; i < alphaP.length; ++i) {
 					estimateInfo.add("alphaP", ":");
-					estimateInfo.add("alphaP", decimalFormat.format(alphaP[i]));
+					estimateInfo.add("alphaP", Util.format(alphaP[i]));
 				}
 				
-				estimateInfo.add("initAlpha1", decimalFormat.format(initAlpha1[0]));			
+				estimateInfo.add("initAlpha1", Util.format(initAlpha1[0]));			
 				for (int i = 1; i < initAlpha1.length; ++i) {
 					estimateInfo.add("initAlpha1", ":");
-					estimateInfo.add("initAlpha1", decimalFormat.format(initAlpha1[i]));
+					estimateInfo.add("initAlpha1", Util.format(initAlpha1[i]));
 				}
-				estimateInfo.add("initAlpha2", decimalFormat.format(initAlpha2[0]));			
+				estimateInfo.add("initAlpha2", Util.format(initAlpha2[0]));			
 				for (int i = 1; i < initAlpha2.length; ++i) {
 					estimateInfo.add("initAlpha2", ":");
-					estimateInfo.add("initAlpha2", decimalFormat.format(initAlpha2[i]));
+					estimateInfo.add("initAlpha2", Util.format(initAlpha2[i]));
 				}
-				estimateInfo.add("initAlphaP", decimalFormat.format(initAlphaP[0]));			
+				estimateInfo.add("initAlphaP", Util.format(initAlphaP[0]));			
 				for (int i = 1; i < initAlphaP.length; ++i) {
 					estimateInfo.add("initAlphaP", ":");
-					estimateInfo.add("initAlphaP", decimalFormat.format(initAlphaP[i]));
+					estimateInfo.add("initAlphaP", Util.format(initAlphaP[i]));
 				}
 				
 				estimateInfo.add("iterations1", Integer.toString(iterations1));

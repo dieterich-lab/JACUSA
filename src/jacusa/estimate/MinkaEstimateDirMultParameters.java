@@ -83,15 +83,14 @@ public class MinkaEstimateDirMultParameters extends MinkaEstimateParameters {
 
 				for (int pileupI = 0; pileupI < pileupN; ++pileupI) {
 					// calculate gradient
-					gradient[baseI] += digammaSummedAlphaOld;
-					gradient[baseI] -= digamma(localCoverages[pileupI] + summedAlphaOld);
-					//
-					gradient[baseI] += digamma(pileupMatrix[pileupI][baseI] + alphaOld[baseI]);
-					gradient[baseI] -= digamma(alphaOld[baseI]);
+					gradient[baseI] += 	digammaSummedAlphaOld -
+										digamma(localCoverages[pileupI] + summedAlphaOld) +
+										digamma(pileupMatrix[pileupI][baseI] + alphaOld[baseI]) - 
+										digamma(alphaOld[baseI]);
 
 					// calculate Q
-					Q[baseI] += trigamma(pileupMatrix[pileupI][baseI] + alphaOld[baseI]);
-					Q[baseI] -= trigamma(alphaOld[baseI]);
+					Q[baseI] += 		trigamma(pileupMatrix[pileupI][baseI] + alphaOld[baseI]) -
+										trigamma(alphaOld[baseI]);
 				}
 
 				// calculate b

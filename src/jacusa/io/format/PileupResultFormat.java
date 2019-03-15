@@ -4,6 +4,7 @@ import jacusa.filter.FilterConfig;
 import jacusa.io.format.PileupFormat;
 import jacusa.pileup.BaseConfig;
 import jacusa.pileup.Result;
+import jacusa.util.Util;
 
 public class PileupResultFormat extends AbstractOutputFormat {
 
@@ -72,7 +73,7 @@ public class PileupResultFormat extends AbstractOutputFormat {
 		final StringBuilder sb = new StringBuilder(pileupFormat.convert2String(result));
 		// add unfiltered value
 		sb.append(pileupFormat.getSEP());
-		sb.append(result.getStatistic());
+		sb.append(Util.format(result.getStatistic()));
 		
 		sb.append(pileupFormat.getSEP());
 		sb.append(result.getObject("filterInfo"));

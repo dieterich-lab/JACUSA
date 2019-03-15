@@ -19,6 +19,11 @@ public abstract class Util {
 		return sb.toString();
 	}
 
+	public static String format(final double value) {
+		return Double.toString(value);
+		// return String.format(Locale.ENGLISH, "%.3f", value);
+	}
+	
 	public static String printMatrix(final double m[][]) {
 		StringBuilder sb = new StringBuilder();
 

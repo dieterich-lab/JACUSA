@@ -6,6 +6,7 @@ import jacusa.pileup.BaseConfig;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 import jacusa.pileup.Result;
+import jacusa.util.Util;
 
 public class ConsensusOutputFormat extends AbstractOutputFormat {
 
@@ -122,7 +123,7 @@ public class ConsensusOutputFormat extends AbstractOutputFormat {
 		if (Double.isNaN(statistic)) {
 			sb.append("NA");
 		} else {
-			sb.append(statistic);
+			sb.append(Util.format(statistic));
 		}
 
 		sb.append(SEP);

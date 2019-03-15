@@ -3,6 +3,7 @@ package jacusa.io.format;
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Result;
+import jacusa.util.Util;
 
 public class BED6OneSampleResultFormat extends BED6ResultFormat {
 	
@@ -30,7 +31,7 @@ public class BED6OneSampleResultFormat extends BED6ResultFormat {
 		if (Double.isNaN(statistic)) {
 			sb.append("NA");
 		} else {
-			sb.append(statistic);
+			sb.append(Util.format(statistic));
 		}
 
 		sb.append(SEP);
