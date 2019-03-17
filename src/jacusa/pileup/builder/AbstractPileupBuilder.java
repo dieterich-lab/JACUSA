@@ -288,7 +288,7 @@ public abstract class AbstractPileupBuilder {
 		String tag = "MD";
 		Object o = record.getAttribute(tag);
 		if (o == null) {
-			return new byte[0]; // no MD field :-(
+			throw new IllegalStateException("No MD field present for SAMRecord: " + record.toString());
 		}
 
 		// init container size with read length
@@ -490,8 +490,7 @@ public abstract class AbstractPileupBuilder {
 				windowPosition = windowCoordinates.convert2WindowPosition(genomicPosition + offset);
 				int orientation = windowCoordinates.getOrientation(genomicPosition + offset);
 				
-				// process MD on demand
-				if (record.getAttribute("MD") != null && orientation == 0 && windowCache.getReferenceBase(windowPosition) == (byte)'N') {
+				if (orientation == 0 && windowCache.getReferenceBase(windowPosition) == (byte)'N') {
 					if (referenceBases == null) {
 						referenceBases = parseMDField(record);
 					}
@@ -543,8 +542,7 @@ public abstract class AbstractPileupBuilder {
 					} else if (parameters.collectLowQualityBaseCalls()) { 
 						addLowQualityBaseCall(windowPosition, baseI, qualI, strand);
 					}
-					// process MD on demand
-					if (record.getAttribute("MD") != null && windowCache.getReferenceBase(windowPosition) == (byte)'N') {
+					if (windowCache.getReferenceBase(windowPosition) == (byte)'N') {
 						if (referenceBases == null) {
 							referenceBases = parseMDField(record);
 						}

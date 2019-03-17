@@ -107,9 +107,9 @@ Example gDNA vs. cDNA (two sample mode)
 Download and extract sample data 
 
 ```
-open https://cloud.dieterichlab.org/index.php/s/349PMjCdJl4wUwV
-get hg19_chr1_gDNA_VS_cDNA.tar.gz
-and unpack with
+# goto to https://data.dieterichlab.org/s/hg19_chr1_gDNA_VS_cDNA
+# download hg19_chr1_gDNA_VS_cDNA.tar.gz
+# and unpack with
 tar xzvpf hg19_chr1_gDNA_VS_cDNA.tar.gz
 ```
 
