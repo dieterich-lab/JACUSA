@@ -1,8 +1,6 @@
 package jacusa.pileup.iterator;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
@@ -39,19 +37,21 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 			parallelPileup.setPileups1(getPileups(location, pileupBuilders));
 			parallelPileup.setPileups2(new Pileup[0]);
 			
-			if (filter.isValid(parallelPileup) && parallelPileup.getPooledPileup1().getRefBase() == 'N') {
+			if (filter.isValid(parallelPileup) && parallelPileup.getPooledPileup1().getRefBase() != 'N') {
 				int[] allelesIs = parallelPileup.getPooledPileup1().getAlleles();
 
 				// pick reference base by MD
 				// all other bases will be converted in pileup2 to refBaseI
 				char refBase = parallelPileup.getPooledPileup1().getRefBase();
-				int refBaseI = BaseConfig.BYTE_BASE2INT_BASE[(byte)refBase];
+				int refBaseI = BaseConfig.BYTE_BASE2INT_BASE[refBase];
 				
-				if (location.strand == STRAND.REVERSE) {
-					refBaseI = BaseConfig.VALID_COMPLEMENTED[refBaseI];
+				if (parallelPileup.getPooledPileup1().getStrand() == STRAND.REVERSE) {
+					refBase 	= BaseConfig.VALID_COMPLEMENTED[refBaseI];
+					refBaseI 	= BaseConfig.BYTE_BASE2INT_BASE[refBase];	
 				}
 				
 				int [] tmpVariantBasesIs = new int[allelesIs.length];
+				Arrays.fill(tmpVariantBasesIs, -1);
 				int i = 0;
 				for (int j = 0; j < allelesIs.length; ++j) {
 					if (allelesIs[j] != refBaseI) {
@@ -59,8 +59,9 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 						++i;
 					}
 				}
-				int[] variantBasesIs = Arrays.copyOf(tmpVariantBasesIs, i);
-				parallelPileup.setPileups2(DefaultPileup.flat(parallelPileup.getPileups1(), variantBasesIs, refBaseI));
+				int[] variantBasesIs = Arrays.copyOfRange(tmpVariantBasesIs, 0, i);
+				final Pileup[] pileups2 = DefaultPileup.flat(parallelPileup.getPileups1(), variantBasesIs, refBaseI);
+				parallelPileup.setPileups2(pileups2);
 				
 				return true;
 			} else {
@@ -83,24 +84,6 @@ public class OneSampleIterator extends AbstractOneSampleIterator {
 		locationAdvancer.advance();
 
 		return current;
-	}
-
-	@Override
-	public int getAlleleCount(Location location) {
-		Set<Integer> alleles = new HashSet<Integer>(4); 
-		alleles.addAll(getAlleles(location, pileupBuilders));
-
-		return alleles.size();
-	}
-	
-	@Override
-	public int getAlleleCount1(Location location) {
-		return getAlleleCount(location, pileupBuilders);
-	}
-	
-	@Override
-	public int getAlleleCount2(Location location) {
-		return 0;
 	}
 	
 }

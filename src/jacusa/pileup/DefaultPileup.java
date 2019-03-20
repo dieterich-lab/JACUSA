@@ -161,6 +161,19 @@ public class DefaultPileup implements Pileup {
 		return ret;
 	}
 	
+	public static Pileup[] empty(Pileup[] pileups) {
+		Pileup[] ret = new Pileup[pileups.length];
+		for (int i = 0; i < pileups.length; ++i) {
+			final Pileup tmpPileup = pileups[i];
+			ret[i] = new DefaultPileup(
+					tmpPileup.getContig(),
+					tmpPileup.getPosition(),
+					tmpPileup.getStrand(),
+					tmpPileup.getCounts().getBaseLength());
+		}
+		return ret;
+	}
+	
 	public enum STRAND {
 		FORWARD(BaseConfig.STRAND_FORWARD_CHAR),REVERSE(BaseConfig.STRAND_REVERSE_CHAR),UNKNOWN(BaseConfig.STRAND_UNKNOWN_CHAR);
 		

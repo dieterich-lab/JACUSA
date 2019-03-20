@@ -29,7 +29,7 @@ public class OneSampleCallWorker extends AbstractCallWorker {
 		this.parameters = parameters;
 		readers1 = initReaders(parameters.getSample1().getPathnames());
 
-		variant = new VariantParallelPileup1();
+		variant = new VariantParallelPileup1(parameters.getBaseConfig());
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package jacusa.filter.factory;
 
-
-import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.filter.AbstractStorageFilter;
 import jacusa.filter.storage.DummyFilterFillCache;
@@ -14,14 +12,10 @@ import jacusa.util.WindowCoordinates;
 public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 
 	private int sample;
-	private AbstractParameters parameters;
-	private boolean strict;
 	
-	public HomozygousFilterFactory(AbstractParameters parameters) {
+	public HomozygousFilterFactory() {
 		super('H', "Filter non-homozygous pileup/BAM in sample 1 or 2 (MUST be set to H:1 or H:2). Default: none");
 		sample = 0;
-		this.parameters = parameters;
-		strict = parameters.collectLowQualityBaseCalls();
 	}
 
 	@Override
@@ -39,14 +33,6 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 				if (sample == 1 || sample == 2) {
 					setSample(sample);
 				}
-				break;
-
-			case 2:
-				if (! s[i].equals("strict")) {
-					throw new IllegalArgumentException("Did you mean strict? " + line);
-				}
-				parameters.collectLowQualityBaseCalls(true);
-				strict = true;
 				break;
 
 			default:
@@ -72,44 +58,7 @@ public class HomozygousFilterFactory extends AbstractFilterFactory<Void> {
 
 	@Override
 	public AbstractStorageFilter<Void> createStorageFilter() {
-		if (strict) {
-			return new HomozygousStrictFilter(getC());
-		}
-		
 		return new HomozygousFilter(getC());
-	}
-
-	private class HomozygousStrictFilter extends AbstractStorageFilter<Void> {
-
-		public HomozygousStrictFilter(final char c) {
-			super(c);
-		}
-
-		@Override
-		public boolean filter(final Result result, final Location location,	final AbstractWindowIterator windowIterator) {
-			int alleles = 0;
-	
-			switch (sample) {
-	
-			case 1:
-				alleles = windowIterator.getAlleleCount1(location);
-				break;
-	
-			case 2:
-				alleles = windowIterator.getAlleleCount2(location);
-				break;
-	
-			default:
-				throw new IllegalArgumentException("Unsupported sample!");
-			}
-	
-			if (alleles > 1) {
-				return true;
-			}
-	
-			return false;
-		}
-
 	}
 	
 	private class HomozygousFilter extends AbstractStorageFilter<Void> {

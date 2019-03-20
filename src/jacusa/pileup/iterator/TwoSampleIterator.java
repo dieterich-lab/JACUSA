@@ -1,9 +1,5 @@
 package jacusa.pileup.iterator;
 
-
-import java.util.HashSet;
-import java.util.Set;
-
 import jacusa.cli.parameters.AbstractParameters;
 import jacusa.cli.parameters.SampleParameters;
 import jacusa.pileup.DefaultPileup.STRAND;
@@ -93,25 +89,6 @@ public class TwoSampleIterator extends AbstractTwoSampleIterator {
 		locationAdvancer.advance();
 
 		return current;
-	}
-
-	@Override
-	public int getAlleleCount(Location location) {
-		Set<Integer> alleles = new HashSet<Integer>(4); 
-		alleles.addAll(getAlleles(location, pileupBuilders1));
-		alleles.addAll(getAlleles(location, pileupBuilders2));
-
-		return alleles.size();
-	}
-	
-	@Override
-	public int getAlleleCount1(Location location) {
-		return getAlleleCount(location, pileupBuilders1);
-	}
-	
-	@Override
-	public int getAlleleCount2(Location location) {
-		return getAlleleCount(location, pileupBuilders2);
 	}
 	
 }

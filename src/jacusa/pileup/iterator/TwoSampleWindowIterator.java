@@ -117,21 +117,5 @@ public class TwoSampleWindowIterator extends AbstractTwoSampleIterator {
 
 		return current;
 	}
-
-	@Override
-	public int getAlleleCount(Location location) {
-		return 0;
-	}
-	
-	@Override
-	public int getAlleleCount1(Location location) {
-		return getAlleleCount(location, pileupBuilders1);
-	}
-	
-	@Override
-	public int getAlleleCount2(Location location) {
-		return getAlleleCount(location, pileupBuilders2);
-	}
-
 	
 }
