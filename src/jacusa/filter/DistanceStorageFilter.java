@@ -25,13 +25,15 @@ public class DistanceStorageFilter extends AbstractWindowStorageFilter {
 
 		Counts[] counts1 = getCounts(location, windowIterator.getFilterContainers4Replicates1(location));
 		Counts[] counts2 = getCounts(location, windowIterator.getFilterContainers4Replicates2(location));
-
+		
 		final int[] variantBaseIs = countFilter.getVariantBaseIs(parallelPileup);
 		if (variantBaseIs.length == 0) {
 			return false;
 		}
 		
-		return countFilter.filter(variantBaseIs, parallelPileup, counts1, counts2);
+		final boolean filter = countFilter.filter(variantBaseIs, parallelPileup, counts1, counts2);
+		
+		return filter;
 	}
 
 }

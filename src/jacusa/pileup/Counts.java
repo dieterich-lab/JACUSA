@@ -172,5 +172,19 @@ public class Counts implements Cloneable {
 	public int getBaseLength() {
 		return baseCount.length;
 	}
+
+	public String toString() {
+		final StringBuilder sb = new StringBuilder();
+		
+		sb.append(baseCount[0]);
+		sb.append(',');
+		sb.append(baseCount[1]);
+		sb.append(',');
+		sb.append(baseCount[2]);
+		sb.append(',');
+		sb.append(baseCount[3]);
+		
+		return sb.toString();
+	}
 	
 }

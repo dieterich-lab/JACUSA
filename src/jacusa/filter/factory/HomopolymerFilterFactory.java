@@ -24,9 +24,13 @@ public class HomopolymerFilterFactory extends AbstractFilterFactory<WindowCache>
 	}
 	
 	public HomopolymerFilterFactory(final AbstractParameters parameters) {
-		super('Y', "Filter wrong variant calls in the vicinity of homopolymers. Default: " + LENGTH + " (Y:length)", cigarOperator);
+		super(
+				'Y', 
+				"Filter wrong variant calls in the vicinity of homopolymers. Default: " + LENGTH + " (Y:length)", 
+				true,
+				new HashSet<CigarOperator>());
 		this.parameters = parameters;
-		length = LENGTH;
+		length 			= LENGTH;
 	}
 	
 	@Override

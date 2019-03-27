@@ -39,12 +39,14 @@ public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<
 		this.sampleParameters = sampleParameters;
 	}
 
-	protected void addRegion(int windowPosition, int length, int readPosition, int[] byte2int, SAMRecord record) {
+	protected void addRegion(int genomicPosition, int length, int readPosition, int[] byte2int, SAMRecord record) {
 		if (this.record != record) {
 			this.record = record;
 			Arrays.fill(visited, false);
 		}
 
+		int windowPosition = windowCache.getWindowCoordinates().get2WindowPosition(genomicPosition);
+		
 		int offset = 0;
 
 		if (readPosition < 0) {
@@ -84,7 +86,7 @@ public abstract class AbstractWindowFilterStorage extends AbstractFilterStorage<
 
 	@Override
 	public void clearContainer() {
-		getContainer().clear();		
+		getContainer().clear();
 	}
 
 }

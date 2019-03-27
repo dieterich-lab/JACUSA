@@ -36,7 +36,7 @@ public class ReadPositionBiasFilterStorage extends AbstractFilterStorage<BaseCou
 
 	@Override
 	public void processAlignmentMatch(
-			int windowPosition, 
+			int windowPosition,
 			int readPosition, 
 			int genomicPosition, 
 			final CigarElement cigarElement,
@@ -44,7 +44,7 @@ public class ReadPositionBiasFilterStorage extends AbstractFilterStorage<BaseCou
 			final int baseI,
 			final int qual) {
 		int normalizedReadPosition = normReadPosition(readPosition, record);
-
+	
 		// bias at begin and end is investigated 
 		normalizedReadPosition = Math.min(targetReadLength - normalizedReadPosition, normalizedReadPosition);
 		data[windowPosition][baseI][normalizedReadPosition] += 1;

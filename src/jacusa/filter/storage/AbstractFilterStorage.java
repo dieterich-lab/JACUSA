@@ -36,7 +36,6 @@ public abstract class AbstractFilterStorage<T> {
 	}
 
 	public void processAlignmentBlock(
-			int windowPosition, 
 			int readPosition, 
 			int genomicPosition, 
 			CigarElement cigarElement, 
@@ -45,7 +44,6 @@ public abstract class AbstractFilterStorage<T> {
 	}
 
 	public void processInsertion(
-			int windowPosition, 
 			int readPosition, 
 			int genomicPosition,
 			int upstreamMatch,
@@ -56,7 +54,7 @@ public abstract class AbstractFilterStorage<T> {
 	}
 
 	public void processAlignmentMatch(
-			int windowPosition, 
+			int windowPosition,
 			int readPosition, 
 			int genomicPosition,
 			final CigarElement cigarElement,
@@ -67,7 +65,6 @@ public abstract class AbstractFilterStorage<T> {
 	}
 
 	public void processHardClipping(
-			int windowPosition, 
 			int readPosition, 
 			int genomicPosition, 
 			final CigarElement cigarElement, 
@@ -76,7 +73,6 @@ public abstract class AbstractFilterStorage<T> {
 	}
 
 	public void processDeletion(
-			int windowPosition, 
 			int readPosition, 
 			int genomicPosition,
 			int upstreamMatch,
@@ -87,7 +83,6 @@ public abstract class AbstractFilterStorage<T> {
 	}
 	
 	public void processSkipped(
-			int windowPosition, 
 			int readPosition, 
 			int genomicPosition,
 			int upstreamMatch,
@@ -98,7 +93,6 @@ public abstract class AbstractFilterStorage<T> {
 	}
 	
 	public void processSoftClipping(
-			int windowPosition, 
 			int readPosition, 
 			int genomicPosition, 
 			final CigarElement cigarElement, 
@@ -107,7 +101,6 @@ public abstract class AbstractFilterStorage<T> {
 	}
 
 	public void processPadding(
-			int windowPosition, 
 			int readPosition, 
 			int genomicPosition,
 			int upstreamMatch,

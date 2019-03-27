@@ -154,10 +154,6 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 
 		AbstractFilterFactory<?>[] filterFactories = new AbstractFilterFactory[] {
 				new ReadPositionalBiasFilterFactory(parameters),
-//				new BASQBiasFilterFactory(parameters),
-//				new MAPQBiasFilterFactory(parameters),
-//				new OutlierFilterFactory(parameters.getStatisticParameters()),
-//				new ZeroCountFilterFactory(parameters.getStatisticParameters()),
 				new DistanceFilterFactory(parameters),
 				new INDEL_DistanceFilterFactory(parameters),
 				new ReadPositionDistanceFilterFactory(parameters),
@@ -167,7 +163,6 @@ public class TwoSamplePileupFactory extends AbstractMethodFactory {
 				new HomopolymerFilterFactory(parameters),
 				new RareEventFilterFactory(parameters),
 				new MinDifferenceFilterFactory(parameters)
-//				new FDRFilterFactory(parameters.getStatisticParameters()),
 		};
 		for (AbstractFilterFactory<?> filterFactory : filterFactories) {
 			abstractPileupFilters.put(filterFactory.getC(), filterFactory);

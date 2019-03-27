@@ -30,7 +30,6 @@ public class INDEL_DistanceFilterFactory extends AbstractFilterFactory<WindowCac
 	}
 	
 	public INDEL_DistanceFilterFactory(AbstractParameters parameters) {
-		//super('I', "Filter distance to INDEL position. Default: " + DISTANCE + ":" + MIN_RATIO + ":" + MIN_COUNT +" (I:distance:min_ratio:min_count)", cigarOperator);
 		super('I', "Filter distance to INDEL position. Default: " + DISTANCE + ":" + MIN_RATIO +" (I:distance:min_ratio)", cigarOperator);
 		this.parameters = parameters;
 		distance = DISTANCE;

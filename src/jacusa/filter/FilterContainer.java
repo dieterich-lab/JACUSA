@@ -70,6 +70,9 @@ public class FilterContainer {
 		for (AbstractFilterStorage<?> filter : cigarFilters) {
 			filter.clearContainer();
 		}
+		for (AbstractFilterStorage<?> filter : processRecordFilters) {
+			filter.clearContainer();
+		}
 	}
 
 	public AbstractFilterStorage<?> get(int filterI) {

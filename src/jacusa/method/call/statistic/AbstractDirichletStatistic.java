@@ -63,41 +63,6 @@ public abstract class AbstractDirichletStatistic implements StatisticCalculator 
 		
 		// alphaInitFactory	= new AlphaInitFactory(getAlphaInits());
 	}
-
-	/*
-	protected Map<String, AbstractAlphaInit> getAlphaInits() {
-		Map<String, AbstractAlphaInit> alphaInits = new HashMap<String, AbstractAlphaInit>();
-
-		AbstractAlphaInit alphaInit = new RonningAlphaInit();
-		alphaInits.put(alphaInit.getName(), alphaInit);
-
-		alphaInit = new BayesAlphaInit();
-		alphaInits.put(alphaInit.getName(), alphaInit);
-
-		alphaInit = new WeirAlphaInit();
-		alphaInits.put(alphaInit.getName(), alphaInit);
-
-		alphaInit = new MeanAlphaInit();
-		alphaInits.put(alphaInit.getName(), alphaInit);
-		
-		alphaInit = new MinAlphaInit();
-		alphaInits.put(alphaInit.getName(), alphaInit);
-		
-		/* 
-		 * combined alpha init(s)
-		 * combined methods for 
-		 * - replicates > 1, and 
-		 * - no replicates
-		 *
-		alphaInit = new RonningBayesAlphaInit();
-		alphaInits.put(alphaInit.getName(), alphaInit);
-
-		alphaInit = new WeirBayesAlphaInit();
-		alphaInits.put(alphaInit.getName(), alphaInit);
-
-		return alphaInits;
-	}
-	*/
 	
 	/**
 	 * 

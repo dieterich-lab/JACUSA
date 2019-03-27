@@ -5,6 +5,7 @@ import jacusa.pileup.BaseConfig;
 import jacusa.pileup.Counts;
 import jacusa.pileup.DefaultParallelPileup;
 import jacusa.pileup.DefaultPileup;
+import jacusa.pileup.DefaultPileup.STRAND;
 import jacusa.pileup.ParallelPileup;
 import jacusa.pileup.Pileup;
 
@@ -22,7 +23,7 @@ public abstract class AbstractCountFilter {
 	public int[] getVariantBaseIs(final ParallelPileup parallelPileup) {
 		final int[] variantBasesIs = parallelPileup.getVariantBaseIs();
 		final int[] allelesIs = parallelPileup.getPooledPileup().getAlleles();
-		final char refBase = parallelPileup.getPooledPileup().getRefBase();
+		char refBase = parallelPileup.getPooledPileup().getRefBase();
 
 		// A | G
 		// define all non-reference bases as potential variants
@@ -30,8 +31,12 @@ public abstract class AbstractCountFilter {
 			if (refBase == 'N') {
 				return new int[0];
 			}
-			final int refBaseI = baseConfig.getBaseI((byte)refBase);
-
+			int refBaseI = baseConfig.getBaseI((byte)refBase);
+			if (parallelPileup.getStrand() == STRAND.REVERSE) {
+				refBaseI = baseConfig.getComplementBaseI((byte)refBase);
+				refBase = BaseConfig.VALID[refBaseI];
+			}
+			
 			// find non-reference base(s)
 			int i = 0;
 			final int[] tmp = new int[allelesIs.length];
@@ -112,8 +117,6 @@ public abstract class AbstractCountFilter {
 	 * Apply filter on each variant base
 	 */
 	public boolean filter(final int[] variantBaseIs, ParallelPileup parallelPileup, Counts[] counts1, Counts[] counts2) {
-		// final int[] variantBaseIs = getVariantBaseIs(parallelPileup);
-
 		for (int variantBaseI : variantBaseIs) {
 			if (filter(variantBaseI, parallelPileup, counts1, counts2)) {
 				return true;
