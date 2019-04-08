@@ -25,10 +25,15 @@ Download
 Get the current Jacusa JAR:
 
 ```
-https://github.com/dieterich-lab/JACUSA/releases/download/1.2.4/JACUSA_v1.2.4.jar
+https://github.com/dieterich-lab/JACUSA/releases/download/1.3.0/JACUSA_v1.3.0.jar
 ```
 
 Changes:
+--------
+v1.3.0
+* Fixed an issue with call-1 and stranded reads. JACUSA now requires BAM files to contain MD field.
+* Changed calculation of up/downstream matches between filtered features
+* Changed Homopolymer calculation -> simple homopolymer within alignment blocks (insertions and introns currently ignored)
 --------
 v1.2.3
 * Fixed pileup filter to maintain orientation for all library type combinations
