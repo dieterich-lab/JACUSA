@@ -1,7 +1,13 @@
-JACUSA
-======
+JACUSA - DEPRECATED
+===================
 
 JAVA framework for accurate SNV assessment
+
+---
+JACUSA*1* has been deprecated and superseded with [JACUSA2](https://github.com/dieterich-lab/JACUSA2).
+Likewise JACUSAhelper has been deprecated and replaced with [JACUSA2helper](https://github.com/dieterich-lab/JACUSA2).
+Please change to the new versions of the software.
+---
 
 Find source code and tools in the following sub-directories of the repository:
 
