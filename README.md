@@ -31,7 +31,7 @@ Download
 Get the current Jacusa JAR:
 
 ```
-https://github.com/dieterich-lab/JACUSA/releases/download/1.3.5/JACUSA_v1.3.5.jar
+https://github.com/dieterich-lab/JACUSA/releases/download/v1.3.5/JACUSA_v1.3.5.jar
 ```
 
 Changes:
